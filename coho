@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+VERSION = process.argv[2]
+console.log(process.argv[2])
+console.log('hi steve')
+util = require('util')
+exec = require('child_process').exec
+
+child = exec("rm -rf temp && mkdir temp", function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+	console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+	exec("cd temp && mkdir ios", function (error, stdout, stderr) {
+	    console.log('stdout: ' + stdout);
+		console.log('stderr: ' + stderr);
+	    if (error !== null) {
+	      console.log('exec error: ' + error);
+	    }
+		exec("cd temp/ios && git clone https://github.com/apache/incubator-cordova-ios.git && cd incubator-cordova-ios && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
+		    console.log('stdout: ' + stdout);
+			console.log('stderr: ' + stderr);
+		    if (error !== null) {
+		      console.log('exec error: ' + error);
+		    }
+			exec("git archive master -o foo.zip", function (error, stdout, stderr) {
+			    console.log('stdout: ' + stdout);
+				console.log('stderr: ' + stderr);
+			    if (error !== null) {
+			      console.log('exec error: ' + error);
+			    }
+			});
+		});
+	});
+	
+});
+/*
+child.on('exit', function (){
+	
+}
+})
+
+child = exec("cd temp && mkdir ios", function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+	console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+});
+
+child = exec("git clone https://github.com/apache/incubator-cordova-ios.git && cd incubator-cordova-ios && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+	console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+});
+
+child = exec("git archive master -o foo.zip", function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+	console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+});
+*/

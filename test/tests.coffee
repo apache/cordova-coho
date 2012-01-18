@@ -36,20 +36,17 @@ exports['confirm ios pull worked'] = (test)->
 
 exports['check version number'] = (test)->
 	test.expect 1
-	test.ok require('fs').readFile()
 	fs = require('fs')
 	
-	thetest = (err,data)->
-		if VERSION != data
-			test.ok false, "VERSION file doesn't match release version"
-			test.done()
-		else
-			test.ok true, "VERSION file matches release version"
-			test.done()
-		
-	fs.readFile('./temp/ios/cordova-ios/PhoneGapLib/VERSION', thetest)
+	vFile = fs.readFileSync('./temp/ios/cordova-ios/PhoneGapLib/VERSION', 'ascii')
+	if vFile != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
 
 exports['zip exists'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./phonegap-#{ VERSION }.zip")
+	test.ok require('path').existsSync("./temp/ios/cordova-ios/phonegap-#{ VERSION }.zip")
 	test.done()

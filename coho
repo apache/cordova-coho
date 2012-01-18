@@ -23,7 +23,7 @@ child = exec("rm -rf temp && mkdir temp", function (error, stdout, stderr) {
 		    if (error !== null) {
 		      console.log('exec error: ' + error);
 		    }
-			exec("cd temp/ios/cordova-ios git archive master -o foo.zip", function (error, stdout, stderr) {
+			exec("cd temp/ios/cordova-ios && git archive master -o phonegap-"+VERSION+".zip", function (error, stdout, stderr) {
 			    console.log('stdout: ' + stdout);
 				console.log('stderr: ' + stderr);
 			    if (error !== null) {

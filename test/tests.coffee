@@ -31,7 +31,7 @@ exports['creating ios subdirectory'] = (test)->
 	
 exports['confirm ios pull worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/ios/incubator-cordova-ios/PhoneGapLib/VERSION")
+	test.ok require('path').existsSync("./temp/ios/cordova-ios/PhoneGapLib/VERSION")
 	test.done()
 
 exports['check version number'] = (test)->
@@ -47,7 +47,7 @@ exports['check version number'] = (test)->
 			test.ok true, "VERSION file matches release version"
 			test.done()
 		
-	fs.readFile('./temp/ios/incubator-cordova-ios/PhoneGapLib/VERSION', thetest)
+	fs.readFile('./temp/ios/cordova-ios/PhoneGapLib/VERSION', thetest)
 
 exports['zip exists'] = (test)->
 	test.expect 1

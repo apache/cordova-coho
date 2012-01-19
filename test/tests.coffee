@@ -29,11 +29,6 @@ exports['creating release directory']=(test)->
 	test.ok require('path').existsSync("./temp/release")
 	test.done()
 
-exports['creating doc directory']=(test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/doc")
-	test.done()
-
 exports['creating lib directory']=(test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/lib")
@@ -116,15 +111,103 @@ exports['confirm docs clone worked'] = (test)->
 
 exports['check ios version number'] = (test)->
 	test.expect 1
-	fs = require('fs')
-	
-	vFile = fs.readFileSync('./temp/repositories/callback-ios/PhoneGapLib/VERSION', 'ascii')
-	if vFile != VERSION
+	fs = require('fs')	
+	if fs.readFileSync('./temp/repositories/callback-ios/PhoneGapLib/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
 		test.done()
+
+exports['check android version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-android/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version " + VERSION +" " + vFile
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check blackberry version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-blackberry/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check windows version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-windows-phone/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check symbian version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-symbian/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check webos version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-webos/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check bada version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-bada/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check docs version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/callback-docs/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['docs script successfull'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/repositories/callback-docs/public")
+	test.done()
+
+exports['docs copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/doc")
+	test.done()
+
+exports['license copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/license")
+	test.done()
+	
+exports['version file copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/version")
+	test.done()
 
 exports['zip exists'] = (test)->
 	test.expect 1

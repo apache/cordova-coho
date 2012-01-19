@@ -11,7 +11,7 @@ child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
     if (error !== null) {
       console.log('exec error: ' + error);
     }
-	exec("cd temp/release && mkdir doc && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada", function (error, stdout, stderr) {
+	exec("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada", function (error, stdout, stderr) {
 	    console.log('stdout: ' + stdout);
 		console.log('stderr: ' + stderr);
 	    if (error !== null) {
@@ -62,6 +62,13 @@ child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
 		    if (error !== null) {
 		      console.log('exec error: ' + error);
 		    }
+			exec("cd temp/repositories/callback-android && cp LICENSE ../../release/license && cp VERSION ../../release/version", function (error, stdout, stderr) {
+			    console.log('stdout: ' + stdout);
+				console.log('stderr: ' + stderr);
+			    if (error !== null) {
+			      console.log('exec error: ' + error);
+			    }
+			});
 		});
 	
 		//windows phone
@@ -89,6 +96,13 @@ child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
 		    if (error !== null) {
 		      console.log('exec error: ' + error);
 		    }
+			exec("cd temp/repositories/callback-docs && ./bin/phonegap-docs && cp -r public ../../release/doc", function (error, stdout, stderr) {
+			    console.log('stdout: ' + stdout);
+				console.log('stderr: ' + stderr);
+			    if (error !== null) {
+			      console.log('exec error: ' + error);
+			    }
+			});
 		});
 	});
 });

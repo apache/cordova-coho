@@ -3,9 +3,14 @@ Cordova
 
 These are documenting the manual steps required to make Cordova/PhoneGap Release. Our goal is to automate these as much as possible.
 
+Perquisites
+===========
+ - Must be run on a Mac with Lion installed
+ - Must have joDoc installed
+ - Must have git setup
 
 Usage
------
+=====
 
    coho 1.2
    // creates phonegap-1.2.zip
@@ -76,3 +81,11 @@ Docs
  - Pull tagged version of cordova-docs
  - CD phonegap-docs and run command ./bin/phonegap-docs
  - Copy contents of Public folder into docs release folder
+
+Issues & Concerns
+=================
+ - Every project needs to have a VERSION file in it to double check the tagged version (Currently missing in windows-phone and docs). Failing tests are expected.
+ - Currently using callback repo for files. Need to switch this to apache git servers but need all the tags for each repo updated first
+ - Need to implement shortlog command to create changelog. Will have to take version number and do some string manipulation to get previous version (1.3.0 to 1.2.0)
+ - The zip is being made incorrectly. Will need to fix.
+ - Still need to implement running the build scripts for each platform and copying over the relevant files to release folder

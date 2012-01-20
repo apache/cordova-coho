@@ -173,7 +173,7 @@ exports['check bada version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	if fs.readFileSync('./temp/repositories/callback-bada/VERSION', 'ascii') != VERSION
-		test.ok false, "VERSION file doesn't match release version"
+		test.ok false, "VERSION file doesn't match release version" + fs.readFileSync('./temp/repositories/callback-bada/VERSION', 'ascii')
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
@@ -198,7 +198,72 @@ exports['docs copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/doc")
 	test.done()
+	
+exports['ios script successfull'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/repositories/callback-ios/dist/PhoneGap-"+VERSION+".dmg")
+	test.done()
 
+exports['ios dmg copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/ios/PhoneGap-"+VERSION+".dmg")
+	test.done()
+
+exports['ios dmg sha1 copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/ios/PhoneGap-"+VERSION+".dmg.SHA1")
+	test.done()
+
+exports['android script successfull'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/repositories/callback-android/example/libs/phonegap-"+VERSION+".jar")
+	test.done()
+
+exports['android phonegap js copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/android/phonegap-"+VERSION+".js")
+	test.done()
+
+exports['android phonegap jar copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/android/phonegap-"+VERSION+".jar")
+	test.done()
+
+exports['android example copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/android/example")
+	test.done()
+
+exports['blackberry script successfull'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/repositories/callback-blackberry/dist/www/phonegap-"+VERSION+".js")
+	test.done()
+
+exports['blackberry copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/blackberry/README.md")
+	test.done()
+	
+exports['windows copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/windows/PhoneGapStarter.zip")
+	test.done()
+
+exports['symbian copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/symbian/VERSION")
+	test.done()
+
+exports['webos copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/webos/VERSION")
+	test.done()
+
+exports['bada copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/bada/VERSION")
+	test.done()
+		
 exports['license copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/license")

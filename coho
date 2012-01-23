@@ -1,106 +1,35 @@
 #!/usr/bin/env node
 VERSION = process.argv[2]
 console.log(process.argv[2])
-console.log('hi steve')
-util = require('util')
-exec = require('child_process').exec
+var util = require('util')
+var exec = require('child_process').exec
 
 child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release", function (error, stdout, stderr) {
-    console.log('stdout: ' + stdout);
-	console.log('stderr: ' + stderr);
-    if (error !== null) {
-      console.log('exec error: ' + error);
-    }
 	exec("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada", function (error, stdout, stderr) {
-	    console.log('stdout: ' + stdout);
-		console.log('stderr: ' + stderr);
-	    if (error !== null) {
-	      console.log('exec error: ' + error);
-	    }
 	
 		//ios
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-ios.git && cd callback-ios && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-	    	console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-	    	if (error !== null) {
-	      		console.log('exec error: ' + error);
-	    	}
 			exec("cd temp/repositories/callback-ios && make", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 				exec("cd temp/repositories/callback-ios/dist && cp -r PhoneGap-"+VERSION+".dmg ../../../release/lib/ios && cp -r PhoneGap-"+VERSION+".dmg.SHA1 ../../../release/lib/ios", function (error, stdout, stderr) {
-				    console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-				    if (error !== null) {
-				      console.log('exec error: ' + error);
-				    }
 				});
 			});
 		});
 
 		//blackberry
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-blackberry.git && cd callback-blackberry && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-blackberry && ant dist", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 				exec("cd temp/repositories/callback-blackberry/dist && cp -r ./* ../../../release/lib/blackberry", function (error, stdout, stderr) {
-				    console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-				    if (error !== null) {
-				      console.log('exec error: ' + error);
-				    }
 				});
 			});
 		});
 
 		//android
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-android.git && cd callback-android && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-android && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md ../../release/lib/android", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 				exec("cd temp/repositories/callback-android && ./bin/create", function (error, stdout, stderr) {
-				    console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-				    if (error !== null) {
-				      console.log('exec error: ' + error);
-				    }
 					exec("cd temp/repositories/callback-android && cp -rp example ../../release/lib/android/example", function (error, stdout, stderr) {
-					    console.log('stdout: ' + stdout);
-						console.log('stderr: ' + stderr);
-					    if (error !== null) {
-					      console.log('exec error: ' + error);
-					    }
 						exec("cd temp/repositories/callback-android/example && cp libs/phonegap-"+VERSION+".jar ../../../release/lib/android/", function (error, stdout, stderr) {
-						    console.log('stdout: ' + stdout);
-							console.log('stderr: ' + stderr);
-						    if (error !== null) {
-						      console.log('exec error: ' + error);
-						    }
 							exec("cd temp/repositories/callback-android/example && cp assets/www/phonegap-"+VERSION+".js ../../../release/lib/android/", function (error, stdout, stderr) {
-							    console.log('stdout: ' + stdout);
-								console.log('stderr: ' + stderr);
-							    if (error !== null) {
-							      console.log('exec error: ' + error);
-							    }
 							});
 						});
 					});
@@ -110,81 +39,31 @@ child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
 
 		//windows phone
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-windows-phone.git && cd callback-windows-phone && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-windows-phone && cp -r ./* ../../release/lib/windows", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 			});
 		});
 
 		//symbian
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-symbian.git && cd callback-symbian && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-symbian && cp -r ./* ../../release/lib/symbian", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 			});
 		});
 
 		//webos
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-webos.git && cd callback-webos && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-webos && cp -r ./* ../../release/lib/webos", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 			});
 		});	
 	
 		//bada
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-bada.git && cd callback-bada && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-bada && cp -r ./* ../../release/lib/bada", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 			});
 		});
 	
 		//docs
 		exec("cd temp/repositories && git clone git@github.com:callback/callback-docs.git && cd callback-docs && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-		    console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-		    if (error !== null) {
-		      console.log('exec error: ' + error);
-		    }
 			exec("cd temp/repositories/callback-docs && ./bin/phonegap-docs && cp -r public ../../release/doc", function (error, stdout, stderr) {
-			    console.log('stdout: ' + stdout);
-				console.log('stderr: ' + stderr);
-			    if (error !== null) {
-			      console.log('exec error: ' + error);
-			    }
 			});
 		});
 	});
@@ -193,10 +72,5 @@ child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
 
 child.on('exit', function(){
 	exec("cd temp/release && git archive master -o phonegap-"+VERSION+".zip", function (error, stdout, stderr) {
-	    console.log('stdout: ' + stdout);
-		console.log('stderr: ' + stderr);
-	    if (error !== null) {
-	      console.log('exec error: ' + error);
-	    }
 	});
 });

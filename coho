@@ -23,7 +23,7 @@ function executeCommands(callback) {
           util.puts(stderr);
         } else {
           util.puts(stdout);
-          executeCommands();
+          executeCommands(callback);
         }
       });
       if (commandQueue.length === 0) {

@@ -4,73 +4,77 @@ console.log(process.argv[2])
 var util = require('util')
 var exec = require('child_process').exec
 
-child = exec("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release", function (error, stdout, stderr) {
-	exec("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada", function (error, stdout, stderr) {
-	
-		//ios
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-ios.git && cd callback-ios && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-ios && make", function (error, stdout, stderr) {
-				exec("cd temp/repositories/callback-ios/dist && cp -r PhoneGap-"+VERSION+".dmg ../../../release/lib/ios && cp -r PhoneGap-"+VERSION+".dmg.SHA1 ../../../release/lib/ios", function (error, stdout, stderr) {
-				});
-			});
-		});
+var commandQueue = [],
+    child;
 
-		//blackberry
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-blackberry.git && cd callback-blackberry && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-blackberry && ant dist", function (error, stdout, stderr) {
-				exec("cd temp/repositories/callback-blackberry/dist && cp -r ./* ../../../release/lib/blackberry", function (error, stdout, stderr) {
-				});
-			});
-		});
+function queueCommand(cmd) {
+    commandQueue.push(cmd);
+}
 
-		//android
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-android.git && cd callback-android && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-android && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md ../../release/lib/android", function (error, stdout, stderr) {
-				exec("cd temp/repositories/callback-android && ./bin/create", function (error, stdout, stderr) {
-					exec("cd temp/repositories/callback-android && cp -rp example ../../release/lib/android/example", function (error, stdout, stderr) {
-						exec("cd temp/repositories/callback-android/example && cp libs/phonegap-"+VERSION+".jar ../../../release/lib/android/", function (error, stdout, stderr) {
-							exec("cd temp/repositories/callback-android/example && cp assets/www/phonegap-"+VERSION+".js ../../../release/lib/android/", function (error, stdout, stderr) {
-							});
-						});
-					});
-				});
-			});
-		});
+// Run through all queued commands in a synchronous manner.
+// If there's an error it will stop executing commands.
+// The callback parameter will fire once all commands have completed.
+function executeCommands(callback) {
+    var cmd = commandQueue.shift();
+    if (cmd) {
+      child = exec(cmd, function(err, stdout, stderr) {
+        if (err !== null) {
+          console.log('ERROR!' + err);
+          util.puts(stderr);
+        } else {
+          util.puts(stdout);
+          executeCommands();
+        }
+      });
+      if (commandQueue.length === 0) {
+        // Attach the callback to the child since this is the last command.
+        child.on('exit', callback);
+      }
+    } else {
+      console.log('All done biatch');
+    }
+}
 
-		//windows phone
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-windows-phone.git && cd callback-windows-phone && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-windows-phone && cp -r ./* ../../release/lib/windows", function (error, stdout, stderr) {
-			});
-		});
+queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
+queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-ios.git && cd callback-ios && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-ios && make");
+queueCommand("cd temp/repositories/callback-ios/dist && cp -r PhoneGap-"+VERSION+".dmg ../../../release/lib/ios && cp -r PhoneGap-"+VERSION+".dmg.SHA1 ../../../release/lib/ios");
 
-		//symbian
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-symbian.git && cd callback-symbian && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-symbian && cp -r ./* ../../release/lib/symbian", function (error, stdout, stderr) {
-			});
-		});
+//blackberry
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-blackberry.git && cd callback-blackberry && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-blackberry && ant dist");
+queueCommand("cd temp/repositories/callback-blackberry/dist && cp -r ./* ../../../release/lib/blackberry");
 
-		//webos
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-webos.git && cd callback-webos && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-webos && cp -r ./* ../../release/lib/webos", function (error, stdout, stderr) {
-			});
-		});	
-	
-		//bada
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-bada.git && cd callback-bada && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-bada && cp -r ./* ../../release/lib/bada", function (error, stdout, stderr) {
-			});
-		});
-	
-		//docs
-		exec("cd temp/repositories && git clone git@github.com:callback/callback-docs.git && cd callback-docs && git fetch --tags && git checkout "+VERSION, function (error, stdout, stderr) {
-			exec("cd temp/repositories/callback-docs && ./bin/phonegap-docs && cp -r public ../../release/doc", function (error, stdout, stderr) {
-			});
-		});
-	});
-});
+//android
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-android.git && cd callback-android && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-android && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md ../../release/lib/android");
+queueCommand("cd temp/repositories/callback-android && ./bin/create");
+queueCommand("cd temp/repositories/callback-android && cp -rp example ../../release/lib/android/example");
+queueCommand("cd temp/repositories/callback-android/example && cp libs/phonegap-"+VERSION+".jar ../../../release/lib/android/");
+queueCommand("cd temp/repositories/callback-android/example && cp assets/www/phonegap-"+VERSION+".js ../../../release/lib/android/");
 
+//windows phone
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-windows-phone.git && cd callback-windows-phone && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-windows-phone && cp -r ./* ../../release/lib/windows");
 
-child.on('exit', function(){
-	exec("cd temp/release && git archive master -o phonegap-"+VERSION+".zip", function (error, stdout, stderr) {
+//symbian
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-symbian.git && cd callback-symbian && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-symbian && cp -r ./* ../../release/lib/symbian");
+
+//webos
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-webos.git && cd callback-webos && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-webos && cp -r ./* ../../release/lib/webos");
+
+//bada
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-bada.git && cd callback-bada && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-bada && cp -r ./* ../../release/lib/bada");
+
+//docs
+queueCommand("cd temp/repositories && git clone git@github.com:callback/callback-docs.git && cd callback-docs && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd temp/repositories/callback-docs && ./bin/phonegap-docs && cp -r public ../../release/doc");
+
+executeCommands(function(){
+	exec("cd temp/release && git archive master -o phonegap-"+VERSION+".zip", function(e, stdout, stderr) {
 	});
 });

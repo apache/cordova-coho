@@ -20,6 +20,8 @@ var util           = require('util')
 , iosReleaseLibDir = ' ../../../release/lib/ios'
 , blackberryReleaseLibDir = '../../../release/lib/blackberry'
 , androidReleaseLibDir = '../../release/lib/android'
+, androidReleaseLicense = '../../release/license'
+, androidReleaseVersion = '../../release/version'
 , windowsReleaseLibDir = '../../release/lib/windows'
 , webosReleaseLibDir = '../../release/lib/webos'
 , badaReleaseLibDir = '../../release/lib/bada'
@@ -72,7 +74,7 @@ queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + bla
 
 //android
 queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md " + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseLibDir);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example" + androidReleaseLibDir + "/example");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../" + androidReleaseLibDir);

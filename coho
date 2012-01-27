@@ -18,7 +18,7 @@ var util           = require('util')
 ,	badadir	       = 'incubator-cordova-bada'
 ,   docsdir        = 'incubator-cordova-docs'
 ,   tempRepoDir    = 'temp/repositories'
-, iosReleaseLibDir = ' ../../../release/lib/ios'
+,   iosReleaseLibDir = ' ../../../release/lib/ios'
 , blackberryReleaseLibDir = '../../../release/lib/blackberry'
 , androidReleaseLibDir = '../../release/lib/android'
 , androidReleaseLicense = '../../release/license'
@@ -27,6 +27,7 @@ var util           = require('util')
 , webosReleaseLibDir = '../../release/lib/webos'
 , badaReleaseLibDir = '../../release/lib/bada'
 , releaseDocDir = '../../release/doc'
+, oldVer = process.argv[3]
 
 var commandQueue = [],
     child;
@@ -77,7 +78,7 @@ queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + bla
 queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseLibDir);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
-queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example" + androidReleaseLibDir + "/example");
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example " + androidReleaseLibDir + "/example");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../" + androidReleaseLibDir);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/phonegap-"+VERSION+".js ../" + androidReleaseLibDir);
 
@@ -104,13 +105,14 @@ fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can f
 });
 queueCommand("mv depreciate.txt temp/release/lib/symbian/depreciate.txt")
 
-if (process.argv[3] != undefined){
-	queueCommand()
-	queueCommand()
-	queueCommand()
-	queueCommand()
-	queueCommand()
-	queueCommand()
+
+if (oldVer != undefined){
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+androiddir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+webosdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badadir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
 }
 
 executeCommands(function(){

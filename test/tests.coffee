@@ -1,5 +1,5 @@
 VERSION = '1.3.0'
-
+oldVersion = '1.2.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -18,7 +18,7 @@ exports['test cli callable'] = (test)->
 			test.ok true, 'successfully called coho'
 			test.done()
 			
-	child = exec "./coho #{ VERSION }", thetest
+	child = exec "./coho #{VERSION} #{oldVersion}", thetest
 
 exports['creating temp directory'] = (test)->
 	test.expect 1
@@ -103,7 +103,7 @@ exports['confirm docs clone worked'] = (test)->
 exports['check ios version number'] = (test)->
 	test.expect 1
 	fs = require('fs')	
-	if fs.readFileSync('./temp/repositories/callback-ios/PhoneGapLib/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-ios/PhoneGapLib/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -113,7 +113,7 @@ exports['check ios version number'] = (test)->
 exports['check android version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-android/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version " + VERSION +" " + vFile
 		test.done()
 	else
@@ -123,7 +123,7 @@ exports['check android version number'] = (test)->
 exports['check blackberry version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-blackberry/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -263,6 +263,5 @@ exports['zip exists'] = (test)->
 exports['test if zip is empty'] = (test)->
 	fs = require('fs')
 	test.expect 1
-	test.ok fs.statSync('phonegap-1.3.0.zip').size isnt 0, 'zip created too soon'
-	test.ok require('path').existsSync("./temp/release/phonegap-#{ VERSION }.zip")
+	test.ok fs.statSync('./temp/release/phonegap-#{ VERSION }.zip').size isnt 0, 'zip created too soon'
 	test.done()

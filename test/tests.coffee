@@ -66,7 +66,7 @@ exports['creating bada directory']=(test)->
 
 exports['confirm ios clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-ios/PhoneGapLib/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/PhoneGapLib/VERSION")
 	test.done()
 
 exports['confirm android clone worked'] = (test)->

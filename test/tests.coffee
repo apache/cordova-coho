@@ -54,11 +54,6 @@ exports['creating windows directory']=(test)->
 	test.ok require('path').existsSync("./temp/release/lib/windows")
 	test.done()
 
-exports['creating symbian directory']=(test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/symbian")
-	test.done()
-
 exports['creating webos directory']=(test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/lib/webos")
@@ -92,12 +87,7 @@ exports['confirm windows clone worked'] = (test)->
 exports['confirm webos clone worked'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/repositories/callback-webos/VERSION")
-	test.done()
-
-exports['confirm symbian clone worked'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-symbian/VERSION")
-	test.done()			
+	test.done()		
 
 exports['confirm bada clone worked'] = (test)->
 	test.expect 1
@@ -143,16 +133,6 @@ exports['check windows version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	if fs.readFileSync('./temp/repositories/callback-windows-phone/VERSION', 'ascii') != VERSION
-		test.ok false, "VERSION file doesn't match release version"
-		test.done()
-	else
-		test.ok true, "VERSION file matches release version"
-		test.done()
-
-exports['check symbian version number'] = (test)->
-	test.expect 1
-	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-symbian/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -247,11 +227,6 @@ exports['blackberry copied into release'] = (test)->
 exports['windows copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/lib/windows/PhoneGapStarter.zip")
-	test.done()
-
-exports['symbian copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/symbian/VERSION")
 	test.done()
 
 exports['webos copied into release'] = (test)->

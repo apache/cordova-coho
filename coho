@@ -52,7 +52,7 @@ function executeCommands(callback) {
 
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
 queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
-/*
+
 //ios
 queueCommand("cd temp/repositories && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd temp/repositories/"+iosdir+" && make");
@@ -86,7 +86,7 @@ queueCommand("cd temp/repositories/"+badadir+" && cp -r ./* ../../release/lib/ba
 //docs
 queueCommand("cd temp/repositories && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd temp/repositories/"+docsdir+" && ./bin/phonegap-docs && cp -r public ../../release/doc");
-*/
+
 //symbian
 fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;

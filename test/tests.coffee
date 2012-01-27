@@ -1,5 +1,6 @@
 VERSION = '1.3.0'
 
+
 exports['sanity test'] = (test)-> 
     test.expect 1
     test.ok true, "this assertion should pass"
@@ -71,32 +72,32 @@ exports['confirm ios clone worked'] = (test)->
 
 exports['confirm android clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-android/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/VERSION")
 	test.done()
 
 exports['confirm blackberry clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-blackberry/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/VERSION")
 	test.done()
 
 exports['confirm windows clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-windows-phone/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-wp7/VERSION")
 	test.done()
 
 exports['confirm webos clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-webos/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-webos/VERSION")
 	test.done()		
 
 exports['confirm bada clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-bada/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-bada/VERSION")
 	test.done()
 
 exports['confirm docs clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-docs/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-docs/VERSION")
 	test.done()
 
 exports['check ios version number'] = (test)->
@@ -122,7 +123,7 @@ exports['check android version number'] = (test)->
 exports['check blackberry version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-blackberry/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -132,7 +133,7 @@ exports['check blackberry version number'] = (test)->
 exports['check windows version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-windows-phone/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-wp7/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -142,7 +143,7 @@ exports['check windows version number'] = (test)->
 exports['check webos version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-webos/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -152,8 +153,8 @@ exports['check webos version number'] = (test)->
 exports['check bada version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-bada/VERSION', 'ascii') != VERSION
-		test.ok false, "VERSION file doesn't match release version" + fs.readFileSync('./temp/repositories/callback-bada/VERSION', 'ascii')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version" + fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii')
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
@@ -162,7 +163,7 @@ exports['check bada version number'] = (test)->
 exports['check docs version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/callback-docs/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-docs/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -171,7 +172,7 @@ exports['check docs version number'] = (test)->
 
 exports['docs script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-docs/public")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-docs/public")
 	test.done()
 
 exports['docs copied into release'] = (test)->
@@ -181,7 +182,7 @@ exports['docs copied into release'] = (test)->
 	
 exports['ios script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-ios/dist/PhoneGap-"+VERSION+".dmg")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/PhoneGap-"+VERSION+".dmg")
 	test.done()
 
 exports['ios dmg copied into release'] = (test)->
@@ -196,7 +197,7 @@ exports['ios dmg sha1 copied into release'] = (test)->
 
 exports['android script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-android/example/libs/phonegap-"+VERSION+".jar")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/example/libs/phonegap-"+VERSION+".jar")
 	test.done()
 
 exports['android phonegap js copied into release'] = (test)->
@@ -216,7 +217,7 @@ exports['android example copied into release'] = (test)->
 
 exports['blackberry script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/callback-blackberry/dist/www/phonegap-"+VERSION+".js")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/dist/www/phonegap-"+VERSION+".js")
 	test.done()
 
 exports['blackberry copied into release'] = (test)->

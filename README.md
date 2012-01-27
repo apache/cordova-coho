@@ -12,8 +12,12 @@ Perquisites
 Usage
 =====
 
-   coho 1.2
-   // creates phonegap-1.2.zip
+	coho 1.3.0
+   	// creates phonegap-1.3.0.zip
+
+	coho 1.3.0 1.2.0
+	// creates phonegap-1.3.0.zip with the changes made since 1.2.0
+	
 
 
 ### the process

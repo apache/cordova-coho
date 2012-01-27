@@ -248,6 +248,11 @@ exports['version file copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/version")
 	test.done()
+	
+exports['test if symbian depreciation file copied'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/symbian/depreciate.txt")
+	test.done()
 
 exports['zip exists'] = (test)->
 	test.expect 1

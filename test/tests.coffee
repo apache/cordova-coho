@@ -278,3 +278,10 @@ exports['zip exists'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/phonegap-#{ VERSION }.zip")
 	test.done()
+	
+exports['test if zip is empty'] = (test)->
+	fs = require('fs')
+	test.expect 1
+	test.ok fs.statSync('phonegap-1.3.0.zip').size isnt 0, 'zip created too soon'
+	test.ok require('path').existsSync("./temp/release/phonegap-#{ VERSION }.zip")
+	test.done()

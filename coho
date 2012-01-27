@@ -16,6 +16,14 @@ var util           = require('util')
 ,	webosdir	   = 'incubator-cordova-webos'
 ,	badadir	       = 'incubator-cordova-bada'
 ,   docsdir        = 'incubator-cordova-docs'
+, tempRepoDir     = 'temp/repositories'
+, iosReleaseLibDir = ' ../../../release/lib/ios'
+, blackberryReleaseLibDir = '../../../release/lib/blackberry'
+, androidReleaseLibDir = '../../release/lib/android'
+, windowsReleaseLibDir = '../../release/lib/windows'
+, webosReleaseLibDir = '../../release/lib/webos'
+, badaReleaseLibDir = '../../release/lib/bada'
+, releaseDocDir = '../../release/doc'
 
 var commandQueue = [],
     child;
@@ -53,38 +61,38 @@ queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdi
 queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
 
 //ios
-queueCommand("cd temp/repositories && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+iosdir+" && make");
-queueCommand("cd temp/repositories/"+iosdir+"/dist && cp -r PhoneGap-"+VERSION+".dmg ../../../release/lib/ios && cp -r PhoneGap-"+VERSION+".dmg.SHA1 ../../../release/lib/ios");
+queueCommand("cd " + tempRepoDir + " && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+iosdir+" && make");
+queueCommand("cd " + tempRepoDir + "/"+iosdir+"/dist && cp -r PhoneGap-"+VERSION+".dmg " + iosReleaseLibDir + " && cp -r PhoneGap-"+VERSION+".dmg.SHA1 " + iosReleaseLibDir);
 
 //blackberry
-queueCommand("cd temp/repositories && git clone "+blackberry+" && cd "+blackberrydir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+blackberrydir+" && ant dist");
-queueCommand("cd temp/repositories/"+blackberrydir+"/dist && cp -r ./* ../../../release/lib/blackberry");
+queueCommand("cd " + tempRepoDir + " && git clone "+blackberry+" && cd "+blackberrydir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && ant dist");
+queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + blackberryReleaseLibDir);
 
 //android
-queueCommand("cd temp/repositories && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+androiddir+" && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md ../../release/lib/android");
-queueCommand("cd temp/repositories/"+androiddir+" && ./bin/create");
-queueCommand("cd temp/repositories/"+androiddir+" && cp -rp example ../../release/lib/android/example");
-queueCommand("cd temp/repositories/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../../../release/lib/android/");
-queueCommand("cd temp/repositories/"+androiddir+"/example && cp assets/www/phonegap-"+VERSION+".js ../../../release/lib/android/");
+queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE ../../release/license && cp VERSION ../../release/version && cp README.md " + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example" + androidReleaseLibDir + "/example");
+queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../" + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/phonegap-"+VERSION+".js ../" + androidReleaseLibDir);
 
 //windows phone
-queueCommand("cd temp/repositories && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+windowsdir+" && cp -r ./* ../../release/lib/windows");
+queueCommand("cd " + tempRepoDir + " && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && cp -r ./* " + windowsReleaseLibDir);
 
 //webos
-queueCommand("cd temp/repositories && git clone "+webos+" && cd "+webosdir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+webosdir+" && cp -r ./* ../../release/lib/webos");
+queueCommand("cd " + tempRepoDir + " && git clone "+webos+" && cd "+webosdir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+webosdir+" && cp -r ./* " + webosReleaseLibDir);
 
 //bada
-queueCommand("cd temp/repositories && git clone "+bada+" && cd "+badadir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+badadir+" && cp -r ./* ../../release/lib/bada");
+queueCommand("cd " + tempRepoDir + " && git clone "+bada+" && cd "+badadir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseLibDir);
 
 //docs
-queueCommand("cd temp/repositories && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd temp/repositories/"+docsdir+" && ./bin/phonegap-docs && cp -r public ../../release/doc");
+queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
+queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/phonegap-docs && cp -r public " + releaseDocDir);
 
 //symbian is being depricated.
 

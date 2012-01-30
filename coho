@@ -3,13 +3,13 @@ VERSION = process.argv[2]
 var util           = require('util')
 ,   exec           = require('child_process').exec
 ,   fs			   = require('fs')
-,   ios            = 'git://git.apache.org/incubator-cordova-ios.git'
-,   blackberry     = 'git://git.apache.org/incubator-cordova-blackberry-webworks.git'
-,   android        = 'git://git.apache.org/incubator-cordova-android.git'
-,   windows        = 'git://git.apache.org/incubator-cordova-wp7.git'
-,   webos          = 'git://git.apache.org/incubator-cordova-webos.git'
-,   bada       	   = 'git://git.apache.org/incubator-cordova-bada.git'
-,   docs      	   = 'git://git.apache.org/incubator-cordova-docs.git'
+,   ios            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git'
+,   blackberry     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-blackberry-webworks.git'
+,   android        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-android.git'
+,   windows        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
+,   webos          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git'
+,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
+,   docs      	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-docs.git'
 ,	iosdir	       = 'incubator-cordova-ios'
 ,	blackberrydir  = 'incubator-cordova-blackberry-webworks'
 ,	androiddir	   = 'incubator-cordova-android'
@@ -60,7 +60,7 @@ function executeCommands(callback) {
     	console.log('All done');
     }
 }
-
+/*
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
 queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
 
@@ -97,22 +97,21 @@ queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseLib
 //docs
 queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/phonegap-docs && cp -r public " + releaseDocDir);
-
+*/
 //symbian
 fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;
-  console.log('It\'s saved!');
 });
 queueCommand("mv depreciate.txt temp/release/lib/symbian/depreciate.txt")
 
 
 if (oldVer != undefined){
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+androiddir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+webosdir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+badadir+" git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
 }
 
 executeCommands(function(){

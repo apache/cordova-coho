@@ -210,6 +210,11 @@ exports['android phonegap jar copied into release'] = (test)->
 	test.ok require('path').existsSync("./temp/release/lib/android/phonegap-"+VERSION+".jar")
 	test.done()
 
+exports['android xml folder copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/android/xml")
+	test.done()
+
 exports['android example copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/lib/android/example")

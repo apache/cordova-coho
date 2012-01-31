@@ -1,5 +1,5 @@
-VERSION = '1.3.0'
-oldVersion = '1.2.0'
+VERSION = '1.4.0'
+oldVersion = '1.3.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -257,11 +257,11 @@ exports['test if symbian depreciation file copied'] = (test)->
 
 exports['zip exists'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/phonegap-#{ VERSION }.zip")
+	test.ok require('path').existsSync("./temp/phonegap-#{ VERSION }.zip")
 	test.done()
 	
 exports['test if zip is empty'] = (test)->
 	fs = require('fs')
 	test.expect 1
-	test.ok fs.statSync('./temp/release/phonegap-#{ VERSION }.zip').size isnt 0, 'zip created too soon'
+	test.ok fs.statSync('temp/phonegap-#{VERSION}.zip').size isnt 0, 'zip created too soon'
 	test.done()

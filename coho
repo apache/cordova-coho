@@ -60,7 +60,7 @@ function executeCommands(callback) {
     	console.log('All done');
     }
 }
-/*
+
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
 queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
 
@@ -81,6 +81,7 @@ queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example " + androidReleaseLibDir + "/example");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../" + androidReleaseLibDir);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/phonegap-"+VERSION+".js ../" + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp -r res/xml ../" + androidReleaseLibDir);
 
 //windows phone
 queueCommand("cd " + tempRepoDir + " && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
@@ -97,7 +98,7 @@ queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseLib
 //docs
 queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/phonegap-docs && cp -r public " + releaseDocDir);
-*/
+
 //symbian
 fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;
@@ -106,15 +107,22 @@ queueCommand("mv depreciate.txt temp/release/lib/symbian/depreciate.txt")
 
 
 if (oldVer != undefined){
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
-	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" > changelog")
+	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
+	queueCommand("echo 'ios' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'blackberry' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'android' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'windows' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'webos' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'bada' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 }
 
 executeCommands(function(){
-	exec("cd temp/release && git archive master -o phonegap-"+VERSION+".zip", function(e, stdout, stderr) {
+	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/", function(e, stdout, stderr) {
 	});
 });

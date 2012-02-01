@@ -123,6 +123,6 @@ if (oldVer != undefined){
 }
 
 executeCommands(function(){
-	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/", function(e, stdout, stderr) {
+	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/ && say DONE", function(e, stdout, stderr) {
 	});
 });

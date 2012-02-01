@@ -6,6 +6,7 @@ Coho is a script that automates the release process for building PhoneGap releas
 Prerequisites
 -------------
  - Must be run on a Mac with Lion installed
+ - Have node installed (v 6.6+)
  - Must have git setup
  - Install joDoc
 	- Clone [joDoc](http://github.com/davebalmer/jodoc)
@@ -35,7 +36,6 @@ Prerequisites
 
 Usage
 -----
-
 	coho 1.4.0
    	// creates phonegap-1.4.0.zip
 
@@ -50,8 +50,12 @@ Usage
 Manual Process
 --------------
 
-1. create a directory
-2. download the shit
+1. create directory structure
+2. download repositories
+3. run build scripts
+4. copy necessary files into release folder
+5. generate changelog
+6. zip release folder
 
 
 iOS

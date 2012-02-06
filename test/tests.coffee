@@ -113,8 +113,8 @@ exports['check ios version number'] = (test)->
 exports['check android version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'ascii') != VERSION
-		test.ok false, "VERSION file doesn't match release version " + VERSION +" " + vFile
+	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'utf8') != VERSION+"\n"
+		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
@@ -123,7 +123,7 @@ exports['check android version number'] = (test)->
 exports['check blackberry version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-blackberry/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-blackberry-webworks/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -143,7 +143,7 @@ exports['check windows version number'] = (test)->
 exports['check webos version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION+"\n\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -153,8 +153,8 @@ exports['check webos version number'] = (test)->
 exports['check bada version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii') != VERSION
-		test.ok false, "VERSION file doesn't match release version" + fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii') != VERSION+"\n\n"
+		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
@@ -163,7 +163,7 @@ exports['check bada version number'] = (test)->
 exports['check docs version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-docs/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-docs/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -255,6 +255,11 @@ exports['version file copied into release'] = (test)->
 	test.ok require('path').existsSync("./temp/release/version")
 	test.done()
 	
+exports['readme copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/readme.md")
+	test.done()
+	
 exports['test if symbian depreciation file copied'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/lib/symbian/depreciate.txt")
@@ -266,7 +271,7 @@ exports['zip exists'] = (test)->
 	test.done()
 	
 exports['test if zip is empty'] = (test)->
-	fs = require('fs')
 	test.expect 1
-	test.ok fs.statSync('temp/phonegap-#{VERSION}.zip').size isnt 0, 'zip created too soon'
+	fs = require('fs')
+	test.ok fs.statSync('./temp/phonegap-#{VERSION}.zip').size != 0, 'zip created too soon'
 	test.done()

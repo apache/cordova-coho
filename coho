@@ -27,7 +27,7 @@ var util           = require('util')
 , webosReleaseLibDir = '../../release/lib/webos'
 , badaReleaseLibDir = '../../release/lib/bada'
 , releaseDocDir = '../../release/doc'
-, oldVer = process.argv[3]
+, oldVer = process.argv[3];
 
 var commandQueue = [],
     child;
@@ -60,7 +60,7 @@ function executeCommands(callback) {
     	console.log('All done');
     }
 }
-
+/*
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
 queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
 
@@ -123,7 +123,7 @@ if (oldVer != undefined){
 	queueCommand("echo 'bada' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 }
-
+*/
 executeCommands(function(){
 	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/ && say DONE", function(e, stdout, stderr) {
 	});

@@ -97,7 +97,7 @@ queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseLib
 
 //docs
 queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/phonegap-docs && cp -r public " + releaseDocDir);
+queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/phonegap-docs && cp -r public/en/"+VERSION+" " + releaseDocDir);
 
 //symbian
 fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
@@ -105,6 +105,8 @@ fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can f
 });
 queueCommand("mv depreciate.txt temp/release/lib/symbian/depreciate.txt")
 
+//readme
+queueCommand("cp lib/README.md temp/release/readme.md")
 
 if (oldVer != undefined){
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")

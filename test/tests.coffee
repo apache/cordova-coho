@@ -1,4 +1,4 @@
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 oldVersion = '1.3.0'
 
 exports['sanity test'] = (test)-> 

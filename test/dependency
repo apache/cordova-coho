@@ -1,0 +1,96 @@
+#!/usr/bin/env node
+var exec = require('child_process').exec
+
+
+exec("sw_vers | grep ProductVersion | awk '{print $2}'", function (error, stdout, stderr) {
+	var osversion = parseFloat(stdout);
+	
+/*	
+    console.log('stdout: ' + stdout+ " " + parseFloat(stdout));
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+*/
+	if (osversion < 10.7){
+		console.log('Sorry, you need to be running Lion (10.7.x) to run this build script. Go to http://www.apple.com/macosx/ to upgrade now')
+	}else{
+		console.log('You have Lion!')
+	}
+})
+
+exec("git --version", function (error, stdout, stderr) {
+	console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+	if (stderr != ""){
+		console.log('errorzzzz')
+	} 
+})
+
+exec("node --version", function (error, stdout, stderr) {
+	console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+	if (stderr != ""){
+		console.log('errorzzzz')
+	} 
+})
+
+exec("perl -v", function (error, stdout, stderr) {
+	console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+	if (stderr != ""){
+		console.log('errorzzzz')
+	} 
+})
+
+exec("jodoc", function (error, stdout, stderr) {
+	console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+	if (stderr != ""){
+		console.log('errorzzzz')
+	} 
+})
+
+exec("nokogiri -v", function (error, stdout, stderr) {
+	console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+	if (stderr != ""){
+		console.log('errorzzzz')
+	} 
+})
+
+/*
+exec("sw_vers | grep ProductVersion | awk '{print $2}'", function (error, stdout, stderr) {
+	osversion = parseFloat(stdout);
+	
+	
+    console.log('stdout: ' + stdout+ " " + parseFloat(stdout));
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+
+	if (osversion < 10.7){
+		console.log('oh shit!')
+	}else{
+		console.log('yeah boy')
+	}
+})
+
+exec("sw_vers | grep ProductVersion | awk '{print $2}'", function (error, stdout, stderr) {
+	osversion = parseFloat(stdout);
+	
+	
+    console.log('stdout: ' + stdout+ " " + parseFloat(stdout));
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+
+	if (osversion < 10.7){
+		console.log('oh shit!')
+	}else{
+		console.log('yeah boy')
+	}
+})
+*/

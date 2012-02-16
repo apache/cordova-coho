@@ -7,8 +7,9 @@ Prerequisites
 -------------
  - Must be run on a Mac with Lion installed
  - Have node installed (v 6.6+)
- - Must have git setup
+ - Must have git setup 
  - Install joDoc
+	- Have perl 5.8+
 	- Clone [joDoc](http://github.com/davebalmer/jodoc)
 
 	        git clone http://github.com/davebalmer/joDoc.git

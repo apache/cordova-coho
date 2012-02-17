@@ -33,6 +33,8 @@ Prerequisites
 	- Install json (Ruby JSON parser)
 
 	        gem install json
+- Install android 
+- Install gpg
 
 Usage
 -----

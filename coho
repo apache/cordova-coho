@@ -125,6 +125,6 @@ if (oldVer != undefined){
 }
 
 executeCommands(function(){
-	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/ && say DONE", function(e, stdout, stderr) {
+	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/ && gpg --armor --output phonegap-"+VERSION+".zip.asc --detach-sig phonegap-"+VERSION+".zip && gpg --print-md MD5 phonegap-"+VERSION+".zip > phonegap-"+VERSION+".zip.md5 && say DONE", function(e, stdout, stderr) {
 	});
 });

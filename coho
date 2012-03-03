@@ -67,20 +67,23 @@ queueCommand("cd temp/release && mkdir lib && cd lib && mkdir ios && mkdir andro
 //ios
 queueCommand("cd " + tempRepoDir + " && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd " + tempRepoDir + "/"+iosdir+" && make");
-queueCommand("cd " + tempRepoDir + "/"+iosdir+"/dist && cp -r PhoneGap-"+VERSION+".dmg " + iosReleaseLibDir + " && cp -r PhoneGap-"+VERSION+".dmg.SHA1 " + iosReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+iosdir+"/dist && cp -r Cordova-"+VERSION+".dmg " + iosReleaseLibDir + " && cp -r Cordova-"+VERSION+".dmg.SHA1 " + iosReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp NOTICE ../../release/lib/ios");
 
 //blackberry
 queueCommand("cd " + tempRepoDir + " && git clone "+blackberry+" && cd "+blackberrydir+" && git fetch --tags && git checkout "+VERSION);
 queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && ant dist");
 queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + blackberryReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp NOTICE ../../../release/lib/blackberry");
 
 //android
 queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
-queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseLibDir + " && cp NOTICE " + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ant clean");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
 queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example " + androidReleaseLibDir + "/example");
-queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/phonegap-"+VERSION+".jar ../" + androidReleaseLibDir);
-queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/phonegap-"+VERSION+".js ../" + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/cordova-"+VERSION+".jar ../" + androidReleaseLibDir);
+queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/cordova-"+VERSION+".js ../" + androidReleaseLibDir);
 queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp -r res/xml ../" + androidReleaseLibDir);
 
 //windows phone
@@ -107,6 +110,8 @@ queueCommand("mv depreciate.txt temp/release/lib/symbian/depreciate.txt")
 
 //readme
 queueCommand("cp lib/README.md temp/release/readme.md")
+queueCommand("cp KEYS temp/release/keys")
+
 
 if (oldVer != undefined){
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
@@ -125,6 +130,6 @@ if (oldVer != undefined){
 }
 
 executeCommands(function(){
-	exec("cd temp/ && zip -r phonegap-"+VERSION+".zip release/ && gpg --armor --output phonegap-"+VERSION+".zip.asc --detach-sig phonegap-"+VERSION+".zip && gpg --print-md MD5 phonegap-"+VERSION+".zip > phonegap-"+VERSION+".zip.md5 && say DONE", function(e, stdout, stderr) {
+	exec("cd temp/ && zip -r cordova-"+VERSION+".zip release/ && gpg --armor --output cordova-"+VERSION+".zip.asc --detach-sig cordova-"+VERSION+".zip && gpg --print-md MD5 cordova-"+VERSION+".zip > cordova-"+VERSION+".zip.md5 && say DONE", function(e, stdout, stderr) {
 	});
 });

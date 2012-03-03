@@ -1,5 +1,5 @@
-VERSION = '1.4.1'
-oldVersion = '1.3.0'
+VERSION = '1.5.0'
+oldVersion = '1.4.1'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -67,7 +67,7 @@ exports['creating bada directory']=(test)->
 
 exports['confirm ios clone worked'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/PhoneGapLib/VERSION")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/CordovaLib/VERSION")
 	test.done()
 
 exports['confirm android clone worked'] = (test)->
@@ -103,7 +103,7 @@ exports['confirm docs clone worked'] = (test)->
 exports['check ios version number'] = (test)->
 	test.expect 1
 	fs = require('fs')	
-	if fs.readFileSync('./temp/repositories/incubator-cordova-ios/PhoneGapLib/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/incubator-cordova-ios/CordovaLib/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -143,7 +143,7 @@ exports['check windows version number'] = (test)->
 exports['check webos version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION+"\n\n"
+	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -182,32 +182,42 @@ exports['docs copied into release'] = (test)->
 	
 exports['ios script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/PhoneGap-"+VERSION+".dmg")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
 	test.done()
 
 exports['ios dmg copied into release'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios/PhoneGap-"+VERSION+".dmg")
+	test.ok require('path').existsSync("./temp/release/lib/ios/Cordova-"+VERSION+".dmg")
+	test.done()
+
+exports['ios notice file copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/ios/NOTICE")
 	test.done()
 
 exports['ios dmg sha1 copied into release'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios/PhoneGap-"+VERSION+".dmg.SHA1")
+	test.ok require('path').existsSync("./temp/release/lib/ios/Cordova-"+VERSION+".dmg.SHA1")
 	test.done()
 
 exports['android script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/example/libs/phonegap-"+VERSION+".jar")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/example/libs/cordova-"+VERSION+".jar")
 	test.done()
 
-exports['android phonegap js copied into release'] = (test)->
+exports['android cordova js copied into release'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/phonegap-"+VERSION+".js")
+	test.ok require('path').existsSync("./temp/release/lib/android/cordova-"+VERSION+".js")
 	test.done()
 
-exports['android phonegap jar copied into release'] = (test)->
+exports['android cordova jar copied into release'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/phonegap-"+VERSION+".jar")
+	test.ok require('path').existsSync("./temp/release/lib/android/cordova-"+VERSION+".jar")
+	test.done()
+
+exports['android notice file copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/android/NOTICE")
 	test.done()
 
 exports['android xml folder copied into release'] = (test)->
@@ -222,7 +232,7 @@ exports['android example copied into release'] = (test)->
 
 exports['blackberry script successfull'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/dist/www/phonegap-"+VERSION+".js")
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/dist/www/cordova-"+VERSION+".js")
 	test.done()
 
 exports['blackberry copied into release'] = (test)->
@@ -230,9 +240,14 @@ exports['blackberry copied into release'] = (test)->
 	test.ok require('path').existsSync("./temp/release/lib/blackberry/README.md")
 	test.done()
 	
+exports['blackberry notice file copied into release'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/lib/blackberry/README.md")
+	test.done()
+	
 exports['windows copied into release'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/windows/PhoneGapStarter.zip")
+	test.ok require('path').existsSync("./temp/release/lib/windows/Cordova-"+VERSION+"-Starter.zip")
 	test.done()
 
 exports['webos copied into release'] = (test)->
@@ -272,11 +287,11 @@ exports['test if changelog generated'] = (test)->
 
 exports['zip exists'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/phonegap-#{ VERSION }.zip")
+	test.ok require('path').existsSync("./temp/cordova-#{ VERSION }.zip")
 	test.done()
 	
 exports['test if zip is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.statSync('./temp/phonegap-#{VERSION}.zip').size != 0, 'zip created too soon'
+	test.ok fs.statSync("./temp/cordova-#{ VERSION }.zip").size != 0, 'zip created too soon'
 	test.done()

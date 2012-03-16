@@ -141,7 +141,12 @@ if (oldVer != undefined){
 	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 }
 
+// zip and sign bin/src/doc folders
+queueCommand("cd temp/release/bin && zip -r cordova-"+VERSION+"-incubating-bin.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-bin.zip.asc --detach-sig cordova-"+VERSION+"-incubating-bin.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-bin.zip > cordova-"+VERSION+"-incubating-bin.zip.md5");
+queueCommand("cd temp/release/doc && zip -r cordova-"+VERSION+"-incubating-doc.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-doc.zip.asc --detach-sig cordova-"+VERSION+"-incubating-doc.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-doc.zip > cordova-"+VERSION+"-incubating-doc.zip.md5");
+queueCommand("cd temp/release/src && zip -r cordova-"+VERSION+"-incubating-src.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-src.zip.asc --detach-sig cordova-"+VERSION+"-incubating-src.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-src.zip > cordova-"+VERSION+"-incubating-src.zip.md5");
+
 executeCommands(function(){
-	exec("cd temp/ && zip -r cordova-"+VERSION+".zip release/ && gpg --armor --output cordova-"+VERSION+".zip.asc --detach-sig cordova-"+VERSION+".zip && gpg --print-md MD5 cordova-"+VERSION+".zip > cordova-"+VERSION+".zip.md5 && say DONE", function(e, stdout, stderr) {
+	exec("say DONE", function(e, stdout, stderr) {
 	});
 });

@@ -145,9 +145,24 @@ if (oldVer != undefined){
 queueCommand("cp NOTICE temp/release");
 
 // zip and sign bin/src/doc folders
-queueCommand("cd temp/release/bin && zip -r cordova-"+VERSION+"-incubating-bin.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-bin.zip.asc --detach-sig cordova-"+VERSION+"-incubating-bin.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-bin.zip > cordova-"+VERSION+"-incubating-bin.zip.md5");
-queueCommand("cd temp/release/doc && zip -r cordova-"+VERSION+"-incubating-doc.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-doc.zip.asc --detach-sig cordova-"+VERSION+"-incubating-doc.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-doc.zip > cordova-"+VERSION+"-incubating-doc.zip.md5");
-queueCommand("cd temp/release/src && zip -r cordova-"+VERSION+"-incubating-src.zip * && gpg --armor --output cordova-"+VERSION+"-incubating-src.zip.asc --detach-sig cordova-"+VERSION+"-incubating-src.zip && gpg --print-md MD5 cordova-"+VERSION+"-incubating-src.zip > cordova-"+VERSION+"-incubating-src.zip.md5");
+var cordovaBinZip = "cordova-"+VERSION+"-incubating-bin.zip";
+var cordovaBinAsc = "cordova-"+VERSION+"-incubating-bin.zip.asc";
+var cordovaBinMd5 = "cordova-"+VERSION+"-incubating-bin.zip.md5";
+
+var cordovaDocZip = "cordova-"+VERSION+"-incubating-doc.zip";
+var cordovaDocAsc = "cordova-"+VERSION+"-incubating-doc.zip.asc";
+var cordovaDocMd5 = "cordova-"+VERSION+"-incubating-doc.zip.md5";
+
+var cordovaSrcZip = "cordova-"+VERSION+"-incubating-src.zip";
+var cordovaSrcAsc = "cordova-"+VERSION+"-incubating-src.zip.asc";
+var cordovaSrcMd5 = "cordova-"+VERSION+"-incubating-src.zip.md5";
+
+queueCommand("cd temp/release/bin && zip -r "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinZip+" > " + cordovaBinMd5);
+queueCommand("cd temp/release/doc && zip -r "+cordovaDocZip+" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5);
+queueCommand("cd temp/release/src && zip -r "+cordovaSrcZip+" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5);
+
+
+// clean up
 
 executeCommands(function(){
 	exec("say DONE", function(e, stdout, stderr) {

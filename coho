@@ -163,7 +163,9 @@ queueCommand("cd temp/release/src && zip -r "+cordovaSrcZip+" * && gpg --armor -
 
 
 // clean up
-
+queueCommand("cd temp/release/bin && ls | grep -v "+cordovaBinZip+" | xargs rm -r");
+queueCommand("cd temp/release/doc && ls | grep -v "+cordovaDocZip+" | xargs rm -r");
+queueCommand("cd temp/release/src && ls | grep -v "+cordovaSrcZip+" | xargs rm -r");
 executeCommands(function(){
 	exec("say DONE", function(e, stdout, stderr) {
 	});

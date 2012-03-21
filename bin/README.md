@@ -30,15 +30,10 @@ Directory Structure
 -------------------
 
 	  |-doc/ ........... source documentation
-	  |-lib/ ........... platform code for supported operating systems
-	  | |-android/
-	  | |-bada/
-	  | |-blackberry/
-	  | |-ios/
-	  | |-symbian/
-	  | |-webos/
-	  | '-windows/
-	  |-changelog ..... a changelog compiled from comments and authors
-	  |-license ....... the Apache Software License v2
-	  |-version ....... release version in plain text
-	  '-readme.md ..... release readme
+	  |-bin/ ........... binaries compiled from src platform code
+	  |-src/ ........... source code for supported platforms 
+	  |-changelog ...... a changelog compiled from comments and authors
+	  |-license ........ file containing all of the licenses used within the platform src code
+	  |-notice ......... file containing all of the third party notices withing the platform src code
+	  |-version ........ release version in plain text
+	  '-readme.md ...... release readme

@@ -30,40 +30,43 @@ exports['creating release directory']=(test)->
 	test.ok require('path').existsSync("./temp/release")
 	test.done()
 
-exports['creating lib directory']=(test)->
+exports['creating bin directory']=(test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib")
+	test.ok require('path').existsSync("./temp/release/bin")
+	test.done()
+	
+exports['confirm bin zip file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip")
 	test.done()
 
-exports['creating ios directory']=(test)->
+exports['confirm bin asc file']=(test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios")
+	test.ok require('path').existsSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip.asc")
+	test.done()
+	
+exports['confirm bin md5 file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip.md5")
+	test.done()	
+	
+exports['test if bin zip is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip").size != 0, 'bin zip created too soon'
 	test.done()
 
-exports['creating android directory']=(test)->
+exports['test if bin asc is empty'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android")
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip.asc").size != 0, 'bin asc created too soon'
 	test.done()
 
-exports['creating blackberry directory']=(test)->
+exports['test if bin md5 is empty'] = (test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/blackberry")
-	test.done()
-
-exports['creating windows directory']=(test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/windows")
-	test.done()
-
-exports['creating webos directory']=(test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/webos")
-	test.done()
-
-exports['creating bada directory']=(test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/bada")
-	test.done()
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/bin/cordova-"+VERSION+"-incubating-bin.zip.md5").size != 0, 'bin md5 created too soon'
+	test.done()	
 
 exports['confirm ios clone worked'] = (test)->
 	test.expect 1
@@ -179,55 +182,48 @@ exports['docs copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/doc")
 	test.done()
-	
+
+exports['confirm doc zip file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip")
+	test.done()
+
+exports['confirm doc asc file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip")
+	test.done()
+
+exports['confirm doc md5 file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip")
+	test.done()	
+
+exports['test if doc zip is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip").size != 0, 'doc zip created too soon'
+	test.done()
+
+exports['test if doc asc is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip.asc").size != 0, 'doc asc created too soon'
+	test.done()
+
+exports['test if doc md5 is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip.md5").size != 0, 'doc md5 created too soon'
+	test.done()		
 exports['ios script successfull'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
 	test.done()
-
-exports['ios dmg copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios/Cordova-"+VERSION+".dmg")
-	test.done()
-
-exports['ios notice file copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios/NOTICE")
-	test.done()
-
-exports['ios dmg sha1 copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/ios/Cordova-"+VERSION+".dmg.SHA1")
-	test.done()
+	
 
 exports['android script successfull'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/example/libs/cordova-"+VERSION+".jar")
-	test.done()
-
-exports['android cordova js copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/cordova-"+VERSION+".js")
-	test.done()
-
-exports['android cordova jar copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/cordova-"+VERSION+".jar")
-	test.done()
-
-exports['android notice file copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/NOTICE")
-	test.done()
-
-exports['android xml folder copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/xml")
-	test.done()
-
-exports['android example copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/android/example")
 	test.done()
 
 exports['blackberry script successfull'] = (test)->
@@ -235,31 +231,6 @@ exports['blackberry script successfull'] = (test)->
 	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/dist/www/cordova-"+VERSION+".js")
 	test.done()
 
-exports['blackberry copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/blackberry/README.md")
-	test.done()
-	
-exports['blackberry notice file copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/blackberry/README.md")
-	test.done()
-	
-exports['windows copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/windows/Cordova-"+VERSION+"-Starter.zip")
-	test.done()
-
-exports['webos copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/webos/VERSION")
-	test.done()
-
-exports['bada copied into release'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/bada/VERSION")
-	test.done()
-		
 exports['license copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/license")
@@ -274,24 +245,45 @@ exports['readme copied into release'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/readme.md")
 	test.done()
-	
-exports['test if symbian depreciation file copied'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/release/lib/symbian/depreciate.txt")
-	test.done()
 
 exports['test if changelog generated'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/release/changelog")
 	test.done()
 
-exports['zip exists'] = (test)->
+exports['confirm src zip file']=(test)->
 	test.expect 1
-	test.ok require('path').existsSync("./temp/cordova-#{ VERSION }.zip")
+	test.ok require('path').existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip")
 	test.done()
-	
-exports['test if zip is empty'] = (test)->
+
+exports['confirm src asc file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip")
+	test.done()
+
+exports['confirm src md5 file']=(test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip")
+	test.done()	
+
+exports['test if src zip is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.statSync("./temp/cordova-#{ VERSION }.zip").size != 0, 'zip created too soon'
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip").size != 0, 'src zip created too soon'
+	test.done()
+
+exports['test if src asc is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.asc").size != 0, 'src asc created too soon'
+	test.done()
+
+exports['test if src md5 is empty'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.md5").size != 0, 'src md5 created too soon'
+	test.done()		
+exports['ios script successfull'] = (test)->
+	test.expect 1
+	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
 	test.done()

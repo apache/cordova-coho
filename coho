@@ -21,8 +21,8 @@ var util           = require('util')
 ,   iosReleaseBinDir = ' ../../../release/bin/ios'
 , blackberryReleaseBinDir = '../../../release/bin/blackberry'
 , androidReleaseBinDir = '../../release/bin/android'
-, androidReleaseLicense = '../../release/license'
-, androidReleaseVersion = '../../release/version'
+, androidReleaseLicense = '../../release/bin/android/LICENSE'
+, androidReleaseVersion = '../../release/bin/android/VERSION'
 , windowsReleaseBinDir = '../../release/bin/windows'
 , webosReleaseBinDir = '../../release/bin/webos'
 , badaReleaseBinDir = '../../release/bin/bada'
@@ -117,13 +117,16 @@ fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can f
 
 queueCommand("mv depreciate.txt temp/release/bin/symbian/depreciate.txt")
 
-//readme
-queueCommand("cp bin/README.md temp/release/readme.md")
-queueCommand("cp KEYS temp/release/keys")
+// keys into top level directory
+queueCommand("echo 'Moving KEYS file to release'");
+queueCommand("cp KEYS temp/release/KEYS")
 
-// notice and license
-queueCommand("cp bin/NOTICE temp/release/NOTICE");
-queueCommand("cp bin/LICENSE temp/release/LICENSE");
+// notice, license, readme, disclaimer file to be put into official release artifact
+queueCommand("echo 'Moving notice, license, readme, and disclaimer files to release artifact'");
+queueCommand("cp bin/README.md temp/release/src/README.MD")
+queueCommand("cp bin/NOTICE temp/release/src/NOTICE");
+queueCommand("cp bin/LICENSE temp/release/src/LICENSE");
+queueCommand("cp bin/DISCLAIMER temp/release/src/DISCLAIMER");
 
 if (oldVer != undefined){
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
@@ -145,21 +148,34 @@ if (oldVer != undefined){
 var cordovaBinZip = "cordova-"+VERSION+"-incubating-bin.zip";
 var cordovaBinAsc = cordovaBinZip+".asc";
 var cordovaBinMd5 = cordovaBinZip+".md5";
+var cordovaBinSha = cordovaBinZip+".sha";
 
 var cordovaDocZip = "cordova-"+VERSION+"-incubating-doc.zip";
 var cordovaDocAsc = cordovaDocZip+".asc";
 var cordovaDocMd5 = cordovaDocZip+".md5";
+var cordovaDocSha = cordovaDocZip+".sha";
 
 var cordovaSrcZip = "cordova-"+VERSION+"-incubating-src.zip";
 var cordovaSrcAsc = cordovaSrcZip+".asc";
 var cordovaSrcMd5 = cordovaSrcZip+".md5";
+var cordovaSrcSha = cordovaSrcZip+".sha";
 
-queueCommand("cd temp/release/bin && zip -r "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinZip+" > " + cordovaBinMd5);
-queueCommand("cd temp/release/doc && zip -r "+cordovaDocZip+" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5);
-queueCommand("cd temp/release/src && zip -r "+cordovaSrcZip+" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5);
+// remove git files before we zip
+queueCommand("echo 'Cleaning up .git files from repositories before zipping em'");
+queueCommand("cd temp/release/src && find `pwd` -name .git -type d -print0 | xargs -0 rm -r");
+queueCommand("cd temp/release/src && find `pwd` -name .git* -type f -print0 | xargs -0 rm -r");
 
+queueCommand("echo 'Zipping and signing bin'");
+queueCommand("cd temp/release/bin && zip -rq "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinMd5+" > " + cordovaBinMd5 +" && gpg --print-md SHA512 " + cordovaBinZip + " > " + cordovaBinSha);
+
+queueCommand("echo 'Zipping and signing doc'");
+queueCommand("cd temp/release/doc && zip -rq "+ cordovaDocZip +" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5 +" && gpg --print-md SHA512 " + cordovaDocZip + " > " + cordovaDocSha);
+
+queueCommand("echo 'Zipping and signing src'");
+queueCommand("cd temp/release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha);
 
 // clean up
+queueCommand("echo 'Final clean up'");
 queueCommand("cd temp/release/bin && ls | grep -v "+cordovaBinZip+" | xargs rm -r");
 queueCommand("cd temp/release/doc && ls | grep -v "+cordovaDocZip+" | xargs rm -r");
 queueCommand("cd temp/release/src && ls | grep -v "+cordovaSrcZip+" | xargs rm -r");

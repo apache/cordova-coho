@@ -52,3 +52,8 @@ be renamed to the Apache Cordova Brand.
 - [Mailing List](http://groups.google.com/group/phonegap)
 - [Issue Tracker](https://issues.apache.org/jira/browse/CB)
 - [IRC](http://webchat.freenode.net/?channels=#phonegap)
+
+How to build from src
+-------------------
+To build for a particular platform, please change directories to the
+platform that you wish to build for and read the README file. 

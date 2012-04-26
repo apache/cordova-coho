@@ -1,0 +1,22 @@
+#!/bin/sh
+
+
+VERSION=$1
+OLDVERSION=$2
+rm -rf temp/release/phonegap
+
+mkdir temp/release/phonegap
+
+cd temp/release/
+unzip bin/cordova-$VERSION-incubating-bin.zip -d phonegap/lib/
+unzip doc/cordova-$VERSION-incubating-doc.zip -d phonegap/doc/
+cp ../repositories/incubator-cordova-android/VERSION phonegap/
+cp changelog phonegap/
+cp KEYS phonegap/
+cp ../../files/README.md phonegap/
+cp ../../license phonegap/
+
+
+
+
+

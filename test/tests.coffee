@@ -1,5 +1,5 @@
-VERSION = '1.5.0'
-oldVersion = '1.4.1'
+VERSION = '1.6.0'
+oldVersion = '1.5.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1

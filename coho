@@ -34,7 +34,7 @@ var util           = require('util')
 , releaseDocDir = '../../release/doc'
 , releaseBinDir = '../release/bin'
 , releaseSrcDir = '../release/src'
-, oldVer = process.argv[3];
+, oldVer = process.argv[4];
 
 var commandQueue = [],
     child;
@@ -89,7 +89,6 @@ checkSoftware();
 
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
 queueCommand("cd temp/release && mkdir bin && mkdir src && cd bin && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
-
 //ios
 if (PLATFORM === "all" || PLATFORM === "ios") {
     queueCommand("echo 'Building iOS'");

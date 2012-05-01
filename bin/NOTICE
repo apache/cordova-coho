@@ -30,7 +30,8 @@ Ant-Contrib project (http://sourceforge.net/projects/ant-contrib).
    ====================================================================
    
 // WEBOS NOTICES
-
+Modifications to phonegap-core.js (compassAPI) and compass.js (adapted from accelerometer.js) are
+Copyright 2012 Hewlett-Packard Development Company, L.P.
    ====================================================================
    
 // WP7 NOTICES   

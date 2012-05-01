@@ -91,9 +91,10 @@ function checkSoftware() {
 checkSoftware();
 
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
-queueCommand("cd temp/release && mkdir bin && mkdir src && cd bin && mkdir ios && mkdir android && mkdir blackberry && mkdir windows && mkdir webos && mkdir symbian && mkdir bada");
+queueCommand("cd temp/release && mkdir bin && mkdir src");
 //ios
 if (PLATFORM === "all" || PLATFORM === "ios") {
+	queueCommand("cd temp/release/bin && mkdir ios");
     queueCommand("echo 'Building iOS'");
     queueCommand("cd " + tempRepoDir + " && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + iosdir + " " + releaseSrcDir);
@@ -104,6 +105,7 @@ if (PLATFORM === "all" || PLATFORM === "ios") {
 
 //blackberry
 if (PLATFORM === "all" || PLATFORM === "blackberry") {
+	queueCommand("cd temp/release/bin && mkdir blackberry");
     queueCommand("echo 'Building BlackBerry'");
     queueCommand("cd " + tempRepoDir + " && git clone "+blackberry+" && cd "+blackberrydir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + blackberrydir + " " + releaseSrcDir);
@@ -114,6 +116,7 @@ if (PLATFORM === "all" || PLATFORM === "blackberry") {
 
 //android
 if (PLATFORM === "all" || PLATFORM === "android") {
+	queueCommand("cd temp/release/bin && mkdir android");
     queueCommand("echo 'Building Android'");
     queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + androiddir + " " + releaseSrcDir);
@@ -128,6 +131,7 @@ if (PLATFORM === "all" || PLATFORM === "android") {
 
 //windows phone
 if (PLATFORM === "all" || PLATFORM === "wp") {
+	queueCommand("cd temp/release/bin && mkdir windows");
     queueCommand("echo 'Building Windows Phone'");
     queueCommand("cd " + tempRepoDir + " && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + windowsdir + " " + releaseSrcDir);
@@ -136,6 +140,7 @@ if (PLATFORM === "all" || PLATFORM === "wp") {
 
 //webos
 if (PLATFORM === "all" || PLATFORM === "webos") {
+	queueCommand("cd temp/release/bin && mkdir webos");
     queueCommand("echo 'Building WebOS'");
     queueCommand("cd " + tempRepoDir + " && git clone "+webos+" && cd "+webosdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + webosdir + " " + releaseSrcDir);
@@ -144,6 +149,7 @@ if (PLATFORM === "all" || PLATFORM === "webos") {
 
 //bada
 if (PLATFORM === "all" || PLATFORM === "bada") {
+	queueCommand("cd temp/release/bin && mkdir bada");
     queueCommand("echo 'Building Bada'");
     queueCommand("cd " + tempRepoDir + " && git clone "+bada+" && cd "+badadir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + badadir + " " + releaseSrcDir);
@@ -152,6 +158,7 @@ if (PLATFORM === "all" || PLATFORM === "bada") {
 
 //badaWac
 if (PLATFORM === "all" || PLATFORM === "badaWac") {
+	queueCommand("cd temp/release/bin && mkdir badaWac");
     queueCommand("echo 'Building BadaWac'");
     queueCommand("cd " + tempRepoDir + " && git clone "+badaWac+" && cd "+badaWacdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + badaWacdir + " " + releaseSrcDir);
@@ -169,7 +176,7 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
 fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;
 });
-
+queueCommand("cd temp/release/bin && mkdir symbian");
 queueCommand("mv depreciate.txt temp/release/bin/symbian/depreciate.txt")
 
 // keys into top level directory
@@ -225,8 +232,10 @@ queueCommand("cd temp/release/src && find `pwd` -name .git* -type f -print0 | xa
 queueCommand("echo 'Zipping and signing bin'");
 queueCommand("cd temp/release/bin && zip -rq "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinMd5+" > " + cordovaBinMd5 +" && gpg --print-md SHA512 " + cordovaBinZip + " > " + cordovaBinSha);
 
-queueCommand("echo 'Zipping and signing doc'");
-queueCommand("cd temp/release/doc && zip -rq "+ cordovaDocZip +" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5 +" && gpg --print-md SHA512 " + cordovaDocZip + " > " + cordovaDocSha);
+if (PLATFORM === "all" || PLATFORM === "docs") {
+	queueCommand("echo 'Zipping and signing doc'");
+	queueCommand("cd temp/release/doc && zip -rq "+ cordovaDocZip +" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5 +" && gpg --print-md SHA512 " + cordovaDocZip + " > " + cordovaDocSha);
+}
 
 queueCommand("echo 'Zipping and signing src'");
 queueCommand("cd temp/release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha);
@@ -234,7 +243,9 @@ queueCommand("cd temp/release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armo
 // clean up
 queueCommand("echo 'Final clean up'");
 queueCommand("cd temp/release/bin && ls | grep -v "+cordovaBinZip+" | xargs rm -r");
-queueCommand("cd temp/release/doc && ls | grep -v "+cordovaDocZip+" | xargs rm -r");
+if (PLATFORM === "all" || PLATFORM === "docs") {
+	queueCommand("cd temp/release/doc && ls | grep -v "+cordovaDocZip+" | xargs rm -r");
+}
 queueCommand("cd temp/release/src && ls | grep -v "+cordovaSrcZip+" | xargs rm -r");
 executeCommands(function(){
 	exec("say DONE", function(e, stdout, stderr) {

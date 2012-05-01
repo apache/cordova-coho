@@ -14,6 +14,7 @@ var util           = require('util')
 ,   windows        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
 ,   webos          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git'
 ,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
+,   badaWac		   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git'
 ,   docs      	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-docs.git'
 ,	iosdir	       = 'incubator-cordova-ios'
 ,	blackberrydir  = 'incubator-cordova-blackberry-webworks'
@@ -21,6 +22,7 @@ var util           = require('util')
 ,	windowsdir	   = 'incubator-cordova-wp7'
 ,	webosdir	   = 'incubator-cordova-webos'
 ,	badadir	       = 'incubator-cordova-bada'
+,	badaWacdir	   = 'incubator-cordova-bada-wac'
 ,   docsdir        = 'incubator-cordova-docs'
 ,   tempRepoDir    = 'temp/repositories'
 ,   iosReleaseBinDir = ' ../../../release/bin/ios'
@@ -31,6 +33,7 @@ var util           = require('util')
 , windowsReleaseBinDir = '../../release/bin/windows'
 , webosReleaseBinDir = '../../release/bin/webos'
 , badaReleaseBinDir = '../../release/bin/bada'
+, badaWacReleaseBinDir = '../../release/bin/badaWac'
 , releaseDocDir = '../../release/doc'
 , releaseBinDir = '../release/bin'
 , releaseSrcDir = '../release/src'
@@ -147,6 +150,14 @@ if (PLATFORM === "all" || PLATFORM === "bada") {
     queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseBinDir);
 }
 
+//badaWac
+if (PLATFORM === "all" || PLATFORM === "badaWac") {
+    queueCommand("echo 'Building BadaWac'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+badaWac+" && cd "+badaWacdir+" && git fetch --tags && git checkout "+VERSION);
+    queueCommand("cd " + tempRepoDir + " && cp -r " + badaWacdir + " " + releaseSrcDir);
+    queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && cp -r ./* " + badaWacReleaseBinDir);
+}
+
 //docs
 if (PLATFORM === "all" || PLATFORM === "docs") {
     queueCommand("echo 'Building Documentation'");
@@ -186,6 +197,8 @@ if (oldVer != undefined){
 	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 	queueCommand("echo 'bada' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'badaWac' >> temp/release/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 }
 
 // zip and sign bin/src/doc folders

@@ -173,7 +173,7 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
 }
 
 //symbian
-fs.writeFile('depreciate.txt', 'PhoneGap-Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
+fs.writeFile('depreciate.txt', 'Apache Cordova Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;
 });
 queueCommand("cd temp/release/bin && mkdir symbian");

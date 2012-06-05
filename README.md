@@ -39,14 +39,11 @@ Prerequisites
 
 Usage
 -----
-	coho 1.4.0
-   	// creates phonegap-1.4.0.zip
-
-	coho 1.4.0 1.3.0
-	// creates phonegap-1.4.0.zip with the changes made since 1.3.0
+	coho all 1.8.0 1.7.0
+   	// creates temp/release directory which contains bin folder, changelog, doc folder, KEYS, and src folder.
 	
 	make
-	// runs coho 1.4.0 1.3.0 and the unit tests
+	// runs coho 1.8.0 1.3.0 and the unit tests
 	
 
 Issues

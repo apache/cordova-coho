@@ -173,7 +173,7 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
 }
 
 //symbian
-fs.writeFile('deprecated.txt', 'Apache Cordova Symbian is being deprecated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
+fs.writeFile('deprecated.txt', 'Apache Cordova Symbian has been deprecated. The latest source code is available at: https://github.com/phonegap/phonegap-symbian.wrt/tree/a779600377f17511f2ff94beb0ab9e8a357860e1', function (err) {
   if (err) throw err;
 });
 queueCommand("cd temp/release/bin && mkdir symbian");

@@ -173,11 +173,11 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
 }
 
 //symbian
-fs.writeFile('depreciate.txt', 'Apache Cordova Symbian is being depreciated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
+fs.writeFile('deprecated.txt', 'Apache Cordova Symbian is being deprecated. You can find the last available code at https://github.com/callback/callback-symbian.', function (err) {
   if (err) throw err;
 });
 queueCommand("cd temp/release/bin && mkdir symbian");
-queueCommand("mv depreciate.txt temp/release/bin/symbian/depreciate.txt")
+queueCommand("mv deprecated.txt temp/release/bin/symbian/deprecated.txt")
 
 // keys into top level directory
 queueCommand("echo 'Moving KEYS file to release'");

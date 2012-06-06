@@ -1,4 +1,23 @@
 #!/usr/bin/env node
+/*
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+   	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.
+*/
+
 PLATFORM = process.argv[2]
 if (!PLATFORM) {
     PLATFORM = "all";
@@ -36,7 +55,7 @@ var util           = require('util')
 , badaWacReleaseBinDir = '../../release/bin/badaWac'
 , releaseDocDir = '../../release/doc'
 , releaseBinDir = '../release/bin'
-, releaseSrcDir = '../release/src'
+, releaseSrcDir = '../release/src/cordova-'+VERSION
 , oldVer = process.argv[4];
 
 var commandQueue = [],
@@ -89,9 +108,9 @@ function checkSoftware() {
 }
 
 checkSoftware();
-
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
-queueCommand("cd temp/release && mkdir bin && mkdir src");
+queueCommand("cd temp/release && mkdir bin && mkdir src && mkdir src/cordova-"+VERSION);
+
 //ios
 if (PLATFORM === "all" || PLATFORM === "ios") {
 	queueCommand("cd temp/release/bin && mkdir ios");
@@ -186,10 +205,10 @@ queueCommand("cp KEYS temp/release/KEYS")
 
 // notice, license, readme, disclaimer file to be put into official release artifact
 queueCommand("echo 'Moving notice, license, readme, and disclaimer files to release artifact'");
-queueCommand("cp bin/README.md temp/release/src/README.MD")
-queueCommand("cp bin/NOTICE temp/release/src/NOTICE");
-queueCommand("cp bin/LICENSE temp/release/src/LICENSE");
-queueCommand("cp bin/DISCLAIMER temp/release/src/DISCLAIMER");
+queueCommand("cp bin/README.md temp/release/src/cordova-"+VERSION+"/README.MD")
+queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"/NOTICE");
+queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"/LICENSE");
+queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"/DISCLAIMER");
 
 if (oldVer != undefined){
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
@@ -227,8 +246,8 @@ var cordovaSrcSha = cordovaSrcZip+".sha";
 
 // remove git files before we zip
 queueCommand("echo 'Cleaning up .git files from repositories before zipping em'");
-queueCommand("cd temp/release/src && find `pwd` -name .git -type d -print0 | xargs -0 rm -r");
-queueCommand("cd temp/release/src && find `pwd` -name .git* -type f -print0 | xargs -0 rm -r");
+queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git -type d -print0 | xargs -0 rm -r");
+queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git* -type f -print0 | xargs -0 rm -r");
 
 queueCommand("echo 'Zipping and signing bin'");
 queueCommand("cd temp/release/bin && zip -rq "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinMd5+" > " + cordovaBinMd5 +" && gpg --print-md SHA512 " + cordovaBinZip + " > " + cordovaBinSha);

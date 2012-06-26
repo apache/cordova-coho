@@ -121,6 +121,8 @@ if (PLATFORM === "all" || PLATFORM === "ios") {
     queueCommand("cd " + tempRepoDir + "/"+iosdir+" && make");
     queueCommand("cd " + tempRepoDir + "/"+iosdir+"/dist && cp -r Cordova-"+VERSION+".dmg " + iosReleaseBinDir + " && cp -r Cordova-"+VERSION+".dmg.SHA1 " + iosReleaseBinDir);
     queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp NOTICE ../../release/bin/ios");
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp LICENSE ../../release/bin/ios");
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp -r /bin ../../release/bin/ios/");
 }
 
 //blackberry
@@ -132,6 +134,8 @@ if (PLATFORM === "all" || PLATFORM === "blackberry") {
     queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && ant dist");
     queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + blackberryReleaseBinDir);
     queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp NOTICE ../../release/bin/blackberry");
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp LICENSE ../../release/bin/blackberry");
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp -r /bin ../../release/bin/blackberry/");
 }
 
 //android
@@ -147,6 +151,7 @@ if (PLATFORM === "all" || PLATFORM === "android") {
     queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/cordova-"+VERSION+".jar ../" + androidReleaseBinDir);
     queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/cordova-"+VERSION+".js ../" + androidReleaseBinDir);
     queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp -r res/xml ../" + androidReleaseBinDir);
+	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -r /bin ../../release/bin/android/");	
 }
 
 //windows phone
@@ -190,6 +195,8 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
     queueCommand("echo 'Building Documentation'");
     queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/generate && cp -r public/en/"+VERSION+" " + releaseDocDir);
+	queueCommand("cp bin/NOTICE temp/release/doc/cordova-"+VERSION+"-incubating-doc/NOTICE");
+	queueCommand("cp bin/LICENSE temp/release/doc/cordova-"+VERSION+"-incubating-doc/LICENSE");
 }
 
 //symbian
@@ -209,6 +216,10 @@ queueCommand("cp bin/README.md temp/release/src/cordova-"+VERSION+"/README.MD")
 queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"/NOTICE");
 queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"/LICENSE");
 queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"/DISCLAIMER");
+queueCommand("cp bin/README.md temp/release/bin/cordova-"+VERSION+"-incubating-bin/README.MD")
+queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"-incubating-bin/NOTICE");
+queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"-incubating-bin/LICENSE");
+queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"-incubating-bin/DISCLAIMER");
 
 if (oldVer != undefined){
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
@@ -248,6 +259,7 @@ var cordovaSrcSha = cordovaSrcZip+".sha";
 queueCommand("echo 'Cleaning up .git files from repositories before zipping em'");
 queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git -type d -print0 | xargs -0 rm -r");
 queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git* -type f -print0 | xargs -0 rm -r");
+queueCommand("cd temp/ && find `pwd` -name .DS_Store | xargs rm -r");
 
 queueCommand("echo 'Zipping and signing bin'");
 queueCommand("cd temp/release/bin && zip -rq "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinMd5+" > " + cordovaBinMd5 +" && gpg --print-md SHA512 " + cordovaBinZip + " > " + cordovaBinSha);

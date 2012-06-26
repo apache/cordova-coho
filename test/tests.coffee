@@ -1,5 +1,5 @@
-VERSION = '1.6.0'
-oldVersion = '1.5.0'
+VERSION = '1.9.0rc1'
+oldVersion = '1.8.1'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -214,13 +214,13 @@ exports['test if doc md5 is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	test.ok fs.statSync("./temp/release/doc/cordova-"+VERSION+"-incubating-doc.zip.md5").size != 0, 'doc md5 created too soon'
-	test.done()		
+	test.done()	
+		
 exports['ios script successfull'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
 	test.done()
-	
-
+		
 exports['android script successfull'] = (test)->
 	test.expect 1
 	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-android/example/libs/cordova-"+VERSION+".jar")
@@ -282,8 +282,5 @@ exports['test if src md5 is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.md5").size != 0, 'src md5 created too soon'
-	test.done()		
-exports['ios script successfull'] = (test)->
-	test.expect 1
-	test.ok require('path').existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
-	test.done()
+	test.done()	
+		

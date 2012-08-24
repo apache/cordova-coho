@@ -28,7 +28,7 @@ var util           = require('util')
 ,   fs			   = require('fs')
 ,   ios            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git'
 ,   blackberry     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-blackberry-webworks.git'
-,   android        = 'https://github.com/imhotep/incubator-cordova-android.git'
+,   android        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-android.git'
 ,   windows        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
 ,   webos          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git'
 ,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
@@ -134,6 +134,7 @@ if (PLATFORM === "all" || PLATFORM === "blackberry") {
     queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + blackberryReleaseBinDir);
     queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp NOTICE ../../release/bin/blackberry");
 	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp LICENSE ../../release/bin/blackberry");
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp VERSION ../../release/bin/blackberry");
 	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp -r bin ../../release/bin/blackberry/");
 }
 
@@ -141,11 +142,9 @@ if (PLATFORM === "all" || PLATFORM === "blackberry") {
 if (PLATFORM === "all" || PLATFORM === "android") {
 	queueCommand("cd temp/release/bin && mkdir android");
     queueCommand("echo 'Building Android'");
-    //queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
-	queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags");
+    queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + " && cp -r " + androiddir + " " + releaseSrcDir);
     queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseBinDir + " && cp NOTICE " + androidReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ant clean");
     queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
     queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example " + androidReleaseBinDir + "/example");
     queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/cordova-"+VERSION+".jar ../" + androidReleaseBinDir);
@@ -195,8 +194,8 @@ if (PLATFORM === "all" || PLATFORM === "docs") {
     queueCommand("echo 'Building Documentation'");
     queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
     queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/generate && cp -r public/en/"+VERSION+" " + releaseDocDir);
-	queueCommand("cp bin/NOTICE temp/release/doc/cordova-"+VERSION+"-incubating-doc/NOTICE");
-	queueCommand("cp bin/LICENSE temp/release/doc/cordova-"+VERSION+"-incubating-doc/LICENSE");
+	queueCommand("cp bin/NOTICE temp/release/doc/NOTICE");
+	queueCommand("cp bin/LICENSE temp/release/doc/LICENSE");
 }
 
 //symbian
@@ -216,25 +215,32 @@ queueCommand("cp bin/README.md temp/release/src/cordova-"+VERSION+"/README.MD")
 queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"/NOTICE");
 queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"/LICENSE");
 queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"/DISCLAIMER");
-queueCommand("cp bin/README.md temp/release/bin/cordova-"+VERSION+"-incubating-bin/README.MD")
-queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"-incubating-bin/NOTICE");
-queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"-incubating-bin/LICENSE");
-queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"-incubating-bin/DISCLAIMER");
+queueCommand("cp bin/README.md temp/release/bin/README.MD")
+queueCommand("cp bin/NOTICE temp/release/bin/NOTICE");
+queueCommand("cp bin/LICENSE temp/release/bin/LICENSE");
+queueCommand("cp bin/DISCLAIMER temp/release/bin/DISCLAIMER");
 
 if (oldVer != undefined){
+	queueCommand("echo IOS")
 	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
 	queueCommand("echo 'ios' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo BB")
 	queueCommand("echo 'blackberry' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo ANDROID")
 	queueCommand("echo 'android' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo WINDOWS")
 	queueCommand("echo 'windows-phone' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo WEBOS")
 	queueCommand("echo 'webos' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo BADA")
 	queueCommand("echo 'bada' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo BADAWAC")
 	queueCommand("echo 'badaWac' >> temp/release/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
 }

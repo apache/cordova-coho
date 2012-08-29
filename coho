@@ -34,6 +34,12 @@ var util           = require('util')
 ,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
 ,   badaWac		   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git'
 ,   docs      	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-docs.git'
+,   cordovajs      = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-js.git'
+,   tizen          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-tizen.git'
+,   qt             = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-qt.git'
+,   mac            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-mac.git'
+,   mobilespec     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-mobile-spec.git'
+,   helloworld     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-app-hello-world.git'
 ,	iosdir	       = 'incubator-cordova-ios'
 ,	blackberrydir  = 'incubator-cordova-blackberry-webworks'
 ,	androiddir	   = 'incubator-cordova-android'
@@ -42,25 +48,21 @@ var util           = require('util')
 ,	badadir	       = 'incubator-cordova-bada'
 ,	badaWacdir	   = 'incubator-cordova-bada-wac'
 ,   docsdir        = 'incubator-cordova-docs'
+,   cordovajsdir   = 'incubator-cordova-js'
+,   tizendir       = 'incubator-cordova-tizen'
+,   qtdir          = 'incubator-cordova-qt'
+,   macdir         = 'incubator-cordova-mac'
+,   mobilespecdir  = 'incubator-cordova-mobile-spec'
+,   helloworlddir  = 'incubator-cordova-app-hello-world'
 ,   tempRepoDir    = 'temp/repositories'
-,   iosReleaseBinDir = ' ../../../release/bin/ios'
-, blackberryReleaseBinDir = '../../../release/bin/blackberry'
-, androidReleaseBinDir = '../../release/bin/android'
-, androidReleaseLicense = '../../release/bin/android/LICENSE'
-, androidReleaseVersion = '../../release/bin/android/VERSION'
-, windowsReleaseBinDir = '../../release/bin/windows-phone'
-, webosReleaseBinDir = '../../release/bin/webos'
-, badaReleaseBinDir = '../../release/bin/bada'
-, badaWacReleaseBinDir = '../../release/bin/badaWac'
-, releaseDocDir = '../../release/doc'
-, releaseBinDir = '../release/bin'
-, releaseSrcDir = '../release/src/cordova-'+VERSION
+, releaseSrcDir = '../../release/src/cordova-'+VERSION
 , oldVer = process.argv[4];
 
 var commandQueue = [],
     child;
 
-var requiredSoftware = ["git", "jodoc", "markdown"];
+
+
 
 function queueCommand(cmd) {
     commandQueue.push(cmd);
@@ -91,119 +93,106 @@ function executeCommands(callback) {
     }
 }
 
-function checkSoftware() {
-    var sw = requiredSoftware.shift();
-    if (sw) {
-		child = exec("which " + sw, function (error, stdout, stderr) {
-            if (stdout === "") {
-                console.log(sw + ' not found. Please install ' + sw + ' before continuing.');
-                process.exit(0);
-            }
-            checkSoftware();
-        });
-    } else {
-        console.log("All required software installed");
-    }
-}
-
-checkSoftware();
 queueCommand("rm -rf temp && mkdir temp && cd temp && mkdir repositories && mkdir release");
-queueCommand("cd temp/release && mkdir bin && mkdir src && mkdir src/cordova-"+VERSION);
+queueCommand("cd temp/release && mkdir src && mkdir src/cordova-"+VERSION);
 
 //ios
 if (PLATFORM === "all" || PLATFORM === "ios") {
-	queueCommand("cd temp/release/bin && mkdir ios");
-    queueCommand("echo 'Building iOS'");
+    queueCommand("echo 'Cloning iOS'");
     queueCommand("cd " + tempRepoDir + " && git clone "+ios+" && cd "+iosdir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + iosdir + " " + releaseSrcDir);
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && make install-wkhtmltopdf");
-    queueCommand("cd " + tempRepoDir + "/"+iosdir+" && make");
-    queueCommand("cd " + tempRepoDir + "/"+iosdir+"/dist && cp -r Cordova-"+VERSION+".dmg " + iosReleaseBinDir + " && cp -r Cordova-"+VERSION+".dmg.SHA1 " + iosReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp NOTICE ../../release/bin/ios");
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp LICENSE ../../release/bin/ios");
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && cp -r bin ../../release/bin/ios/");
+    queueCommand("cd " + tempRepoDir + " && cd " + iosdir + " && git archive --format zip -o " + releaseSrcDir+"/"+iosdir+".zip "+VERSION);
 }
 
 //blackberry
 if (PLATFORM === "all" || PLATFORM === "blackberry") {
-	queueCommand("cd temp/release/bin && mkdir blackberry");
-    queueCommand("echo 'Building BlackBerry'");
+    queueCommand("echo 'Cloning BlackBerry'");
     queueCommand("cd " + tempRepoDir + " && git clone "+blackberry+" && cd "+blackberrydir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + blackberrydir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && ant dist");
-    queueCommand("cd " + tempRepoDir + "/"+blackberrydir+"/dist && cp -r ./* " + blackberryReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp NOTICE ../../release/bin/blackberry");
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp LICENSE ../../release/bin/blackberry");
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp VERSION ../../release/bin/blackberry");
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && cp -r bin ../../release/bin/blackberry/");
+	queueCommand("cd " + tempRepoDir + " && cd " + blackberrydir + " && git archive --format zip -o " + releaseSrcDir+"/"+blackberrydir+".zip "+VERSION);
 }
 
 //android
 if (PLATFORM === "all" || PLATFORM === "android") {
-	queueCommand("cd temp/release/bin && mkdir android");
-    queueCommand("echo 'Building Android'");
+    queueCommand("echo 'Cloning Android'");
     queueCommand("cd " + tempRepoDir + " && git clone "+android+" && cd "+androiddir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + androiddir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp LICENSE " + androidReleaseLicense + " && cp VERSION " + androidReleaseVersion + " && cp README.md " + androidReleaseBinDir + " && cp NOTICE " + androidReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+" && ./bin/create");
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -rp example " + androidReleaseBinDir + "/example");
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp libs/cordova-"+VERSION+".jar ../" + androidReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp assets/www/cordova-"+VERSION+".js ../" + androidReleaseBinDir);
-    queueCommand("cd " + tempRepoDir + "/"+androiddir+"/example && cp -r res/xml ../" + androidReleaseBinDir);
-	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && cp -r bin ../../release/bin/android/");	
+	queueCommand("cd " + tempRepoDir + " && cd " + androiddir + " && git archive --format zip -o " + releaseSrcDir+"/"+androiddir+".zip "+VERSION);
 }
 
 //windows phone
 if (PLATFORM === "all" || PLATFORM === "wp") {
-	queueCommand("cd temp/release/bin && mkdir windows-phone");
-    queueCommand("echo 'Building Windows Phone'");
+    queueCommand("echo 'Cloning Windows Phone'");
     queueCommand("cd " + tempRepoDir + " && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + windowsdir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && cp -r ./* " + windowsReleaseBinDir);
+	queueCommand("cd " + tempRepoDir + " && cd " + windowsdir + " && git archive --format zip -o " + releaseSrcDir+"/"+windowsdir+".zip "+VERSION);
 }
 
 //webos
 if (PLATFORM === "all" || PLATFORM === "webos") {
-	queueCommand("cd temp/release/bin && mkdir webos");
-    queueCommand("echo 'Building WebOS'");
+    queueCommand("echo 'Cloning WebOS'");
     queueCommand("cd " + tempRepoDir + " && git clone "+webos+" && cd "+webosdir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + webosdir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+webosdir+" && cp -r ./* " + webosReleaseBinDir);
+    queueCommand("cd " + tempRepoDir + " && cd " + webosdir + " && git archive --format zip -o " + releaseSrcDir+"/"+webosdir+".zip "+VERSION);
 }
 
 //bada
 if (PLATFORM === "all" || PLATFORM === "bada") {
-	queueCommand("cd temp/release/bin && mkdir bada");
-    queueCommand("echo 'Building Bada'");
+    queueCommand("echo 'Cloning Bada'");
     queueCommand("cd " + tempRepoDir + " && git clone "+bada+" && cd "+badadir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + badadir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+badadir+" && cp -r ./* " + badaReleaseBinDir);
+    queueCommand("cd " + tempRepoDir + " && cd " + badadir + " && git archive --format zip -o " + releaseSrcDir+"/"+badadir+".zip "+VERSION);
 }
 
 //badaWac
 if (PLATFORM === "all" || PLATFORM === "badaWac") {
-	queueCommand("cd temp/release/bin && mkdir badaWac");
-    queueCommand("echo 'Building BadaWac'");
+    queueCommand("echo 'Cloning BadaWac'");
     queueCommand("cd " + tempRepoDir + " && git clone "+badaWac+" && cd "+badaWacdir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + " && cp -r " + badaWacdir + " " + releaseSrcDir);
-    queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && cp -r ./* " + badaWacReleaseBinDir);
+	queueCommand("cd " + tempRepoDir + " && cd " + badaWacdir + " && git archive --format zip -o " + releaseSrcDir+"/"+badaWacdir+".zip "+VERSION);
 }
 
 //docs
 if (PLATFORM === "all" || PLATFORM === "docs") {
-    queueCommand("echo 'Building Documentation'");
+    queueCommand("echo 'Cloning Documentation'");
     queueCommand("cd " + tempRepoDir + " && git clone "+docs+" && cd "+docsdir+" && git fetch --tags && git checkout "+VERSION);
-    queueCommand("cd " + tempRepoDir + "/"+docsdir+" && ./bin/generate && cp -r public/en/"+VERSION+" " + releaseDocDir);
-	queueCommand("cp bin/NOTICE temp/release/doc/NOTICE");
-	queueCommand("cp bin/LICENSE temp/release/doc/LICENSE");
+	queueCommand("cd " + tempRepoDir + " && cd " + docsdir + " && git archive --format zip -o " + releaseSrcDir+"/"+docsdir+".zip "+VERSION);
 }
 
-//symbian
-fs.writeFile('deprecated.txt', 'Apache Cordova Symbian has been deprecated. The latest source code is available at: https://github.com/phonegap/phonegap-symbian.wrt/tree/a779600377f17511f2ff94beb0ab9e8a357860e1', function (err) {
-  if (err) throw err;
-});
-queueCommand("cd temp/release/bin && mkdir symbian");
-queueCommand("mv deprecated.txt temp/release/bin/symbian/deprecated.txt")
+//cordovajs
+if (PLATFORM === "all" || PLATFORM === "cordovajs") {
+    queueCommand("echo 'Cloning Cordova JS'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+cordovajs+" && cd "+cordovajsdir+" && git fetch --tags && git checkout "+VERSION);
+    queueCommand("cd " + tempRepoDir + " && cd " + cordovajsdir + " && git archive --format zip -o " + releaseSrcDir+"/"+cordovajsdir+".zip "+VERSION);
+}
+
+//tizen
+if (PLATFORM === "all" || PLATFORM === "tizen") {
+    queueCommand("echo 'Cloning Tizen'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+tizen+" && cd "+tizendir+" && git fetch --tags && git checkout "+VERSION);
+	queueCommand("cd " + tempRepoDir + " && cd " + tizendir + " && git archive --format zip -o " + releaseSrcDir+"/"+tizendir+".zip "+VERSION);
+}
+
+//qt
+if (PLATFORM === "all" || PLATFORM === "qt") {
+    queueCommand("echo 'Cloning QT'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+qt+" && cd "+qtdir+" && git fetch --tags && git checkout "+VERSION);
+    queueCommand("cd " + tempRepoDir + " && cd " + qtdir + " && git archive --format zip -o " + releaseSrcDir+"/"+qtdir+".zip "+VERSION);
+}
+
+//mac
+if (PLATFORM === "all" || PLATFORM === "mac") {
+    queueCommand("echo 'Cloning Mac'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+mac+" && cd "+macdir+" && git fetch --tags && git checkout "+VERSION);
+	queueCommand("cd " + tempRepoDir + " && cd " + macdir + " && git archive --format zip -o " + releaseSrcDir+"/"+macdir+".zip "+VERSION);
+}
+
+//mobile spec
+if (PLATFORM === "all" || PLATFORM === "mobilespec") {
+    queueCommand("echo 'Cloning mobile spec'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+mobilespec+" && cd "+mobilespecdir+" && git fetch --tags && git checkout "+VERSION);
+    queueCommand("cd " + tempRepoDir + " && cd " + mobilespecdir + " && git archive --format zip -o " + releaseSrcDir+"/"+mobilespecdir+".zip "+VERSION);
+}
+
+//hello world app
+if (PLATFORM === "all" || PLATFORM === "helloworld") {
+    queueCommand("echo 'Cloning hello world app'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+helloworld+" && cd "+helloworlddir+" && git fetch --tags && git checkout "+VERSION);
+	queueCommand("cd " + tempRepoDir + " && cd " + helloworlddir + " && git archive --format zip -o " + releaseSrcDir+"/"+helloworlddir+".zip "+VERSION);
+}
 
 // keys into top level directory
 queueCommand("echo 'Moving KEYS file to release'");
@@ -215,47 +204,42 @@ queueCommand("cp bin/README.md temp/release/src/cordova-"+VERSION+"/README.MD")
 queueCommand("cp bin/NOTICE temp/release/src/cordova-"+VERSION+"/NOTICE");
 queueCommand("cp bin/LICENSE temp/release/src/cordova-"+VERSION+"/LICENSE");
 queueCommand("cp bin/DISCLAIMER temp/release/src/cordova-"+VERSION+"/DISCLAIMER");
-queueCommand("cp bin/README.md temp/release/bin/README.MD")
-queueCommand("cp bin/NOTICE temp/release/bin/NOTICE");
-queueCommand("cp bin/LICENSE temp/release/bin/LICENSE");
-queueCommand("cp bin/DISCLAIMER temp/release/bin/DISCLAIMER");
 
 if (oldVer != undefined){
 	queueCommand("echo IOS")
-	queueCommand("cd temp/release/ && touch changelog && echo 'ChangeLog' > changelog")
-	queueCommand("echo 'ios' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("cd temp/release/src/cordova-"+VERSION+"/ && touch changelog && echo 'ChangeLog' > changelog")
+	queueCommand("echo 'ios' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+iosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo BB")
-	queueCommand("echo 'blackberry' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'blackberry' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+blackberrydir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo ANDROID")
-	queueCommand("echo 'android' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'android' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo WINDOWS")
-	queueCommand("echo 'windows-phone' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'windows-phone' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo WEBOS")
-	queueCommand("echo 'webos' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'webos' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo BADA")
-	queueCommand("echo 'bada' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'bada' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badadir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo BADAWAC")
-	queueCommand("echo 'badaWac' >> temp/release/changelog")
-	queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> ../../release/changelog")
+	queueCommand("echo 'badaWac' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+badaWacdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
+	queueCommand("echo TIZEN")
+	queueCommand("echo 'tizen' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+tizendir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
+	queueCommand("echo MAC")
+	queueCommand("echo 'mac' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+macdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
+	queueCommand("echo QT")
+	queueCommand("echo 'qt' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+qtdir+" && git shortlog --no-merges "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 }
 
 // zip and sign bin/src/doc folders
-var cordovaBinZip = "cordova-"+VERSION+"-incubating-bin.zip";
-var cordovaBinAsc = cordovaBinZip+".asc";
-var cordovaBinMd5 = cordovaBinZip+".md5";
-var cordovaBinSha = cordovaBinZip+".sha";
-
-var cordovaDocZip = "cordova-"+VERSION+"-incubating-doc.zip";
-var cordovaDocAsc = cordovaDocZip+".asc";
-var cordovaDocMd5 = cordovaDocZip+".md5";
-var cordovaDocSha = cordovaDocZip+".sha";
-
 var cordovaSrcZip = "cordova-"+VERSION+"-incubating-src.zip";
 var cordovaSrcAsc = cordovaSrcZip+".asc";
 var cordovaSrcMd5 = cordovaSrcZip+".md5";
@@ -267,24 +251,17 @@ queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git -
 queueCommand("cd temp/release/src/cordova-"+VERSION+" && find `pwd` -name .git* -type f -print0 | xargs -0 rm -r");
 queueCommand("cd temp/ && find `pwd` -name .DS_Store | xargs rm -r");
 
-queueCommand("echo 'Zipping and signing bin'");
-queueCommand("cd temp/release/bin && zip -rq "+ cordovaBinZip +" * && gpg --armor --output "+cordovaBinAsc+" --detach-sig "+cordovaBinZip+" && gpg --print-md MD5 "+cordovaBinMd5+" > " + cordovaBinMd5 +" && gpg --print-md SHA512 " + cordovaBinZip + " > " + cordovaBinSha);
-
-if (PLATFORM === "all" || PLATFORM === "docs") {
-	queueCommand("echo 'Zipping and signing doc'");
-	queueCommand("cd temp/release/doc && zip -rq "+ cordovaDocZip +" * && gpg --armor --output "+cordovaDocAsc+" --detach-sig "+cordovaDocZip+" && gpg --print-md MD5 "+cordovaDocZip+" > " + cordovaDocMd5 +" && gpg --print-md SHA512 " + cordovaDocZip + " > " + cordovaDocSha);
-}
-
 queueCommand("echo 'Zipping and signing src'");
 queueCommand("cd temp/release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha);
 
-// clean up
+/* clean up
 queueCommand("echo 'Final clean up'");
 queueCommand("cd temp/release/bin && ls | grep -v "+cordovaBinZip+" | xargs rm -r");
 if (PLATFORM === "all" || PLATFORM === "docs") {
 	queueCommand("cd temp/release/doc && ls | grep -v "+cordovaDocZip+" | xargs rm -r");
 }
 queueCommand("cd temp/release/src && ls | grep -v "+cordovaSrcZip+" | xargs rm -r");
+*/
 executeCommands(function(){
 	exec("say DONE", function(e, stdout, stderr) {
 	});

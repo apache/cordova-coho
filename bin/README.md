@@ -37,16 +37,11 @@ Get started
 
 Community
 -------------------
-Note the following links still refer to the original PhoneGap project.
-As time goes on, these will be ideally moved to an Apache hosted site or
-be renamed to the Apache Cordova Brand.
-
 - [Website](http://cordova.io)
 - [Twitter](http://twitter.com/apachecordova)
-- [Wiki](http://docs.cordova.io/guide_getting-started_index.md.html)
-- [Mailing List](http://groups.google.com/group/phonegap)
+- [Wiki](http://wiki.cordova.io)
+- [Mailing List](http://cordova.io/#mailing-list)
 - [Issue Tracker](https://issues.apache.org/jira/browse/CB)
-- [IRC](http://webchat.freenode.net/?channels=#phonegap)
 
 How to build from src
 -------------------

@@ -1,0 +1,29 @@
+{
+  "name": "coho",
+  "version": "0.0.0",
+  "description": "Apache Cordova Release Tool",
+  "main": "coho",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "async": "~0.1.15",
+    "nodeunit": "~0.6.4",
+    "procstreams": "~0.2.0"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.2.0"
+  },
+  "scripts": {
+    "test": "coho all 2.1.0 2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stevengill/coho.git"
+  },
+  "keywords": [
+    "phonegap"
+  ],
+  "author": "steven gill",
+  "license": "apachev2"
+}

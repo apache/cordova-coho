@@ -6,11 +6,6 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "async": "~0.1.15",
-    "nodeunit": "~0.6.4",
-    "procstreams": "~0.2.0"
-  },
   "devDependencies": {
     "coffee-script": "~1.2.0"
   },

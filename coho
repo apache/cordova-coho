@@ -25,7 +25,7 @@ if (!PLATFORM) {
 VERSION = process.argv[3]
 var util           = require('util')
 ,   exec           = require('child_process').exec
-,   fs			   = require('fs')
+,   fs             = require('fs')
 ,   ios            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git'
 ,   blackberry     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-blackberry-webworks.git'
 ,   android        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-android.git'
@@ -33,7 +33,7 @@ var util           = require('util')
 ,   windowsph      = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
 ,   webos          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git'
 ,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
-,   badaWac		   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git'
+,   badaWac	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git'
 ,   docs      	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-docs.git'
 ,   cordovajs      = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-js.git'
 ,   tizen          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-tizen.git'
@@ -41,14 +41,14 @@ var util           = require('util')
 ,   mac            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-mac.git'
 ,   mobilespec     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-mobile-spec.git'
 ,   helloworld     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-app-hello-world.git'
-,	iosdir	       = 'incubator-cordova-ios'
-,	blackberrydir  = 'incubator-cordova-blackberry-webworks'
-,	androiddir	   = 'incubator-cordova-android'
+,   iosdir         = 'incubator-cordova-ios'
+,   blackberrydir  = 'incubator-cordova-blackberry-webworks'
+,   androiddir	   = 'incubator-cordova-android'
 ,	windowsphdir   = 'incubator-cordova-wp7'
-,	windowsdir	   = 'incubator-cordova-windows'
-,	webosdir	   = 'incubator-cordova-webos'
-,	badadir	       = 'incubator-cordova-bada'
-,	badaWacdir	   = 'incubator-cordova-bada-wac'
+,   windowsdir	   = 'incubator-cordova-wp7'
+,   webosdir	   = 'incubator-cordova-webos'
+,   badadir        = 'incubator-cordova-bada'
+,   badaWacdir	   = 'incubator-cordova-bada-wac'
 ,   docsdir        = 'incubator-cordova-docs'
 ,   cordovajsdir   = 'incubator-cordova-js'
 ,   tizendir       = 'incubator-cordova-tizen'
@@ -57,8 +57,8 @@ var util           = require('util')
 ,   mobilespecdir  = 'incubator-cordova-mobile-spec'
 ,   helloworlddir  = 'incubator-cordova-app-hello-world'
 ,   tempRepoDir    = 'temp/repositories'
-, releaseSrcDir = '../../release/src/cordova-'+VERSION
-, oldVer = process.argv[4];
+,   releaseSrcDir  = '../../release/src/cordova-'+VERSION
+,   oldVer         = process.argv[4];
 
 var commandQueue = [],
     child;
@@ -265,6 +265,7 @@ queueCommand("cd temp/ && find `pwd` -name .DS_Store | xargs rm -r");
 
 queueCommand("echo 'Zipping and signing src'");
 queueCommand("cd temp/release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha);
+queueCommand("echo Created temp/release/src/"+cordovaSrcZip+" with corresponding asc, md5, and sha files.");
 
 /* clean up
 queueCommand("echo 'Final clean up'");

@@ -29,7 +29,8 @@ var util           = require('util')
 ,   ios            = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git'
 ,   blackberry     = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-blackberry-webworks.git'
 ,   android        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-android.git'
-,   windows        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
+,   windows        = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-windows.git'
+,   windowsph      = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git'
 ,   webos          = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git'
 ,   bada       	   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git'
 ,   badaWac		   = 'https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git'
@@ -43,7 +44,8 @@ var util           = require('util')
 ,	iosdir	       = 'incubator-cordova-ios'
 ,	blackberrydir  = 'incubator-cordova-blackberry-webworks'
 ,	androiddir	   = 'incubator-cordova-android'
-,	windowsdir	   = 'incubator-cordova-wp7'
+,	windowsphdir   = 'incubator-cordova-wp7'
+,	windowsdir	   = 'incubator-cordova-windows'
 ,	webosdir	   = 'incubator-cordova-webos'
 ,	badadir	       = 'incubator-cordova-bada'
 ,	badaWacdir	   = 'incubator-cordova-bada-wac'
@@ -117,11 +119,18 @@ if (PLATFORM === "all" || PLATFORM === "android") {
 	queueCommand("cd " + tempRepoDir + " && cd " + androiddir + " && git archive --format zip -o " + releaseSrcDir+"/"+androiddir+".zip "+VERSION);
 }
 
-//windows phone
-if (PLATFORM === "all" || PLATFORM === "wp") {
+//windows 
+if (PLATFORM === "all" || PLATFORM === "windows") {
     queueCommand("echo 'Cloning Windows Phone'");
     queueCommand("cd " + tempRepoDir + " && git clone "+windows+" && cd "+windowsdir+" && git fetch --tags && git checkout "+VERSION);
 	queueCommand("cd " + tempRepoDir + " && cd " + windowsdir + " && git archive --format zip -o " + releaseSrcDir+"/"+windowsdir+".zip "+VERSION);
+}
+
+//windows phone
+if (PLATFORM === "all" || PLATFORM === "wp") {
+    queueCommand("echo 'Cloning Windows Phone'");
+    queueCommand("cd " + tempRepoDir + " && git clone "+windowsph+" && cd "+windowsphdir+" && git fetch --tags && git checkout "+VERSION);
+	queueCommand("cd " + tempRepoDir + " && cd " + windowsphdir + " && git archive --format zip -o " + releaseSrcDir+"/"+windowsphdir+".zip "+VERSION);
 }
 
 //webos
@@ -216,9 +225,12 @@ if (oldVer != undefined){
 	queueCommand("echo ANDROID")
 	queueCommand("echo '\nAndroid \n-------\n' >> temp/release/src/cordova-"+VERSION+"/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+androiddir+" && git log --format='%h %s' "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
-	queueCommand("echo WINDOWS PHONE")
-	queueCommand("echo '\nWindows Phone \n-------------\n' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("echo WINDOWS")
+	queueCommand("echo '\nWindows \n-------------\n' >> temp/release/src/cordova-"+VERSION+"/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+windowsdir+" && git log --format='%h %s' "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
+	queueCommand("echo WINDOWS PHONE 7")
+	queueCommand("echo '\nWindows Phone 7 \n-------------\n' >> temp/release/src/cordova-"+VERSION+"/changelog")
+	queueCommand("cd " + tempRepoDir + "/"+windowsphdir+" && git log --format='%h %s' "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")
 	queueCommand("echo WEBOS")
 	queueCommand("echo '\nWebOS \n-----\n' >> temp/release/src/cordova-"+VERSION+"/changelog")
 	queueCommand("cd " + tempRepoDir + "/"+webosdir+" && git log --format='%h %s' "+oldVer+".."+VERSION+" >> "+releaseSrcDir+"/changelog")

@@ -1,5 +1,5 @@
-VERSION = '1.8.0'
-oldVersion = '1.7.0'
+VERSION = '2.2.0'
+oldVersion = '2.1.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -99,7 +99,13 @@ exports['confirm blackberry clone worked'] = (test)->
 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/VERSION")
 	test.done()
 
-exports['confirm windows clone worked'] = (test)->
+exports['confirm windows 8 clone worked'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.existsSync("./temp/repositories/incubator-cordova-windows/windows8/VERSION")
+	test.done()
+
+exports['confirm windows phone clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-wp7/VERSION")
@@ -115,6 +121,12 @@ exports['confirm bada clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-bada/VERSION")
+	test.done()
+
+exports['confirm bada-wac clone worked'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	test.ok fs.existsSync("./temp/repositories/incubator-cordova-bada-wac/VERSION")
 	test.done()
 
 exports['confirm docs clone worked'] = (test)->
@@ -153,10 +165,20 @@ exports['check blackberry version number'] = (test)->
 		test.ok true, "VERSION file matches release version"
 		test.done()
 
-exports['check windows version number'] = (test)->
+exports['check windows 8 version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-wp7/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/incubator-cordova-windows/windows8/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check windows phone version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-wp7/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -167,6 +189,16 @@ exports['check webos version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
 	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check bada-wac version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-bada-wac/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -193,8 +225,68 @@ exports['check docs version number'] = (test)->
 		test.ok true, "VERSION file matches release version"
 		test.done()
 
+exports['check cordova-js version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-js/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check hello world app version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-app-hello-world/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+		
+exports['check QT version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-qt/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check tizen version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-tizen/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+		
+exports['check mac version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-mac/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
+exports['check mobile spec version number'] = (test)->
+	test.expect 1
+	fs = require('fs')
+	if fs.readFileSync('./temp/repositories/incubator-cordova-mobile-spec/VERSION', 'ascii') != VERSION
+		test.ok false, "VERSION file doesn't match release version"
+		test.done()
+	else
+		test.ok true, "VERSION file matches release version"
+		test.done()
+
 # commented out because coho does not generate binary content
-# exports['docs script successfull'] = (test)->
+# exports['docs script successful'] = (test)->
 # 	test.expect 1
 # 	fs = require('fs')
 # 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-docs/public")
@@ -250,21 +342,21 @@ exports['check docs version number'] = (test)->
 #	test.done()	
 		
 # commented out because coho does not generate binary content
-# exports['ios script successfull'] = (test)->
+# exports['ios script successful'] = (test)->
 # 	test.expect 1
 # 	fs = require('fs')
 # 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-ios/dist/Cordova-"+VERSION+".dmg")
 # 	test.done()
 		
 # commented out because coho does not generate binary content
-# exports['android script successfull'] = (test)->
+# exports['android script successful'] = (test)->
 # 	test.expect 1
 # 	fs = require('fs')
 # 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-android/example/libs/cordova-"+VERSION+".jar")
 # 	test.done()
 
 # commented out because coho does not generate binary content
-# exports['blackberry script successfull'] = (test)->
+# exports['blackberry script successful'] = (test)->
 # 	test.expect 1
 # 	fs = require('fs')
 # 	test.ok fs.existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/dist/www/cordova-"+VERSION+".js")

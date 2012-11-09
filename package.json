@@ -1,20 +1,22 @@
 {
   "name": "coho",
-  "version": "0.0.0",
-  "description": "Apache Cordova Release Tool",
-  "main": "coho",
+  "version": "0.0.1",
+  "description": "apache cordova release tool",
+  "main": "./coho",
   "directories": {
     "test": "test"
   },
   "devDependencies": {
-    "coffee-script": "~1.2.0"
+    "coffee-script": ">=1.2.0",
+    "nodeunit": "0.7.4"
   },
   "scripts": {
-    "test": "coho all 2.1.0 2.0.0"
+    "start": "./coho all 2.2.0 2.1.0",
+    "test": "make"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/stevengill/coho.git"
+    "url": "https://git-wip-us.apache.org/repos/asf/incubator-cordova-coho.git"
   },
   "keywords": [
     "phonegap"

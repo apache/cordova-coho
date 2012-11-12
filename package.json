@@ -8,7 +8,8 @@
   },
   "devDependencies": {
     "coffee-script": ">=1.2.0",
-    "nodeunit": "0.7.4"
+    "nodeunit": "0.7.4",
+    "shelljs": "0.0.8"
   },
   "scripts": {
     "start": "./coho all 2.2.0 2.1.0",

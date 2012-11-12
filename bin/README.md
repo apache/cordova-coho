@@ -7,15 +7,8 @@ Apache Cordova is a web platform that exposes native mobile device apis and
 data to JavaScript. Previously known as PhoneGap, the name changed
 happened when PhoneGap was donated to the Apache foundation.
 
-Currently Apache Cordova is an effort undergoing incubation at The
-Apache Software Foundation (ASF), sponsored by the Apache Incubator
-project. Incubation is required of all newly accepted projects until a
-further review indicates that the infrastructure, communications, and
-decision making process have stabilized in a manner consistent with
-other successful ASF projects. While incubation status is not
-necessarily a reflection of the completeness or stability of the code,
-it does indicate that the project has yet to be fully endorsed by the
-ASF.
+Currently Apache Cordova is a top level project at The
+Apache Software Foundation (ASF).
 
 Why?
 -------------------

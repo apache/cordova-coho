@@ -299,36 +299,36 @@ exports['test if changelog generated'] = (test)->
 exports['confirm src zip file']=(test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip")
+	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-src.zip")
 	test.done()
 
 exports['confirm src asc file']=(test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.asc")
+	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-src.zip.asc")
 	test.done()
 
 exports['confirm src md5 file']=(test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.md5")
+	test.ok fs.existsSync("./temp/release/src/cordova-"+VERSION+"-src.zip.md5")
 	test.done()	
 
 exports['test if src zip is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip").size != 0, 'src zip created too soon'
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-src.zip").size != 0, 'src zip created too soon'
 	test.done()
 
 exports['test if src asc is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.asc").size != 0, 'src asc created too soon'
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-src.zip.asc").size != 0, 'src asc created too soon'
 	test.done()
 
 exports['test if src md5 is empty'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-incubating-src.zip.md5").size != 0, 'src md5 created too soon'
+	test.ok fs.statSync("./temp/release/src/cordova-"+VERSION+"-src.zip.md5").size != 0, 'src md5 created too soon'
 	test.done()	
 		

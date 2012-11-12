@@ -17,11 +17,16 @@
 	specific language governing permissions and limitations
 	under the License.
 */
-PLATFORM = process.argv[2]
-if (!PLATFORM) {
-    PLATFORM = "all";
+COMMAND = process.argv[2]
+if (!COMMAND) {
+    COMMAND = "all";
 }
 VERSION = process.argv[3]
+if (!VERSION){
+    VERSION = '2.2.0';
+}
+OLDVER         = process.argv[4]
+
 var util           = require('util')
 ,   exec           = require('child_process').exec
 ,   fs             = require('fs')
@@ -30,15 +35,12 @@ var util           = require('util')
 ,   releaseSrcDir  = '../../release/src/cordova-'+VERSION
 ,   repoCount      = 15
 ,   tracker        = 0
-,   oldVer         = process.argv[4];
+,   cordovaSrcZip  = "cordova-"+VERSION+"-src.zip"
+,   cordovaSrcAsc  = cordovaSrcZip+".asc"
+,   cordovaSrcMd5  = cordovaSrcZip+".md5"
+,   cordovaSrcSha  = cordovaSrcZip+".sha";
 
-var cordovaSrcZip = "cordova-"+VERSION+"-src.zip";
-var cordovaSrcAsc = cordovaSrcZip+".asc";
-var cordovaSrcMd5 = cordovaSrcZip+".md5";
-var cordovaSrcSha = cordovaSrcZip+".sha";
 
-shjs.rm('-rf', 'temp')
-shjs.mkdir('-p', ['temp/repositories','temp/release/src/cordova-'+VERSION])
 
 var platformDict = {
   "iOS" : ['https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git','incubator-cordova-ios'],
@@ -59,23 +61,30 @@ var platformDict = {
 };
 
 
-shjs.cd(tempRepoDir)
-shjs.echo(shjs.ls('.'))
 
-//keys into top level directory
-shjs.echo('Moving KEYS file to release');
-shjs.cp('../../KEYS', '../release/KEYS');
+//shjs.echo(shjs.ls('.'))
 
-// notice, license, readme, disclaimer file to be put into official release artifact
-shjs.echo('Moving notice, license, readme, and disclaimer files to release artifact');
-shjs.cp('../../bin/*', '../release/src/cordova-'+VERSION);
-
-
-//git clone & checkout version
+//prep function
 function prep(){
+    //remove old folders and create new ons
+    shjs.rm('-rf', 'temp')
+    shjs.mkdir('-p', ['temp/repositories','temp/release/src/cordova-'+VERSION])
+    
+    //set working directory 
+    shjs.cd(tempRepoDir)
+    
+    //copy keys into top level directory
+    console.log('Moving KEYS file to release');
+    shjs.cp('../../KEYS', '../release/KEYS');
+
+    //copy notice, license, readme, disclaimer file to be put into official release artifact
+    console.log('Moving notice, license, readme, and disclaimer files to release artifact');
+    shjs.cp('../../bin/*', '../release/src/cordova-'+VERSION);
+    
+    //git clone & checkout version
     tracker = 0;
     for(key in platformDict){
-        shjs.echo('Cloning ' + key);
+        console.log('Cloning ' + key);
         shjs.exec("git clone "+platformDict[key][0]+" && cd "+platformDict[key][1]+" && git fetch --tags && git checkout "+VERSION, {async:true, silent:true}, function(e, stdout, stderr) {
             tracker +=1;
             if (tracker == repoCount){
@@ -100,20 +109,22 @@ function repoZip(){
 
 //generates the changelog
 function changelog(){
-    //keeps track of directoires of created changelogs
-    var tempArray = []
-    if (oldVer != undefined){
+    if (OLDVER != undefined){
+        //keeps track of directoires of created changelogs
+        var tempArray = []
         exec('cd ../release/src/cordova-'+VERSION+' && echo "CHANGELOG" > changelog');
         tempArray.push('../release/src/cordova-'+VERSION+'/changelog');
         tracker = 0;
         for(key in platformDict){
             tempArray.push(platformDict[key][1]+'/changelog');
-            exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+oldVer+".."+VERSION+" >> changelog", function(){
+            exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+OLDVER+".."+VERSION+" >> changelog", function(){
                 tracker +=1
                 if (tracker == repoCount){
                     //concatenate all changelogs to one changelog 
                     shjs.cat(tempArray).to('../release/src/cordova-'+VERSION+'/changelog');
-                    signZip();
+                    if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'sign' ){
+                        signZip();
+                    }
                 }
             });
         }
@@ -122,10 +133,19 @@ function changelog(){
 
 // zip and sign cordova release folder
 function signZip(){
-    shjs.echo('Zipping and signing src');
+    if (COMMAND.toLowerCase() === 'sign'){
+        //set working directory 
+        shjs.cd(tempRepoDir)
+    }
+    console.log('Zipping and signing src');
     shjs.exec("cd ../release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha, {async:true}, function(){
-        shjs.echo("Created temp/release/src/"+cordovaSrcZip+" with corresponding asc, md5, and sha files.");
+        console.log("Created temp/release/src/"+cordovaSrcZip+" with corresponding asc, md5, and sha files.");
     });   
 }
-
-prep();
+if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
+    prep();
+}else if(COMMAND.toLowerCase() === 'sign'){
+    signZip();
+}else{
+    console.log("Incorrect Arguments, please review the readme!");
+}

@@ -1,5 +1,5 @@
 VERSION = '2.2.0'
-oldVersion = '2.1.0'
+OLDVER = '2.1.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -18,7 +18,7 @@ exports['test cli callable'] = (test)->
 			test.ok true, 'successfully called coho'
 			test.done()
 			
-	child = exec "./coho all #{VERSION} #{oldVersion}", thetest
+	child = exec "./coho all #{VERSION} #{OLDVER}", thetest
 
 exports['creating temp directory'] = (test)->
 	test.expect 1

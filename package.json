@@ -4,11 +4,13 @@
   "description": "apache cordova release tool",
   "main": "./coho",
   "directories": {
-    "test": "test"
+    "test": "make"
   },
   "devDependencies": {
     "coffee-script": ">=1.2.0",
-    "nodeunit": "0.7.4",
+    "nodeunit": "0.7.4"
+  },
+  "dependencies": {
     "shelljs": "0.0.8"
   },
   "scripts": {

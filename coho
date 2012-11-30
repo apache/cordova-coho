@@ -43,21 +43,22 @@ var util           = require('util')
 
 
 var platformDict = {
-  "iOS" : ['https://git-wip-us.apache.org/repos/asf/incubator-cordova-ios.git','incubator-cordova-ios'],
-  "Android":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-android.git', 'incubator-cordova-android'],
-  "BlackBerry":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-blackberry-webworks.git', 'incubator-cordova-blackberry-webworks'],
-  "Windows":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-windows.git', 'incubator-cordova-windows'],
-  "Windows Phone":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-wp7.git', 'incubator-cordova-wp7'],
-  "Bada":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada.git', 'incubator-cordova-bada'],
-  "BadaWac":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-bada-wac.git', 'incubator-cordova-bada-wac'],
-  "WebOS":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-webos.git', 'incubator-cordova-webos'],
-  "Tizen":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-tizen.git', 'incubator-cordova-tizen'],
-  "QT":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-qt.git', 'incubator-cordova-qt'],
-  "OSX":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-mac.git', 'incubator-cordova-mac'],
-  "Docs":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-docs.git', 'incubator-cordova-docs'],
-  "MobileSpec":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-mobile-spec.git', 'incubator-cordova-mobile-spec'],
-  "CordovaJS":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-js.git', 'incubator-cordova-js'],
-  "Hello World App":['https://git-wip-us.apache.org/repos/asf/incubator-cordova-app-hello-world.git', 'incubator-cordova-app-hello-world']
+  "iOS" : ['https://git-wip-us.apache.org/repos/asf/cordova-ios.git','cordova-ios'],
+  "Android":['https://git-wip-us.apache.org/repos/asf/cordova-android.git', 'cordova-android'],
+  "BlackBerry":['https://git-wip-us.apache.org/repos/asf/cordova-blackberry.git', 'cordova-blackberry'],
+  "Windows":['https://git-wip-us.apache.org/repos/asf/cordova-windows.git', 'cordova-windows'],
+  "Windows Phone 7":['https://git-wip-us.apache.org/repos/asf/cordova-wp7.git', 'cordova-wp7'],
+  "Windows Phone 8":['https://git-wip-us.apache.org/repos/asf/cordova-wp8.git', 'cordova-wp8'],
+  "Bada":['https://git-wip-us.apache.org/repos/asf/cordova-bada.git', 'cordova-bada'],
+  "BadaWac":['https://git-wip-us.apache.org/repos/asf/cordova-bada-wac.git', 'cordova-bada-wac'],
+  "WebOS":['https://git-wip-us.apache.org/repos/asf/cordova-webos.git', 'cordova-webos'],
+  "Tizen":['https://git-wip-us.apache.org/repos/asf/cordova-tizen.git', 'cordova-tizen'],
+  "QT":['https://git-wip-us.apache.org/repos/asf/cordova-qt.git', 'cordova-qt'],
+  "OSX":['https://git-wip-us.apache.org/repos/asf/cordova-osx.git', 'cordova-osx'],
+  "Docs":['https://git-wip-us.apache.org/repos/asf/cordova-docs.git', 'cordova-docs'],
+  "MobileSpec":['https://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git', 'cordova-mobile-spec'],
+  "CordovaJS":['https://git-wip-us.apache.org/repos/asf/cordova-js.git', 'cordova-js'],
+  "Hello World App":['https://git-wip-us.apache.org/repos/asf/cordova-app-hello-world.git', 'cordova-app-hello-world']
 };
 
 

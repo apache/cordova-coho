@@ -1,5 +1,5 @@
-VERSION = '2.2.0'
-OLDVER = '2.1.0'
+VERSION = '2.3.0rc1'
+OLDVER = '2.2.0'
 
 exports['sanity test'] = (test)-> 
     test.expect 1
@@ -35,103 +35,103 @@ exports['creating release directory']=(test)->
 exports['confirm ios clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-ios/CordovaLib/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-ios/CordovaLib/VERSION")
 	test.done()
 
 exports['confirm android clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-android/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-android/VERSION")
 	test.done()
 
 exports['confirm blackberry clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-blackberry-webworks/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-blackberry/VERSION")
 	test.done()
 
 exports['confirm windows 8 clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-windows/windows8/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-windows/windows8/VERSION")
 	test.done()
 
 exports['confirm windows phone clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-wp7/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-wp7/VERSION")
 	test.done()
 
 exports['confirm webos clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-webos/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-webos/VERSION")
 	test.done()		
 
 exports['confirm bada clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-bada/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-bada/VERSION")
 	test.done()
 
 exports['confirm bada-wac clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-bada-wac/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-bada-wac/VERSION")
 	test.done()
 
 exports['confirm docs clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-docs/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-docs/VERSION")
 	test.done()
 
 exports['confirm docs clone worked'] = (test)->
     test.expect 1
     fs = require('fs')
-    test.ok fs.existsSync("./temp/repositories/incubator-cordova-docs/VERSION")
+    test.ok fs.existsSync("./temp/repositories/cordova-docs/VERSION")
     test.done()
 
 exports['confirm cordova-js clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-js/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-js/VERSION")
 	test.done()
   	
 exports['confirm hello world app clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-app-hello-world/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-app-hello-world/VERSION")
 	test.done()
         	
 exports['confirm qt clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-qt/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-qt/VERSION")
 	test.done()
             	
 exports['confirm tizen clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-tizen/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-tizen/VERSION")
 	test.done()
                 	
-exports['confirm mac clone worked'] = (test)->
+exports['confirm osx clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-mac/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-osx/VERSION")
 	test.done()
                     	
 exports['confirm mobile-spec clone worked'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	test.ok fs.existsSync("./temp/repositories/incubator-cordova-mobile-spec/VERSION")
+	test.ok fs.existsSync("./temp/repositories/cordova-mobile-spec/VERSION")
 	test.done()
 
 exports['check ios version number'] = (test)->
 	test.expect 1
 	fs = require('fs')	
-	if fs.readFileSync('./temp/repositories/incubator-cordova-ios/CordovaLib/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-ios/CordovaLib/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -141,7 +141,7 @@ exports['check ios version number'] = (test)->
 exports['check android version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-android/VERSION', 'utf8') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-android/VERSION', 'utf8') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -151,7 +151,7 @@ exports['check android version number'] = (test)->
 exports['check blackberry version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-blackberry-webworks/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-blackberry/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -161,7 +161,7 @@ exports['check blackberry version number'] = (test)->
 exports['check windows 8 version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-windows/windows8/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-windows/windows8/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -171,7 +171,7 @@ exports['check windows 8 version number'] = (test)->
 exports['check windows phone version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-wp7/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-wp7/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -181,7 +181,7 @@ exports['check windows phone version number'] = (test)->
 exports['check webos version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-webos/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-webos/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -191,7 +191,7 @@ exports['check webos version number'] = (test)->
 exports['check bada-wac version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-bada-wac/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-bada-wac/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -201,7 +201,7 @@ exports['check bada-wac version number'] = (test)->
 exports['check bada version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-bada/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-bada/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -211,7 +211,7 @@ exports['check bada version number'] = (test)->
 exports['check docs version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-docs/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-docs/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -221,7 +221,7 @@ exports['check docs version number'] = (test)->
 exports['check cordova-js version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-js/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-js/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -231,7 +231,7 @@ exports['check cordova-js version number'] = (test)->
 exports['check hello world app version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-app-hello-world/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-app-hello-world/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -241,7 +241,7 @@ exports['check hello world app version number'] = (test)->
 exports['check QT version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-qt/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-qt/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -251,17 +251,17 @@ exports['check QT version number'] = (test)->
 exports['check tizen version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-tizen/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-tizen/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
 		test.ok true, "VERSION file matches release version"
 		test.done()
 		
-exports['check mac version number'] = (test)->
+exports['check osx version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-mac/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-osx/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else
@@ -271,7 +271,7 @@ exports['check mac version number'] = (test)->
 exports['check mobile spec version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/incubator-cordova-mobile-spec/VERSION', 'ascii') != VERSION+"\n"
+	if fs.readFileSync('./temp/repositories/cordova-mobile-spec/VERSION', 'ascii') != VERSION+"\n"
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else

@@ -58,7 +58,8 @@ Usage
 	runs `coho all 1.8.0 1.7.0` and the unit tests to verify the
 	packaging of the artifact. You may need to
 	npm install coffee-script and nodeunit if you wish to run this. You 
-	will probably want to change the release version 'VERSION' and the 		previous version 'oldVersion' variables at the top of the 
+	will probably want to change the release version 'VERSION' and the
+ 	previous version 'oldVersion' variables at the top of the 
 	`test/tests.coffee` script from the default values of '1.8.0' and
 	'1.7.0' respectively.
 

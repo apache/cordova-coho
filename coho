@@ -120,7 +120,7 @@ function changelog(){
             tempArray.push(platformDict[key][1]+'/changelog');
             exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+OLDVER+".."+VERSION+" >> changelog", function(){
                 tracker +=1
-                if (tracker == repoCount){
+                if (tracker === repoCount){
                     //concatenate all changelogs to one changelog 
                     shjs.cat(tempArray).to('../release/src/cordova-'+VERSION+'/changelog');
                     if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'sign' ){

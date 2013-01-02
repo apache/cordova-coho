@@ -161,7 +161,7 @@ exports['check blackberry version number'] = (test)->
 exports['check windows 8 version number'] = (test)->
 	test.expect 1
 	fs = require('fs')
-	if fs.readFileSync('./temp/repositories/cordova-windows/windows8/VERSION', 'ascii') != VERSION
+	if fs.readFileSync('./temp/repositories/cordova-wp8/VERSION', 'ascii') != VERSION
 		test.ok false, "VERSION file doesn't match release version"
 		test.done()
 	else

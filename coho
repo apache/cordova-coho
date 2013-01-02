@@ -23,7 +23,7 @@ if (!COMMAND) {
 }
 VERSION = process.argv[3]
 if (!VERSION){
-    VERSION = '2.2.0';
+    VERSION = '2.3.0';
 }
 OLDVER         = process.argv[4]
 
@@ -33,7 +33,7 @@ var util           = require('util')
 ,   shjs           = require('shelljs')
 ,   tempRepoDir    = 'temp/repositories'
 ,   releaseSrcDir  = '../../release/src/cordova-'+VERSION
-,   repoCount      = 15
+,   repoCount      = 0
 ,   tracker        = 0
 ,   cordovaSrcZip  = "cordova-"+VERSION+"-src.zip"
 ,   cordovaSrcAsc  = cordovaSrcZip+".asc"
@@ -81,13 +81,23 @@ function prep(){
     //copy notice, license, readme, disclaimer file to be put into official release artifact
     console.log('Moving notice, license, readme, and disclaimer files to release artifact');
     shjs.cp('../../bin/*', '../release/src/cordova-'+VERSION);
+
+    // count the number of repo's dynamically instead of hardcoding
+    for(key in platformDict) {
+      repoCount++;
+    }
     
     //git clone & checkout version
     tracker = 0;
     for(key in platformDict){
-        console.log('Cloning ' + key);
-        shjs.exec("git clone "+platformDict[key][0]+" && cd "+platformDict[key][1]+" && git fetch --tags && git checkout "+VERSION, {async:true, silent:true}, function(e, stdout, stderr) {
+        console.log('Cloning ' + key + ' (in parallel)...');
+        shjs.exec("git clone "+platformDict[key][0]+" && cd "+platformDict[key][1]+" && git fetch --tags && git checkout "+VERSION, {async:true, silent:true}, function(code, output) {
+            if (code != 0) {
+              console.log("Error cloning: " + output);
+              shjs.exit(1);
+            }
             tracker +=1;
+            console.log("Cloned " + tracker + " of " + repoCount);
             if (tracker == repoCount){
                 repoZip();
             }
@@ -97,9 +107,14 @@ function prep(){
 
 //zip repos into release directory
 function repoZip(){
+    console.log("Zipping content...");
     tracker = 0;
     for(key in platformDict){
-        shjs.exec("cd " + platformDict[key][1] + " && git archive --format zip -o " + releaseSrcDir+"/"+platformDict[key][1]+".zip "+VERSION, {async:true}, function(){
+        shjs.exec("cd " + platformDict[key][1] + " && git archive --format zip -o " + releaseSrcDir+"/"+platformDict[key][1]+".zip "+VERSION, {async:true}, function(code, output){
+            if (code != 0) {
+                console.log("Error zipping: " + output);
+                shjs.exit(2);
+            }
             tracker += 1;
             if (tracker == repoCount){
                 changelog();
@@ -111,15 +126,20 @@ function repoZip(){
 //generates the changelog
 function changelog(){
     if (OLDVER != undefined){
+        console.log("Generating change logs...");
         //keeps track of directoires of created changelogs
         var tempArray = []
-        exec('cd ../release/src/cordova-'+VERSION+' && echo "CHANGELOG" > changelog');
+        shjs.exec('cd ../release/src/cordova-'+VERSION+' && echo "CHANGELOG" > changelog', {silent:true});
         tempArray.push('../release/src/cordova-'+VERSION+'/changelog');
         tracker = 0;
         for(key in platformDict){
             tempArray.push(platformDict[key][1]+'/changelog');
-            exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+OLDVER+".."+VERSION+" >> changelog", function(){
-                tracker +=1
+            shjs.exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+OLDVER+".."+VERSION+" >> changelog", {async:true, silent:false}, function(code, output){
+                if (code != 0) {
+                    console.log("Error generating changelog: " + output);
+                    // keep on going even is there is an error
+                }
+                tracker +=1;
                 if (tracker === repoCount){
                     //concatenate all changelogs to one changelog 
                     shjs.cat(tempArray).to('../release/src/cordova-'+VERSION+'/changelog');
@@ -141,8 +161,9 @@ function signZip(){
     console.log('Zipping and signing src');
     shjs.exec("cd ../release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha, {async:true}, function(){
         console.log("Created temp/release/src/"+cordovaSrcZip+" with corresponding asc, md5, and sha files.");
-    });   
+    });
 }
+
 if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
     prep();
 }else if(COMMAND.toLowerCase() === 'sign'){

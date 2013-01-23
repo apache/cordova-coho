@@ -23,7 +23,7 @@ if (!COMMAND) {
 }
 VERSION = process.argv[3]
 if (!VERSION){
-    VERSION = '2.3.0';
+    VERSION = '2.4.0';
 }
 OLDVER         = process.argv[4]
 
@@ -58,7 +58,8 @@ var platformDict = {
   "Docs":['https://git-wip-us.apache.org/repos/asf/cordova-docs.git', 'cordova-docs'],
   "MobileSpec":['https://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git', 'cordova-mobile-spec'],
   "CordovaJS":['https://git-wip-us.apache.org/repos/asf/cordova-js.git', 'cordova-js'],
-  "Hello World App":['https://git-wip-us.apache.org/repos/asf/cordova-app-hello-world.git', 'cordova-app-hello-world']
+  "Hello World App":['https://git-wip-us.apache.org/repos/asf/cordova-app-hello-world.git', 'cordova-app-hello-world'],
+  "Cordova CLI":['https://git-wip-us.apache.org/repos/asf/cordova-cli.git', 'cordova-cli']
 };
 
 

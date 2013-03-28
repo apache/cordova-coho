@@ -23,7 +23,7 @@ if (!COMMAND) {
 }
 VERSION = process.argv[3]
 if (!VERSION){
-    VERSION = '2.4.0';
+    VERSION = '2.5.0';
 }
 OLDVER         = process.argv[4]
 
@@ -49,11 +49,6 @@ var platformDict = {
   "Windows":['https://git-wip-us.apache.org/repos/asf/cordova-windows.git', 'cordova-windows'],
   "Windows Phone 7":['https://git-wip-us.apache.org/repos/asf/cordova-wp7.git', 'cordova-wp7'],
   "Windows Phone 8":['https://git-wip-us.apache.org/repos/asf/cordova-wp8.git', 'cordova-wp8'],
-  "Bada":['https://git-wip-us.apache.org/repos/asf/cordova-bada.git', 'cordova-bada'],
-  "BadaWac":['https://git-wip-us.apache.org/repos/asf/cordova-bada-wac.git', 'cordova-bada-wac'],
-  "WebOS":['https://git-wip-us.apache.org/repos/asf/cordova-webos.git', 'cordova-webos'],
-  "Tizen":['https://git-wip-us.apache.org/repos/asf/cordova-tizen.git', 'cordova-tizen'],
-  "QT":['https://git-wip-us.apache.org/repos/asf/cordova-qt.git', 'cordova-qt'],
   "OSX":['https://git-wip-us.apache.org/repos/asf/cordova-osx.git', 'cordova-osx'],
   "Docs":['https://git-wip-us.apache.org/repos/asf/cordova-docs.git', 'cordova-docs'],
   "MobileSpec":['https://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git', 'cordova-mobile-spec'],
@@ -62,7 +57,13 @@ var platformDict = {
   "Cordova CLI":['https://git-wip-us.apache.org/repos/asf/cordova-cli.git', 'cordova-cli']
 };
 
+/* "Bada":['https://git-wip-us.apache.org/repos/asf/cordova-bada.git', 'cordova-bada'],
+  "BadaWac":['https://git-wip-us.apache.org/repos/asf/cordova-bada-wac.git', 'cordova-bada-wac'],
+  "WebOS":['https://git-wip-us.apache.org/repos/asf/cordova-webos.git', 'cordova-webos'],
+  "QT":['https://git-wip-us.apache.org/repos/asf/cordova-qt.git', 'cordova-qt'],
+  "Tizen":['https://git-wip-us.apache.org/repos/asf/cordova-tizen.git', 'cordova-tizen'],
 
+*/ 
 
 //shjs.echo(shjs.ls('.'))
 
@@ -165,10 +166,31 @@ function signZip(){
     });
 }
 
+function apacheUpload(){
+    if (shjs.test('-d','./apachecordova')){
+        console.log('apachecordova directory exists');
+        shjs.exec("cd apachecordova && svn update");
+
+    }else{
+        //grab apachecordova repo off apache svn servers
+        shjs.exec("svn checkout https://dist.apache.org/repos/dist/release/cordova apachecordova")
+    }
+    
+
+    /*svn checkout https://dist.apache.org/repos/dist/release/cordova apachecordova
+    add function to do rest of 
+    delete all files 
+    copy over release files
+    svn add *
+    svn commit -m*/
+}
+
 if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
     prep();
 }else if(COMMAND.toLowerCase() === 'sign'){
     signZip();
+}else if(COMMAND.toLowerCase() === 'upload'){
+        apacheUpload();
 }else{
     console.log("Incorrect Arguments, please review the readme!");
 }

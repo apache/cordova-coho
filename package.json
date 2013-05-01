@@ -11,7 +11,8 @@
     "nodeunit": "0.7.4"
   },
   "dependencies": {
-    "shelljs": "0.0.8"
+    "shelljs": "0.0.8",
+    "optimist": "0.4"
   },
   "scripts": {
     "start": "./coho all 2.2.0 2.1.0",

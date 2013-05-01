@@ -1,169 +1,297 @@
 #!/usr/bin/env node
 /*
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-	distributed with this work for additional information
-   	regarding copyright ownership.  The ASF licenses this file
-	to you under the Apache License, Version 2.0 (the
-	"License"); you may not use this file except in compliance
-	with the License.  You may obtain a copy of the License at
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-	http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing,
-	software distributed under the License is distributed on an
-	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-	KIND, either express or implied.  See the License for the
-	specific language governing permissions and limitations
-	under the License.
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
 */
-COMMAND = process.argv[2]
-if (!COMMAND) {
-    COMMAND = "all";
-}
-VERSION = process.argv[3]
-if (!VERSION){
-    VERSION = '2.5.0';
-}
-OLDVER         = process.argv[4]
 
-var util           = require('util')
-,   exec           = require('child_process').exec
-,   fs             = require('fs')
-,   shjs           = require('shelljs')
-,   tempRepoDir    = 'temp/repositories'
-,   releaseSrcDir  = '../../release/src/cordova-'+VERSION
-,   repoCount      = 0
-,   tracker        = 0
-,   cordovaSrcZip  = "cordova-"+VERSION+"-src.zip"
-,   cordovaSrcAsc  = cordovaSrcZip+".asc"
-,   cordovaSrcMd5  = cordovaSrcZip+".md5"
-,   cordovaSrcSha  = cordovaSrcZip+".sha";
+var fs             = require('fs')
+,   optimist       = require('optimist')
+,   path           = require('path')
+,   shjs           = require('shelljs');
 
 
+var platformRepos = [
+    {
+        title: 'Android',
+        id: 'android',
+        repoName: 'cordova-android'
+    }, {
+        title: 'iOS',
+        id: 'ios',
+        repoName: 'cordova-ios'
+    }, {
+        title: 'BlackBerry',
+        id: 'blackberry',
+        repoName: 'cordova-blackberry'
+    }, {
+        title: 'Windows',
+        id: 'windows',
+        repoName: 'cordova-windows'
+    }, {
+        title: 'Windows Phone 7',
+        id: 'wp7',
+        repoName: 'cordova-wp7'
+    }, {
+        title: 'Windows Phone 8',
+        id: 'wp8',
+        repoName: 'cordova-wp8'
+    }, {
+        title: 'Mac OSX',
+        id: 'osx',
+        repoName: 'cordova-osx'
+    }, {
+        title: 'Bada',
+        id: 'bada',
+        repoName: 'cordova-bada',
+        inactive: true
+    }, {
+        title: 'Bada WAC',
+        id: 'bada-wac',
+        repoName: 'cordova-bada-wac',
+        inactive: true
+    }, {
+        title: 'WebOS',
+        id: 'webos',
+        repoName: 'cordova-webos',
+        inactive: true
+    }, {
+        title: 'QT',
+        id: 'qt',
+        repoName: 'cordova-qt',
+        inactive: true
+    }, {
+        title: 'Tizen',
+        id: 'tizen',
+        repoName: 'cordova-tizen',
+        inactive: true
+    }
+];
 
-var platformDict = {
-  "iOS" : ['https://git-wip-us.apache.org/repos/asf/cordova-ios.git','cordova-ios'],
-  "Android":['https://git-wip-us.apache.org/repos/asf/cordova-android.git', 'cordova-android'],
-  "BlackBerry":['https://git-wip-us.apache.org/repos/asf/cordova-blackberry.git', 'cordova-blackberry'],
-  "Windows":['https://git-wip-us.apache.org/repos/asf/cordova-windows.git', 'cordova-windows'],
-  "Windows Phone 7":['https://git-wip-us.apache.org/repos/asf/cordova-wp7.git', 'cordova-wp7'],
-  "Windows Phone 8":['https://git-wip-us.apache.org/repos/asf/cordova-wp8.git', 'cordova-wp8'],
-  "OSX":['https://git-wip-us.apache.org/repos/asf/cordova-osx.git', 'cordova-osx'],
-  "Docs":['https://git-wip-us.apache.org/repos/asf/cordova-docs.git', 'cordova-docs'],
-  "MobileSpec":['https://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git', 'cordova-mobile-spec'],
-  "CordovaJS":['https://git-wip-us.apache.org/repos/asf/cordova-js.git', 'cordova-js'],
-  "Hello World App":['https://git-wip-us.apache.org/repos/asf/cordova-app-hello-world.git', 'cordova-app-hello-world'],
-  "Cordova CLI":['https://git-wip-us.apache.org/repos/asf/cordova-cli.git', 'cordova-cli']
+var nonPlatformRepos = [
+    {
+        title: 'Docs',
+        id: 'docs',
+        repoName: 'cordova-docs'
+    }, {
+        title: 'MobileSpec',
+        id: 'mobile-spec',
+        repoName: 'cordova-mobile-spec'
+    }, {
+        title: 'Cordova JS',
+        id: 'js',
+        repoName: 'cordova-js'
+    }, {
+        title: 'Hello World App',
+        id: 'app-hello-world',
+        repoName: 'cordova-app-hello-world'
+    }
+];
+
+
+var otherRepos = [
+    {
+        title: 'Cordova CLI',
+        id: 'cli',
+        repoName: 'cordova-cli'
+    }, {
+        title: 'Cordova Plugman',
+        id: 'plugman',
+        repoName: 'cordova-plugman'
+    }
+];
+
+var allRepos = platformRepos.concat(nonPlatformRepos).concat(otherRepos);
+
+var repoGroups = {
+    'all': allRepos,
+    'active': allRepos.filter(function(r) { return !r.inactive }),
+    'inactive': allRepos.filter(function(r) { return r.inactive }),
+    'platform': platformRepos,
+    'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
 };
 
-/* "Bada":['https://git-wip-us.apache.org/repos/asf/cordova-bada.git', 'cordova-bada'],
-  "BadaWac":['https://git-wip-us.apache.org/repos/asf/cordova-bada-wac.git', 'cordova-bada-wac'],
-  "WebOS":['https://git-wip-us.apache.org/repos/asf/cordova-webos.git', 'cordova-webos'],
-  "QT":['https://git-wip-us.apache.org/repos/asf/cordova-qt.git', 'cordova-qt'],
-  "Tizen":['https://git-wip-us.apache.org/repos/asf/cordova-tizen.git', 'cordova-tizen'],
-
-*/ 
-
-//shjs.echo(shjs.ls('.'))
-
-//prep function
-function prep(){
-    //remove old folders and create new ons
-    shjs.rm('-rf', 'temp')
-    shjs.mkdir('-p', ['temp/repositories','temp/release/src/cordova-'+VERSION])
-    
-    //set working directory 
-    shjs.cd(tempRepoDir)
-    
-    //copy keys into top level directory
-    console.log('Moving KEYS file to release');
-    shjs.cp('../../KEYS', '../release/KEYS');
-
-    //copy notice, license, readme, disclaimer file to be put into official release artifact
-    console.log('Moving notice, license, readme, and disclaimer files to release artifact');
-    shjs.cp('../../bin/*', '../release/src/cordova-'+VERSION);
-
-    // count the number of repo's dynamically instead of hardcoding
-    for(key in platformDict) {
-      repoCount++;
-    }
-    
-    //git clone & checkout version
-    tracker = 0;
-    for(key in platformDict){
-        console.log('Cloning ' + key + ' (in parallel)...');
-        shjs.exec("git clone "+platformDict[key][0]+" && cd "+platformDict[key][1]+" && git fetch --tags && git checkout "+VERSION, {async:true, silent:true}, function(code, output) {
-            if (code != 0) {
-              console.log("Error cloning: " + output);
-              shjs.exit(1);
-            }
-            tracker +=1;
-            console.log("Cloned " + tracker + " of " + repoCount);
-            if (tracker == repoCount){
-                repoZip();
-            }
-    	});   
-    }
+function fatal() {
+    console.error.apply(console, arguments);
+    process.exit(1);
 }
 
-//zip repos into release directory
-function repoZip(){
-    console.log("Zipping content...");
-    tracker = 0;
-    for(key in platformDict){
-        shjs.exec("cd " + platformDict[key][1] + " && git archive --format zip -o " + releaseSrcDir+"/"+platformDict[key][1]+".zip "+VERSION, {async:true}, function(code, output){
-            if (code != 0) {
-                console.log("Error zipping: " + output);
-                shjs.exit(2);
-            }
-            tracker += 1;
-            if (tracker == repoCount){
-                changelog();
-            }
-        });
-    }
+function registerRepoFlag(opt) {
+    return opt.options('r', {
+        alias: 'repo',
+        desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
+        default: 'active'
+    });
 }
 
-//generates the changelog
-function changelog(){
-    if (OLDVER != undefined){
-        console.log("Generating change logs...");
-        //keeps track of directoires of created changelogs
-        var tempArray = []
-        shjs.exec('cd ../release/src/cordova-'+VERSION+' && echo "CHANGELOG" > changelog', {silent:true});
-        tempArray.push('../release/src/cordova-'+VERSION+'/changelog');
-        tracker = 0;
-        for(key in platformDict){
-            tempArray.push(platformDict[key][1]+'/changelog');
-            shjs.exec("cd "+platformDict[key][1]+" && echo '\n"+key+" \n---\n' > changelog && git log --format='%h %s' "+OLDVER+".."+VERSION+" >> changelog", {async:true, silent:false}, function(code, output){
-                if (code != 0) {
-                    console.log("Error generating changelog: " + output);
-                    // keep on going even is there is an error
-                }
-                tracker +=1;
-                if (tracker === repoCount){
-                    //concatenate all changelogs to one changelog 
-                    shjs.cat(tempArray).to('../release/src/cordova-'+VERSION+'/changelog');
-                    if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'sign' ){
-                        signZip();
-                    }
-                }
-            });
+function registerHelpFlag(opt) {
+    return opt.options('h', {
+        alias: 'help',
+        desc: 'Shows help information.'
+    });
+}
+
+function execHelper(cmd, silent) {
+    if (!silent) {
+        console.log('Executing command:', cmd);
+    }
+    var result = shjs.exec(cmd, {silent: silent});
+    if (result.code) {
+        process.exit(2);
+    }
+    return result.output.trim();
+}
+
+function cpAndLog(src, dest) {
+    console.log('Coping File:', src, '->', dest);
+    // Throws upon failure.
+    shjs.cp('-f', src, dest);
+}
+
+function forEachRepo(repos, func) {
+    repos.forEach(function(repo) {
+        shjs.cd(repo.repoName);
+        func(repo);
+        shjs.cd('..');
+    });
+}
+
+function getRepoById(id, opt_repos) {
+    var repos = opt_repos || allRepos;
+    for (var i = 0; i < repos.length; ++i) {
+        if (repos[i].id == id) {
+            return repos[i];
         }
     }
-}   
+    return null;
+}
 
-// zip and sign cordova release folder
-function signZip(){
-    if (COMMAND.toLowerCase() === 'sign'){
-        //set working directory 
-        shjs.cd(tempRepoDir)
+function createRepoUrl(repo) {
+    return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
+}
+
+function createReleaseCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = opt
+        .options('new-version', {
+            desc: 'The version to release. E.g. 2.7.1rc2',
+            demand: true
+         })
+        .options('prev-version', {
+            desc: 'The previous release version (used to create changelog)',
+            demand: true
+         })
+        .options('update', {
+            type: 'boolean',
+            desc: 'Use --no-update to skip the "git fetch" step.',
+            default: true
+         })
+        .options('sign', {
+            type: 'boolean',
+            desc: 'Use --no-sign to skip the final zip+pgp signing step.',
+            default: true
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Clones all necessary repositories, and then stages the release.\n' +
+               'This involves:\n' +
+               '    Cloning all repositories that are not already cloned.\n' +
+               '    Updating all of them via git fetch\n' +
+               '    Zipping them up\n' +
+               '    Adding in extra release files\n' +
+               '    Zipping up all files + zips into a master zip\n' +
+               '    Signing the master zip via pgp\n' +
+               '\n' +
+               'Usage: $0 create-release')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
     }
-    console.log('Zipping and signing src');
-    shjs.exec("cd ../release/src && zip -rq "+ cordovaSrcZip +" * && gpg --armor --output "+cordovaSrcAsc+" --detach-sig "+cordovaSrcZip+" && gpg --print-md MD5 "+cordovaSrcZip+" > " + cordovaSrcMd5 +" && gpg --print-md SHA512 " + cordovaSrcZip + " > " + cordovaSrcSha, {async:true}, function(){
-        console.log("Created temp/release/src/"+cordovaSrcZip+" with corresponding asc, md5, and sha files.");
+    var repos = computeReposFromFlag(argv);
+    var prevVersion = argv['prev-version'];
+    var newVersion = argv['new-version'];
+
+    // Ensure we can find the path to the coho repo.
+    var scriptPath = path.dirname(process.argv[1]);
+    var keysPath = path.join(scriptPath, 'KEYS');
+    var binPath = path.join(scriptPath, 'bin');
+    if (!shjs.test('-f', keysPath)) {
+        fatal('Expected path to exist: ' + keysPath);
+    }
+    if (!shjs.test('-d', binPath)) {
+        fatal('Expected path to exist: ' + binPath);
+    }
+
+    cloneRepos(repos);
+    if (argv.update) {
+        // No need to update branches, just do a git fetch --tags.
+        updateRepos(repos, null, [], false);
+    }
+
+    // Check that the version tags exist.
+    forEachRepo(repos, function(repo) {
+        if (!execHelper('git tag --list ' + prevVersion, true)) {
+            fatal('Tag "' + prevVersion + '" does not exist in repo ' + repo.repoName);
+        }
+        if (!execHelper('git tag --list ' + newVersion, true)) {
+            fatal('Tag "' + newVersion + '" does not exist in repo ' + repo.repoName);
+        }
     });
+
+    var releaseDir = path.join('staging', 'release');
+    var destDir = path.join(releaseDir, 'src', 'cordova-' + newVersion);
+    shjs.mkdir('-p', destDir);
+
+    // Create zips.
+    forEachRepo(repos, function(repo) {
+        var zipPath = path.join('..', destDir, repo.repoName + '.zip');
+        if (shjs.test('-f', zipPath)) {
+            console.log('Skipping zip (already exists):', zipPath);
+        } else {
+            execHelper('git archive --format zip -o "' + zipPath + '" ' + newVersion);
+        }
+    });
+
+    cpAndLog(keysPath, path.join(releaseDir, 'KEYS'));
+    cpAndLog(path.join(binPath, '*'), destDir);
+
+    console.log('Generating change logs...');
+    var changeLogData = 'Cordova Commits from ' + prevVersion + ' -> ' + newVersion + '\n';
+    forEachRepo(repos, function(repo) {
+        changeLogData += '\n' + repo.repoName + '\n---\n';
+        changeLogData += execHelper('git log --format="%h %s" ' + prevVersion + '..' + newVersion, true);
+    });
+    fs.writeFileSync(path.join(destDir, 'changelog'), changeLogData);
+    console.log('Generating final zip...');
+
+    var cordovaSrcZip  = 'cordova-' + newVersion + '-src.zip';
+    var cordovaSrcSha  = cordovaSrcZip + '.sha';
+
+    shjs.rm('-f', path.join(releaseDir, 'src', cordovaSrcZip + '*'));
+    var oldDir = shjs.pwd();
+    shjs.cd(path.join(releaseDir, 'src'));
+    execHelper('zip -rq ' + cordovaSrcZip + ' cordova-' + newVersion);
+    execHelper('gpg --armor --detach-sig --output ' + cordovaSrcZip + '.asc ' + cordovaSrcZip);
+    fs.writeFileSync(cordovaSrcZip + '.md5', execHelper('gpg --print-md MD5 ' + cordovaSrcZip));
+    fs.writeFileSync(cordovaSrcZip + '.sha', execHelper('gpg --print-md SHA512 ' + cordovaSrcZip));
+    console.log('Final product is ready at:', path.join(releaseDir, 'src ', cordovaSrcZip));
+    shjs.cd(oldDir);
+    process.exit(0);
 }
 
 function apacheUpload(){
@@ -185,12 +313,295 @@ function apacheUpload(){
     svn commit -m*/
 }
 
-if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
-    prep();
-}else if(COMMAND.toLowerCase() === 'sign'){
-    signZip();
-}else if(COMMAND.toLowerCase() === 'upload'){
-        apacheUpload();
-}else{
-    console.log("Incorrect Arguments, please review the readme!");
+function computeReposFromFlag(argv) {
+    var flagValue = argv.r;
+    var values = Array.isArray(flagValue) ? flagValue : [flagValue];
+    var ret = [];
+    var addedIds = {};
+    function addRepo(repo) {
+        if (!addedIds[repo.id]) {
+            addedIds[repo.id] = true;
+            ret.push(repo);
+        }
+    }
+    values.forEach(function(value) {
+        var repo = getRepoById(value);
+        var group = repoGroups[value];
+        if (repo) {
+            addRepo(repo);
+        } else if (group) {
+            group.forEach(addRepo);
+        } else {
+            fatal('Invalid repo value: ' + value + '\nUse the list-repos command to see value values.');
+        }
+    });
+    return ret;
+}
+
+function computeExistingRepos() {
+    return allRepos.filter(function(repo) {
+        return shjs.test('-d', repo.repoName);
+    });
+}
+
+function listReposCommand(argv) {
+    console.log('Valid values for the --repo flag:');
+    console.log('');
+    console.log('Repositories:');
+    allRepos.forEach(function(repo) {
+        console.log('    ' + repo.id);
+    });
+    console.log('');
+    console.log('Repository Groups:');
+    var groupNames = Object.keys(repoGroups);
+    groupNames.sort();
+    groupNames.forEach(function(groupName) {
+        console.log('    ' + groupName + ' (' + repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
+    });
+    process.exit(0);
+}
+
+function repoCloneCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Clones git repositories into the current working directory. If the repositories are already cloned, then this is a no-op.\n\n' +
+               'Usage: $0 clone --repo=name [--repo=othername]')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv);
+    cloneRepos(repos);
+    process.exit(0);
+}
+
+function cloneRepos(repos) {
+    var failures = [];
+    var numSkipped = 0;
+
+    repos.forEach(function(repo) {
+        if (shjs.test('-d', repo.repoName)) {
+            console.log('Repo already cloned: ' + repo.repoName);
+            numSkipped +=1 ;
+        } else {
+            var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
+            if (code) {
+                failures.push(repo.repoName);
+            }
+        }
+    });
+
+    var numCloned = repos.length - failures.length - numSkipped;
+    if (numCloned) {
+        console.log('Successfully cloned ' + numCloned + ' repositories.');
+    }
+    if (failures.length) {
+        fatal('The following repositories failed to clone: ' + failures.join(', '));
+    }
+}
+
+function repoUpdateCommand(argv) {
+    var opt = optimist
+        .options('r', {
+            alias: 'remote',
+            desc: 'The name of the remote to fetch from. By default, it uses the remote that points to the apache git repo.',
+         })
+        .options('b', {
+            alias: 'branch',
+            desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
+            default: 'master'
+         })
+        .options('fetch', {
+            type: 'boolean',
+            desc: 'Use --no-fetch to skip the "git fetch" step.',
+            default: true
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Updates all existing git repositories within the current working directory.\n' +
+               'Performs the following commands on each:\n' +
+               '    save active branch\n' +
+               '    git fetch $REMOTE \n' +
+               '    git stash\n' +
+               '    for each specified branch:\n' +
+               '        git checkout $BRANCH\n' +
+               '        git rebase $REMOTE/$BRANCH\n' +
+               '        git checkout -\n' +
+               '    git checkout $SAVED_ACTIVE_BRANCH\n' +
+               '    git stash pop\n' +
+               '\n' +
+               'Usage: $0 repo-update')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var remoteName = argv.r;
+    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var repos = computeExistingRepos();
+    if (repos.length === 0) {
+        fatal('No repos found. Clone some using the repo-clone command.');
+    }
+    updateRepos(repos, remoteName, branches, !argv.f);
+    process.exit(0);
+}
+
+function determineApacheRemote(repo) {
+    var fields = execHelper('git remote -v', true).split(/\s+/);
+    for (var i = 1; i < fields.length; i += 3) {
+        if (fields[i].indexOf('git-wip-us.apache.org/repos/asf/' + repo.repoName) != -1) {
+            return fields[i - 1];
+        }
+    }
+    fatal('Could not find an apache remote for repo ' + repo.repoName);
+}
+
+function updateRepos(repos, remoteName, branches, noFetch) {
+    function remoteBranchExists(name) {
+        return !!execHelper('git branch -r --list ' + remoteName + '/' + name, true);
+    }
+
+    var remotesMap = {};
+
+    // Pre-fetch checks.
+    forEachRepo(repos, function(repo) {
+        // Ensure it's on a named branch.
+        execHelper('git symbolic-ref --short HEAD', true);
+        // Ensure the remote exists.
+        if (remoteName) {
+            var remotes = execHelper('git remote', true).split(/\s+/);
+            if (remotes.indexOf(remoteName) == -1) {
+                fatal('No remote named "' + remoteName + '" found in repo ' + repo.repoName);
+            }
+            remotesMap[repo.id] = remoteName;
+        } else {
+            remotesMap[repo.id] = determineApacheRemote(repo);
+        }
+    });
+
+    if (noFetch) {
+        forEachRepo(repos, function(repo) {
+            execHelper('git fetch --progress --tags ' + remotesMap[repo.id]);
+        });
+    }
+
+    if (branches && branches.length) {
+        forEachRepo(repos, function(repo) {
+            console.log('Updating ' + repo.repoName);
+            var curBranch = execHelper('git symbolic-ref --short HEAD', true);
+            var requiresStash = !!execHelper('git status --porcelain', true);
+
+            if (requiresStash) {
+                execHelper('git stash save --all --quiet "coho stash"');
+            }
+
+            branches.forEach(function(branchName) {
+                if (!remoteBranchExists(branchName)) {
+                    console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
+                } else {
+                    if (curBranch != branchName) {
+                        execHelper('git checkout ' + branchName);
+                        curBranch = branchName;
+                    }
+                    execHelper('git rebase ' + remotesMap[repo.id] + '/' + branchName);
+                }
+            });
+
+            if (requiresStash) {
+                execHelper('git stash pop');
+            }
+        });
+    }
+
+    console.log('Successfully updated ' + repos.length + ' repositories.');
+}
+
+function buildCommand(argv) {
+    var argv = optimist
+        .options('h', {
+            alias: 'help',
+            desc: 'Shows help information.'
+         })
+        .options('p', {
+            alias: 'platform',
+            demand: true,
+            desc: 'List of platforms to operate on. Use multiple flags for multiple platforms. Use "all" for all platforms.'
+         })
+        .options('v', {
+            alias: 'version',
+            desc: 'The version of the release. E.g.: "2.7.0rc1"',
+            demand: true,
+            type: 'string'
+        })
+        .usage('Usage: $0 init --platform=name [--platform=othername]')
+        .argv;
+}
+
+function main() {
+    var commandList = [
+        {
+            name: 'repo-clone',
+            desc: 'Clones git repositories into the current working directory.',
+            entryPoint: repoCloneCommand
+        }, {
+            name: 'repo-update',
+            desc: 'Updates all cordova git repos in the current working directory.',
+            entryPoint: repoUpdateCommand
+        }, {
+            name: 'create-release',
+            desc: 'Creates a signed .zip that consitutes a release.',
+            entryPoint: createReleaseCommand
+        }, {
+            name: 'release-upload',
+            desc: 'Uploads a signed .zip to Cordova\'s webserver.',
+            entryPoint: null
+        }, {
+            name: 'list-repos',
+            desc: 'Shows a list of valid values for the --repo flag.',
+            entryPoint: listReposCommand
+        }
+    ];
+    var commandMap = {};
+    for (var i = 0; i < commandList.length; ++i) {
+        commandMap[commandList[i].name] = commandList[i];
+    }
+    var usage = 'Usage: $0 command [options]\n' +
+               '\n' +
+               'Valid commands:\n';
+    for (var i = 0; i < commandList.length; ++i) {
+        usage += '    ' + commandList[i].name + ': ' + commandList[i].desc + '\n';
+    }
+    usage += '\nFor help on a specific command: $0 command --help';
+
+    var command;
+    var argv = optimist
+        .usage(usage)
+        .check(function(argv) {
+            command = argv._[0];
+            if (!command) {
+                throw 'No command specified.';
+            }
+            if (!commandMap[command]) {
+                throw 'Unknown command: ' + command;
+            }
+        }).argv;
+
+    commandMap[command].entryPoint();
+}
+main();
+
+function oldMain() {
+    if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
+        prep();
+    }else if(COMMAND.toLowerCase() === 'sign'){
+        signZip();
+    }else if(COMMAND.toLowerCase() === 'upload'){
+            apacheUpload();
+    }else{
+        console.log("Incorrect Arguments, please review the readme!");
+    }
 }

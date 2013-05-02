@@ -111,6 +111,10 @@ var otherRepos = [
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman'
+    }, {
+        title: 'Cordova Coho',
+        id: 'coho',
+        repoName: 'cordova-coho'
     }
 ];
 
@@ -163,9 +167,17 @@ function cpAndLog(src, dest) {
 
 function forEachRepo(repos, func) {
     repos.forEach(function(repo) {
-        shjs.cd(repo.repoName);
+        var alreadyInRepo = (path.basename(shjs.pwd()) == repo.repoName);
+        if (!alreadyInRepo) {
+            shjs.cd(repo.repoName);
+            if (shjs.error()) {
+                fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
+            }
+        }
         func(repo);
-        shjs.cd('..');
+        if (!alreadyInRepo) {
+            shjs.cd('..');
+        }
     });
 }
 
@@ -240,7 +252,7 @@ function createReleaseCommand(argv) {
     cloneRepos(repos);
     if (argv.update) {
         // No need to update branches, just do a git fetch --tags.
-        updateRepos(repos, null, [], false);
+        updateRepos(repos, [], false);
     }
 
     // Check that the version tags exist.
@@ -344,6 +356,10 @@ function computeExistingRepos() {
     });
 }
 
+function remoteBranchExists(repo, name) {
+    return !!execHelper('git branch -r --list ' + repo.remoteName + '/' + name, true);
+}
+
 function listReposCommand(argv) {
     console.log('Valid values for the --repo flag:');
     console.log('');
@@ -405,10 +421,6 @@ function cloneRepos(repos) {
 
 function repoUpdateCommand(argv) {
     var opt = optimist
-        .options('r', {
-            alias: 'remote',
-            desc: 'The name of the remote to fetch from. By default, it uses the remote that points to the apache git repo.',
-         })
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
@@ -440,13 +452,12 @@ function repoUpdateCommand(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var remoteName = argv.r;
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeExistingRepos();
     if (repos.length === 0) {
         fatal('No repos found. Clone some using the repo-clone command.');
     }
-    updateRepos(repos, remoteName, branches, !argv.f);
+    updateRepos(repos, branches, !argv.f);
     process.exit(0);
 }
 
@@ -460,32 +471,34 @@ function determineApacheRemote(repo) {
     fatal('Could not find an apache remote for repo ' + repo.repoName);
 }
 
-function updateRepos(repos, remoteName, branches, noFetch) {
-    function remoteBranchExists(name) {
-        return !!execHelper('git branch -r --list ' + remoteName + '/' + name, true);
+function stashAndPop(repo, func) {
+    var requiresStash = !!execHelper('git status --porcelain', true);
+
+    if (requiresStash) {
+        execHelper('git stash save --all --quiet "coho stash"');
     }
 
-    var remotesMap = {};
+    func();
 
+    if (requiresStash) {
+        execHelper('git stash pop');
+    }
+}
+
+function updateRepos(repos, branches, noFetch) {
     // Pre-fetch checks.
     forEachRepo(repos, function(repo) {
         // Ensure it's on a named branch.
         execHelper('git symbolic-ref --short HEAD', true);
-        // Ensure the remote exists.
-        if (remoteName) {
-            var remotes = execHelper('git remote', true).split(/\s+/);
-            if (remotes.indexOf(remoteName) == -1) {
-                fatal('No remote named "' + remoteName + '" found in repo ' + repo.repoName);
-            }
-            remotesMap[repo.id] = remoteName;
-        } else {
-            remotesMap[repo.id] = determineApacheRemote(repo);
+        // Find the apache remote.
+        if (!repo.remoteName) {
+            repo.remoteName = determineApacheRemote(repo);
         }
     });
 
     if (noFetch) {
         forEachRepo(repos, function(repo) {
-            execHelper('git fetch --progress --tags ' + remotesMap[repo.id]);
+            execHelper('git fetch --progress --tags ' + repo.remoteName);
         });
     }
 
@@ -493,52 +506,66 @@ function updateRepos(repos, remoteName, branches, noFetch) {
         forEachRepo(repos, function(repo) {
             console.log('Updating ' + repo.repoName);
             var curBranch = execHelper('git symbolic-ref --short HEAD', true);
-            var requiresStash = !!execHelper('git status --porcelain', true);
-
-            if (requiresStash) {
-                execHelper('git stash save --all --quiet "coho stash"');
-            }
-
-            branches.forEach(function(branchName) {
-                if (!remoteBranchExists(branchName)) {
-                    console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
-                } else {
-                    if (curBranch != branchName) {
-                        execHelper('git checkout ' + branchName);
-                        curBranch = branchName;
+            stashAndPop(repo, function() {
+                branches.forEach(function(branchName) {
+                    if (!remoteBranchExists(repo, branchName)) {
+                        console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
+                    } else {
+                        if (curBranch != branchName) {
+                            execHelper('git checkout ' + branchName);
+                            curBranch = branchName;
+                        }
+                        execHelper('git rebase ' + repo.remoteName + '/' + branchName);
                     }
-                    execHelper('git rebase ' + remotesMap[repo.id] + '/' + branchName);
-                }
+                });
             });
-
-            if (requiresStash) {
-                execHelper('git stash pop');
-            }
         });
     }
 
     console.log('Successfully updated ' + repos.length + ' repositories.');
 }
 
-function buildCommand(argv) {
-    var argv = optimist
-        .options('h', {
-            alias: 'help',
-            desc: 'Shows help information.'
-         })
-        .options('p', {
-            alias: 'platform',
-            demand: true,
-            desc: 'List of platforms to operate on. Use multiple flags for multiple platforms. Use "all" for all platforms.'
-         })
-        .options('v', {
-            alias: 'version',
-            desc: 'The version of the release. E.g.: "2.7.0rc1"',
-            demand: true,
-            type: 'string'
-        })
-        .usage('Usage: $0 init --platform=name [--platform=othername]')
+function repoBranchCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = opt
+        .options('name', {
+            desc: 'The branch name. Must match the pattern #.#.x',
+            demand: true
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Ensures that a release branch exists, either by pulling it or creating it.\n' +
+               '\n' +
+               'Usage: $0 repo-branch --name=2.7.x')
         .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv);
+    var branchName = argv.name;
+    if (!/\d+\.\d+\.x/.test(branchName)) {
+        fatal('The branch name must be in the form #.#.x');
+    }
+
+    // First - perform precondition checks.
+    updateRepos(repos, [], true);
+
+    forEachRepo(repos, function(repo) {
+        // git fetch.
+        updateRepos([repo], ['master'], false);
+        // Either create or pull down the branch.
+        if (remoteBranchExists(repo, branchName)) {
+            console.log('Remote branch already exists for repo: ' + repo.repoName);
+            execHelper('git checkout ' + branchName);
+        } else {
+            stashAndPop(repo, function() {
+                execHelper('git checkout -b ' + branchName);
+                execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+            });
+        }
+    });
 }
 
 function main() {
@@ -552,18 +579,21 @@ function main() {
             desc: 'Updates all cordova git repos in the current working directory.',
             entryPoint: repoUpdateCommand
         }, {
-            name: 'create-release',
-            desc: 'Creates a signed .zip that consitutes a release.',
-            entryPoint: createReleaseCommand
-        }, {
-            name: 'release-upload',
-            desc: 'Uploads a signed .zip to Cordova\'s webserver.',
-            entryPoint: null
+            name: 'repo-branch',
+            desc: 'Creates and pushes a release branch.',
+            entryPoint: repoBranchCommand
         }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
             entryPoint: listReposCommand
+        }, {
+            name: 'create-release',
+            desc: 'Creates a signed .zip that consitutes a release.',
+            entryPoint: createReleaseCommand
         }
+//            name: 'upload-release',
+//            desc: 'Uploads a signed .zip to Cordova\'s webserver.',
+//            entryPoint: null
     ];
     var commandMap = {};
     for (var i = 0; i < commandList.length; ++i) {
@@ -593,15 +623,3 @@ function main() {
     commandMap[command].entryPoint();
 }
 main();
-
-function oldMain() {
-    if (COMMAND.toLowerCase() === 'all' || COMMAND.toLowerCase() === 'build' ){
-        prep();
-    }else if(COMMAND.toLowerCase() === 'sign'){
-        signZip();
-    }else if(COMMAND.toLowerCase() === 'upload'){
-            apacheUpload();
-    }else{
-        console.log("Incorrect Arguments, please review the readme!");
-    }
-}

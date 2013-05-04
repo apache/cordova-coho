@@ -265,8 +265,9 @@ function createReleaseCommand(argv) {
         }
     });
 
-    var releaseDir = path.join('staging', 'release');
-    var destDir = path.join(releaseDir, 'src', 'cordova-' + newVersion);
+    var releaseDir = path.join('releases', 'cordova-' + newVersion);
+    var destDir = path.join(releaseDir, 'cordova-' + newVersion);
+    shjs.rm('-rf', releaseDir);
     shjs.mkdir('-p', destDir);
 
     // Create zips.
@@ -294,14 +295,14 @@ function createReleaseCommand(argv) {
     var cordovaSrcZip  = 'cordova-' + newVersion + '-src.zip';
     var cordovaSrcSha  = cordovaSrcZip + '.sha';
 
-    shjs.rm('-f', path.join(releaseDir, 'src', cordovaSrcZip + '*'));
+    shjs.rm('-f', path.join(releaseDir, cordovaSrcZip + '*'));
     var oldDir = shjs.pwd();
-    shjs.cd(path.join(releaseDir, 'src'));
+    shjs.cd(releaseDir);
     execHelper('zip -rq ' + cordovaSrcZip + ' cordova-' + newVersion);
     execHelper('gpg --armor --detach-sig --output ' + cordovaSrcZip + '.asc ' + cordovaSrcZip);
     fs.writeFileSync(cordovaSrcZip + '.md5', execHelper('gpg --print-md MD5 ' + cordovaSrcZip));
     fs.writeFileSync(cordovaSrcZip + '.sha', execHelper('gpg --print-md SHA512 ' + cordovaSrcZip));
-    console.log('Final product is ready at:', path.join(releaseDir, 'src ', cordovaSrcZip));
+    console.log('Final product is ready at:', path.join(releaseDir, cordovaSrcZip));
     shjs.cd(oldDir);
     process.exit(0);
 }

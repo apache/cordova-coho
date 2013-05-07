@@ -28,11 +28,13 @@ var platformRepos = [
     {
         title: 'Android',
         id: 'android',
-        repoName: 'cordova-android'
+        repoName: 'cordova-android',
+        cordovaJsPath: 'framework/assets/www/cordova.js'
     }, {
         title: 'iOS',
         id: 'ios',
-        repoName: 'cordova-ios'
+        repoName: 'cordova-ios',
+        cordovaJsPath: 'CordovaLib/cordova.js'
     }, {
         title: 'BlackBerry',
         id: 'blackberry',
@@ -148,12 +150,15 @@ function registerHelpFlag(opt) {
     });
 }
 
-function execHelper(cmd, silent) {
+function execHelper(cmd, silent, allowError) {
     if (!silent) {
         console.log('Executing command:', cmd);
     }
     var result = shjs.exec(cmd, {silent: silent});
     if (result.code) {
+        if (allowError) {
+            return null;
+        }
         process.exit(2);
     }
     return result.output.trim();
@@ -227,7 +232,7 @@ function createReleaseCommand(argv) {
                '    Zipping up all files + zips into a master zip\n' +
                '    Signing the master zip via pgp\n' +
                '\n' +
-               'Usage: $0 create-release')
+               'Usage: $0 create-release-snapshot')
         .argv;
 
     if (argv.h) {
@@ -257,10 +262,10 @@ function createReleaseCommand(argv) {
 
     // Check that the version tags exist.
     forEachRepo(repos, function(repo) {
-        if (!execHelper('git tag --list ' + prevVersion, true)) {
+        if (!tagExists(prevVersion)) {
             fatal('Tag "' + prevVersion + '" does not exist in repo ' + repo.repoName);
         }
-        if (!execHelper('git tag --list ' + newVersion, true)) {
+        if (!tagExists(newVersion)) {
             fatal('Tag "' + newVersion + '" does not exist in repo ' + repo.repoName);
         }
     });
@@ -359,6 +364,21 @@ function computeExistingRepos() {
 
 function remoteBranchExists(repo, name) {
     return !!execHelper('git branch -r --list ' + repo.remoteName + '/' + name, true);
+}
+
+function retrieveCurrentBranchName() {
+    var ret = execHelper('git symbolic-ref --short HEAD', true, true);
+    if (!ret) {
+        throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
+    }
+}
+
+function retrieveCurrentTagName() {
+    return execHelper('git symbolic-ref --short HEAD', true, true);
+}
+
+function tagExists(tagName) {
+    return !!execHelper('git tag --list ' + tagName, true);
 }
 
 function listReposCommand(argv) {
@@ -472,8 +492,12 @@ function determineApacheRemote(repo) {
     fatal('Could not find an apache remote for repo ' + repo.repoName);
 }
 
+function pendingChangesExist() {
+    return !!execHelper('git status --porcelain', true);
+}
+
 function stashAndPop(repo, func) {
-    var requiresStash = !!execHelper('git status --porcelain', true);
+    var requiresStash = pendingChangesExist();
 
     if (requiresStash) {
         execHelper('git stash save --all --quiet "coho stash"');
@@ -490,7 +514,7 @@ function updateRepos(repos, branches, noFetch) {
     // Pre-fetch checks.
     forEachRepo(repos, function(repo) {
         // Ensure it's on a named branch.
-        execHelper('git symbolic-ref --short HEAD', true);
+        retrieveCurrentBranchName();
         // Find the apache remote.
         if (!repo.remoteName) {
             repo.remoteName = determineApacheRemote(repo);
@@ -506,7 +530,7 @@ function updateRepos(repos, branches, noFetch) {
     if (branches && branches.length) {
         forEachRepo(repos, function(repo) {
             console.log('Updating ' + repo.repoName);
-            var curBranch = execHelper('git symbolic-ref --short HEAD', true);
+            var curBranch = retrieveCurrentBranchName();
             stashAndPop(repo, function() {
                 branches.forEach(function(branchName) {
                     if (!remoteBranchExists(repo, branchName)) {
@@ -526,18 +550,18 @@ function updateRepos(repos, branches, noFetch) {
     console.log('Successfully updated ' + repos.length + ' repositories.');
 }
 
-function repoBranchCommand(argv) {
+function prepareReleaseBranchCommand(argv) {
     var opt = registerRepoFlag(optimist)
     opt = opt
-        .options('name', {
-            desc: 'The branch name. Must match the pattern #.#.x',
+        .options('version', {
+            desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
             demand: true
          });
     opt = registerHelpFlag(opt);
     var argv = opt
         .usage('Ensures that a release branch exists, either by pulling it or creating it.\n' +
                '\n' +
-               'Usage: $0 repo-branch --name=2.7.x')
+               'Usage: $0 prepare-release --version=2.7.0')
         .argv;
 
     if (argv.h) {
@@ -545,28 +569,103 @@ function repoBranchCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv);
-    var branchName = argv.name;
-    if (!/\d+\.\d+\.x/.test(branchName)) {
-        fatal('The branch name must be in the form #.#.x');
+    var version = argv.version;
+    if (!/^\d+\.\d+\.\d+(rc\d)?$/.test(version)) {
+        fatal('The version must be in the form #.#.#[rc#]');
     }
+    var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
     updateRepos(repos, [], true);
 
-    forEachRepo(repos, function(repo) {
-        // git fetch.
-        updateRepos([repo], ['master'], false);
-        // Either create or pull down the branch.
-        if (remoteBranchExists(repo, branchName)) {
-            console.log('Remote branch already exists for repo: ' + repo.repoName);
-            execHelper('git checkout ' + branchName);
-        } else {
+    function helper(repos) {
+        forEachRepo(repos, function(repo) {
             stashAndPop(repo, function() {
-                execHelper('git checkout -b ' + branchName);
-                execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+                // git fetch.
+                updateRepos([repo], ['master'], false);
+
+                if (repo.cordovaJsPath) {
+                    cpAndLog('../cordova-js/pkg/cordova.' + repo.id + '.js', repo.cordovaJsPath);
+                    if (pendingChangesExist()) {
+                        execHelper('git commit -am "Update JS snapshot to version ' + version + '"');
+                        execHelper('git push ' + repo.remoteName + ' master');
+                    }
+                } else if (allRepos.indexOf(repo) != -1) {
+                    fatal('TODO: Repo metadata missing cordovaJsPath information.');
+                }
+
+                // Either create or pull down the branch.
+                if (remoteBranchExists(repo, branchName)) {
+                    console.log('Remote branch already exists for repo: ' + repo.repoName);
+                    execHelper('git checkout ' + branchName);
+                } else {
+                    execHelper('git checkout -b ' + branchName);
+                    execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+                }
+                // Update the VERSION files.
+                var versionFilePath = 'VERSION';
+                if (repo.id == 'ios') {
+                    versionFilePath = 'CordovaLib/VERSION';
+                }
+                if (fs.existsSync(versionFilePath)) {
+                    console.log(repo.repoName + ': ' + 'Updating VERSION file.');
+                    fs.writeFileSync(versionFilePath, version + '\n');
+                    if (repo.id == 'android') {
+                        shjs.sed('-i', /cordovaVersion.*=.*;/, 'cordovaVersion = "' + version + '";', 'framework/src/org/apache/cordova/Device.java');
+                    }
+                } else {
+                    console.warn('No VERSION file exists in repo ' + repo.repoName);
+                }
+
+                var requiresPush = false;
+                if (pendingChangesExist()) {
+                    requiresPush = true;
+                    execHelper('git commit -am "Set VERSION to ' + version + '"');
+                }
+
+                // Create/update the tag.
+                var tagName = retrieveCurrentTagName();
+                if (tagName != version) {
+                    requiresPush = true;
+                    if (tagExists(version)) {
+                        execHelper('git tag ' + version);
+                    } else {
+                        execHelper('git tag ' + version + ' --force');
+                    }
+                }
+                if (requiresPush) {
+                    execHelper('git push --tags ' + repo.remoteName + ' ' + branchName);
+                }
             });
-        }
-    });
+        });
+    }
+
+    var cordovaJs = getRepoById('js', repos);
+    if (cordovaJs) {
+        repos.splice(repos.indexOf(cordovaJs), 1);
+        helper([cordovaJs]);
+
+        // Ensure cordova-js is tagged and built.
+        forEachRepo([cordovaJs], function() {
+            if (retrieveCurrentTagName() != version) {
+                fatal('Not preparing branches since cordova-js is not at the version tag.');
+            }
+            execHelper('jake');
+        });
+    }
+
+    var appHelloWorld = getRepoById('app-hello-world', repos);
+    if (appHelloWorld) {
+        repos.splice(repos.indexOf(appHelloWorld), 1);
+        helper([appHelloWorld]);
+        forEachRepo([appHelloWorld], function() {
+            if (retrieveCurrentTagName() != version) {
+                fatal('Not preparing branches since cordova-app-hello-world is not at the version tag.');
+            }
+        });
+    }
+
+    helper(repos);
 }
 
 function main() {
@@ -580,15 +679,15 @@ function main() {
             desc: 'Updates all cordova git repos in the current working directory.',
             entryPoint: repoUpdateCommand
         }, {
-            name: 'repo-branch',
-            desc: 'Creates and pushes a release branch.',
-            entryPoint: repoBranchCommand
-        }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
             entryPoint: listReposCommand
         }, {
-            name: 'create-release',
+            name: 'prepare-release',
+            desc: 'Performs steps required to create & tag a release.',
+            entryPoint: prepareReleaseBranchCommand
+        }, {
+            name: 'create-release-snapshot',
             desc: 'Creates a signed .zip that consitutes a release.',
             entryPoint: createReleaseCommand
         }

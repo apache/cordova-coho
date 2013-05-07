@@ -287,7 +287,7 @@ function createReleaseCommand(argv) {
     var changeLogData = 'Cordova Commits from ' + prevVersion + ' -> ' + newVersion + '\n';
     forEachRepo(repos, function(repo) {
         changeLogData += '\n' + repo.repoName + '\n---\n';
-        changeLogData += execHelper('git log --format="%h %s" ' + prevVersion + '..' + newVersion, true);
+        changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true);
     });
     fs.writeFileSync(path.join(destDir, 'changelog'), changeLogData);
     console.log('Generating final zip...');

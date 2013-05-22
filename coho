@@ -559,9 +559,9 @@ function prepareReleaseBranchCommand(argv) {
          });
     opt = registerHelpFlag(opt);
     var argv = opt
-        .usage('Ensures that a release branch exists, either by pulling it or creating it.\n' +
+        .usage('Prepares release branches and creates tags. Command is safe to run multiple times.\n' +
                '\n' +
-               'Usage: $0 prepare-release --version=2.7.0')
+               'Usage: $0 prepare-release --version=2.8.0rc1')
         .argv;
 
     if (argv.h) {
@@ -684,7 +684,7 @@ function main() {
             entryPoint: listReposCommand
         }, {
             name: 'prepare-release',
-            desc: 'Performs steps required to create & tag a release.',
+            desc: 'Branches, updates JS, updates VERSION, tags.',
             entryPoint: prepareReleaseBranchCommand
         }, {
             name: 'create-release-snapshot',

@@ -559,21 +559,30 @@ function updateRepos(repos, branches, noFetch) {
 
     if (branches && branches.length) {
         forEachRepo(repos, function(repo) {
-            console.log('Updating ' + repo.repoName);
-            var curBranch = retrieveCurrentBranchName();
-            stashAndPop(repo, function() {
-                branches.forEach(function(branchName) {
-                    if (!remoteBranchExists(repo, branchName)) {
-                        console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
-                    } else {
-                        if (curBranch != branchName) {
-                            execHelper('git checkout ' + branchName);
-                            curBranch = branchName;
-                        }
-                        execHelper('git rebase ' + repo.remoteName + '/' + branchName);
-                    }
-                });
+            var staleBranches = branches.filter(function(branchName) {
+                var curHash = execHelper('git rev-parse ' + branchName, true, true);
+                var newHash = execHelper('git rev-parse ' + repo.remoteName + '/' + branchName, true, true);
+                return curHash !== newHash;
             });
+            if (!staleBranches.length) {
+                console.log('Repo already up-to-date: ' + repo.repoName);
+            } else {
+                console.log('Updating ' + repo.repoName);
+                var curBranch = retrieveCurrentBranchName();
+                stashAndPop(repo, function() {
+                    staleBranches.forEach(function(branchName) {
+                        if (!remoteBranchExists(repo, branchName)) {
+                            console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
+                        } else {
+                            if (curBranch != branchName) {
+                                execHelper('git checkout ' + branchName);
+                                curBranch = branchName;
+                            }
+                            execHelper('git rebase ' + repo.remoteName + '/' + branchName);
+                        }
+                    });
+                });
+            }
         });
     }
 }

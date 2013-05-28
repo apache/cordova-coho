@@ -25,6 +25,15 @@ var shjs = require('shelljs');
 
 var origWorkingDir = process.cwd();
 
+var COMMON_RAT_FLAGS = ['-e "*.wav"',
+    '-e "*.webloc"',
+    '-e "*jasmine-1.2.0*"',
+    '-e "*.xcodeproj"',
+    '-e ".*"',
+    '-e "*-Info.plist"',
+    '-e "VERSION"'
+    ];
+
 var platformRepos = [
     {
         title: 'Android',
@@ -741,6 +750,39 @@ function tagReleaseBranchCommand(argv) {
     });
 }
 
+function ratCommand() {
+    var opt = registerRepoFlag(optimist);
+    opt = registerHelpFlag(opt);
+    opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
+              '\n' +
+              'Usage: $0 audit-license-headers --repo=ios')
+    argv = opt.argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv);
+    // Check that RAT command exists.
+    var ratPath = path.resolve(path.join(path.dirname(process.argv[1]), 'apache-rat-0.8', 'apache-rat-0.8.jar'));
+    if (!fs.existsSync(ratPath)) {
+        console.log('RAT tool not found, downloading to: ' + ratPath);
+        forEachRepo([getRepoById('coho')], function() {
+            if (shjs.which('curl')) {
+                execHelper('curl "http://mirror.csclub.uwaterloo.ca/apache/incubator/rat/binaries/apache-rat-incubating-0.8-bin.tar.gz" | tar xz');
+            } else {
+                execHelper('wget -O - "http://mirror.csclub.uwaterloo.ca/apache/incubator/rat/binaries/apache-rat-incubating-0.8-bin.tar.gz" | tar xz');
+            }
+        });
+        if (!fs.existsSync(ratPath)) {
+            fatal('Download failed.');
+        }
+    }
+    forEachRepo(repos, function(repo) {
+        execHelper('java -jar "' + ratPath + '" -d . ' + COMMON_RAT_FLAGS.join(' '));
+    });
+}
+
 function main() {
     var commandList = [
         {
@@ -763,6 +805,10 @@ function main() {
             name: 'tag-release',
             desc: 'Tags repos for a release.',
             entryPoint: tagReleaseBranchCommand
+        }, {
+            name: 'audit-license-headers',
+            desc: 'Uses Apache RAT to look for missing license headers.',
+            entryPoint: ratCommand
         }, {
             name: 'create-release-snapshot',
             desc: 'Creates a signed .zip that consitutes a release.',

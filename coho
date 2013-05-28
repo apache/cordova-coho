@@ -25,13 +25,17 @@ var shjs = require('shelljs');
 
 var origWorkingDir = process.cwd();
 
-var COMMON_RAT_FLAGS = ['-e "*.wav"',
-    '-e "*.webloc"',
-    '-e "*jasmine-1.2.0*"',
-    '-e "*.xcodeproj"',
-    '-e ".*"',
-    '-e "*-Info.plist"',
-    '-e "VERSION"'
+var COMMON_RAT_EXCLUDES = [
+    '*.wav',
+    '*.webloc',
+    '*jasmine-1.2.0*',
+    '*.xcodeproj',
+    '.*',
+    '*-Info.plist',
+    'VERSION',
+    'node_modules',
+    'thirdparty',
+    'package.json',
     ];
 
 var platformRepos = [
@@ -39,7 +43,13 @@ var platformRepos = [
         title: 'Android',
         id: 'android',
         repoName: 'cordova-android',
-        cordovaJsPaths: ['framework/assets/www/cordova.js']
+        cordovaJsPaths: ['framework/assets/www/cordova.js'],
+        ratExcludes: [
+            '*.properties',
+            'bin',
+            'gen',
+            'proguard-project.txt'
+        ]
     }, {
         title: 'iOS',
         id: 'ios',
@@ -106,7 +116,12 @@ var nonPlatformRepos = [
     }, {
         title: 'MobileSpec',
         id: 'mobile-spec',
-        repoName: 'cordova-mobile-spec'
+        repoName: 'cordova-mobile-spec',
+        ratExcludes: [
+          'jasmine.*',
+          'html',
+          'uubench.js',
+        ]
     }, {
         title: 'Cordova JS',
         id: 'js',
@@ -779,7 +794,12 @@ function ratCommand() {
         }
     }
     forEachRepo(repos, function(repo) {
-        execHelper('java -jar "' + ratPath + '" -d . ' + COMMON_RAT_FLAGS.join(' '));
+        var allExcludes = COMMON_RAT_EXCLUDES;
+        if (repo.ratExcludes) {
+            allExcludes = allExcludes.concat(repo.ratExcludes);
+        }
+        var excludeFlags = '-e "' + allExcludes.join('" -e "') + '"';
+        execHelper('java -jar "' + ratPath + '" -d . ' + excludeFlags);
     });
 }
 

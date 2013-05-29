@@ -638,7 +638,8 @@ function createReleaseBranchCommand() {
                '    1. Creating the branch if it doesn\'t already exist\n' +
                '    2. Updating cordova.js snapshot and VERSION file.\n' +
                '\n' +
-               'Command is safe to run multiple times.\n' +
+               'Command is safe to run multiple times, and can be run for the purpose\n' +
+               'of checking out existing release branches.\n' +
                '\n' +
                'Usage: $0 create-release-branch --version=2.8.0rc1')
     );
@@ -819,7 +820,7 @@ function main() {
             entryPoint: listReposCommand
         }, {
             name: 'create-release-branch',
-            desc: 'Branches, updates JS, updates VERSION.',
+            desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
             entryPoint: createReleaseBranchCommand
         }, {
             name: 'tag-release',

@@ -699,10 +699,16 @@ function createReleaseBranchCommand() {
             var versionFilePath = 'VERSION';
             if (repo.id == 'ios') {
                 versionFilePath = 'CordovaLib/VERSION';
+            } else if (repo.id == 'blackberry') {
+                versionFilePath = 'blackberry/VERSION';
             }
             if (fs.existsSync(versionFilePath)) {
                 console.log(repo.repoName + ': ' + 'Updating VERSION file.');
                 fs.writeFileSync(versionFilePath, version + '\n');
+                if (repo.id == 'blackberry') {
+                    versionFilePath = 'blackberry10/VERSION';
+                    fs.writeFileSync(versionFilePath, version + '\n');
+                }
                 if (repo.id == 'android') {
                     shjs.sed('-i', /cordovaVersion.*=.*;/, 'cordovaVersion = "' + version + '";', 'framework/src/org/apache/cordova/Device.java');
                 }

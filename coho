@@ -139,7 +139,7 @@ var otherRepos = [
         title: 'Cordova CLI',
         id: 'cli',
         repoName: 'cordova-cli',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',

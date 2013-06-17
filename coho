@@ -530,7 +530,7 @@ function repoUpdateCommand(argv) {
     if (repos.length === 0) {
         fatal('No repos found. Clone some using the repo-clone command.');
     }
-    updateRepos(repos, branches, !argv.f);
+    updateRepos(repos, branches, !argv.fetch);
     process.exit(0);
 }
 

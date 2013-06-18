@@ -651,9 +651,9 @@ function createReleaseBranchCommand() {
     updateRepos(repos, [], true);
 
     var hasRunJake = false;
+    var cordovaJsRepo = getRepoById('js');
     function ensureJsIsBuilt() {
-        var cordovaJs = getRepoById('js');
-        forEachRepo([cordovaJs], function() {
+        forEachRepo([cordovaJsRepo], function() {
             var actualCurTag = retrieveCurrentTagName();
             if (actualCurTag != version) {
                 fatal('Not preparing branches since cordova-js is not at the version tag. (it\'s at ' + actualCurTag + ')');
@@ -663,6 +663,13 @@ function createReleaseBranchCommand() {
                 hasRunJake = true;
             }
         });
+    }
+
+    // Ensure cordova-js comes first.
+    var repoIndex = repos.indexOf(cordovaJsRepo);
+    if (repoIndex != -1) {
+      repos.splice(repoIndex, 1);
+      repos.unshift(cordovaJsRepo);
     }
 
     forEachRepo(repos, function(repo) {

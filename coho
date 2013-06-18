@@ -685,7 +685,7 @@ function createReleaseBranchCommand() {
                         cpAndLog(src, jsPath);
                     });
                     if (pendingChangesExist()) {
-                        execHelper('git commit -am "Update JS snapshot to version ' + version + '"');
+                        execHelper('git commit -am "Update JS snapshot to version ' + version + '" (via coho)');
                         execHelper('git push ' + repo.remoteName + ' master');
                     }
                 } else if (allRepos.indexOf(repo) != -1) {
@@ -727,7 +727,7 @@ function createReleaseBranchCommand() {
             }
 
             if (pendingChangesExist()) {
-                execHelper('git commit -am "Set VERSION to ' + version + '"');
+                execHelper('git commit -am "Set VERSION to ' + version + '" (via coho)');
                 execHelper('git push ' + repo.remoteName + ' ' + branchName);
             }
         });

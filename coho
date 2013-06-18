@@ -68,13 +68,13 @@ var platformRepos = [
         id: 'wp7',
         repoName: 'cordova-wp7',
         cordovaJsSrcName: 'cordova.windowsphone.js',
-        cordovaJsPaths: ['templates/standalone/www/cordova.js', 'example/www/cordova.js']
+        cordovaJsPaths: ['templates/standalone/www/cordova.js']
     }, {
         title: 'Windows Phone 8',
         id: 'wp8',
         repoName: 'cordova-wp8',
         cordovaJsSrcName: 'cordova.windowsphone.js',
-        cordovaJsPaths: ['templates/standalone/www/cordova.js', 'example/www/cordova.js']
+        cordovaJsPaths: ['templates/standalone/www/cordova.js']
     }, {
         title: 'Mac OSX',
         id: 'osx',

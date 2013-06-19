@@ -651,6 +651,7 @@ function createReleaseBranchCommand() {
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
     var performGitPush = argv.push;
+    var needsGitPush = false;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -674,8 +675,8 @@ function createReleaseBranchCommand() {
     // Ensure cordova-js comes first.
     var repoIndex = repos.indexOf(cordovaJsRepo);
     if (repoIndex != -1) {
-      repos.splice(repoIndex, 1);
-      repos.unshift(cordovaJsRepo);
+        repos.splice(repoIndex, 1);
+        repos.unshift(cordovaJsRepo);
     }
 
     forEachRepo(repos, function(repo) {
@@ -693,7 +694,9 @@ function createReleaseBranchCommand() {
                     if (pendingChangesExist()) {
                         execHelper('git commit -am "Update JS snapshot to version ' + version + ' (via coho)"');
                         if (performGitPush) {
-                          execHelper('git push ' + repo.remoteName + ' master');
+                            execHelper('git push ' + repo.remoteName + ' master');
+                        } else {
+                            needsGitPush = true;
                         }
                     }
                 } else if (allRepos.indexOf(repo) != -1) {
@@ -709,7 +712,9 @@ function createReleaseBranchCommand() {
             } else {
                 execHelper('git checkout -b ' + branchName);
                 if (performGitPush) {
-                  execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+                    execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+                } else {
+                    needsGitPush = true;
                 }
             }
             // Update the VERSION files.
@@ -739,11 +744,19 @@ function createReleaseBranchCommand() {
             if (pendingChangesExist()) {
                 execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
                 if (performGitPush) {
-                  execHelper('git push ' + repo.remoteName + ' ' + branchName);
+                    execHelper('git push ' + repo.remoteName + ' ' + branchName);
+                } else {
+                    needsGitPush = true;
                 }
             }
         });
     });
+
+    console.log('');
+    console.log('All work is complete.');
+    if (needsGitPush) {
+        console.log('Run again with --push to push changes.');
+    }
 }
 
 function tagReleaseBranchCommand(argv) {
@@ -755,6 +768,7 @@ function tagReleaseBranchCommand(argv) {
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
     var performGitPush = argv.push;
+    var needsGitPush = false;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -785,13 +799,21 @@ function tagReleaseBranchCommand(argv) {
                     execHelper('git tag ' + version);
                 }
                 if (performGitPush) {
-                  execHelper('git push --tags ' + repo.remoteName + ' ' + branchName);
+                    execHelper('git push --tags ' + repo.remoteName + ' ' + branchName);
+                } else {
+                    needsGitPush = true;
                 }
             } else {
                 console.log('Repo ' + repo.repoName + ' is already tagged.');
             }
         });
     });
+
+    console.log('');
+    console.log('All work is complete.');
+    if (needsGitPush) {
+        console.log('Run again with --push to push changes.');
+    }
 }
 
 function ratCommand() {

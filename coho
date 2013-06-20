@@ -168,7 +168,7 @@ var repoGroups = {
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
 };
 
-var performGitPush = false;
+var performGitPush = true;
 var gitPushCount = 0;
 
 function reportGitPushResult() {
@@ -715,7 +715,7 @@ function prepareReleaseBranchCommand() {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    performGitPush = argv.push;
+    // performGitPush = argv.push;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -785,7 +785,7 @@ function tagReleaseBranchCommand(argv) {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    performGitPush = argv.push;
+    // performGitPush = argv.push;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -809,7 +809,6 @@ function tagReleaseBranchCommand(argv) {
             // Create/update the tag.
             var tagName = retrieveCurrentTagName();
             if (tagName != version) {
-                requiresPush = true;
                 if (tagExists(version)) {
                     execHelper('git tag ' + version + ' --force');
                 } else {

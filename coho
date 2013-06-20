@@ -184,18 +184,28 @@ var repoGroups = {
 var gitCommitCount = 0;
 
 function reportGitPushResult() {
-    console.log('');
+    print('');
     if (gitCommitCount) {
-        console.log('All work complete. ' + gitCommitCount + ' commits were made locally.');
-        console.log('To review changes:');
-        console.log('  ' + process.argv[1] + ' repo-status -r auto');
-        console.log('To push changes:');
-        console.log('  ' + process.argv[1] + ' repo-push -r auto');
-        console.log('To revert all local commits:');
-        console.log('  ' + process.argv[1] + ' repo-reset -r auto');
+        print('All work complete. ' + gitCommitCount + ' commits were made locally.');
+        print('To review changes:');
+        print('  ' + process.argv[1] + ' repo-status -r auto');
+        print('To push changes:');
+        print('  ' + process.argv[1] + ' repo-push -r auto');
+        print('To revert all local commits:');
+        print('  ' + process.argv[1] + ' repo-reset -r auto');
     } else {
-        console.log('All work complete. No commits were made.');
+        print('All work complete. No commits were made.');
     }
+}
+
+function print() {
+    var newArgs = Array.prototype.slice.call(arguments);
+    if (newArgs.length > 1 || newArgs[0]) {
+        newArgs.unshift('====');
+        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n==== ') });
+    }
+
+    console.log.apply(console, newArgs);
 }
 
 function fatal() {
@@ -223,7 +233,7 @@ function logCwd() {
     var curDir = process.cwd();
     if (curDir != lastLoggedDir) {
         lastLoggedDir = curDir;
-        console.log('Changed directory to: ' + path.relative(origWorkingDir, curDir));
+        print('Changed directory to: ' + path.relative(origWorkingDir, curDir));
     }
 }
 
@@ -233,7 +243,7 @@ function execHelper(cmd, silent, allowError) {
     }
     if (!silent) {
         logCwd();
-        console.log('Executing command:', cmd);
+        print('Executing command:', cmd);
     }
     var result = shjs.exec(cmd, {silent: silent});
     if (result.code) {
@@ -246,7 +256,7 @@ function execHelper(cmd, silent, allowError) {
 }
 
 function cpAndLog(src, dest) {
-    console.log('Coping File:', src, '->', dest);
+    print('Coping File:', src, '->', dest);
     // Throws upon failure.
     shjs.cp('-f', src, dest);
     if (shjs.error()) {
@@ -373,7 +383,7 @@ function createReleaseCommand(argv) {
     forEachRepo(repos, function(repo) {
         var zipPath = path.join('..', destDir, repo.repoName + '.zip');
         if (shjs.test('-f', zipPath)) {
-            console.log('Skipping zip (already exists):', zipPath);
+            print('Skipping zip (already exists):', zipPath);
         } else {
             execHelper('git archive --format zip -o "' + zipPath + '" ' + newVersion);
         }
@@ -382,14 +392,14 @@ function createReleaseCommand(argv) {
     cpAndLog(keysPath, path.join(releaseDir, 'KEYS'));
     cpAndLog(path.join(binPath, '*'), destDir);
 
-    console.log('Generating change logs...');
+    print('Generating change logs...');
     var changeLogData = 'Cordova Commits from ' + prevVersion + ' -> ' + newVersion + '\n';
     forEachRepo(repos, function(repo) {
         changeLogData += '\n' + repo.repoName + '\n---\n';
         changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true);
     });
     fs.writeFileSync(path.join(destDir, 'changelog'), changeLogData);
-    console.log('Generating final zip...');
+    print('Generating final zip...');
 
     var cordovaSrcZip  = 'cordova-' + newVersion + '-src.zip';
     var cordovaSrcSha  = cordovaSrcZip + '.sha';
@@ -401,14 +411,14 @@ function createReleaseCommand(argv) {
     execHelper('gpg --armor --detach-sig --output ' + cordovaSrcZip + '.asc ' + cordovaSrcZip);
     fs.writeFileSync(cordovaSrcZip + '.md5', execHelper('gpg --print-md MD5 ' + cordovaSrcZip));
     fs.writeFileSync(cordovaSrcZip + '.sha', execHelper('gpg --print-md SHA512 ' + cordovaSrcZip));
-    console.log('Final product is ready at:', path.join(releaseDir, cordovaSrcZip));
+    print('Final product is ready at:', path.join(releaseDir, cordovaSrcZip));
     shjs.cd(oldDir);
     process.exit(0);
 }
 
 function apacheUpload(){
     if (shjs.test('-d','./apachecordova')){
-        console.log('apachecordova directory exists');
+        print('apachecordova directory exists');
         shjs.exec("cd apachecordova && svn update");
 
     }else{
@@ -488,18 +498,18 @@ function tagExists(tagName) {
 }
 
 function listReposCommand(argv) {
-    console.log('Valid values for the --repo flag:');
-    console.log('');
-    console.log('Repositories:');
+    print('Valid values for the --repo flag:');
+    print('');
+    print('Repositories:');
     allRepos.forEach(function(repo) {
-        console.log('    ' + repo.id);
+        print('    ' + repo.id);
     });
-    console.log('');
-    console.log('Repository Groups:');
+    print('');
+    print('Repository Groups:');
     var groupNames = Object.keys(repoGroups);
     groupNames.sort();
     groupNames.forEach(function(groupName) {
-        console.log('    ' + groupName + ' (' + repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
+        print('    ' + groupName + ' (' + repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
     });
     process.exit(0);
 }
@@ -527,7 +537,7 @@ function cloneRepos(repos) {
 
     repos.forEach(function(repo) {
         if (shjs.test('-d', repo.repoName)) {
-            console.log('Repo already cloned: ' + repo.repoName);
+            print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else {
             var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
@@ -539,7 +549,7 @@ function cloneRepos(repos) {
 
     var numCloned = repos.length - failures.length - numSkipped;
     if (numCloned) {
-        console.log('Successfully cloned ' + numCloned + ' repositories.');
+        print('Successfully cloned ' + numCloned + ' repositories.');
     }
     if (failures.length) {
         fatal('The following repositories failed to clone: ' + failures.join(', '));
@@ -592,9 +602,9 @@ function repoStatusCommand(argv) {
             }
         });
     });
-    console.log('\n\n');
-    console.log(logs);
-    console.log(diffs);
+    print('\n\n');
+    print(logs);
+    print(diffs);
 }
 
 function repoResetCommand(argv) {
@@ -632,10 +642,10 @@ function repoResetCommand(argv) {
                 gitCheckout(branchName);
                 var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName);
                 if (changes) {
-                    console.log(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.\n');
                     execHelper('git reset --hard ' + repo.remoteName + '/' + branchName);
                 } else {
-                    console.log(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
                 }
             });
         });
@@ -682,7 +692,7 @@ function repoPushCommand(argv) {
                 if (changes) {
                     execHelper('git push ' + repo.remoteName + ' ' + branchName);
                 } else {
-                    console.log(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
                 }
             }
         });
@@ -786,9 +796,9 @@ function updateRepos(repos, branches, noFetch) {
                 return !!changes;
             });
             if (!staleBranches.length) {
-                console.log('Confirmed already up-to-date: ' + repo.repoName);
+                print('Confirmed already up-to-date: ' + repo.repoName);
             } else {
-                console.log('Updating ' + repo.repoName);
+                print('Updating ' + repo.repoName);
                 stashAndPop(repo, function() {
                     staleBranches.forEach(function(branchName) {
                         gitCheckout(branchName);
@@ -857,7 +867,7 @@ function updateJsSnapshot(repo, version, branchName) {
             execHelper('git commit -am "Update JS snapshot to version ' + version + ' (via coho)"');
         }
     } else if (allRepos.indexOf(repo) != -1) {
-        console.log('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
+        print('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
     }
 }
 
@@ -901,7 +911,7 @@ function prepareReleaseBranchCommand() {
 
             // Either create or pull down the branch.
             if (remoteBranchExists(repo, branchName)) {
-                console.log('Remote branch already exists for repo: ' + repo.repoName);
+                print('Remote branch already exists for repo: ' + repo.repoName);
                 // Check out and rebase.
                 updateRepos([repo], [branchName], true);
                 gitCheckout(branchName);
@@ -913,7 +923,7 @@ function prepareReleaseBranchCommand() {
             // Update the VERSION files.
             var versionFilePaths = repo.versionFilePaths || ['VERSION'];
             if (fs.existsSync(versionFilePaths[0])) {
-                console.log(repo.repoName + ': ' + 'Updating VERSION file.');
+                print(repo.repoName + ': ' + 'Updating VERSION file.');
                 versionFilePaths.forEach(function(versionFilePath) {
                     fs.writeFileSync(versionFilePath, version + '\n');
                 });
@@ -921,7 +931,7 @@ function prepareReleaseBranchCommand() {
                     shjs.sed('-i', /cordovaVersion.*=.*;/, 'cordovaVersion = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'Device.java'));
                 }
                 if (!pendingChangesExist()) {
-                    console.log('VERSION file was already up-to-date.');
+                    print('VERSION file was already up-to-date.');
                 }
             } else {
                 console.warn('No VERSION file exists in repo ' + repo.repoName);
@@ -955,7 +965,7 @@ function tagReleaseBranchCommand(argv) {
             updateRepos([repo], [], false);
 
             if (remoteBranchExists(repo, branchName)) {
-                console.log('Remote branch already exists for repo: ' + repo.repoName);
+                print('Remote branch already exists for repo: ' + repo.repoName);
                 gitCheckout(branchName);
             } else {
                 fatal('Release branch does not exist for repo ' + repo.repoName);
@@ -974,13 +984,13 @@ function tagReleaseBranchCommand(argv) {
                 }
                 execHelper('git push --tags ' + repo.remoteName + ' ' + branchName);
             } else {
-                console.log('Repo ' + repo.repoName + ' is already tagged.');
+                print('Repo ' + repo.repoName + ' is already tagged.');
             }
         });
     });
 
-    console.log('');
-    console.log('All work complete.');
+    print('');
+    print('All work complete.');
 }
 
 function ratCommand() {
@@ -999,7 +1009,7 @@ function ratCommand() {
     // Check that RAT command exists.
     var ratPath = path.resolve(path.join(path.dirname(process.argv[1]), 'apache-rat-0.8', 'apache-rat-0.8.jar'));
     if (!fs.existsSync(ratPath)) {
-        console.log('RAT tool not found, downloading to: ' + ratPath);
+        print('RAT tool not found, downloading to: ' + ratPath);
         forEachRepo([getRepoById('coho')], function() {
             if (shjs.which('curl')) {
                 execHelper('curl "http://mirror.csclub.uwaterloo.ca/apache/incubator/rat/binaries/apache-rat-incubating-0.8-bin.tar.gz" | tar xz');

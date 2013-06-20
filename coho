@@ -163,6 +163,7 @@ var allRepos = platformRepos.concat(nonPlatformRepos).concat(otherRepos);
 var repoGroups = {
     'all': allRepos,
     'active': allRepos.filter(function(r) { return !r.inactive }),
+    'auto': computeExistingRepos(),
     'inactive': allRepos.filter(function(r) { return r.inactive }),
     'platform': platformRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
@@ -443,15 +444,24 @@ function computeExistingRepos() {
     });
 }
 
+function localBranchExists(name) {
+    return !!execHelper('git branch --list ' + name, true);
+}
+
 function remoteBranchExists(repo, name) {
     return !!execHelper('git branch -r --list ' + repo.remoteName + '/' + name, true);
 }
 
 function retrieveCurrentBranchName() {
-    var ret = execHelper('git symbolic-ref --short HEAD', true, true);
+    try {
+        var ret = execHelper('git symbolic-ref --short HEAD', true, true);
+    } catch (e) {
+        ret = execHelper('git symbolic-ref --short HEAD', true, true);
+    }
     if (!ret) {
         throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
     }
+    return ret;
 }
 
 function retrieveCurrentTagName() {
@@ -524,8 +534,106 @@ function cloneRepos(repos) {
     }
 }
 
-function repoUpdateCommand(argv) {
+function repoStatusCommand(argv) {
+    var opt = registerRepoFlag(optimist)
     var opt = optimist
+        .options('b', {
+            alias: 'branch',
+            desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches.',
+            default: 'master'
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Reports what changes exist locally that are not yet pushed.\n' +
+               '\n' +
+               'Usage: $0 repo-status -r ios -b master -b 2.9.x')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var repos = computeReposFromFlag(argv);
+
+    var logs = '';
+    var diffs = '';
+
+    forEachRepo(repos, function(repo) {
+        // Determine remote name.
+        updateRepos([repo], [], true);
+        branches.forEach(function(branchName) {
+            if (!localBranchExists(branchName)) {
+                return;
+            }
+            gitCheckout(branchName);
+            var targetBranch = remoteBranchExists(repo, branchName) ? branchName : 'master';
+            var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + targetBranch + '..' + branchName, true);
+            if (changes) {
+                logs += repo.repoName + ' on branch ' + branchName + ': Local commits exist.\n';
+                logs += changes + '\n';
+                diffs += 'Diff for for ' + repo.repoName + ' on branch ' + branchName + ' (truncated):\n';
+                diffs += execHelper('git diff ' + repo.remoteName + '/' + targetBranch + '..' + branchName, true).split('\n').slice(0, 30).join('\n');
+                diffs += '\n\n';
+            } else {
+                logs += repo.repoName + ' on branch ' + branchName + ': No local commits\n';
+            }
+        });
+    });
+    console.log('\n\n');
+    console.log(logs);
+    console.log(diffs);
+}
+
+function repoResetCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    var opt = optimist
+        .options('b', {
+            alias: 'branch',
+            desc: 'The name of the branch to reset. Can be specified multiple times to specify multiple branches.',
+            default: 'master'
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Resets repository branches to match their upstream state.\n' +
+               'Performs the following commands on each:\n' +
+               '    git reset --hard origin/$BRANCH_NAME\n' +
+               '\n' +
+               'Usage: $0 repo-reset -r ios -b master -b 2.9.x')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var repos = computeReposFromFlag(argv);
+
+    // Pre-fetch checks.
+    forEachRepo(repos, function(repo) {
+        // Determine remote name.
+        updateRepos([repo], [], true);
+        stashAndPop(repo, function() {
+            branches.forEach(function(branchName) {
+                if (!localBranchExists(branchName)) {
+                    return;
+                }
+                gitCheckout(branchName);
+                var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName);
+                if (changes) {
+                    console.log(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.\n');
+                    execHelper('git reset --hard ' + repo.remoteName + '/' + branchName);
+                } else {
+                    console.log(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                }
+            });
+        });
+    });
+}
+
+function repoUpdateCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    var opt = opt
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
@@ -538,8 +646,7 @@ function repoUpdateCommand(argv) {
          });
     opt = registerHelpFlag(opt);
     var argv = opt
-        .usage('Updates all existing git repositories within the current working directory.\n' +
-               'Performs the following commands on each:\n' +
+        .usage('Updates git repositories by performing the following commands:\n' +
                '    save active branch\n' +
                '    git fetch $REMOTE \n' +
                '    git stash\n' +
@@ -558,10 +665,8 @@ function repoUpdateCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = computeExistingRepos();
-    if (repos.length === 0) {
-        fatal('No repos found. Clone some using the repo-clone command.');
-    }
+    var repos = computeReposFromFlag(argv);
+
     updateRepos(repos, branches, !argv.fetch);
     process.exit(0);
 }
@@ -870,8 +975,16 @@ function main() {
             entryPoint: repoCloneCommand
         }, {
             name: 'repo-update',
-            desc: 'Updates all cordova git repos in the current working directory.',
+            desc: 'Performs git pull --rebase on all specified repositories.',
             entryPoint: repoUpdateCommand
+        }, {
+            name: 'repo-reset',
+            desc: 'Performs git reset --hard origin/$BRANCH on all specified repositories.',
+            entryPoint: repoResetCommand
+        }, {
+            name: 'repo-status',
+            desc: 'Lists changes that exist locally but have not yet been pushed.',
+            entryPoint: repoStatusCommand
         }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',

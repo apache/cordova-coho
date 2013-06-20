@@ -181,17 +181,20 @@ var repoGroups = {
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
 };
 
-var performGitPush = true;
-var gitPushCount = 0;
+var gitCommitCount = 0;
 
 function reportGitPushResult() {
     console.log('');
-    if (gitPushCount && !performGitPush) {
-        console.log('All work complete. Changes were made locally. Run again with --push to push them.');
-    } else if (gitPushCount) {
-        console.log('All work complete. Changes were successfully pushed.');
+    if (gitCommitCount) {
+        console.log('All work complete. ' + gitCommitCount + ' commits were made locally.');
+        console.log('To review changes:');
+        console.log('  ' + process.argv[1] + ' repo-status -r auto');
+        console.log('To push changes:');
+        console.log('  ' + process.argv[1] + ' repo-push -r auto');
+        console.log('To revert all local commits:');
+        console.log('  ' + process.argv[1] + ' repo-reset -r auto');
     } else {
-        console.log('All work complete. No changes were made.');
+        console.log('All work complete. No commits were made.');
     }
 }
 
@@ -225,11 +228,8 @@ function logCwd() {
 }
 
 function execHelper(cmd, silent, allowError) {
-    if (/^git push/.exec(cmd)) {
-        gitPushCount++;
-        if (!performGitPush) {
-            return;
-        }
+    if (/^git commit/.exec(cmd)) {
+        gitCommitCount++;
     }
     if (!silent) {
         logCwd();
@@ -558,7 +558,7 @@ function repoStatusCommand(argv) {
     var argv = opt
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
-               'Usage: $0 repo-status -r ios -b master -b 2.9.x')
+               'Usage: $0 repo-status -r auto -b master -b 2.9.x')
         .argv;
 
     if (argv.h) {
@@ -611,7 +611,7 @@ function repoResetCommand(argv) {
                'Performs the following commands on each:\n' +
                '    git reset --hard origin/$BRANCH_NAME\n' +
                '\n' +
-               'Usage: $0 repo-reset -r ios -b master -b 2.9.x')
+               'Usage: $0 repo-reset -r auto -b master -b 2.9.x')
         .argv;
 
     if (argv.h) {
@@ -621,7 +621,6 @@ function repoResetCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv);
 
-    // Pre-fetch checks.
     forEachRepo(repos, function(repo) {
         // Determine remote name.
         updateRepos([repo], [], true);
@@ -639,6 +638,53 @@ function repoResetCommand(argv) {
                     console.log(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
                 }
             });
+        });
+    });
+}
+
+function repoPushCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    var opt = optimist
+        .options('b', {
+            alias: 'branch',
+            desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
+            default: 'master'
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Pushes changes to the remote repository.\n' +
+               '\n' +
+               'Usage: $0 repo-push -r auto -b master -b 2.9.x')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var repos = computeReposFromFlag(argv);
+
+    forEachRepo(repos, function(repo) {
+        // Update first.
+        updateRepos([repo], branches, false);
+        branches.forEach(function(branchName) {
+            if (!localBranchExists(branchName)) {
+                return;
+            }
+            var isNewBranch = !remoteBranchExists(repo, branchName);
+
+            gitCheckout(branchName);
+
+            if (isNewBranch) {
+                execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
+            } else {
+                var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName, true);
+                if (changes) {
+                    execHelper('git push ' + repo.remoteName + ' ' + branchName);
+                } else {
+                    console.log(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                }
+            }
         });
     });
 }
@@ -733,22 +779,20 @@ function updateRepos(repos, branches, noFetch) {
     if (branches && branches.length) {
         forEachRepo(repos, function(repo) {
             var staleBranches = branches.filter(function(branchName) {
-                var curHash = execHelper('git rev-parse ' + branchName, true, true);
-                var newHash = execHelper('git rev-parse ' + repo.remoteName + '/' + branchName, true, true);
-                return curHash !== newHash;
+                if (!remoteBranchExists(repo, branchName)) {
+                    return false;
+                }
+                var changes = execHelper('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName, true);
+                return !!changes;
             });
             if (!staleBranches.length) {
-                console.log('Repo already up-to-date: ' + repo.repoName);
+                console.log('Confirmed already up-to-date: ' + repo.repoName);
             } else {
                 console.log('Updating ' + repo.repoName);
                 stashAndPop(repo, function() {
                     staleBranches.forEach(function(branchName) {
-                        if (!remoteBranchExists(repo, branchName)) {
-                            console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
-                        } else {
-                            gitCheckout(branchName);
-                            execHelper('git rebase ' + repo.remoteName + '/' + branchName);
-                        }
+                        gitCheckout(branchName);
+                        execHelper('git rebase ' + repo.remoteName + '/' + branchName);
                     });
                 });
             }
@@ -762,9 +806,6 @@ function configureReleaseCommandFlags(opt) {
         .options('version', {
             desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
             demand: true
-         })
-        .options('push', {
-            desc: 'Whether to git push changes. Defaults to false.',
          });
     opt = registerHelpFlag(opt);
     argv = opt.argv;
@@ -814,7 +855,6 @@ function updateJsSnapshot(repo, version, branchName) {
         }
         if (pendingChangesExist()) {
             execHelper('git commit -am "Update JS snapshot to version ' + version + ' (via coho)"');
-            execHelper('git push ' + repo.remoteName + ' ' + branchName);
         }
     } else if (allRepos.indexOf(repo) != -1) {
         console.log('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
@@ -837,7 +877,6 @@ function prepareReleaseBranchCommand() {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    // performGitPush = argv.push;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -870,7 +909,6 @@ function prepareReleaseBranchCommand() {
                 updateJsSnapshot(repo, version, branchName);
             } else {
                 execHelper('git checkout -b ' + branchName);
-                execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
             }
             // Update the VERSION files.
             var versionFilePaths = repo.versionFilePaths || ['VERSION'];
@@ -891,7 +929,6 @@ function prepareReleaseBranchCommand() {
 
             if (pendingChangesExist()) {
                 execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
-                execHelper('git push ' + repo.remoteName + ' ' + branchName);
             }
         });
     });
@@ -907,7 +944,6 @@ function tagReleaseBranchCommand(argv) {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    // performGitPush = argv.push;
     var branchName = version.replace(/\d+(rc\d)?$/, 'x');
 
     // First - perform precondition checks.
@@ -943,7 +979,8 @@ function tagReleaseBranchCommand(argv) {
         });
     });
 
-    reportGitPushResult();
+    console.log('');
+    console.log('All work complete.');
 }
 
 function ratCommand() {
@@ -1002,6 +1039,10 @@ function main() {
             name: 'repo-status',
             desc: 'Lists changes that exist locally but have not yet been pushed.',
             entryPoint: repoStatusCommand
+        }, {
+            name: 'repo-push',
+            desc: 'Push changes that exist locally but have not yet been pushed.',
+            entryPoint: repoPushCommand
         }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',

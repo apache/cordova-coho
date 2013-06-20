@@ -1035,6 +1035,13 @@ function main() {
             }
         }).argv;
 
+    // ShellJS opens a lot of file handles, and the default on OS X is too small.
+    var ulimit = execHelper('ulimit -S -n', true, true);
+    if (ulimit && ulimit < 2000) {
+        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'');
+        return;
+    }
+
     commandMap[command].entryPoint();
 }
 main();

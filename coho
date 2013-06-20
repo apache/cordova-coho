@@ -54,17 +54,20 @@ var platformRepos = [
         title: 'iOS',
         id: 'ios',
         repoName: 'cordova-ios',
-        cordovaJsPaths: ['CordovaLib/cordova.js']
+        cordovaJsPaths: ['CordovaLib/cordova.js'],
+        versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
         title: 'BlackBerry',
         id: 'blackberry',
-        repoName: 'cordova-blackberry'
+        repoName: 'cordova-blackberry',
+        versionFilePaths: [path.join('blackberry', 'VERSION'), path.join('blackberry10', 'VERSION')]
     }, {
         title: 'Windows',
         id: 'windows',
         repoName: 'cordova-windows',
         cordovaJsSrcName: 'cordova.windows8.js',
-        cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js']
+        cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
+        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
     }, {
         title: 'Windows Phone 7',
         id: 'wp7',
@@ -748,19 +751,12 @@ function prepareReleaseBranchCommand() {
                 execHelper('git push --set-upstream ' + repo.remoteName + ' ' + branchName);
             }
             // Update the VERSION files.
-            var versionFilePath = 'VERSION';
-            if (repo.id == 'ios') {
-                versionFilePath = path.join('CordovaLib', 'VERSION');
-            } else if (repo.id == 'blackberry') {
-                versionFilePath = path.join('blackberry', 'VERSION');
-            }
-            if (fs.existsSync(versionFilePath)) {
+            var versionFilePaths = repo.versionFilePaths || ['VERSION'];
+            if (fs.existsSync(versionFilePaths[0])) {
                 console.log(repo.repoName + ': ' + 'Updating VERSION file.');
-                fs.writeFileSync(versionFilePath, version + '\n');
-                if (repo.id == 'blackberry') {
-                    versionFilePath = 'blackberry10/VERSION';
+                versionFilePaths.forEach(function(versionFilePath) {
                     fs.writeFileSync(versionFilePath, version + '\n');
-                }
+                });
                 if (repo.id == 'android') {
                     shjs.sed('-i', /cordovaVersion.*=.*;/, 'cordovaVersion = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'Device.java'));
                 }

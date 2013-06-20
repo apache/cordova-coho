@@ -166,7 +166,18 @@ var repoGroups = {
 };
 
 var performGitPush = false;
-var needsGitPush = false;
+var gitPushCount = 0;
+
+function reportGitPushResult() {
+    console.log('');
+    if (gitPushCount && !performGitPush) {
+        console.log('All work complete. Changes were made locally. Run again with --push to push them.');
+    } else if (gitPushCount) {
+        console.log('All work complete. Changes were successfully pushed.');
+    } else {
+        console.log('All work complete. No changes were made.');
+    }
+}
 
 function fatal() {
     console.error.apply(console, arguments);
@@ -199,8 +210,8 @@ function logCwd() {
 
 function execHelper(cmd, silent, allowError) {
     if (/^git push/.exec(cmd)) {
+        gitPushCount++;
         if (!performGitPush) {
-            needsGitPush = true;
             return;
         }
     }
@@ -224,6 +235,13 @@ function cpAndLog(src, dest) {
     shjs.cp('-f', src, dest);
     if (shjs.error()) {
         fatal('Copy failed.');
+    }
+}
+
+function gitCheckout(branchName) {
+    var curBranch = retrieveCurrentBranchName();
+    if (curBranch != branchName) {
+        execHelper('git checkout ' + branchName);
     }
 }
 
@@ -603,16 +621,12 @@ function updateRepos(repos, branches, noFetch) {
                 console.log('Repo already up-to-date: ' + repo.repoName);
             } else {
                 console.log('Updating ' + repo.repoName);
-                var curBranch = retrieveCurrentBranchName();
                 stashAndPop(repo, function() {
                     staleBranches.forEach(function(branchName) {
                         if (!remoteBranchExists(repo, branchName)) {
                             console.warning('Skipping branch. Remote branch "' + branchName + '" does not exist.');
                         } else {
-                            if (curBranch != branchName) {
-                                execHelper('git checkout ' + branchName);
-                                curBranch = branchName;
-                            }
+                            gitCheckout(branchName);
                             execHelper('git rebase ' + repo.remoteName + '/' + branchName);
                         }
                     });
@@ -717,6 +731,7 @@ function prepareReleaseBranchCommand() {
         stashAndPop(repo, function() {
             // git fetch + update master
             updateRepos([repo], ['master'], false);
+            gitCheckout('master');
             // Update JS on master.
             updateJsSnapshot(repo, version, 'master');
 
@@ -725,6 +740,7 @@ function prepareReleaseBranchCommand() {
                 console.log('Remote branch already exists for repo: ' + repo.repoName);
                 // Check out and rebase.
                 updateRepos([repo], [branchName], true);
+                gitCheckout(branchName);
                 // Update JS on branch.
                 updateJsSnapshot(repo, version, branchName);
             } else {
@@ -762,11 +778,7 @@ function prepareReleaseBranchCommand() {
         });
     });
 
-    console.log('');
-    console.log('All work is complete.');
-    if (needsGitPush) {
-        console.log('Run again with --push to push changes.');
-    }
+    reportGitPushResult();
 }
 
 function tagReleaseBranchCommand(argv) {
@@ -790,7 +802,7 @@ function tagReleaseBranchCommand(argv) {
 
             if (remoteBranchExists(repo, branchName)) {
                 console.log('Remote branch already exists for repo: ' + repo.repoName);
-                execHelper('git checkout ' + branchName);
+                gitCheckout(branchName);
             } else {
                 fatal('Release branch does not exist for repo ' + repo.repoName);
             }
@@ -814,11 +826,7 @@ function tagReleaseBranchCommand(argv) {
         });
     });
 
-    console.log('');
-    console.log('All work is complete.');
-    if (needsGitPush) {
-        console.log('Run again with --push to push changes.');
-    }
+    reportGitPushResult();
 }
 
 function ratCommand() {

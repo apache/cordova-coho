@@ -831,19 +831,19 @@ function configureReleaseCommandFlags(opt) {
     return argv;
 }
 
-var hasRunJake = false;
+var hasBuiltJs = false;
 
 function updateJsSnapshot(repo, version, branchName) {
     function ensureJsIsBuilt() {
         var cordovaJsRepo = getRepoById('js');
-        if (!hasRunJake) {
+        if (!hasBuiltJs) {
             forEachRepo([cordovaJsRepo], function() {
                 var actualCurTag = retrieveCurrentTagName();
                 if (actualCurTag != version) {
                     fatal('Not preparing branches since cordova-js is not at the version tag. (it\'s at ' + actualCurTag + ')');
                 }
-                execHelper('jake');
-                hasRunJake = true;
+                execHelper('grunt cordovajs');
+                hasBuiltJs = true;
             });
         }
     }

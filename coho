@@ -213,6 +213,10 @@ function fatal() {
     process.exit(1);
 }
 
+function getVersionBranchName(version) {
+    return version.replace(/\d+(rc\d)?$/, 'x');
+}
+
 function registerRepoFlag(opt) {
     return opt.options('r', {
         alias: 'repo',
@@ -838,6 +842,7 @@ function updateJsSnapshot(repo, version, branchName) {
         var cordovaJsRepo = getRepoById('js');
         if (!hasBuiltJs) {
             forEachRepo([cordovaJsRepo], function() {
+                gitCheckout(getVersionBranchName(version));
                 var actualCurTag = retrieveCurrentTagName();
                 if (actualCurTag != version) {
                     fatal('Not preparing branches since cordova-js is not at the version tag. (it\'s at ' + actualCurTag + ')');
@@ -887,7 +892,7 @@ function prepareReleaseBranchCommand() {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    var branchName = version.replace(/\d+(rc\d)?$/, 'x');
+    var branchName = getVersionBranchName(version);
 
     // First - perform precondition checks.
     updateRepos(repos, [], true);
@@ -954,7 +959,7 @@ function tagReleaseBranchCommand(argv) {
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
-    var branchName = version.replace(/\d+(rc\d)?$/, 'x');
+    var branchName = getVersionBranchName(version);
 
     // First - perform precondition checks.
     updateRepos(repos, [], true);

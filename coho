@@ -571,15 +571,15 @@ function remoteBranchExists(repo, name) {
 }
 
 function retrieveCurrentBranchName() {
-    try {
-        var ret = execHelper('git symbolic-ref --short HEAD', true, true);
-    } catch (e) {
-        ret = execHelper('git symbolic-ref --short HEAD', true, true);
-    }
-    if (!ret) {
+    var ref = execHelper('git symbolic-ref HEAD', true, true);
+    if (!ref) {
         throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
     }
-    return ret;
+    var match = /refs\/heads\/(.*)/.exec(ref);
+    if (!match) {
+        throw new Error('Could not parse branch name from: ' + ref);
+    }
+    return match[1];
 }
 
 function retrieveCurrentTagName() {

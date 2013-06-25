@@ -326,7 +326,10 @@ function logCwd() {
     var curDir = process.cwd();
     if (curDir != lastLoggedDir) {
         lastLoggedDir = curDir;
-        print('Changed directory to: ' + path.relative(origWorkingDir, curDir));
+        var relPath = path.relative(origWorkingDir, curDir);
+        if (relPath) {
+            print('Changed directory to: ' + relPath);
+        }
     }
 }
 
@@ -1045,14 +1048,25 @@ function tagReleaseBranchCommand(argv) {
         .usage('Tags a release branches.\n' +
                '\n' +
                'Usage: $0 tag-release --version=2.8.0rc1')
+        .options('pretend', {
+            desc: 'Don\'t actually run git commands, just print out what would be run.',
+         })
     );
     var repos = computeReposFromFlag(argv);
     var version = argv.version;
+    var pretend = argv.pretend;
     var branchName = getVersionBranchName(version);
 
     // First - perform precondition checks.
     updateRepos(repos, [], true);
 
+    function execOrPretend(cmd) {
+        if (pretend) {
+            print('PRETENDING TO RUN: ' + cmd);
+        } else {
+            execHelper(cmd);
+        }
+    }
     forEachRepo(repos, function(repo) {
         stashAndPop(repo, function() {
             // git fetch.
@@ -1072,11 +1086,11 @@ function tagReleaseBranchCommand(argv) {
             var tagName = retrieveCurrentTagName();
             if (tagName != version) {
                 if (tagExists(version)) {
-                    execHelper('git tag ' + version + ' --force');
+                    execOrPretend('git tag ' + version + ' --force');
                 } else {
-                    execHelper('git tag ' + version);
+                    execOrPretend('git tag ' + version);
                 }
-                execHelper('git push --tags ' + repo.remoteName + ' ' + branchName);
+                execOrPretend('git push --tags ' + repo.remoteName + ' ' + branchName);
             } else {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }

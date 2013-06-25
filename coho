@@ -150,6 +150,89 @@ var nonPlatformRepos = [
     }
 ];
 
+var pluginRepos = [
+    {
+        title: 'Plugin - Battery Status',
+        id: 'plugin-battery-status',
+        repoName: 'cordova-plugin-battery-status',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Camera',
+        id: 'plugin-camera',
+        repoName: 'cordova-plugin-camera',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Console',
+        id: 'plugin-console',
+        repoName: 'cordova-plugin-console',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Contacts',
+        id: 'plugin-contacts',
+        repoName: 'cordova-plugin-contacts',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Device Motion',
+        id: 'plugin-device-motion',
+        repoName: 'cordova-plugin-device-motion',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Device Orientation',
+        id: 'plugin-device-orientation',
+        repoName: 'cordova-plugin-device-orientation',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Device',
+        id: 'plugin-device',
+        repoName: 'cordova-plugin-device',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Dialogs',
+        id: 'plugin-dialogs',
+        repoName: 'cordova-plugin-dialogs',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - File Transfer',
+        id: 'plugin-file-transfer',
+        repoName: 'cordova-plugin-file-transfer',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - File',
+        id: 'plugin-file',
+        repoName: 'cordova-plugin-file',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Geolocation',
+        id: 'plugin-geolocation',
+        repoName: 'cordova-plugin-geolocation',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Globalization',
+        id: 'plugin-globalization',
+        repoName: 'cordova-plugin-globalization',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - InAppBrowser',
+        id: 'plugin-inappbrowser',
+        repoName: 'cordova-plugin-inappbrowser',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Media Capture',
+        id: 'plugin-media-capture',
+        repoName: 'cordova-plugin-media-capture',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Network Information',
+        id: 'plugin-network-information',
+        repoName: 'cordova-plugin-network-information',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Splash Screen',
+        id: 'plugin-splashscreen',
+        repoName: 'cordova-plugin-splashscreen',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
+    }
+];
 
 var otherRepos = [
     {
@@ -161,6 +244,11 @@ var otherRepos = [
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
+        inactive: true, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Cordova App Harness',
+        id: 'app-harness',
+        repoName: 'cordova-app-harness',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova Coho',
@@ -178,6 +266,7 @@ var repoGroups = {
     'auto': computeExistingRepos(),
     'inactive': allRepos.filter(function(r) { return r.inactive }),
     'platform': platformRepos,
+    'plugins': pluginRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
 };
 

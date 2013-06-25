@@ -231,6 +231,11 @@ var pluginRepos = [
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
         inactive: false, // Not on the same release schedule as the rest of Cordova
+    }, {
+        title: 'Plugin - Vibration',
+        id: 'plugin-vibration',
+        repoName: 'cordova-plugin-vibration',
+        inactive: false, // Not on the same release schedule as the rest of Cordova
     }
 ];
 
@@ -258,7 +263,7 @@ var otherRepos = [
     }
 ];
 
-var allRepos = platformRepos.concat(nonPlatformRepos).concat(otherRepos);
+var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat(otherRepos);
 
 var repoGroups = {
     'all': allRepos,

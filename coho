@@ -339,6 +339,8 @@ function logCwd() {
 }
 
 function execHelper(cmd, silent, allowError) {
+    // Don't allow failure if being silent.
+    allowError = allowError || silent;
     if (/^git commit/.exec(cmd)) {
         gitCommitCount++;
     }
@@ -893,7 +895,7 @@ function updateRepos(repos, branches, noFetch) {
                 if (!remoteBranchExists(repo, branchName)) {
                     return false;
                 }
-                var changes = execHelper('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName, true);
+                var changes = execHelper('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName, true, true);
                 return !!changes;
             });
             if (!staleBranches.length) {

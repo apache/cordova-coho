@@ -217,6 +217,11 @@ var pluginRepos = [
         repoName: 'cordova-plugin-inappbrowser',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
+        title: 'Plugin - Media',
+        id: 'plugin-media',
+        repoName: 'cordova-plugin-media',
+        inactive: true, // Not on the same release schedule as the rest of Cordova
+    }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',

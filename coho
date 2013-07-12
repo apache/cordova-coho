@@ -1332,7 +1332,7 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
                                            ' -> ' + root_version + ' for ' + repo.title, '',
                                            [component_map[repo.jiraComponentName]], version_id));
         });
-        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload Announce Release Candidate',
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Announce Release Candidate',
                                        announce_description, all_components, version_id));
         sendCreateSubtaskRequests(request_queue, username, password, pretend);
     });

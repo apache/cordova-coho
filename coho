@@ -22,6 +22,7 @@ var fs = require('fs');
 var optimist = require('optimist');
 var path = require('path');
 var shjs = require('shelljs');
+var request = require('request');
 
 var origWorkingDir = process.cwd();
 
@@ -43,6 +44,7 @@ var platformRepos = [
         title: 'Android',
         id: 'android',
         repoName: 'cordova-android',
+        jiraComponentName: 'Android',
         cordovaJsPaths: ['framework/assets/www/cordova.js'],
         ratExcludes: [
             '*.properties',
@@ -54,12 +56,14 @@ var platformRepos = [
         title: 'iOS',
         id: 'ios',
         repoName: 'cordova-ios',
+        jiraComponentName: 'iOS',
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
         title: 'BlackBerry',
         id: 'blackberry',
         repoName: 'cordova-blackberry',
+        jiraComponentName: 'BlackBerry',
         cordovaJsPaths: [
             path.join('bbos', 'javascript', 'cordova.blackberry.js'),
             path.join('playbook', 'javascript', 'cordova.blackberry.js'),
@@ -77,6 +81,7 @@ var platformRepos = [
         title: 'Windows',
         id: 'windows',
         repoName: 'cordova-windows',
+        jiraComponentName: 'Windows 8',
         cordovaJsSrcName: 'cordova.windows8.js',
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
         versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
@@ -84,43 +89,51 @@ var platformRepos = [
         title: 'Windows Phone 7',
         id: 'wp7',
         repoName: 'cordova-wp7',
+        jiraComponentName: 'WP7',
         cordovaJsSrcName: 'cordova.windowsphone.js',
         cordovaJsPaths: ['templates/standalone/www/cordova.js']
     }, {
         title: 'Windows Phone 8',
         id: 'wp8',
         repoName: 'cordova-wp8',
+        jiraComponentName: 'WP8',
         cordovaJsSrcName: 'cordova.windowsphone.js',
         cordovaJsPaths: ['common/www/cordova.js']
     }, {
         title: 'Mac OSX',
         id: 'osx',
         repoName: 'cordova-osx',
+        jiraComponentName: 'OSX',
         cordovaJsPaths: ['CordovaFramework/cordova.js']
     }, {
         title: 'Bada',
         id: 'bada',
         repoName: 'cordova-bada',
+        jiraComponentName: 'Bada',
         inactive: true
     }, {
         title: 'Bada WAC',
         id: 'bada-wac',
         repoName: 'cordova-bada-wac',
+        jiraComponentName: 'Bada',
         inactive: true
     }, {
         title: 'WebOS',
         id: 'webos',
         repoName: 'cordova-webos',
+        jiraComponentName: 'webOS',
         inactive: true
     }, {
         title: 'QT',
         id: 'qt',
         repoName: 'cordova-qt',
+        jiraComponentName: 'Qt',
         inactive: true
     }, {
         title: 'Tizen',
         id: 'tizen',
         repoName: 'cordova-tizen',
+        jiraComponentName: 'Tizen',
         inactive: true
     }
 ];
@@ -129,11 +142,13 @@ var nonPlatformRepos = [
     {
         title: 'Docs',
         id: 'docs',
-        repoName: 'cordova-docs'
+        repoName: 'cordova-docs',
+        jiraComponentName: 'Docs'
     }, {
         title: 'MobileSpec',
         id: 'mobile-spec',
         repoName: 'cordova-mobile-spec',
+        jiraComponentName: 'mobile-spec',
         ratExcludes: [
           'jasmine.*',
           'html',
@@ -142,11 +157,13 @@ var nonPlatformRepos = [
     }, {
         title: 'Cordova JS',
         id: 'js',
-        repoName: 'cordova-js'
+        repoName: 'cordova-js',
+        jiraComponentName: 'CordovaJS'
     }, {
         title: 'Hello World App',
         id: 'app-hello-world',
-        repoName: 'cordova-app-hello-world'
+        repoName: 'cordova-app-hello-world',
+        jiraComponentName: 'App Hello World'
     }
 ];
 
@@ -155,91 +172,109 @@ var pluginRepos = [
         title: 'Plugin - Battery Status',
         id: 'plugin-battery-status',
         repoName: 'cordova-plugin-battery-status',
+        jiraComponentName: 'Plugin Battery Status',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Camera',
         id: 'plugin-camera',
         repoName: 'cordova-plugin-camera',
+        jiraComponentName: 'Plugin Camera',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
+        jiraComponentName: 'Plugin Console',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
+        jiraComponentName: 'Plugin Contacts',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
+        jiraComponentName: 'Plugin Device Motion',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
+        jiraComponentName: 'Plugin Device Orientation',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
+        jiraComponentName: 'Plugin Device',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Dialogs',
         id: 'plugin-dialogs',
         repoName: 'cordova-plugin-dialogs',
+        jiraComponentName: 'Plugin Dialogs',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
+        jiraComponentName: 'Plugin File Transfer',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
+        jiraComponentName: 'Plugin File',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
+        jiraComponentName: 'Plugin Geolocation',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Globalization',
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
+        jiraComponentName: 'Plugin Globalization',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
         repoName: 'cordova-plugin-inappbrowser',
+        jiraComponentName: 'Plugin InAppBrowser',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Media',
         id: 'plugin-media',
         repoName: 'cordova-plugin-media',
+        jiraComponentName: 'Plugin Media',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',
+        jiraComponentName: 'Plugin Media Capture',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Network Information',
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
+        jiraComponentName: 'Plugin Network Information',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
+        jiraComponentName: 'Plugin SplashScreen',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
+        jiraComponentName: 'Plugin Vibration',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }
 ];
@@ -249,11 +284,13 @@ var otherRepos = [
         title: 'Cordova CLI',
         id: 'cli',
         repoName: 'cordova-cli',
+        jiraComponentName: 'CLI',
         inactive: false, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
+        jiraComponentName: 'Plugman',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova App Harness',
@@ -264,6 +301,7 @@ var otherRepos = [
         title: 'Cordova Coho',
         id: 'coho',
         repoName: 'cordova-coho',
+        jiraComponentName: 'Coho',
         inactive: true, // Not on the same release schedule as the rest of Cordova
     }
 ];
@@ -281,6 +319,9 @@ var repoGroups = {
 };
 
 var gitCommitCount = 0;
+
+var JIRA_API_URL = "https://issues.apache.org/jira/rest/api/latest/";
+var JIRA_PROJECT_KEY = "CB";
 
 function reportGitPushResult() {
     print('');
@@ -451,7 +492,7 @@ function createReleaseCommand(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
     var prevVersion = argv['prev-version'];
     var newVersion = argv['new-version'];
 
@@ -543,8 +584,7 @@ function apacheUpload(){
     svn commit -m*/
 }
 
-function computeReposFromFlag(argv) {
-    var flagValue = argv.r;
+function computeReposFromFlag(flagValue) {
     var values = Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
     var addedIds = {};
@@ -634,7 +674,7 @@ function repoCloneCommand(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
     cloneRepos(repos);
     process.exit(0);
 }
@@ -684,7 +724,7 @@ function repoStatusCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
 
     var logs = '';
     var diffs = '';
@@ -737,7 +777,7 @@ function repoResetCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
 
     forEachRepo(repos, function(repo) {
         // Determine remote name.
@@ -780,7 +820,7 @@ function repoPushCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
 
     forEachRepo(repos, function(repo) {
         // Update first.
@@ -841,7 +881,7 @@ function repoUpdateCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
 
     updateRepos(repos, branches, !argv.fetch);
     process.exit(0);
@@ -994,7 +1034,7 @@ function prepareReleaseBranchCommand() {
                '\n' +
                'Usage: $0 prepare-release-branch --version=2.8.0rc1')
     );
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
     var version = argv.version;
     var branchName = getVersionBranchName(version);
 
@@ -1064,7 +1104,7 @@ function tagReleaseBranchCommand(argv) {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
          })
     );
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
     var version = argv.version;
     var pretend = argv.pretend;
     var branchName = getVersionBranchName(version);
@@ -1125,7 +1165,7 @@ function ratCommand() {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = computeReposFromFlag(argv);
+    var repos = computeReposFromFlag(argv.r);
     // Check that RAT command exists.
     var ratPath = path.resolve(path.join(path.dirname(process.argv[1]), 'apache-rat-0.8', 'apache-rat-0.8.jar'));
     if (!fs.existsSync(ratPath)) {
@@ -1148,6 +1188,219 @@ function ratCommand() {
         }
         var excludeFlags = '-e "' + allExcludes.join('" -e "') + '"';
         execHelper('java -jar "' + ratPath + '" -d . ' + excludeFlags);
+    });
+}
+
+function sendCreateIssueRequest(issue, username, password, pretend, callback) {
+    var auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
+    requestToSend = {
+        'uri':JIRA_API_URL + 'issue',
+        'headers':{
+            'Authorization':auth
+        },
+        'json':issue
+    };
+    print('creating jira issue: ' + issue.fields.summary);
+    if (!pretend) {
+        request.post(requestToSend, callback);
+    } else {
+        print('sending request:');
+        console.log(JSON.stringify(requestToSend, null, 2));
+        callback(null, { 'statuscode':0 }, { 'key':'1234567' });
+    }
+}
+
+function sendCreateSubtaskRequests(request_queue, username, password, pretend) {
+    if (request_queue.length == 0) {
+        return;
+    }
+    sendCreateIssueRequest(request_queue.shift(), username, password, pretend, function(err, res, body) {
+        if (err) {
+            print('there was an error creating subtask.');
+        } else if (res.statuscode >= 400) {
+            print('got http status ' + res.statuscode + ' during subtask creation.');
+            print(body);
+        } else {
+            sendCreateSubtaskRequests(request_queue, username, password, pretend);
+        }
+    });
+}
+
+function makeSubtask(parent_key, summary, description, component_ids, version_id) {
+    var components = [];
+    component_ids.forEach(function(component_id) {
+        components.push({'id':component_id});
+    });
+    return {
+        'fields':{
+            'project':{
+                'key':JIRA_PROJECT_KEY
+            },
+            'parent':{
+                'key':parent_key
+            },
+            'summary':summary,
+            'description':description,
+            'issuetype':{
+                'name':'Sub-task'
+            },
+            'components':components,
+            'fixVersions': [{
+                'id':version_id
+            }]
+        },
+    };
+}
+
+function createReleaseBug(version, root_version, prev_version, version_id, username, password, component_map, pretend) {
+    var subjectPrefix = '[Release + ' + version + '] ';
+    var workflow_link = 'Workflow here:\nhttp://wiki.apache.org/cordova/CuttingReleases';
+    var parent_issue = {
+        'fields':{
+            'project':{
+                'key':JIRA_PROJECT_KEY
+            },
+            'summary':subjectPrefix + 'Parent Issue',
+            'description':'Parent bug for the ' + version + ' Cordova Release.\n\n' + workflow_link,
+            'issuetype':{
+                'name':'Task'
+            },
+            'fixVersions': [{
+                'id':version_id
+            }],
+            'components': []
+        }
+    };
+    var create_release_branches_description = workflow_link + '\n\n' +
+        'Steps:\n' +
+        '1. Create remote branches\n' +
+        '2. Update all VERSION files\n\n' +
+        'Both steps can be done via coho create-release-branch --version ' + version;
+    var tag_description = workflow_link + '\n\n' +
+        'Steps:\n' +
+        '1. Update cordova.js snapshot to newly tagger version\n' +
+        '2. Update snapshot of cordova-app-hello-world within create template (if its changed since previous release)\n' +
+        '3. Run Apache RAT\n' +
+        '4. Look through all open JIRA bugs targeted at the current version and either fix or postpone them.\n' +
+        '5. Test (refer to http://wiki.apache.org/cordova/CuttingReleases#What_to_Test)\n' +
+        '6. Tag (via coho)';
+    var announce_description = workflow_link + '\n\n' +
+        'Steps:\n' +
+        '1. Create the .zip of the release candidate\n' +
+        '2. Upload it to apache servers\n' +
+        '3. Upload new docs snapshot (see Release wiki)\n' +
+        '4. Update cordova.apache.org website with new release info (see Release wiki)\n' +
+        '5. Wait 24 hours\n' +
+        '6. Announce its availability to the mailing-list & blog about it.';
+    var tagRepos = computeReposFromFlag('active');
+    var upgradeGuideRepos = computeReposFromFlag('active-platform');
+    var all_components = {};
+    tagRepos.forEach(function(repo) {
+        all_components[component_map[repo.jiraComponentName]] = null;
+    });
+    all_components = Object.keys(all_components);
+    all_components.forEach(function(component_id) {
+        parent_issue.fields.components.push({'id':component_id});
+    });
+
+    sendCreateIssueRequest(parent_issue, username, password, pretend, function(err, res, body) {
+        if (err) {
+            fatal('Error creating parent issue: ' + err);
+        }
+        var parent_key = body.key;
+        if (!parent_key) {
+            fatal('No ID retrieved for created parent issue. Aborting.');
+        }
+        var request_queue = [];
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create Release Branches',
+                                       create_release_branches_description, all_components, version_id));
+        tagRepos.forEach(function(repo) {
+            if (!component_map[repo.jiraComponentName]) {
+                print('Unable to find component ' + repo.jiraComponentName + ' in JIRA.');
+                return;
+            }
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag ' + repo.title, tag_description,
+                                           [component_map[repo.jiraComponentName]], version_id));
+        });
+        upgradeGuideRepos.forEach(function(repo) {
+            if (!component_map[repo.jiraComponentName]) {
+                print('Unable to find component ' + repo.jiraComponentName + ' in JIRA.');
+                return;
+            }
+            request_queue.push(makeSubtask(parent_key,
+                                           subjectPrefix + 'Update Upgrading Guide for ' + prev_version +
+                                           ' -> ' + root_version + ' for ' + repo.title, '',
+                                           [component_map[repo.jiraComponentName]], version_id));
+        });
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload Announce Release Candidate',
+                                       announce_description, all_components, version_id));
+        sendCreateSubtaskRequests(request_queue, username, password, pretend);
+    });
+}
+
+function createReleaseBugCommand() {
+    var opt = registerHelpFlag(optimist);
+    opt = opt.options('version', {
+        desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
+        demand: true
+    }).options('username', {
+        desc: 'Username to use when creating issues in JIRA',
+        demand: true
+    }).options('password', {
+        desc: 'Password to use when creating issues in JIRA',
+        demand: true
+    }).options('pretend', {
+        desc: 'Instead of creating issues in JIRA, print the issue creation requests that would have been sent instead'
+    });
+    opt.usage('Creates an issue in JIRA for releasing a new version of Cordova, including creating all subtasks.\n' +
+              '\n' +
+              'Usage: $0 create-release-bug --version=3.0.0rc1 --username=Alice --password=Passw0rd');
+    var argv = opt.argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+
+    request.get(JIRA_API_URL + 'project/' + JIRA_PROJECT_KEY + '/components', function(err, res, components) {
+        if (err) {
+            fatal('Error getting components from JIRA: ' + err);
+        } else if (!components) {
+            fatal('Error: JIRA returned no components');
+        }
+        components = JSON.parse(components);
+        var component_map = {};
+        components.forEach(function(component) {
+            component_map[component.name] = component.id;
+        });
+
+        request.get(JIRA_API_URL + 'project/' + JIRA_PROJECT_KEY + '/versions', function(err, res, versions) {
+            if (err) {
+                fatal('Error getting versions from JIRA: ' + err);
+            } else if (!versions) {
+                fatal('Error: JIRA returned no versions');
+            }
+            versions = JSON.parse(versions);
+            var version = argv.version;
+            var root_version = version;
+            var version_id = null;
+            var prev_version = null;
+            if (version.indexOf('r') > -1) {
+                root_version = version.substr(0, version.indexOf('r'));
+            }
+            for (var i = 0; i < versions.length; i++) {
+                if (versions[i].name == root_version) {
+                    version_id = versions[i].id;
+                    prev_version = versions[i - 1].name;
+                    break;
+                }
+            }
+            if (!version_id) {
+                fatal('Cannot find version ID number in JIRA related to "root" version string: ' + version);
+            }
+            createReleaseBug(version, root_version, prev_version, version_id, argv.username, argv.password, component_map,
+                             argv.pretend);
+        });
     });
 }
 
@@ -1193,6 +1446,10 @@ function main() {
             name: 'create-release-snapshot',
             desc: 'Creates a signed .zip that consitutes a release.',
             entryPoint: createReleaseCommand
+        }, {
+            name: 'create-release-bug',
+            desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',
+            entryPoint: createReleaseBugCommand
         }
 //            name: 'upload-release',
 //            desc: 'Uploads a signed .zip to Cordova\'s webserver.',

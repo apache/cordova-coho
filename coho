@@ -348,7 +348,15 @@ function fatal() {
 }
 
 function getVersionBranchName(version) {
-    return version.replace(/\d+(rc\d)?$/, 'x');
+    return version.replace(/\d+(-?rc\d)?$/, 'x');
+}
+
+function validateVersionString(version, opt_allowNonSemver) {
+    var pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
+    if (!pattern.test(version)) {
+        fatal('Versions must be in the form #.#.#-[rc#]');
+    }
+    return version;
 }
 
 function registerRepoFlag(opt) {
@@ -388,7 +396,7 @@ function execHelper(cmd, silent, allowError) {
         logCwd();
         print('Executing command:', cmd);
     }
-    var result = shjs.exec(cmd, {silent: silent});
+    var result = shjs.exec(cmd, {silent: (silent && silent !== 2)});
     if (result.code) {
         if (allowError) {
             return null;
@@ -451,7 +459,7 @@ function createReleaseCommand(argv) {
     var opt = registerRepoFlag(optimist)
     opt = opt
         .options('new-version', {
-            desc: 'The version to release. E.g. 2.7.1rc2',
+            desc: 'The version to release. E.g. 2.7.1-rc2',
             demand: true
          })
         .options('prev-version', {
@@ -487,8 +495,8 @@ function createReleaseCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
-    var prevVersion = argv['prev-version'];
-    var newVersion = argv['new-version'];
+    var prevVersion = validateVersionString(argv['prev-version'], true);
+    var newVersion = validateVersionString(argv['new-version']);
 
     // Ensure we can find the path to the coho repo.
     var scriptPath = path.dirname(process.argv[1]);
@@ -989,7 +997,7 @@ function configureReleaseCommandFlags(opt) {
     var opt = registerRepoFlag(opt)
     opt = opt
         .options('version', {
-            desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
+            desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]',
             demand: true
          });
     opt = registerHelpFlag(opt);
@@ -999,10 +1007,7 @@ function configureReleaseCommandFlags(opt) {
         optimist.showHelp();
         process.exit(1);
     }
-    var version = argv.version;
-    if (!/^\d+\.\d+\.\d+(rc\d)?$/.test(version)) {
-        fatal('The version must be in the form #.#.#[rc#]');
-    }
+    var version = validateVersionString(argv.version);
     return argv;
 }
 
@@ -1059,10 +1064,10 @@ function prepareReleaseBranchCommand() {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-release-branch --version=2.8.0rc1')
+               'Usage: $0 prepare-release-branch --version=2.8.0-rc1')
     );
     var repos = computeReposFromFlag(argv.r);
-    var version = argv.version;
+    var version = validateVersionString(argv.version);
     var branchName = getVersionBranchName(version);
 
     // First - perform precondition checks.
@@ -1126,13 +1131,13 @@ function tagReleaseBranchCommand(argv) {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Tags a release branches.\n' +
                '\n' +
-               'Usage: $0 tag-release --version=2.8.0rc1')
+               'Usage: $0 tag-release --version=2.8.0-rc1')
         .options('pretend', {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
          })
     );
     var repos = computeReposFromFlag(argv.r);
-    var version = argv.version;
+    var version = validateVersionString(argv.version);
     var pretend = argv.pretend;
     var branchName = getVersionBranchName(version);
 
@@ -1381,13 +1386,14 @@ function createReleaseBugCommand() {
     });
     opt.usage('Creates an issue in JIRA for releasing a new version of Cordova, including creating all subtasks.\n' +
               '\n' +
-              'Usage: $0 create-release-bug --version=3.0.0rc1 --username=Alice --password=Passw0rd');
+              'Usage: $0 create-release-bug --version=3.0.0-rc1 --username=Alice --password=Passw0rd');
     var argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
+    var version = validateVersionString(argv.version);
 
     request.get(JIRA_API_URL + 'project/' + JIRA_PROJECT_KEY + '/components', function(err, res, components) {
         if (err) {
@@ -1408,7 +1414,6 @@ function createReleaseBugCommand() {
                 fatal('Error: JIRA returned no versions');
             }
             versions = JSON.parse(versions);
-            var version = argv.version;
             var root_version = version;
             var version_id = null;
             var prev_version = null;
@@ -1511,7 +1516,7 @@ function main() {
     // ShellJS opens a lot of file handles, and the default on OS X is too small.
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
-        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'');
+        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'', 2);
         return;
     }
 

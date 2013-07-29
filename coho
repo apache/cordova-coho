@@ -86,13 +86,6 @@ var platformRepos = [
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
         versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
     }, {
-        title: 'Windows Phone 7',
-        id: 'wp7',
-        repoName: 'cordova-wp7',
-        jiraComponentName: 'WP7',
-        cordovaJsSrcName: 'cordova.windowsphone.js',
-        cordovaJsPaths: ['templates/standalone/www/cordova.js']
-    }, {
         title: 'Windows Phone 8',
         id: 'wp8',
         repoName: 'cordova-wp8',

@@ -84,7 +84,8 @@ var platformRepos = [
         jiraComponentName: 'Windows 8',
         cordovaJsSrcName: 'cordova.windows8.js',
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
-        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
+        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')],
+        inactive: true
     }, {
         title: 'Windows Phone 8',
         id: 'wp8',
@@ -166,109 +167,109 @@ var pluginRepos = [
         id: 'plugin-battery-status',
         repoName: 'cordova-plugin-battery-status',
         jiraComponentName: 'Plugin Battery Status',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false 
     }, {
         title: 'Plugin - Camera',
         id: 'plugin-camera',
         repoName: 'cordova-plugin-camera',
         jiraComponentName: 'Plugin Camera',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
         jiraComponentName: 'Plugin Console',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false 
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
         jiraComponentName: 'Plugin Contacts',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
         jiraComponentName: 'Plugin Device Motion',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
         jiraComponentName: 'Plugin Device Orientation',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
         jiraComponentName: 'Plugin Device',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Dialogs',
         id: 'plugin-dialogs',
         repoName: 'cordova-plugin-dialogs',
         jiraComponentName: 'Plugin Dialogs',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
         jiraComponentName: 'Plugin Geolocation',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Globalization',
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
         repoName: 'cordova-plugin-inappbrowser',
         jiraComponentName: 'Plugin InAppBrowser',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Media',
         id: 'plugin-media',
         repoName: 'cordova-plugin-media',
         jiraComponentName: 'Plugin Media',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',
         jiraComponentName: 'Plugin Media Capture',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Network Information',
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
         jiraComponentName: 'Plugin SplashScreen',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
+        inactive: false
     }
 ];
 

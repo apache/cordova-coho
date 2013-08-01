@@ -560,22 +560,55 @@ function createReleaseCommand(argv) {
 }
 
 function apacheUpload(){
-    if (shjs.test('-d','./apachecordova')){
-        print('apachecordova directory exists');
-        shjs.exec("cd apachecordova && svn update");
-
-    }else{
-        //grab apachecordova repo off apache svn servers
-        shjs.exec("svn checkout https://dist.apache.org/repos/dist/release/cordova apachecordova")
+    var opt = registerRepoFlag(optimist)
+    opt = opt
+        .options('new-version', {
+            desc: 'The version to release. E.g. 3.0.0',
+            demand: true
+         })
+        .options('prev-version', {
+            desc: 'The previous release version (used to remove old version from download page)',
+            demand: false
+         });
+    
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Uploads the release to the apache servers and optionally removes previous release files.\n' +
+            'This involves:\n' +
+            '    Checking out Apache Cordova release repository if it does not already exist.\n' +
+            '    Updating the repositoryvia svn update\n' +
+            '    Optionally removing old release artifacts\n' +
+            '    Copying in new relase artifacts\n' +
+            '    Svn committing new release artifacts to the apache repo\n' +
+            '\n' +
+            'Usage: $0 upload-release --new-version 3.0.0 [--prev-version 2.9.0]')
+        .argv;
+    
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
     }
     
+    if (shjs.test('-d','./apachecordova')){
+        print('apachecordova directory exists');
+        execHelper("cd apachecordova && svn update");
 
-    /*svn checkout https://dist.apache.org/repos/dist/release/cordova apachecordova
-    add function to do rest of 
-    delete all files 
-    copy over release files
-    svn add *
-    svn commit -m*/
+    } else {
+        //grab apachecordova repo off apache svn servers
+        execHelper("svn checkout https://dist.apache.org/repos/dist/release/cordova apachecordova")
+    }
+
+    if (argv['prev-version'] && shjs.test('-d','./apachecordova/cordova-'+argv['prev-version']+'-src.zip')){
+        //remove old version
+        print('removing previous release from apache servers')
+        execHelper("cd apachecordova && svn delete cordova-"+argv['prev-version']+"-src.*");
+    }
+    
+    print('copy over and commit new release files')
+    execHelper("cp -r releases/cordova-"+argv['new-version']+"/cordova-"+argv['new-version']+"-src* apachecordova/");
+    execHelper("cd apachecordova && svn add *");
+    print("svn commit -m 'updated to "+argv['new-version']+"'")
+    execHelper("cd apachecordova && svn commit -m 'updated to "+opt.argv['new-version']+"'");
 }
 
 function computeReposFromFlag(flagValue) {
@@ -1444,10 +1477,11 @@ function main() {
             name: 'create-release-bug',
             desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',
             entryPoint: createReleaseBugCommand
+        }, {
+            name: 'upload-release',
+            desc: 'Uploads a signed .zip to Cordova\'s webserver.',
+            entryPoint: apacheUpload
         }
-//            name: 'upload-release',
-//            desc: 'Uploads a signed .zip to Cordova\'s webserver.',
-//            entryPoint: null
     ];
     var commandMap = {};
     for (var i = 0; i < commandList.length; ++i) {

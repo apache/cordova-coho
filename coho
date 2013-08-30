@@ -509,7 +509,7 @@ function createReleaseCommand(argv) {
         fatal('Expected path to exist: ' + binPath);
     }
 
-    cloneRepos(repos);
+    cloneRepos(repos,false);
     if (argv.update) {
         // No need to update branches, just do a git fetch --tags.
         updateRepos(repos, [], false);
@@ -710,17 +710,17 @@ function repoCloneCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
-    cloneRepos(repos);
+    cloneRepos(repos, false);
     process.exit(0);
 }
 
-function cloneRepos(repos) {
+function cloneRepos(repos, quiet) {
     var failures = [];
     var numSkipped = 0;
 
     repos.forEach(function(repo) {
         if (shjs.test('-d', repo.repoName)) {
-            print('Repo already cloned: ' + repo.repoName);
+            if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else {
             var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
@@ -939,6 +939,8 @@ function repoUpdateCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
 
+    // ensure that any missing repos are cloned
+    cloneRepos(repos,true);
     updateRepos(repos, branches, !argv.fetch);
     process.exit(0);
 }

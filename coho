@@ -882,6 +882,27 @@ function repoPushCommand(argv) {
     });
 }
 
+function repoPerformShellCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Performs the supplied shell command in each repo directory.\n' +
+               '\n' +
+               'Usage: $0 foreach "shell command"')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv.r);
+    var cmd = argv._[1];
+    forEachRepo(repos, function(repo) {
+         shjs.exec(cmd); 
+    });
+    process.exit(0);
+}
+
 function repoUpdateCommand(argv) {
     var opt = registerRepoFlag(optimist)
     var opt = opt
@@ -1486,6 +1507,10 @@ function main() {
             name: 'upload-release',
             desc: 'Uploads a signed .zip to Cordova\'s webserver.',
             entryPoint: apacheUpload
+        }, {
+            name: 'foreach',
+            desc: 'Runs a shell command in each repo.',
+            entryPoint: repoPerformShellCommand
         }
     ];
     var commandMap = {};

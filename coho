@@ -363,7 +363,7 @@ function registerRepoFlag(opt) {
     return opt.options('r', {
         alias: 'repo',
         desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
-        default: 'active'
+        default: 'auto'
     });
 }
 

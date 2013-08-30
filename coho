@@ -363,7 +363,7 @@ function registerRepoFlag(opt) {
     return opt.options('r', {
         alias: 'repo',
         desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
-        default: 'active'
+        default: 'auto'
     });
 }
 
@@ -898,7 +898,7 @@ function repoPerformShellCommand(argv) {
     var repos = computeReposFromFlag(argv.r);
     var cmd = argv._[1];
     forEachRepo(repos, function(repo) {
-         shjs.exec(cmd); 
+         execHelper(cmd);
     });
     process.exit(0);
 }

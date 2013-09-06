@@ -769,10 +769,10 @@ function repoStatusCommand(argv) {
         process.exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var branches2 = Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2];
+    var branches2 = argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
     var repos = computeReposFromFlag(argv.r);
 
-    if (branches.length != branches2.length) {
+    if (branches2 && branches.length != branches2.length) {
         fatal('Must specify the same number of --branch and --branch2 flags');
     }
 
@@ -786,7 +786,7 @@ function repoStatusCommand(argv) {
             if (!localBranchExists(branchName)) {
                 return;
             }
-            var targetBranch = branches2[i] || (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
+            var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
             var changes = execHelper('git log --oneline ' + targetBranch + '..' + branchName, true);
             if (changes) {
                 logs += repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.\n';

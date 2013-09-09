@@ -723,8 +723,7 @@ function repoStatusCommand(argv) {
     var opt = optimist
         .options('b', {
             alias: 'branch',
-            desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches. The local version of the branch is compared with the origin\'s version unless --b2 is specified.',
-            default: 'master'
+            desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches. The local version of the branch is compared with the origin\'s version unless --b2 is specified.'
          })
         .options('branch2', {
             desc: 'The name of the branch to diff against. This is origin/$branch by default.'
@@ -745,11 +744,11 @@ function repoStatusCommand(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var branches2 = argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
+    var branches = argv.b && (Array.isArray(argv.b) ? argv.b : [argv.b]);
+    var branches2 = branches && argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
     var repos = computeReposFromFlag(argv.r);
 
-    if (branches2 && branches.length != branches2.length) {
+    if (branches2 && branches && branches.length != branches2.length) {
         fatal('Must specify the same number of --branch and --branch2 flags');
     }
 
@@ -759,7 +758,8 @@ function repoStatusCommand(argv) {
     forEachRepo(repos, function(repo) {
         // Determine remote name.
         updateRepos([repo], [], true);
-        branches.forEach(function(branchName, i) {
+        var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
+        actualBranches.forEach(function(branchName, i) {
             if (!localBranchExists(branchName)) {
                 return;
             }

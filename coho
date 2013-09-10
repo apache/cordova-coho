@@ -1314,7 +1314,8 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
                 'key':JIRA_PROJECT_KEY
             },
             'summary':subjectPrefix + 'Parent Issue',
-            'description':'Parent bug for the ' + version + ' Cordova Release.\n\n' + workflow_link,
+            'description':'Parent bug for the ' + version + ' Cordova Release.\n\n' + workflow_link +
+                          '\n\nRelease Master: ?\n\nComponent Leads: Refer to assignee of "Test & Tag" sub-tasks.\n'
             'issuetype':{
                 'name':'Task'
             },

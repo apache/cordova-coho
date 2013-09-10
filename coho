@@ -1364,6 +1364,9 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
 
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload signed release .zip to Apache Dist',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
+
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Announce Release',
                                        'Refer to ' + workflow_link, all_components, version_id));
         sendCreateSubtaskRequests(request_queue, username, password, pretend);

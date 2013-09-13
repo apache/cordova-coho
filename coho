@@ -100,6 +100,13 @@ var platformRepos = [
         jiraComponentName: 'OSX',
         cordovaJsPaths: ['CordovaFramework/cordova.js']
     }, {
+        title: 'Firefox OS',
+        id: 'firefoxos',
+        repoName: 'cordova-firefoxos',
+        jiraComponentName: 'FirefoxOS',
+        cordovaJsPaths: ['cordova-lib/cordova.js'],
+        inactive: true
+    }, {
         title: 'Bada',
         id: 'bada',
         repoName: 'cordova-bada',
@@ -158,6 +165,11 @@ var nonPlatformRepos = [
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
         jiraComponentName: 'App Hello World'
+    }, {
+        title: 'App Harness',
+        id: 'app-harness',
+        repoName: 'cordova-app-harness',
+        jiraComponentName: 'AppHarness'
     }
 ];
 

@@ -309,7 +309,7 @@ var JIRA_PROJECT_KEY = "CB";
 function reportGitPushResult(repos, branches) {
     print('');
     if (gitCommitCount) {
-        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join('') + ' ' + branches.map(function(b) { return '-b ' + b; }).join('');
+        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
         print('  ' + process.argv[1] + ' repo-status ' + flagsStr);

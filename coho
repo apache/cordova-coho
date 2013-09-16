@@ -306,16 +306,17 @@ var gitCommitCount = 0;
 var JIRA_API_URL = "https://issues.apache.org/jira/rest/api/latest/";
 var JIRA_PROJECT_KEY = "CB";
 
-function reportGitPushResult() {
+function reportGitPushResult(repos, branches) {
     print('');
     if (gitCommitCount) {
+        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join('') + ' ' + branches.map(function(b) { return '-b ' + b; }).join('');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status -r auto');
+        print('  ' + process.argv[1] + ' repo-status ' + flagsStr);
         print('To push changes:');
-        print('  ' + process.argv[1] + ' repo-push -r auto');
+        print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
         print('To revert all local commits:');
-        print('  ' + process.argv[1] + ' repo-reset -r auto');
+        print('  ' + process.argv[1] + ' repo-reset ' + flagsStr);
     } else {
         print('All work complete. No commits were made.');
     }
@@ -334,6 +335,18 @@ function print() {
 function fatal() {
     console.error.apply(console, arguments);
     process.exit(1);
+}
+
+function createPlatformDevVersion(version) {
+    // e.g. "3.1.0" -> "3.2.0-dev".
+    // e.g. "3.1.2-0.8.0-rc2" -> "3.2.0-0.8.0-dev".
+    version = version.replace(/-rc.*$/, '');
+    var parts = version.split('.');
+    parts[1] = String(+parts[1] + 1);
+    var cliSafeParts = parts[2].split('-');
+    cliSafeParts[0] = '0';
+    parts[2] = cliSafeParts.join('-');
+    return parts.join('.') + '-dev';
 }
 
 function getVersionBranchName(version) {
@@ -810,6 +823,9 @@ function repoResetCommand(argv) {
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
                '    git reset --hard origin/$BRANCH_NAME\n' +
+               '    git clean -f -d\n' +
+               '    if ($BRANCH_NAME exists only locally) then\n' +
+               '        git branch -D $BRANCH_NAME\n' +
                '\n' +
                'Usage: $0 repo-reset -r auto -b master -b 2.9.x')
         .argv;
@@ -821,24 +837,42 @@ function repoResetCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
 
-    forEachRepo(repos, function(repo) {
-        // Determine remote name.
-        updateRepos([repo], [], true);
-        stashAndPop(repo, function() {
-            branches.forEach(function(branchName) {
-                if (!localBranchExists(branchName)) {
-                    return;
-                }
+    function cleanRepo(repo) {
+        branches.forEach(function(branchName) {
+            if (!localBranchExists(branchName)) {
+                return;
+            }
+            if (remoteBranchExists(repo, branchName)) {
                 gitCheckout(branchName);
                 var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName);
                 if (changes) {
-                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
                     execHelper('git reset --hard ' + repo.remoteName + '/' + branchName);
                 } else {
-                    print(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
                 }
+            } else {
+                if (retrieveCurrentBranchName() == branchName) {
+                    gitCheckout('master');
+                }
+                print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
+                execHelper('git log --oneline -3 ' + branchName);
+                execHelper('git branch -D ' + branchName);
+            }
+        })
+    }
+    forEachRepo(repos, function(repo) {
+        // Determine remote name.
+        updateRepos([repo], [], true);
+        var branchName = retrieveCurrentBranchName();
+        if (branches.indexOf(branchName) == -1) {
+            stashAndPop(repo, function() {
+                cleanRepo(repo);
             });
-        });
+        } else {
+            execHelper('git clean -f -d');
+            cleanRepo(repo);
+        }
     });
 }
 
@@ -968,6 +1002,7 @@ function pendingChangesExist() {
 
 function stashAndPop(repo, func) {
     var requiresStash = pendingChangesExist();
+    var branchName = retrieveCurrentBranchName();
 
     if (requiresStash) {
         execHelper('git stash save --all --quiet "coho stash"');
@@ -975,6 +1010,7 @@ function stashAndPop(repo, func) {
 
     func();
 
+    gitCheckout(branchName);
     if (requiresStash) {
         execHelper('git stash pop');
     }
@@ -1082,6 +1118,31 @@ function updateJsSnapshot(repo, version) {
     }
 }
 
+function updateRepoVersion(repo, version) {
+    // Update the VERSION files.
+    var versionFilePaths = repo.versionFilePaths || ['VERSION'];
+    if (fs.existsSync(versionFilePaths[0])) {
+        versionFilePaths.forEach(function(versionFilePath) {
+            fs.writeFileSync(versionFilePath, version + '\n');
+        });
+        shjs.config.fatal = true;
+        if (repo.id == 'android') {
+            shjs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
+            shjs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
+        }
+        shjs.config.fatal = false;
+        if (!pendingChangesExist()) {
+            print('VERSION file was already up-to-date.');
+        }
+    } else {
+        console.warn('No VERSION file exists in repo ' + repo.repoName);
+    }
+
+    if (pendingChangesExist()) {
+        execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
+    }
+}
+
 function prepareReleaseBranchCommand() {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Prepares release branches but does not create tags. This includes:\n' +
@@ -1128,36 +1189,22 @@ function prepareReleaseBranchCommand() {
                 gitCheckout(branchName);
                 // Update JS on branch.
                 updateJsSnapshot(repo, version);
+            } else if (localBranchExists(branchName)) {
+                execHelper('git checkout ' + branchName);
             } else {
                 execHelper('git checkout -b ' + branchName);
             }
-            // Update the VERSION files.
-            var versionFilePaths = repo.versionFilePaths || ['VERSION'];
-            if (fs.existsSync(versionFilePaths[0])) {
-                print(repo.repoName + ': ' + 'Updating VERSION file.');
-                versionFilePaths.forEach(function(versionFilePath) {
-                    fs.writeFileSync(versionFilePath, version + '\n');
-                });
-                shjs.config.fatal = true;
-                if (repo.id == 'android') {
-                    shjs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
-                    shjs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
-                }
-                shjs.config.fatal = false;
-                if (!pendingChangesExist()) {
-                    print('VERSION file was already up-to-date.');
-                }
-            } else {
-                console.warn('No VERSION file exists in repo ' + repo.repoName);
-            }
-
-            if (pendingChangesExist()) {
-                execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
-            }
+            print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
+            updateRepoVersion(repo, version);
+            gitCheckout('master');
+            var devVersion = createPlatformDevVersion(version);
+            print(repo.repoName + ': ' + 'Setting VERSION to "' + devVersion + '" on branch + "master".');
+            updateRepoVersion(repo, devVersion);
+            gitCheckout(branchName);
         });
     });
 
-    reportGitPushResult();
+    reportGitPushResult(repos, ['master', branchName]);
 }
 
 function tagReleaseBranchCommand(argv) {
@@ -1466,7 +1513,7 @@ function main() {
             entryPoint: repoUpdateCommand
         }, {
             name: 'repo-reset',
-            desc: 'Performs git reset --hard origin/$BRANCH on all specified repositories.',
+            desc: 'Performs git reset --hard origin/$BRANCH and git clean -f -d on all specified repositories.',
             entryPoint: repoResetCommand
         }, {
             name: 'repo-status',

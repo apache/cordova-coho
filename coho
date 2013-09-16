@@ -804,7 +804,7 @@ function repoStatusCommand(argv) {
                 logs += changes + '\n';
                 if (argv.diff) {
                     diffs += 'Diff (truncated) for ' + repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '):\n';
-                    diffs += execHelper('git diff ' + targetBranch + '..' + branchName, true).split('\n').slice(0, 30).join('\n');
+                    diffs += execHelper('git diff ' + targetBranch + '...' + branchName, true).split('\n').slice(0, 30).join('\n');
                     diffs += '\n\n';
                 }
             } else {

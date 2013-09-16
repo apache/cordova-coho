@@ -718,6 +718,13 @@ function repoCloneCommand(argv) {
     process.exit(0);
 }
 
+function checkoutDevBranch(repos) {
+    forEachRepo(repos, function(repo) {
+        var branchName = pluginRepos.indexOf(repo) == -1 ? 'master' : 'dev';
+        gitCheckout(branchName);
+    });
+}
+
 function cloneRepos(repos, quiet) {
     var failures = [];
     var numSkipped = 0;
@@ -730,6 +737,8 @@ function cloneRepos(repos, quiet) {
             var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
             if (code) {
                 failures.push(repo.repoName);
+            } else {
+                checkoutDevBranch([repo]);
             }
         }
     });
@@ -950,7 +959,7 @@ function repoUpdateCommand(argv) {
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
-            default: 'master'
+            default: ['master', 'dev']
          })
         .options('fetch', {
             type: 'boolean',

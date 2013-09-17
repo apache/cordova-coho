@@ -350,6 +350,9 @@ function createPlatformDevVersion(version) {
 }
 
 function getVersionBranchName(version) {
+    if (/-dev$/.test(version)) {
+        return 'master';
+    }
     return version.replace(/\d+(-?rc\d)?$/, 'x');
 }
 
@@ -418,9 +421,9 @@ function cpAndLog(src, dest) {
 }
 
 function gitCheckout(branchName) {
-    var curBranch = retrieveCurrentBranchName();
+    var curBranch = retrieveCurrentBranchName(true);
     if (curBranch != branchName) {
-        execHelper('git checkout ' + branchName);
+        execHelper('git checkout -q ' + branchName);
     }
 }
 
@@ -661,9 +664,12 @@ function remoteBranchExists(repo, name) {
     return !!execHelper('git branch -r --list ' + repo.remoteName + '/' + name, true);
 }
 
-function retrieveCurrentBranchName() {
+function retrieveCurrentBranchName(allowDetached) {
     var ref = execHelper('git symbolic-ref HEAD', true, true);
     if (!ref) {
+        if (allowDetached) {
+            return null;
+        }
         throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
     }
     var match = /refs\/heads\/(.*)/.exec(ref);
@@ -1086,20 +1092,22 @@ function configureReleaseCommandFlags(opt) {
     return argv;
 }
 
-var hasBuiltJs = false;
+var hasBuiltJs = '';
 
 function updateJsSnapshot(repo, version) {
     function ensureJsIsBuilt() {
         var cordovaJsRepo = getRepoById('js');
-        if (!hasBuiltJs) {
+        if (hasBuiltJs != version) {
             forEachRepo([cordovaJsRepo], function() {
-                gitCheckout(getVersionBranchName(version));
-                var actualCurTag = retrieveCurrentTagName();
-                if (actualCurTag != version) {
-                    fatal('Not preparing branches since cordova-js is not at the version tag. (it\'s at ' + actualCurTag + ')');
-                }
-                execHelper('grunt cordovajs');
-                hasBuiltJs = true;
+                stashAndPop(cordovaJsRepo, function() {
+                    if (getVersionBranchName(version) == 'master') {
+                        gitCheckout('master');
+                    } else {
+                        gitCheckout(version);
+                    }
+                    execHelper('grunt cordovajs');
+                    hasBuiltJs = version;
+                });
             });
         }
     }
@@ -1186,9 +1194,6 @@ function prepareReleaseBranchCommand() {
         stashAndPop(repo, function() {
             // git fetch + update master
             updateRepos([repo], ['master'], false);
-            gitCheckout('master');
-            // Update JS on master.
-            updateJsSnapshot(repo, version);
 
             // Either create or pull down the branch.
             if (remoteBranchExists(repo, branchName)) {
@@ -1196,19 +1201,21 @@ function prepareReleaseBranchCommand() {
                 // Check out and rebase.
                 updateRepos([repo], [branchName], true);
                 gitCheckout(branchName);
-                // Update JS on branch.
-                updateJsSnapshot(repo, version);
             } else if (localBranchExists(branchName)) {
                 execHelper('git checkout ' + branchName);
             } else {
+                gitCheckout('master');
                 execHelper('git checkout -b ' + branchName);
             }
+            updateJsSnapshot(repo, version);
             print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
             updateRepoVersion(repo, version);
+
             gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': ' + 'Setting VERSION to "' + devVersion + '" on branch + "master".');
             updateRepoVersion(repo, devVersion);
+            updateJsSnapshot(repo, devVersion);
             gitCheckout(branchName);
         });
     });

@@ -312,7 +312,7 @@ function reportGitPushResult(repos, branches) {
         var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status ' + flagsStr);
+        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' | less');
         print('To push changes:');
         print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
         print('To revert all local commits:');
@@ -792,9 +792,6 @@ function repoStatusCommand(argv) {
         fatal('Must specify the same number of --branch and --branch2 flags');
     }
 
-    var logs = '';
-    var diffs = '';
-
     forEachRepo(repos, function(repo) {
         // Determine remote name.
         updateRepos([repo], [], true);
@@ -806,22 +803,31 @@ function repoStatusCommand(argv) {
             var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
             var changes = execHelper('git log --oneline ' + targetBranch + '..' + branchName, true);
             if (changes) {
-                logs += repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.\n';
-                logs += changes + '\n';
-                if (argv.diff) {
-                    diffs += 'Diff (truncated) for ' + repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '):\n';
-                    diffs += execHelper('git diff ' + targetBranch + '...' + branchName, true).split('\n').slice(0, 30).join('\n');
-                    diffs += '\n\n';
-                }
+                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.');
+                console.log(changes);
             } else {
-                logs += repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): No changes\n';
+                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): No changes');
             }
         });
     });
-    print('\n\n');
-    print(logs);
     if (argv.diff) {
-        print(diffs);
+        forEachRepo(repos, function(repo) {
+            var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
+            actualBranches.forEach(function(branchName, i) {
+                if (!localBranchExists(branchName)) {
+                    return;
+                }
+                var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
+                var diff = execHelper('git diff ' + targetBranch + '...' + branchName, true);
+                if (diff) {
+                    print('------------------------------------------------------------------------------');
+                    print('Diff for ' + repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + ')');
+                    print('------------------------------------------------------------------------------');
+                    console.log(diff);
+                    console.log('\n');
+                }
+            });
+        });
     }
 }
 

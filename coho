@@ -84,10 +84,9 @@ var platformRepos = [
         jiraComponentName: 'Windows 8',
         cordovaJsSrcName: 'cordova.windows8.js',
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
-        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')],
-        inactive: true
+        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
     }, {
-        title: 'Windows Phone 8',
+        title: 'Windows Phone 7 & 8',
         id: 'wp8',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
@@ -104,8 +103,7 @@ var platformRepos = [
         id: 'firefoxos',
         repoName: 'cordova-firefoxos',
         jiraComponentName: 'FirefoxOS',
-        cordovaJsPaths: ['cordova-lib/cordova.js'],
-        inactive: true
+        cordovaJsPaths: ['cordova-lib/cordova.js']
     }, {
         title: 'Bada',
         id: 'bada',
@@ -903,7 +901,7 @@ function repoPushCommand(argv) {
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
-            default: 'master'
+            default: ['master', 'dev']
          });
     opt = registerHelpFlag(opt);
     var argv = opt

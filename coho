@@ -84,10 +84,9 @@ var platformRepos = [
         jiraComponentName: 'Windows 8',
         cordovaJsSrcName: 'cordova.windows8.js',
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
-        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')],
-        inactive: true
+        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
     }, {
-        title: 'Windows Phone 8',
+        title: 'Windows Phone 7 & 8',
         id: 'wp8',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
@@ -106,6 +105,12 @@ var platformRepos = [
         repoName: 'cordova-osx',
         jiraComponentName: 'OSX',
         cordovaJsPaths: ['CordovaFramework/cordova.js']
+    }, {
+        title: 'Firefox OS',
+        id: 'firefoxos',
+        repoName: 'cordova-firefoxos',
+        jiraComponentName: 'FirefoxOS',
+        cordovaJsPaths: ['cordova-lib/cordova.js']
     }, {
         title: 'Bada',
         id: 'bada',
@@ -165,6 +170,11 @@ var nonPlatformRepos = [
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
         jiraComponentName: 'App Hello World'
+    }, {
+        title: 'App Harness',
+        id: 'app-harness',
+        repoName: 'cordova-app-harness',
+        jiraComponentName: 'AppHarness'
     }
 ];
 
@@ -174,109 +184,91 @@ var pluginRepos = [
         id: 'plugin-battery-status',
         repoName: 'cordova-plugin-battery-status',
         jiraComponentName: 'Plugin Battery Status',
-        inactive: false 
     }, {
         title: 'Plugin - Camera',
         id: 'plugin-camera',
         repoName: 'cordova-plugin-camera',
         jiraComponentName: 'Plugin Camera',
-        inactive: false
     }, {
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
         jiraComponentName: 'Plugin Console',
-        inactive: false 
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
         jiraComponentName: 'Plugin Contacts',
-        inactive: false
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
         jiraComponentName: 'Plugin Device Motion',
-        inactive: false
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
         jiraComponentName: 'Plugin Device Orientation',
-        inactive: false
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
         jiraComponentName: 'Plugin Device',
-        inactive: false
     }, {
         title: 'Plugin - Dialogs',
         id: 'plugin-dialogs',
         repoName: 'cordova-plugin-dialogs',
         jiraComponentName: 'Plugin Dialogs',
-        inactive: false
     }, {
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
-        inactive: false
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
-        inactive: false
     }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
         jiraComponentName: 'Plugin Geolocation',
-        inactive: false
     }, {
         title: 'Plugin - Globalization',
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
-        inactive: false
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
         repoName: 'cordova-plugin-inappbrowser',
         jiraComponentName: 'Plugin InAppBrowser',
-        inactive: false
     }, {
         title: 'Plugin - Media',
         id: 'plugin-media',
         repoName: 'cordova-plugin-media',
         jiraComponentName: 'Plugin Media',
-        inactive: false
     }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',
         jiraComponentName: 'Plugin Media Capture',
-        inactive: false
     }, {
         title: 'Plugin - Network Information',
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
-        inactive: false
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
         jiraComponentName: 'Plugin SplashScreen',
-        inactive: false
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
-        inactive: false
     }
 ];
 
@@ -286,24 +278,20 @@ var otherRepos = [
         id: 'cli',
         repoName: 'cordova-cli',
         jiraComponentName: 'CLI',
-        inactive: false, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
         jiraComponentName: 'Plugman',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
     }, {
         title: 'Cordova Coho',
         id: 'coho',
         repoName: 'cordova-coho',
         jiraComponentName: 'Coho',
-        inactive: true, // Not on the same release schedule as the rest of Cordova
     }
 ];
 
@@ -311,29 +299,29 @@ var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat
 
 var repoGroups = {
     'all': allRepos,
-    'active': allRepos.filter(function(r) { return !r.inactive }),
     'auto': computeExistingRepos(),
-    'inactive': allRepos.filter(function(r) { return r.inactive }),
     'platform': platformRepos,
     'plugins': pluginRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
 };
+repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('docs')]);
 
 var gitCommitCount = 0;
 
 var JIRA_API_URL = "https://issues.apache.org/jira/rest/api/latest/";
 var JIRA_PROJECT_KEY = "CB";
 
-function reportGitPushResult() {
+function reportGitPushResult(repos, branches) {
     print('');
     if (gitCommitCount) {
+        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status -r auto');
+        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' | less');
         print('To push changes:');
-        print('  ' + process.argv[1] + ' repo-push -r auto');
+        print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
         print('To revert all local commits:');
-        print('  ' + process.argv[1] + ' repo-reset -r auto');
+        print('  ' + process.argv[1] + ' repo-reset ' + flagsStr);
     } else {
         print('All work complete. No commits were made.');
     }
@@ -354,15 +342,38 @@ function fatal() {
     process.exit(1);
 }
 
+function createPlatformDevVersion(version) {
+    // e.g. "3.1.0" -> "3.2.0-dev".
+    // e.g. "3.1.2-0.8.0-rc2" -> "3.2.0-0.8.0-dev".
+    version = version.replace(/-rc.*$/, '');
+    var parts = version.split('.');
+    parts[1] = String(+parts[1] + 1);
+    var cliSafeParts = parts[2].split('-');
+    cliSafeParts[0] = '0';
+    parts[2] = cliSafeParts.join('-');
+    return parts.join('.') + '-dev';
+}
+
 function getVersionBranchName(version) {
-    return version.replace(/\d+(rc\d)?$/, 'x');
+    if (/-dev$/.test(version)) {
+        return 'master';
+    }
+    return version.replace(/\d+(-?rc\d)?$/, 'x');
+}
+
+function validateVersionString(version, opt_allowNonSemver) {
+    var pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
+    if (!pattern.test(version)) {
+        fatal('Versions must be in the form #.#.#-[rc#]');
+    }
+    return version;
 }
 
 function registerRepoFlag(opt) {
     return opt.options('r', {
         alias: 'repo',
         desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
-        default: 'active'
+        default: 'auto'
     });
 }
 
@@ -395,7 +406,7 @@ function execHelper(cmd, silent, allowError) {
         logCwd();
         print('Executing command:', cmd);
     }
-    var result = shjs.exec(cmd, {silent: silent});
+    var result = shjs.exec(cmd, {silent: (silent && silent !== 2)});
     if (result.code) {
         if (allowError) {
             return null;
@@ -415,9 +426,9 @@ function cpAndLog(src, dest) {
 }
 
 function gitCheckout(branchName) {
-    var curBranch = retrieveCurrentBranchName();
+    var curBranch = retrieveCurrentBranchName(true);
     if (curBranch != branchName) {
-        execHelper('git checkout ' + branchName);
+        execHelper('git checkout -q ' + branchName);
     }
 }
 
@@ -441,6 +452,8 @@ function forEachRepo(repos, func) {
 }
 
 function getRepoById(id, opt_repos) {
+    // Strip cordova- prefix if it exists.
+    id = id.replace(/^cordova-/, '');
     var repos = opt_repos || allRepos;
     for (var i = 0; i < repos.length; ++i) {
         if (repos[i].id == id) {
@@ -458,7 +471,7 @@ function createReleaseCommand(argv) {
     var opt = registerRepoFlag(optimist)
     opt = opt
         .options('new-version', {
-            desc: 'The version to release. E.g. 2.7.1rc2',
+            desc: 'The version to release. E.g. 2.7.1-rc2',
             demand: true
          })
         .options('prev-version', {
@@ -494,8 +507,8 @@ function createReleaseCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
-    var prevVersion = argv['prev-version'];
-    var newVersion = argv['new-version'];
+    var prevVersion = validateVersionString(argv['prev-version'], true);
+    var newVersion = validateVersionString(argv['new-version']);
 
     // Ensure we can find the path to the coho repo.
     var scriptPath = path.dirname(process.argv[1]);
@@ -508,7 +521,7 @@ function createReleaseCommand(argv) {
         fatal('Expected path to exist: ' + binPath);
     }
 
-    cloneRepos(repos);
+    cloneRepos(repos,false);
     if (argv.update) {
         // No need to update branches, just do a git fetch --tags.
         updateRepos(repos, [], false);
@@ -656,9 +669,12 @@ function remoteBranchExists(repo, name) {
     return !!execHelper('git branch -r --list ' + repo.remoteName + '/' + name, true);
 }
 
-function retrieveCurrentBranchName() {
+function retrieveCurrentBranchName(allowDetached) {
     var ref = execHelper('git symbolic-ref HEAD', true, true);
     if (!ref) {
+        if (allowDetached) {
+            return null;
+        }
         throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
     }
     var match = /refs\/heads\/(.*)/.exec(ref);
@@ -709,22 +725,31 @@ function repoCloneCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
-    cloneRepos(repos);
+    cloneRepos(repos, false);
     process.exit(0);
 }
 
-function cloneRepos(repos) {
+function checkoutDevBranch(repos) {
+    forEachRepo(repos, function(repo) {
+        var branchName = pluginRepos.indexOf(repo) == -1 ? 'master' : 'dev';
+        gitCheckout(branchName);
+    });
+}
+
+function cloneRepos(repos, quiet) {
     var failures = [];
     var numSkipped = 0;
 
     repos.forEach(function(repo) {
         if (shjs.test('-d', repo.repoName)) {
-            print('Repo already cloned: ' + repo.repoName);
+            if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else {
             var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
             if (code) {
                 failures.push(repo.repoName);
+            } else {
+                checkoutDevBranch([repo]);
             }
         }
     });
@@ -743,50 +768,72 @@ function repoStatusCommand(argv) {
     var opt = optimist
         .options('b', {
             alias: 'branch',
-            desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches.',
-            default: 'master'
-         });
+            desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches. The local version of the branch is compared with the origin\'s version unless --b2 is specified.'
+         })
+        .options('branch2', {
+            desc: 'The name of the branch to diff against. This is origin/$branch by default.'
+         })
+        .options('diff', {
+            desc: 'Show a diff of the changes (use --no-diff to disable)',
+            default: true
+         })
     opt = registerHelpFlag(opt);
     var argv = opt
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
-               'Usage: $0 repo-status -r auto -b master -b 2.9.x')
+               'Example usage: $0 repo-status -r auto -b master -b 2.9.x\n' +
+               'Example usage: $0 repo-status -r plugins -b dev --branch2 master --no-diff')
         .argv;
 
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var branches = argv.b && (Array.isArray(argv.b) ? argv.b : [argv.b]);
+    var branches2 = branches && argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
     var repos = computeReposFromFlag(argv.r);
 
-    var logs = '';
-    var diffs = '';
+    if (branches2 && branches && branches.length != branches2.length) {
+        fatal('Must specify the same number of --branch and --branch2 flags');
+    }
 
     forEachRepo(repos, function(repo) {
         // Determine remote name.
         updateRepos([repo], [], true);
-        branches.forEach(function(branchName) {
+        var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
+        actualBranches.forEach(function(branchName, i) {
             if (!localBranchExists(branchName)) {
                 return;
             }
-            gitCheckout(branchName);
-            var targetBranch = remoteBranchExists(repo, branchName) ? branchName : 'master';
-            var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + targetBranch + '..' + branchName, true);
+            var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
+            var changes = execHelper('git log --oneline ' + targetBranch + '..' + branchName, true);
             if (changes) {
-                logs += repo.repoName + ' on branch ' + branchName + ': Local commits exist.\n';
-                logs += changes + '\n';
-                diffs += 'Diff for for ' + repo.repoName + ' on branch ' + branchName + ' (truncated):\n';
-                diffs += execHelper('git diff ' + repo.remoteName + '/' + targetBranch + '..' + branchName, true).split('\n').slice(0, 30).join('\n');
-                diffs += '\n\n';
+                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.');
+                console.log(changes);
             } else {
-                logs += repo.repoName + ' on branch ' + branchName + ': No local commits\n';
+                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): No changes');
             }
         });
     });
-    print('\n\n');
-    print(logs);
-    print(diffs);
+    if (argv.diff) {
+        forEachRepo(repos, function(repo) {
+            var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
+            actualBranches.forEach(function(branchName, i) {
+                if (!localBranchExists(branchName)) {
+                    return;
+                }
+                var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
+                var diff = execHelper('git diff ' + targetBranch + '...' + branchName, true);
+                if (diff) {
+                    print('------------------------------------------------------------------------------');
+                    print('Diff for ' + repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + ')');
+                    print('------------------------------------------------------------------------------');
+                    console.log(diff);
+                    console.log('\n');
+                }
+            });
+        });
+    }
 }
 
 function repoResetCommand(argv) {
@@ -802,6 +849,9 @@ function repoResetCommand(argv) {
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
                '    git reset --hard origin/$BRANCH_NAME\n' +
+               '    git clean -f -d\n' +
+               '    if ($BRANCH_NAME exists only locally) then\n' +
+               '        git branch -D $BRANCH_NAME\n' +
                '\n' +
                'Usage: $0 repo-reset -r auto -b master -b 2.9.x')
         .argv;
@@ -813,24 +863,42 @@ function repoResetCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
 
-    forEachRepo(repos, function(repo) {
-        // Determine remote name.
-        updateRepos([repo], [], true);
-        stashAndPop(repo, function() {
-            branches.forEach(function(branchName) {
-                if (!localBranchExists(branchName)) {
-                    return;
-                }
+    function cleanRepo(repo) {
+        branches.forEach(function(branchName) {
+            if (!localBranchExists(branchName)) {
+                return;
+            }
+            if (remoteBranchExists(repo, branchName)) {
                 gitCheckout(branchName);
                 var changes = execHelper('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName);
                 if (changes) {
-                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
                     execHelper('git reset --hard ' + repo.remoteName + '/' + branchName);
                 } else {
-                    print(repo.repoName + ' on branch ' + branchName + ': No local commits exist.\n');
+                    print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
                 }
+            } else {
+                if (retrieveCurrentBranchName() == branchName) {
+                    gitCheckout('master');
+                }
+                print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
+                execHelper('git log --oneline -3 ' + branchName);
+                execHelper('git branch -D ' + branchName);
+            }
+        })
+    }
+    forEachRepo(repos, function(repo) {
+        // Determine remote name.
+        updateRepos([repo], [], true);
+        var branchName = retrieveCurrentBranchName();
+        if (branches.indexOf(branchName) == -1) {
+            stashAndPop(repo, function() {
+                cleanRepo(repo);
             });
-        });
+        } else {
+            execHelper('git clean -f -d');
+            cleanRepo(repo);
+        }
     });
 }
 
@@ -840,7 +908,7 @@ function repoPushCommand(argv) {
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
-            default: 'master'
+            default: ['master', 'dev']
          });
     opt = registerHelpFlag(opt);
     var argv = opt
@@ -881,13 +949,34 @@ function repoPushCommand(argv) {
     });
 }
 
+function repoPerformShellCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Performs the supplied shell command in each repo directory.\n' +
+               '\n' +
+               'Usage: $0 foreach "shell command"')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv.r);
+    var cmd = argv._[1];
+    forEachRepo(repos, function(repo) {
+         execHelper(cmd);
+    });
+    process.exit(0);
+}
+
 function repoUpdateCommand(argv) {
     var opt = registerRepoFlag(optimist)
     var opt = opt
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
-            default: 'master'
+            default: ['master', 'dev']
          })
         .options('fetch', {
             type: 'boolean',
@@ -917,6 +1006,8 @@ function repoUpdateCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
 
+    // ensure that any missing repos are cloned
+    cloneRepos(repos,true);
     updateRepos(repos, branches, !argv.fetch);
     process.exit(0);
 }
@@ -937,6 +1028,7 @@ function pendingChangesExist() {
 
 function stashAndPop(repo, func) {
     var requiresStash = pendingChangesExist();
+    var branchName = retrieveCurrentBranchName();
 
     if (requiresStash) {
         execHelper('git stash save --all --quiet "coho stash"');
@@ -944,6 +1036,7 @@ function stashAndPop(repo, func) {
 
     func();
 
+    gitCheckout(branchName);
     if (requiresStash) {
         execHelper('git stash pop');
     }
@@ -996,7 +1089,7 @@ function configureReleaseCommandFlags(opt) {
     var opt = registerRepoFlag(opt)
     opt = opt
         .options('version', {
-            desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
+            desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]',
             demand: true
          });
     opt = registerHelpFlag(opt);
@@ -1006,27 +1099,26 @@ function configureReleaseCommandFlags(opt) {
         optimist.showHelp();
         process.exit(1);
     }
-    var version = argv.version;
-    if (!/^\d+\.\d+\.\d+(rc\d)?$/.test(version)) {
-        fatal('The version must be in the form #.#.#[rc#]');
-    }
+    var version = validateVersionString(argv.version);
     return argv;
 }
 
-var hasBuiltJs = false;
+var hasBuiltJs = '';
 
-function updateJsSnapshot(repo, version, branchName) {
+function updateJsSnapshot(repo, version) {
     function ensureJsIsBuilt() {
         var cordovaJsRepo = getRepoById('js');
-        if (!hasBuiltJs) {
+        if (hasBuiltJs != version) {
             forEachRepo([cordovaJsRepo], function() {
-                gitCheckout(getVersionBranchName(version));
-                var actualCurTag = retrieveCurrentTagName();
-                if (actualCurTag != version) {
-                    fatal('Not preparing branches since cordova-js is not at the version tag. (it\'s at ' + actualCurTag + ')');
-                }
-                execHelper('grunt cordovajs');
-                hasBuiltJs = true;
+                stashAndPop(cordovaJsRepo, function() {
+                    if (getVersionBranchName(version) == 'master') {
+                        gitCheckout('master');
+                    } else {
+                        gitCheckout(version);
+                    }
+                    execHelper('grunt cordovajs');
+                    hasBuiltJs = version;
+                });
             });
         }
     }
@@ -1054,6 +1146,31 @@ function updateJsSnapshot(repo, version, branchName) {
     }
 }
 
+function updateRepoVersion(repo, version) {
+    // Update the VERSION files.
+    var versionFilePaths = repo.versionFilePaths || ['VERSION'];
+    if (fs.existsSync(versionFilePaths[0])) {
+        versionFilePaths.forEach(function(versionFilePath) {
+            fs.writeFileSync(versionFilePath, version + '\n');
+        });
+        shjs.config.fatal = true;
+        if (repo.id == 'android') {
+            shjs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
+            shjs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
+        }
+        shjs.config.fatal = false;
+        if (!pendingChangesExist()) {
+            print('VERSION file was already up-to-date.');
+        }
+    } else {
+        console.warn('No VERSION file exists in repo ' + repo.repoName);
+    }
+
+    if (pendingChangesExist()) {
+        execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
+    }
+}
+
 function prepareReleaseBranchCommand() {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Prepares release branches but does not create tags. This includes:\n' +
@@ -1066,10 +1183,10 @@ function prepareReleaseBranchCommand() {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-release-branch --version=2.8.0rc1')
+               'Usage: $0 prepare-release-branch --version=2.8.0-rc1')
     );
     var repos = computeReposFromFlag(argv.r);
-    var version = argv.version;
+    var version = validateVersionString(argv.version);
     var branchName = getVersionBranchName(version);
 
     // First - perform precondition checks.
@@ -1088,9 +1205,6 @@ function prepareReleaseBranchCommand() {
         stashAndPop(repo, function() {
             // git fetch + update master
             updateRepos([repo], ['master'], false);
-            gitCheckout('master');
-            // Update JS on master.
-            updateJsSnapshot(repo, version, 'master');
 
             // Either create or pull down the branch.
             if (remoteBranchExists(repo, branchName)) {
@@ -1098,48 +1212,39 @@ function prepareReleaseBranchCommand() {
                 // Check out and rebase.
                 updateRepos([repo], [branchName], true);
                 gitCheckout(branchName);
-                // Update JS on branch.
-                updateJsSnapshot(repo, version, branchName);
+            } else if (localBranchExists(branchName)) {
+                execHelper('git checkout ' + branchName);
             } else {
+                gitCheckout('master');
                 execHelper('git checkout -b ' + branchName);
             }
-            // Update the VERSION files.
-            var versionFilePaths = repo.versionFilePaths || ['VERSION'];
-            if (fs.existsSync(versionFilePaths[0])) {
-                print(repo.repoName + ': ' + 'Updating VERSION file.');
-                versionFilePaths.forEach(function(versionFilePath) {
-                    fs.writeFileSync(versionFilePath, version + '\n');
-                });
-                if (repo.id == 'android') {
-                    shjs.sed('-i', /cordovaVersion.*=.*;/, 'cordovaVersion = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'Device.java'));
-                }
-                if (!pendingChangesExist()) {
-                    print('VERSION file was already up-to-date.');
-                }
-            } else {
-                console.warn('No VERSION file exists in repo ' + repo.repoName);
-            }
+            updateJsSnapshot(repo, version);
+            print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
+            updateRepoVersion(repo, version);
 
-            if (pendingChangesExist()) {
-                execHelper('git commit -am "Set VERSION to ' + version + ' (via coho)"');
-            }
+            gitCheckout('master');
+            var devVersion = createPlatformDevVersion(version);
+            print(repo.repoName + ': ' + 'Setting VERSION to "' + devVersion + '" on branch + "master".');
+            updateRepoVersion(repo, devVersion);
+            updateJsSnapshot(repo, devVersion);
+            gitCheckout(branchName);
         });
     });
 
-    reportGitPushResult();
+    reportGitPushResult(repos, ['master', branchName]);
 }
 
 function tagReleaseBranchCommand(argv) {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Tags a release branches.\n' +
                '\n' +
-               'Usage: $0 tag-release --version=2.8.0rc1')
+               'Usage: $0 tag-release --version=2.8.0-rc1')
         .options('pretend', {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
          })
     );
     var repos = computeReposFromFlag(argv.r);
-    var version = argv.version;
+    var version = validateVersionString(argv.version);
     var pretend = argv.pretend;
     var branchName = getVersionBranchName(version);
 
@@ -1295,7 +1400,8 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
                 'key':JIRA_PROJECT_KEY
             },
             'summary':subjectPrefix + 'Parent Issue',
-            'description':'Parent bug for the ' + version + ' Cordova Release.\n\n' + workflow_link,
+            'description':'Parent bug for the ' + version + ' Cordova Release.\n\n' + workflow_link +
+                          '\n\nRelease Master: ?\n\nComponent Leads: Refer to assignee of "Test & Tag" sub-tasks.\n',
             'issuetype':{
                 'name':'Task'
             },
@@ -1305,34 +1411,15 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
             'components': []
         }
     };
-    var create_release_branches_description = workflow_link + '\n\n' +
-        'Steps:\n' +
-        '1. Create remote branches\n' +
-        '2. Update all VERSION files\n\n' +
-        'Both steps can be done via coho create-release-branch --version ' + version;
-    var tag_description = workflow_link + '\n\n' +
-        'Steps:\n' +
-        '1. Update cordova.js snapshot to newly tagger version\n' +
-        '2. Update snapshot of cordova-app-hello-world within create template (if its changed since previous release)\n' +
-        '3. Run Apache RAT\n' +
-        '4. Look through all open JIRA bugs targeted at the current version and either fix or postpone them.\n' +
-        '5. Test (refer to http://wiki.apache.org/cordova/CuttingReleases#What_to_Test)\n' +
-        '6. Tag (via coho)';
-    var announce_description = workflow_link + '\n\n' +
-        'Steps:\n' +
-        '1. Create the .zip of the release candidate\n' +
-        '2. Upload it to apache servers\n' +
-        '3. Upload new docs snapshot (see Release wiki)\n' +
-        '4. Update cordova.apache.org website with new release info (see Release wiki)\n' +
-        '5. Wait 24 hours\n' +
-        '6. Announce its availability to the mailing-list & blog about it.';
-    var tagRepos = computeReposFromFlag('active');
-    var upgradeGuideRepos = computeReposFromFlag('active-platform');
-    var all_components = {};
-    tagRepos.forEach(function(repo) {
-        all_components[component_map[repo.jiraComponentName]] = null;
-    });
-    all_components = Object.keys(all_components);
+    function componentsForRepos(repos) {
+        return repos.map(function(repo) {
+            if (!component_map[repo.jiraComponentName]) {
+                fatal('Unable to find component ' + repo.jiraComponentName + ' in JIRA.');
+            }
+            return component_map[repo.jiraComponentName];
+        });
+    }
+    var all_components = componentsForRepos(repoGroups['cadence']);
     all_components.forEach(function(component_id) {
         parent_issue.fields.components.push({'id':component_id});
     });
@@ -1346,28 +1433,28 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
             fatal('No ID retrieved for created parent issue. Aborting.');
         }
         var request_queue = [];
-        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create Release Branches',
-                                       create_release_branches_description, all_components, version_id));
-        tagRepos.forEach(function(repo) {
-            if (!component_map[repo.jiraComponentName]) {
-                print('Unable to find component ' + repo.jiraComponentName + ' in JIRA.');
-                return;
-            }
-            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag ' + repo.title, tag_description,
-                                           [component_map[repo.jiraComponentName]], version_id));
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world',
+                                       'Refer to ' + workflow_link, componentsForRepos([getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world')]), version_id));
+        repoGroups['active-platform'].forEach(function(repo) {
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag RC1 for ' + repo.title, 'Refer to ' + workflow_link + '\n\nDon\'t forget about CHANGELOG.md',
+                                           componentsForRepos([repo]), version_id));
         });
-        upgradeGuideRepos.forEach(function(repo) {
-            if (!component_map[repo.jiraComponentName]) {
-                print('Unable to find component ' + repo.jiraComponentName + ' in JIRA.');
-                return;
-            }
-            request_queue.push(makeSubtask(parent_key,
-                                           subjectPrefix + 'Update Upgrading Guide for ' + prev_version +
-                                           ' -> ' + root_version + ' for ' + repo.title, '',
-                                           [component_map[repo.jiraComponentName]], version_id));
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 of cordova-cli',
+                                       'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
+
+        repoGroups['active-platform'].forEach(function(repo) {
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' for ' + repo.title, 'Refer to ' + workflow_link + '\n\nDon\'t forget about upgrade guides!',
+                                           componentsForRepos([repo]), version_id));
         });
-        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Announce Release Candidate',
-                                       announce_description, all_components, version_id));
+
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' of cordova-cli',
+                                       'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
+
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload signed release .zip to Apache Dist',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
+
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Announce Release',
+                                       'Refer to ' + workflow_link, all_components, version_id));
         sendCreateSubtaskRequests(request_queue, username, password, pretend);
     });
 }
@@ -1375,7 +1462,7 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
 function createReleaseBugCommand() {
     var opt = registerHelpFlag(optimist);
     opt = opt.options('version', {
-        desc: 'The version to use for the branch. Must match the pattern #.#.#[rc#]',
+        desc: 'The version to use for the branch. Must match the pattern #.#.#',
         demand: true
     }).options('username', {
         desc: 'Username to use when creating issues in JIRA',
@@ -1388,12 +1475,16 @@ function createReleaseBugCommand() {
     });
     opt.usage('Creates an issue in JIRA for releasing a new version of Cordova, including creating all subtasks.\n' +
               '\n' +
-              'Usage: $0 create-release-bug --version=3.0.0rc1 --username=Alice --password=Passw0rd');
+              'Usage: $0 create-release-bug --version=3.0.0 --username=Alice --password=Passw0rd');
     var argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
+    }
+    var version = validateVersionString(argv.version);
+    if (version.indexOf('-') != -1) {
+        fatal('Don\'t append "-rc" for release bugs.');
     }
 
     request.get(JIRA_API_URL + 'project/' + JIRA_PROJECT_KEY + '/components', function(err, res, components) {
@@ -1415,7 +1506,6 @@ function createReleaseBugCommand() {
                 fatal('Error: JIRA returned no versions');
             }
             versions = JSON.parse(versions);
-            var version = argv.version;
             var root_version = version;
             var version_id = null;
             var prev_version = null;
@@ -1450,7 +1540,7 @@ function main() {
             entryPoint: repoUpdateCommand
         }, {
             name: 'repo-reset',
-            desc: 'Performs git reset --hard origin/$BRANCH on all specified repositories.',
+            desc: 'Performs git reset --hard origin/$BRANCH and git clean -f -d on all specified repositories.',
             entryPoint: repoResetCommand
         }, {
             name: 'repo-status',
@@ -1488,6 +1578,10 @@ function main() {
             name: 'upload-release',
             desc: 'Uploads a signed .zip to Cordova\'s webserver.',
             entryPoint: apacheUpload
+        }, {
+            name: 'foreach',
+            desc: 'Runs a shell command in each repo.',
+            entryPoint: repoPerformShellCommand
         }
     ];
     var commandMap = {};
@@ -1518,7 +1612,7 @@ function main() {
     // ShellJS opens a lot of file handles, and the default on OS X is too small.
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
-        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'');
+        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'', 2);
         return;
     }
 

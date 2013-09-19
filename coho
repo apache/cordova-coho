@@ -94,6 +94,13 @@ var platformRepos = [
         cordovaJsSrcName: 'cordova.windowsphone.js',
         cordovaJsPaths: ['common/www/cordova.js']
     }, {
+        title: 'Firefox OS',
+        id: 'firefoxos',
+        repoName: 'cordova-firefoxos',
+        jiraComponentName: 'FirefoxOS',
+        cordovaJsSrcName: 'cordova.firefoxos.js',
+        cordovaJsPaths: ['cordova-lib/cordova.js']
+    }, {
         title: 'Mac OSX',
         id: 'osx',
         repoName: 'cordova-osx',

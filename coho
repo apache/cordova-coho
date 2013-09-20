@@ -64,18 +64,12 @@ var platformRepos = [
         id: 'blackberry',
         repoName: 'cordova-blackberry',
         jiraComponentName: 'BlackBerry',
+        cordovaJsSrcName: 'cordova.blackberry10.js',
         cordovaJsPaths: [
-            path.join('bbos', 'javascript', 'cordova.blackberry.js'),
-            path.join('playbook', 'javascript', 'cordova.blackberry.js'),
-            // bb10 JS path uses a different src, so logic is hardcoded below.
+            path.join('blackberry10', 'javascript', 'cordova.blackberry10.js')
             ],
         versionFilePaths: [
-            path.join('bbos', 'VERSION'),
-            path.join('bbos', 'bin', 'templates', 'project', 'www', 'VERSION'),
             path.join('blackberry10', 'VERSION'),
-            path.join('blackberry10', 'bin', 'templates', 'project', 'www', 'VERSION'),
-            path.join('playbook', 'VERSION'),
-            path.join('playbook', 'bin', 'templates', 'project', 'www', 'VERSION'),
             ]
     }, {
         title: 'Windows',
@@ -1133,11 +1127,6 @@ function updateJsSnapshot(repo, version) {
             var src = path.join('..', 'cordova-js', 'pkg', repo.cordovaJsSrcName || ('cordova.' + repo.id + '.js'));
             cpAndLog(src, jsPath);
         });
-        // Extra bb10 logic
-        if (repo.id == 'blackberry') {
-            var src = path.join('..', 'cordova-js', 'pkg', 'cordova.blackberry10.js');
-            cpAndLog(src, path.join('blackberry10', 'javascript', 'cordova.blackberry10.js'));
-        }
         if (pendingChangesExist()) {
             execHelper('git commit -am "Update JS snapshot to version ' + version + ' (via coho)"');
         }
@@ -1436,14 +1425,14 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world')]), version_id));
         repoGroups['active-platform'].forEach(function(repo) {
-            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag RC1 for ' + repo.title, 'Refer to ' + workflow_link + '\n\nDon\'t forget about CHANGELOG.md',
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag RC1 for ' + repo.title, 'Refer to ' + workflow_link,
                                            componentsForRepos([repo]), version_id));
         });
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
 
         repoGroups['active-platform'].forEach(function(repo) {
-            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' for ' + repo.title, 'Refer to ' + workflow_link + '\n\nDon\'t forget about upgrade guides!',
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' for ' + repo.title, 'Refer to ' + workflow_link,
                                            componentsForRepos([repo]), version_id));
         });
 

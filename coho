@@ -1300,14 +1300,16 @@ function ratCommand() {
     }
     var repos = computeReposFromFlag(argv.r);
     // Check that RAT command exists.
-    var ratPath = path.resolve(path.join(path.dirname(process.argv[1]), 'apache-rat-0.8', 'apache-rat-0.8.jar'));
+    var ratName = 'apache-rat-0.10';
+    var ratUrl = "https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz";
+    var ratPath = path.resolve(path.join(path.dirname(process.argv[1]), ratName, ratName+'.jar'));
     if (!fs.existsSync(ratPath)) {
         print('RAT tool not found, downloading to: ' + ratPath);
         forEachRepo([getRepoById('coho')], function() {
             if (shjs.which('curl')) {
-                execHelper('curl "http://mirror.csclub.uwaterloo.ca/apache/incubator/rat/binaries/apache-rat-incubating-0.8-bin.tar.gz" | tar xz');
+                execHelper('curl "' + ratUrl + '" | tar xz');
             } else {
-                execHelper('wget -O - "http://mirror.csclub.uwaterloo.ca/apache/incubator/rat/binaries/apache-rat-incubating-0.8-bin.tar.gz" | tar xz');
+                execHelper('wget -O - "' + ratUrl + '" | tar xz');
             }
         });
         if (!fs.existsSync(ratPath)) {

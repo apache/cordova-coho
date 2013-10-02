@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": "apache cordova release tool",
   "main": "./coho",
+  "bin": {
+    "coho": "./coho"
+  },
   "devDependencies": {
     "coffee-script": ">=1.2.0",
     "nodeunit": "0.7.4"

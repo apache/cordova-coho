@@ -9,6 +9,10 @@ Prerequisites
  - Must have git setup
  - Must install node dependencies via `npm install`
 
+If you get the error:
+    Error: Cannot find module 'optimist'
+then you haven't run `npm install` yet.
+
 Usage
 -----
 `./coho --help`

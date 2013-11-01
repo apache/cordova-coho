@@ -400,6 +400,8 @@ function execHelper(cmd, silent, allowError) {
         logCwd();
         print('Executing command:', cmd);
     }
+    // silent==2 is used only when modifying ulimit and re-exec'ing,
+    // so don't be silent but allow whatever to happen.
     var result = shjs.exec(cmd, {silent: (silent && silent !== 2)});
     if (result.code) {
         if (allowError) {
@@ -542,7 +544,7 @@ function createReleaseCommand(argv) {
         if (shjs.test('-f', zipPath)) {
             print('Skipping zip (already exists):', zipPath);
         } else {
-            execHelper('git archive --format zip -o "' + zipPath + '" ' + newVersion);
+            execHelper('git archive --format zip -o "' + zipPath + '" --prefix=' + repo.repoName + '/ ' + newVersion);
         }
     });
 
@@ -553,7 +555,7 @@ function createReleaseCommand(argv) {
     var changeLogData = 'Cordova Commits from ' + prevVersion + ' -> ' + newVersion + '\n';
     forEachRepo(repos, function(repo) {
         changeLogData += '\n' + repo.repoName + '\n---\n';
-        changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true);
+        changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true) + '\n';
     });
     fs.writeFileSync(path.join(destDir, 'changelog'), changeLogData);
     print('Generating final zip...');
@@ -1608,6 +1610,7 @@ function main() {
     // ShellJS opens a lot of file handles, and the default on OS X is too small.
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
+        // re-run with the new ulimit
         execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'', 2);
         return;
     }

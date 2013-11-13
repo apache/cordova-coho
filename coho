@@ -263,6 +263,11 @@ var pluginRepos = [
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
+    }, {
+        title: 'Plugins - Other',
+        id: 'cordova-plugins',
+        repoName: 'cordova-plugins',
+        jiraComponentName: 'Plugins',
     }
 ];
 
@@ -727,7 +732,7 @@ function repoCloneCommand(argv) {
 
 function checkoutDevBranch(repos) {
     forEachRepo(repos, function(repo) {
-        var branchName = pluginRepos.indexOf(repo) == -1 ? 'master' : 'dev';
+        var branchName = (repo.id == 'cordova-plugins' || pluginRepos.indexOf(repo) == -1) ? 'master' : 'dev';
         gitCheckout(branchName);
     });
 }

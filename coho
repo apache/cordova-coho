@@ -328,9 +328,16 @@ function reportGitPushResult(repos, branches) {
 
 function print() {
     var newArgs = Array.prototype.slice.call(arguments);
+    // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
-        newArgs.unshift('====');
-        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n==== ') });
+        var curDir = path.relative(origWorkingDir, process.cwd());
+        var prefix = './' + curDir + '/ =';
+        var PREFIX_LEN = 30;
+        if (prefix.length < PREFIX_LEN) {
+            prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');
+        }
+        newArgs.unshift(prefix);
+        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n' + prefix + ' ') });
     }
 
     console.log.apply(console, newArgs);
@@ -383,18 +390,6 @@ function registerHelpFlag(opt) {
     });
 }
 
-var lastLoggedDir = null;
-function logCwd() {
-    var curDir = process.cwd();
-    if (curDir != lastLoggedDir) {
-        lastLoggedDir = curDir;
-        var relPath = path.relative(origWorkingDir, curDir);
-        if (relPath) {
-            print('Changed directory to: ' + relPath);
-        }
-    }
-}
-
 function execHelper(cmd, silent, allowError) {
     // Don't allow failure if being silent.
     allowError = allowError || silent;
@@ -402,8 +397,7 @@ function execHelper(cmd, silent, allowError) {
         gitCommitCount++;
     }
     if (!silent) {
-        logCwd();
-        print('Executing command:', cmd);
+        print('Executing:', cmd);
     }
     // silent==2 is used only when modifying ulimit and re-exec'ing,
     // so don't be silent but allow whatever to happen.

@@ -283,6 +283,11 @@ var pluginRepos = [
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
         inactive: true
+    }, {
+        title: 'Plugins - Other',
+        id: 'cordova-plugins',
+        repoName: 'cordova-plugins',
+        jiraComponentName: 'Plugins',
     }
 ];
 
@@ -348,9 +353,16 @@ function reportGitPushResult(repos, branches) {
 
 function print() {
     var newArgs = Array.prototype.slice.call(arguments);
+    // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
-        newArgs.unshift('====');
-        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n==== ') });
+        var curDir = path.relative(origWorkingDir, process.cwd());
+        var prefix = './' + curDir + '/ =';
+        var PREFIX_LEN = 30;
+        if (prefix.length < PREFIX_LEN) {
+            prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');
+        }
+        newArgs.unshift(prefix);
+        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n' + prefix + ' ') });
     }
 
     console.log.apply(console, newArgs);
@@ -403,18 +415,6 @@ function registerHelpFlag(opt) {
     });
 }
 
-var lastLoggedDir = null;
-function logCwd() {
-    var curDir = process.cwd();
-    if (curDir != lastLoggedDir) {
-        lastLoggedDir = curDir;
-        var relPath = path.relative(origWorkingDir, curDir);
-        if (relPath) {
-            print('Changed directory to: ' + relPath);
-        }
-    }
-}
-
 function execHelper(cmd, silent, allowError) {
     // Don't allow failure if being silent.
     allowError = allowError || silent;
@@ -422,9 +422,10 @@ function execHelper(cmd, silent, allowError) {
         gitCommitCount++;
     }
     if (!silent) {
-        logCwd();
-        print('Executing command:', cmd);
+        print('Executing:', cmd);
     }
+    // silent==2 is used only when modifying ulimit and re-exec'ing,
+    // so don't be silent but allow whatever to happen.
     var result = shjs.exec(cmd, {silent: (silent && silent !== 2)});
     if (result.code) {
         if (allowError) {
@@ -568,7 +569,7 @@ function createReleaseCommand(argv) {
         if (shjs.test('-f', zipPath)) {
             print('Skipping zip (already exists):', zipPath);
         } else {
-            execHelper('git archive --format zip -o "' + zipPath + '" ' + newVersion);
+            execHelper('git archive --format zip -o "' + zipPath + '" --prefix=' + repo.repoName + '/ ' + newVersion);
         }
     });
 
@@ -579,7 +580,7 @@ function createReleaseCommand(argv) {
     var changeLogData = 'Cordova Commits from ' + prevVersion + ' -> ' + newVersion + '\n';
     forEachRepo(repos, function(repo) {
         changeLogData += '\n' + repo.repoName + '\n---\n';
-        changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true);
+        changeLogData += execHelper('git log --no-merges --format="%h %s" ' + prevVersion + '..' + newVersion, true) + '\n';
     });
     fs.writeFileSync(path.join(destDir, 'changelog'), changeLogData);
     print('Generating final zip...');
@@ -751,7 +752,7 @@ function repoCloneCommand(argv) {
 
 function checkoutDevBranch(repos) {
     forEachRepo(repos, function(repo) {
-        var branchName = pluginRepos.indexOf(repo) == -1 ? 'master' : 'dev';
+        var branchName = (repo.id == 'cordova-plugins' || pluginRepos.indexOf(repo) == -1) ? 'master' : 'dev';
         gitCheckout(branchName);
     });
 }
@@ -1634,6 +1635,7 @@ function main() {
     // ShellJS opens a lot of file handles, and the default on OS X is too small.
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
+        // re-run with the new ulimit
         execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'', 2);
         return;
     }

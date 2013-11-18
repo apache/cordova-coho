@@ -98,7 +98,8 @@ var platformRepos = [
         id: 'osx',
         repoName: 'cordova-osx',
         jiraComponentName: 'OSX',
-        cordovaJsPaths: ['CordovaFramework/cordova.js']
+        cordovaJsPaths: ['CordovaFramework/cordova.js'],
+        inactive: true
     }, {
         title: 'Firefox OS',
         id: 'firefoxos',
@@ -168,7 +169,8 @@ var nonPlatformRepos = [
         title: 'App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',
-        jiraComponentName: 'AppHarness'
+        jiraComponentName: 'AppHarness',
+        inactive: true
     }
 ];
 
@@ -178,91 +180,109 @@ var pluginRepos = [
         id: 'plugin-battery-status',
         repoName: 'cordova-plugin-battery-status',
         jiraComponentName: 'Plugin Battery Status',
+        inactive: true
     }, {
         title: 'Plugin - Camera',
         id: 'plugin-camera',
         repoName: 'cordova-plugin-camera',
         jiraComponentName: 'Plugin Camera',
+        inactive: true
     }, {
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
         jiraComponentName: 'Plugin Console',
+        inactive: true
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
         jiraComponentName: 'Plugin Contacts',
+        inactive: true
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
         jiraComponentName: 'Plugin Device Motion',
+        inactive: true
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
         jiraComponentName: 'Plugin Device Orientation',
+        inactive: true
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
         jiraComponentName: 'Plugin Device',
+        inactive: true
     }, {
         title: 'Plugin - Dialogs',
         id: 'plugin-dialogs',
         repoName: 'cordova-plugin-dialogs',
         jiraComponentName: 'Plugin Dialogs',
+        inactive: true
     }, {
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
+        inactive: true
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
+        inactive: true
     }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
         jiraComponentName: 'Plugin Geolocation',
+        inactive: true
     }, {
         title: 'Plugin - Globalization',
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
+        inactive: true
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
         repoName: 'cordova-plugin-inappbrowser',
         jiraComponentName: 'Plugin InAppBrowser',
+        inactive: true
     }, {
         title: 'Plugin - Media',
         id: 'plugin-media',
         repoName: 'cordova-plugin-media',
         jiraComponentName: 'Plugin Media',
+        inactive: true
     }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',
         jiraComponentName: 'Plugin Media Capture',
+        inactive: true
     }, {
         title: 'Plugin - Network Information',
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
+        inactive: true
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
         jiraComponentName: 'Plugin SplashScreen',
+        inactive: true
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
+        inactive: true
     }
 ];
 
@@ -272,20 +292,24 @@ var otherRepos = [
         id: 'cli',
         repoName: 'cordova-cli',
         jiraComponentName: 'CLI',
+        inactive: true
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
         jiraComponentName: 'Plugman',
+        inactive: true
     }, {
         title: 'Cordova App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',
+        inactive: true
     }, {
         title: 'Cordova Coho',
         id: 'coho',
         repoName: 'cordova-coho',
         jiraComponentName: 'Coho',
+        inactive: true
     }
 ];
 
@@ -297,6 +321,7 @@ var repoGroups = {
     'platform': platformRepos,
     'plugins': pluginRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
+    'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
 repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('docs')]);
 
@@ -501,6 +526,7 @@ function createReleaseCommand(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
+    console.log(repos);
     var prevVersion = validateVersionString(argv['prev-version'], true);
     var newVersion = validateVersionString(argv['new-version']);
 

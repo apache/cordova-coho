@@ -288,6 +288,7 @@ var pluginRepos = [
         id: 'cordova-plugins',
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
+        inactive: true
     }
 ];
 
@@ -647,7 +648,7 @@ function apacheUpload(){
     
     print('copy over and commit new release files')
     execHelper("cp -r releases/cordova-"+argv['new-version']+"/cordova-"+argv['new-version']+"-src* apachecordova/");
-    execHelper("cd apachecordova && svn add *");
+    execHelper("cd apachecordova && svn add cordova-"+argv['new-version']+"-src*");
     print("svn commit -m 'updated to "+argv['new-version']+"'")
     execHelper("cd apachecordova && svn commit -m 'updated to "+opt.argv['new-version']+"'");
 }
@@ -1456,15 +1457,21 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
             fatal('No ID retrieved for created parent issue. Aborting.');
         }
         var request_queue = [];
-        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world',
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Test & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world')]), version_id));
         repoGroups['active-platform'].forEach(function(repo) {
-            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Tag RC1 for ' + repo.title, 'Refer to ' + workflow_link,
+            request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Test & Tag RC1 for ' + repo.title, 'Refer to ' + workflow_link,
                                            componentsForRepos([repo]), version_id));
         });
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
+        
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload docs without switching default',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
 
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create blog post for RC1 & Announce',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
+        
         repoGroups['active-platform'].forEach(function(repo) {
             request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' for ' + repo.title, 'Refer to ' + workflow_link,
                                            componentsForRepos([repo]), version_id));
@@ -1472,8 +1479,14 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
 
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
-
+                                     
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create blog post for final release & get reviewed',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
+                                       
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload signed release .zip to Apache Dist',
+                                       'Refer to ' + workflow_link, componentsForRepos([]), version_id));
+        
+        request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Change default docs to new version',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
 
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Announce Release',

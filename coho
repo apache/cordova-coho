@@ -101,11 +101,23 @@ var platformRepos = [
         cordovaJsPaths: ['CordovaFramework/cordova.js'],
         inactive: true
     }, {
-        title: 'Firefox OS',
-        id: 'firefoxos',
-        repoName: 'cordova-firefoxos',
-        jiraComponentName: 'FirefoxOS',
-        cordovaJsPaths: ['cordova-lib/cordova.js']
+        title: 'Ubuntu',
+        id: 'ubuntu',
+        repoName: 'cordova-ubuntu',
+        jiraComponentName: 'UBUNTU',
+        cordovaJsPaths: ['www/cordova.js']
+    }, {
+        title: 'Amazon Fire OS',
+        id: 'ubuntu',
+        repoName: 'cordova-amazon-fireos',
+        jiraComponentName: 'Amazon FireOS',
+        cordovaJsPaths: ['framework/assets/www/cordova.js'],
+        ratExcludes: [
+            '*.properties',
+            'bin',
+            'gen',
+            'proguard-project.txt'
+        ]
     }, {
         title: 'Bada',
         id: 'bada',

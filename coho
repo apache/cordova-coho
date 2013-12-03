@@ -1104,7 +1104,11 @@ function updateRepos(repos, branches, noFetch) {
                 stashAndPop(repo, function() {
                     staleBranches.forEach(function(branchName) {
                         gitCheckout(branchName);
-                        execHelper('git rebase ' + repo.remoteName + '/' + branchName);
+                        var ret = execHelper('git rebase ' + repo.remoteName + '/' + branchName, false, true);
+                        if (ret === null) {
+                            console.log('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
+                            process.exit(1);
+                        }
                     });
                 });
             }

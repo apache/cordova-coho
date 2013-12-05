@@ -1,7 +1,7 @@
 {
   "name": "coho",
   "version": "0.0.2",
-  "description": "apache cordova release tool",
+  "description": "Apache Cordova release tool",
   "main": "./coho",
   "bin": {
     "coho": "./coho"

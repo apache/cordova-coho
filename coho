@@ -241,13 +241,13 @@ var pluginRepos = [
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
         inactive: true
-    },/* {
+    }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
         inactive: true
-    },*/ {
+    }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',

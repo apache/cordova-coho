@@ -104,11 +104,11 @@ var platformRepos = [
         title: 'Ubuntu',
         id: 'ubuntu',
         repoName: 'cordova-ubuntu',
-        jiraComponentName: 'UBUNTU',
+        jiraComponentName: 'Ubuntu',
         cordovaJsPaths: ['www/cordova.js']
     }, {
         title: 'Amazon Fire OS',
-        id: 'ubuntu',
+        id: 'amazon fireos',
         repoName: 'cordova-amazon-fireos',
         jiraComponentName: 'Amazon FireOS',
         cordovaJsPaths: ['framework/assets/www/cordova.js'],
@@ -241,13 +241,13 @@ var pluginRepos = [
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
         inactive: true
-    }, {
+    },/* {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
         inactive: true
-    }, {
+    },*/ {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
@@ -295,13 +295,13 @@ var pluginRepos = [
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
         inactive: true
-    }, {
+    }/*, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
         inactive: true
-    }
+    }*/
 ];
 
 var otherRepos = [

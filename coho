@@ -114,7 +114,7 @@ var platformRepos = [
         cordovaJsPaths: ['www/cordova.js']
     }, {
         title: 'Amazon Fire OS',
-        id: 'amazon fireos',
+        id: 'amazon-fireos',
         repoName: 'cordova-amazon-fireos',
         jiraComponentName: 'Amazon FireOS',
         cordovaJsPaths: ['framework/assets/www/cordova.js'],

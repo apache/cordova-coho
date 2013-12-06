@@ -18,11 +18,17 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var optimist = require('optimist');
-var path = require('path');
-var shjs = require('shelljs');
-var request = require('request');
+try {
+    var fs = require('fs');
+    var optimist = require('optimist');
+    var path = require('path');
+    var shjs = require('shelljs');
+    var request = require('request');
+} catch (e) {
+    console.log("Please run npm install from this directory:\n\t" +
+                __dirname);
+    process.exit(2);
+}
 
 var origWorkingDir = process.cwd();
 

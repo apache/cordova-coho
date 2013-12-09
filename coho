@@ -18,15 +18,14 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var fs = require('fs');
+var path = require('path');
 try {
-    var fs = require('fs');
     var optimist = require('optimist');
-    var path = require('path');
     var shjs = require('shelljs');
     var request = require('request');
 } catch (e) {
-    console.log("Please run npm install from this directory:\n\t" +
-                __dirname);
+    console.log('Please run "npm install" from this directory:\n\t' + __dirname);
     process.exit(2);
 }
 
@@ -1336,6 +1335,41 @@ function tagReleaseBranchCommand(argv) {
     print('All work complete.');
 }
 
+function lastWeekCommand() {
+    var opt = registerRepoFlag(optimist);
+    opt = registerHelpFlag(opt);
+    opt.usage('Shows formatted git log for changes in the past 7 days.\n' +
+              '\n' +
+              'Usage: $0 last-week [--repo=ios] [--me] [--days=7]\n' +
+              '    --me: Show only your commits\n' +
+              '    --days=n: Show commits from the past n days');
+    argv = opt.argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv.r);
+    var filterByEmail = !!argv.me;
+    var days = argv.days || 7;
+    var userEmail = filterByEmail && execHelper('git config user.email', true);
+
+    var cmd = 'git log --no-merges --date=short';
+    if (filterByEmail) {
+        cmd += ' --committer="' + userEmail + '"';
+    }
+
+    print('Running command: ' + cmd + ' --format="$REPO_NAME %s" --since="' + days + ' days ago"');
+    forEachRepo(repos, function(repo) {
+        var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
+        var output = execHelper(cmd + ' --format="' + repoName + ' %cd %s"' +
+            ' --since="' + days + ' days ago"', true);
+        if (output) {
+            console.log(output)
+        }
+    });
+}
+
 function ratCommand() {
     var opt = registerRepoFlag(optimist);
     opt = registerHelpFlag(opt);
@@ -1636,6 +1670,10 @@ function main() {
             name: 'upload-release',
             desc: 'Uploads a signed .zip to Cordova\'s webserver.',
             entryPoint: apacheUpload
+        }, {
+            name: 'last-week',
+            desc: 'Prints out git logs of things that happened last week.',
+            entryPoint: lastWeekCommand
         }, {
             name: 'foreach',
             desc: 'Runs a shell command in each repo.',

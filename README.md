@@ -13,6 +13,11 @@ If you get the error:
     Error: Cannot find module 'optimist'
 then you haven't run `npm install` yet.
 
+Getting Coho
+------------
+
+    mkdir cordova && cd cordova && git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
+
 Usage
 -----
 `./coho --help`
@@ -28,4 +33,6 @@ Examples
 `./coho foreach -r plugins "git clean -fd"`
 
 `./coho list-repos`
+
+`./coho last-week --me`
 

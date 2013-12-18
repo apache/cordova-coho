@@ -13,6 +13,12 @@ If you get the error:
     Error: Cannot find module 'optimist'
 then you haven't run `npm install` yet.
 
+Suggested way to install `node` is to use `nvm`:
+
+    curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+    source ~/.bash_profile
+    nvm install v0.10.23
+
 Getting Coho
 ------------
 

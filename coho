@@ -845,7 +845,7 @@ function repoStatusCommand(argv) {
                 return;
             }
             var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
-            var changes = execHelper('git log --oneline ' + targetBranch + '..' + branchName, true);
+            var changes = execHelper('git log --no-merges --oneline ' + targetBranch + '..' + branchName, true);
             if (changes) {
                 print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.');
                 console.log(changes);

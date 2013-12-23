@@ -1377,7 +1377,7 @@ function lastWeekCommand() {
         cmd = 'git log --no-merges --date=short --fixed-strings --committer="' + userEmail + '"';
         forEachRepo(repos, function(repo) {
             var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-            var output = execHelper(cmd + ' --format="%an|' + repoName + ' %cd %s"' +
+            var output = execHelper(cmd + ' --format="%ae|' + repoName + ' %cd %s"' +
                 ' --since="' + days + ' days ago"', true);
             if (output) {
                 output.split('\n').forEach(function(line) {

@@ -30,15 +30,15 @@ Usage
 
 Examples
 --------
-`./coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli`
+`./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli`
 
-`./coho repo-update -r auto`
+`./cordova-coho/coho repo-update -r auto`
 
-`./coho foreach -r plugins "git checkout master"`
+`./cordova-coho/coho foreach -r plugins "git checkout master"`
 
-`./coho foreach -r plugins "git clean -fd"`
+`./cordova-coho/coho foreach -r plugins "git clean -fd"`
 
-`./coho list-repos`
+`./cordova-coho/coho list-repos`
 
-`./coho last-week --me`
+`./cordova-coho/coho last-week --me`
 

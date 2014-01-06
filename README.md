@@ -17,7 +17,8 @@ Suggested way to install `node` is to use `nvm`:
 
     curl https://raw.github.com/creationix/nvm/master/install.sh | sh
     source ~/.bash_profile
-    nvm install v0.10.23
+    nvm install 0.10
+    nvm alias default 0.10
 
 Getting Coho
 ------------

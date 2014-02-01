@@ -353,6 +353,9 @@ var gitCommitCount = 0;
 var JIRA_API_URL = "https://issues.apache.org/jira/rest/api/latest/";
 var JIRA_PROJECT_KEY = "CB";
 
+var GITHUB_API_URL = "https://api.github.com/";
+var GITHUB_ORGANIZATION = "apache";
+
 function reportGitPushResult(repos, branches) {
     print('');
     if (gitCommitCount) {
@@ -1649,6 +1652,78 @@ function createReleaseBugCommand() {
     });
 }
 
+function listGitHubPullRequests(repo, branch) {
+    var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls?base=' + branch;
+
+    request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, pullRequests) {
+        if (err) {
+            fatal('Error getting pull requests from GitHub: ' + err);
+        } else if (!pullRequests) {
+            fatal('Error: GitHub returned no pull requests');
+        } else if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-remaining'] == 0) {
+            var resetEpoch = new Date(res.headers['x-ratelimit-reset'] * 1000);
+            var expiration = resetEpoch.getHours() + ":" + resetEpoch.getMinutes() + ":" + resetEpoch.getSeconds();
+            fatal('Error: GitHub rate limit exceeded, wait till ' + expiration + ' before trying again.\n' +
+                'See http://developer.github.com/v3/#rate-limiting for details.');
+        }
+
+        pullRequests = JSON.parse(pullRequests);
+
+        pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
+
+        if(pullRequests.length === 0) {
+            print('No open Pull Requests for repo "' + repo + '" and branch "' + branch + '"');
+        } else {
+            print('Found ' + pullRequests.length + ' Pull Requests for repo "' + repo + '" and branch "' + branch + '"');
+        }
+        console.log('\n');
+
+        pullRequests.forEach(function(pullRequest) {
+            console.log('-----------------------------------------------------------------------------------------------');
+            console.log('Pull Request number ' + pullRequest.number  + ' for ' + repo + ' on branch ' + branch + ' (Last modified:  ' + pullRequest.updated_at + ')');
+            console.log('-----------------------------------------------------------------------------------------------');
+            console.log('Title: ' + pullRequest.title);
+            console.log('Author: ' + pullRequest.user.login);
+            console.log('Url: ' + pullRequest.url);
+            if(pullRequest.body !== '') {
+                console.log('\n' + pullRequest.body);
+            }
+            console.log('\n');
+        });
+    });
+}
+
+function listPullRequestsCommand() {
+    var opt = registerHelpFlag(optimist);
+    opt = registerRepoFlag(opt);
+    opt = opt.options('b', {
+        alias: 'branch',
+        desc: 'The name of the branch to check. Can be specified multiple times to specify multiple branches.',
+        default: 'master'
+    });
+    opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
+               '\n' +
+               'Example usage: $0 list-pulls -r auto -b master\n' +
+               'Example usage: $0 list-pulls -r plugins -b dev\n' +
+               '\n' +
+               'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n');
+    var argv = opt.argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    
+    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    var repos = computeReposFromFlag(argv.r)
+
+    repos.forEach(function(repo) {
+        branches.forEach(function(branchName) {
+            listGitHubPullRequests(repo.repoName, branchName);
+        });
+    });
+}
+
 function main() {
     var commandList = [
         {
@@ -1675,6 +1750,10 @@ function main() {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
             entryPoint: listReposCommand
+        }, {
+            name: 'list-pulls',
+            desc: 'Shows a list of GitHub pull requests for all specified repositories.',
+            entryPoint: listPullRequestsCommand
         }, {
             name: 'prepare-release-branch',
             desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',

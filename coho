@@ -21,6 +21,7 @@ under the License.
 var fs = require('fs');
 var path = require('path');
 try {
+    var exit = require('exit');
     var optimist = require('optimist');
     var shjs = require('shelljs');
     var request = require('request');
@@ -388,7 +389,7 @@ function print() {
 
 function fatal() {
     console.error.apply(console, arguments);
-    process.exit(1);
+    exit(1);
 }
 
 function createPlatformDevVersion(version) {
@@ -449,7 +450,7 @@ function execHelper(cmd, silent, allowError) {
         if (allowError) {
             return null;
         }
-        process.exit(2);
+        exit(2);
     }
     return result.output.trim();
 }
@@ -542,7 +543,7 @@ function createReleaseCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
     console.log(repos);
@@ -615,7 +616,7 @@ function createReleaseCommand(argv) {
     fs.writeFileSync(cordovaSrcZip + '.sha', execHelper('gpg --print-md SHA512 ' + cordovaSrcZip));
     print('Final product is ready at:', path.join(releaseDir, cordovaSrcZip));
     shjs.cd(oldDir);
-    process.exit(0);
+    exit(0);
 }
 
 function apacheUpload(){
@@ -645,7 +646,7 @@ function apacheUpload(){
     
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     
     if (shjs.test('-d','./apachecordova')){
@@ -748,7 +749,7 @@ function listReposCommand(argv) {
     groupNames.forEach(function(groupName) {
         print('    ' + groupName + ' (' + repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
     });
-    process.exit(0);
+    exit(0);
 }
 
 function repoCloneCommand(argv) {
@@ -761,11 +762,11 @@ function repoCloneCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
     cloneRepos(repos, false);
-    process.exit(0);
+    exit(0);
 }
 
 function checkoutDevBranch(repos) {
@@ -826,7 +827,7 @@ function repoStatusCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var branches = argv.b && (Array.isArray(argv.b) ? argv.b : [argv.b]);
     var branches2 = branches && argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
@@ -897,7 +898,7 @@ function repoResetCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
@@ -958,7 +959,7 @@ function repoPushCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
@@ -999,14 +1000,14 @@ function repoPerformShellCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
     var cmd = argv._[1];
     forEachRepo(repos, function(repo) {
          execHelper(cmd);
     });
-    process.exit(0);
+    exit(0);
 }
 
 function repoUpdateCommand(argv) {
@@ -1040,7 +1041,7 @@ function repoUpdateCommand(argv) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r);
@@ -1048,7 +1049,7 @@ function repoUpdateCommand(argv) {
     // ensure that any missing repos are cloned
     cloneRepos(repos,true);
     updateRepos(repos, branches, !argv.fetch);
-    process.exit(0);
+    exit(0);
 }
 
 function determineApacheRemote(repo) {
@@ -1145,7 +1146,7 @@ function configureReleaseCommandFlags(opt) {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var version = validateVersionString(argv.version);
     return argv;
@@ -1409,7 +1410,7 @@ function ratCommand() {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
     // Check that RAT command exists.
@@ -1601,7 +1602,7 @@ function createReleaseBugCommand() {
 
     if (argv.h) {
         optimist.showHelp();
-        process.exit(1);
+        exit(1);
     }
     var version = validateVersionString(argv.version);
     if (version.indexOf('-') != -1) {

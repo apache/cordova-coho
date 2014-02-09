@@ -1652,8 +1652,8 @@ function createReleaseBugCommand() {
     });
 }
 
-function listGitHubPullRequests(repo, branch) {
-    var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls?base=' + branch;
+function listGitHubPullRequests(repo) {
+    var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
     request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, pullRequests) {
         if (err) {
@@ -1671,24 +1671,20 @@ function listGitHubPullRequests(repo, branch) {
 
         pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
 
-        if(pullRequests.length === 0) {
-            print('No open Pull Requests for repo "' + repo + '" and branch "' + branch + '"');
-        } else {
-            print('Found ' + pullRequests.length + ' Pull Requests for repo "' + repo + '" and branch "' + branch + '"');
-        }
-        console.log('\n');
+        console.log('\x1B[31m========= ' + repo + ': ' + pullRequests.length + ' Pull Requests. =========\x1B[39m');
 
         pullRequests.forEach(function(pullRequest) {
-            console.log('-----------------------------------------------------------------------------------------------');
-            console.log('Pull Request number ' + pullRequest.number  + ' for ' + repo + ' on branch ' + branch + ' (Last modified:  ' + pullRequest.updated_at + ')');
-            console.log('-----------------------------------------------------------------------------------------------');
-            console.log('Title: ' + pullRequest.title);
-            console.log('Author: ' + pullRequest.user.login);
-            console.log('Url: ' + pullRequest.html_url);
-            if(pullRequest.body !== '') {
-                console.log('\n' + pullRequest.body);
+            var updatedDate = new Date(pullRequest.updated_at);
+            var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
+            console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+            console.log(pullRequest.user.login + ': ' + pullRequest.title + ' (\x1B[31m' + daysAgo + ' days ago\x1B[39m)');
+            console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+            console.log('* ' + pullRequest.html_url);
+            console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
+            if (pullRequest.body) {
+                console.log(pullRequest.body);
             }
-            console.log('\n');
+            console.log('');
         });
     });
 }
@@ -1696,15 +1692,10 @@ function listGitHubPullRequests(repo, branch) {
 function listPullRequestsCommand() {
     var opt = registerHelpFlag(optimist);
     opt = registerRepoFlag(opt);
-    opt = opt.options('b', {
-        alias: 'branch',
-        desc: 'The name of the branch to check. Can be specified multiple times to specify multiple branches.',
-        default: 'master'
-    });
     opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
                '\n' +
-               'Example usage: $0 list-pulls -r auto -b master\n' +
-               'Example usage: $0 list-pulls -r plugins -b dev\n' +
+               'Example usage: $0 list-pulls | tee pulls.list | less -R\n' +
+               'Example usage: $0 list-pulls -r plugins\n' +
                '\n' +
                'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n');
     var argv = opt.argv;
@@ -1714,13 +1705,10 @@ function listPullRequestsCommand() {
         process.exit(1);
     }
     
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = computeReposFromFlag(argv.r)
 
     repos.forEach(function(repo) {
-        branches.forEach(function(branchName) {
-            listGitHubPullRequests(repo.repoName, branchName);
-        });
+        listGitHubPullRequests(repo.repoName);
     });
 }
 

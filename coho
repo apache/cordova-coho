@@ -715,7 +715,7 @@ function listReleaseUrls(argv) {
         process.exit(1);
     }
     var repos = computeReposFromFlag(argv.r);
-    var version = validateVersionString(argv['version']);
+    var version = argv['version']; //validateVersionString(argv['version']);
 
     var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
     forEachRepo(repos, function(repo) {

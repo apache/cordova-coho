@@ -1007,7 +1007,7 @@ function repoPerformShellCommand(argv) {
     var repos = computeReposFromFlag(argv.r);
     var cmd = argv._[1];
     forEachRepo(repos, function(repo) {
-         execHelper(cmd);
+         execHelper(cmd, false, true);
     });
     process.exit(0);
 }

@@ -637,7 +637,7 @@ function apacheUpload(){
             desc: 'The previous release version (used to remove old version from download page)',
             demand: false
          });
-    
+
     opt = registerHelpFlag(opt);
     var argv = opt
         .usage('Uploads the release to the apache servers and optionally removes previous release files.\n' +
@@ -650,12 +650,12 @@ function apacheUpload(){
             '\n' +
             'Usage: $0 upload-release --new-version 3.0.0 [--prev-version 2.9.0]')
         .argv;
-    
+
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
-    
+
     if (shjs.test('-d','./apachecordova')){
         print('apachecordova directory exists');
         execHelper("cd apachecordova && svn update");
@@ -670,7 +670,7 @@ function apacheUpload(){
         print('removing previous release from apache servers')
         execHelper("cd apachecordova && svn delete cordova-"+argv['prev-version']+"-src.*");
     }
-    
+
     print('copy over and commit new release files')
     execHelper("cp -r releases/cordova-"+argv['new-version']+"/cordova-"+argv['new-version']+"-src* apachecordova/");
     execHelper("cd apachecordova && svn add cordova-"+argv['new-version']+"-src*");
@@ -1590,13 +1590,13 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
         });
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Branch & Tag RC1 of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
-        
+
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload docs without switching default',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
 
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create blog post for RC1 & Announce',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
-        
+
         repoGroups['active-platform'].forEach(function(repo) {
             request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' for ' + repo.title, 'Refer to ' + workflow_link,
                                            componentsForRepos([repo]), version_id));
@@ -1604,13 +1604,13 @@ function createReleaseBug(version, root_version, prev_version, version_id, usern
 
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Test & Tag ' + version + ' of cordova-cli',
                                        'Refer to ' + workflow_link, componentsForRepos([getRepoById('cli')]), version_id));
-                                     
+
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Create blog post for final release & get reviewed',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
-                                       
+
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Upload signed release .zip to Apache Dist',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
-        
+
         request_queue.push(makeSubtask(parent_key, subjectPrefix + 'Change default docs to new version',
                                        'Refer to ' + workflow_link, componentsForRepos([]), version_id));
 
@@ -1689,7 +1689,29 @@ function createReleaseBugCommand() {
     });
 }
 
-function listGitHubPullRequests(repo) {
+var commentFailed = false;
+function addLastCommentInfo(repo, pullRequests, callback) {
+    var remaining = pullRequests.length;
+    pullRequests.forEach(function(pullRequest) {
+        // review_comments_url is always empty, so resort to scraping.
+        request.get({ url: 'https://github.com/apache/' + repo + '/pull/' + pullRequest.number, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, payload) {
+            if (err) {
+                if (!commentFailed) {
+                    commentFailed = true;
+                    console.warn('Pull request scrape request failed: ' + err);
+                }
+            } else {
+                var m = /[\s\S]*timeline-comment-header[\s\S]*?"author".*?>(.*?)</.exec(payload);
+                pullRequest.lastUpdatedBy = m && m[1] || '';
+            }
+            if (--remaining === 0) {
+                callback();
+            }
+        });
+    });
+}
+
+function listGitHubPullRequests(repo, maxAge, hideUser, callback) {
     var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
     request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, pullRequests) {
@@ -1705,34 +1727,79 @@ function listGitHubPullRequests(repo) {
         }
 
         pullRequests = JSON.parse(pullRequests);
+        var origCount = pullRequests.length;
 
-        pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
-
-        console.log('\x1B[31m========= ' + repo + ': ' + pullRequests.length + ' Pull Requests. =========\x1B[39m');
-
-        pullRequests.forEach(function(pullRequest) {
-            var updatedDate = new Date(pullRequest.updated_at);
+        pullRequests = pullRequests.filter(function(p) {
+            var updatedDate = new Date(p.updated_at);
             var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
-            console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
-            console.log(pullRequest.user.login + ': ' + pullRequest.title + ' (\x1B[31m' + daysAgo + ' days ago\x1B[39m)');
-            console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
-            console.log('* ' + pullRequest.html_url);
-            console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
-            if (pullRequest.body) {
-                console.log(pullRequest.body);
-            }
-            console.log('');
+            return daysAgo < maxAge;
         });
+        var countAfterDateFilter = pullRequests.length;
+
+        addLastCommentInfo(repo, pullRequests, next);
+
+        function next() {
+            if (hideUser) {
+                pullRequests = pullRequests.filter(function(p) {
+                    return p.lastUpdatedBy != hideUser;
+                });
+            }
+            var count = pullRequests.length;
+
+            pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
+
+            var countMsg = count + ' Pull Requests';
+            if (countAfterDateFilter !== origCount || count !== countAfterDateFilter) {
+                countMsg += ' (plus ';
+            }
+            if (countAfterDateFilter !== origCount) {
+                countMsg += (origCount - countAfterDateFilter) + ' old';
+                if (count !== countAfterDateFilter) {
+                    countMsg += ', ';
+                }
+            }
+            if (count !== countAfterDateFilter) {
+                countMsg += (countAfterDateFilter - count) + ' stale';
+            }
+            if (countAfterDateFilter !== origCount || count !== countAfterDateFilter) {
+                countMsg += ')';
+            }
+            console.log('\x1B[31m========= ' + repo + ': ' + countMsg + '. =========\x1B[39m');
+
+            pullRequests.forEach(function(pullRequest) {
+                var updatedDate = new Date(pullRequest.updated_at);
+                var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
+                console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+                console.log(pullRequest.user.login + ': ' + pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
+                console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+                console.log('* ' + pullRequest.html_url);
+                console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
+                if (pullRequest.body) {
+                    console.log(pullRequest.body);
+                }
+                console.log('');
+            });
+            callback();
+        }
     });
 }
 
 function listPullRequestsCommand() {
     var opt = registerHelpFlag(optimist);
-    opt = registerRepoFlag(opt);
+    opt = registerRepoFlag(opt)
+        .options('max-age', {
+            desc: 'Don\'t show pulls older than this (in days)',
+            type: 'number',
+            default: 90
+         })
+        .options('hide-user', {
+            desc: 'Hide PRs where the last comment\'s is by this github user.',
+            type: 'string'
+         });
     opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
                '\n' +
-               'Example usage: $0 list-pulls | tee pulls.list | less -R\n' +
-               'Example usage: $0 list-pulls -r plugins\n' +
+               'Example usage: $0 list-pulls --hide-user="agrieve" | tee pulls.list | less -R\n' +
+               'Example usage: $0 list-pulls --max-age=365 -r plugins\n' +
                '\n' +
                'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n');
     var argv = opt.argv;
@@ -1741,12 +1808,16 @@ function listPullRequestsCommand() {
         optimist.showHelp();
         process.exit(1);
     }
-    
+
     var repos = computeReposFromFlag(argv.r)
 
-    repos.forEach(function(repo) {
-        listGitHubPullRequests(repo.repoName);
-    });
+    function next() {
+        if (repos.length) {
+            var repo = repos.shift();
+            listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], next);
+        }
+    }
+    next();
 }
 
 function main() {

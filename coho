@@ -323,6 +323,11 @@ var otherRepos = [
         jiraComponentName: 'Plugman',
         inactive: true
     }, {
+        title: 'Cordova Medic',
+        id: 'medic',
+        repoName: 'cordova-medic',
+        inactive: true
+    }, {
         title: 'Cordova App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',
@@ -377,7 +382,7 @@ function print() {
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
         var curDir = path.relative(origWorkingDir, process.cwd());
-        var prefix = './' + curDir + '/ =';
+        var prefix = curDir ? './' + curDir + '/ =' : './ =';
         var PREFIX_LEN = 30;
         if (prefix.length < PREFIX_LEN) {
             prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');

@@ -1,25 +1,6 @@
 This file contains the PGP keys of various developers.
 
-Users: pgp < KEYS
-       gpg --import KEYS
-Developers: 
-    pgp -kxa <your name> and append it to this file.
-    (pgpk -ll <your name> && pgpk -xa <your name>)
-    >> this file.
-    (gpg --list-sigs <your name>
-         && gpg --armor --export <your name>) >>
-         this file.
-pub   2048R/41D3E0F8 2012-02-10 [expires: 2016-02-10]
-uid                  Steven Gill <stevengill97@gmail.com>
-sig 3        41D3E0F8 2012-02-10  Steven Gill <stevengill97@gmail.com>
-sub   2048R/D5B20C87 2012-02-10 [expires: 2016-02-10]
-sig          41D3E0F8 2012-02-10  Steven Gill <stevengill97@gmail.com>
-
-pub   4096R/B1BCD440 2012-02-16
-uid                  Steven Gill (steve at apache) <steven@apache.org>
-sig 3        B1BCD440 2012-02-16  Steven Gill (steve at apache) <steven@apache.org>
-sub   4096R/7B9CA0D9 2012-02-16
-sig          B1BCD440 2012-02-16  Steven Gill (steve at apache) <steven@apache.org>
+Refer to https://wiki.apache.org/cordova/SetUpGpg
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG/MacGPG2 v2.0.17 (Darwin)
@@ -104,4 +85,56 @@ NccnDXARCvhpkaN2uEzvA0rZuzFEZr7rCOibKbfOCSwVUl7ScpJ713AuDdpBnlUK
 qj2cRc6IA5uRFBBqnqlOoKMZoVteD6ECBg6uztJ8koVSG9Tf5pRRet1zxCDYSkdR
 StsCVdirtcRmjUMUtiQ=
 =/wKU
+-----END PGP PUBLIC KEY BLOCK-----
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1
+
+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
+fQg/K8Jw0hpLVIAiLGyCOVFTrOM=
+=oyHT
 -----END PGP PUBLIC KEY BLOCK-----

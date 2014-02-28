@@ -182,12 +182,6 @@ var nonPlatformRepos = [
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
         jiraComponentName: 'App Hello World'
-    }, {
-        title: 'App Harness',
-        id: 'app-harness',
-        repoName: 'cordova-app-harness',
-        jiraComponentName: 'AppHarness',
-        inactive: true
     }
 ];
 
@@ -331,13 +325,32 @@ var otherRepos = [
         title: 'Cordova App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',
-        inactive: true
+        inactive: true,
+        jiraComponentName: 'AppHarness'
     }, {
         title: 'Cordova Coho',
         id: 'coho',
         repoName: 'cordova-coho',
         jiraComponentName: 'Coho',
         inactive: true
+    }, {
+        title: 'Apache dist/release/cordova',
+        id: 'dist',
+        repoName: 'cordova-dist',
+        inactive: true,
+        svn: 'https://dist.apache.org/repos/dist/release/cordova'
+    }, {
+        title: 'Apache dist/dev/cordova',
+        id: 'dist/dev',
+        repoName: 'cordova-dist-dev',
+        inactive: true,
+        svn: 'https://dist.apache.org/repos/dist/dev/cordova'
+    }, {
+        title: 'Cordova Website',
+        id: 'website',
+        repoName: 'cordova-website',
+        inactive: true,
+        svn: 'https://svn.apache.org/repos/asf/cordova/site'
     }
 ];
 
@@ -823,22 +836,16 @@ function cloneRepos(repos, quiet) {
         if (shjs.test('-d', repo.repoName)) {
             if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
+        } else if (repo.svn) {
+            execHelper('svn checkout ' + repo.svn + ' ' + repo.repoName);
         } else {
-            var code = shjs.exec('git clone --progress ' + createRepoUrl(repo)).code;
-            if (code) {
-                failures.push(repo.repoName);
-            } else {
-                checkoutDevBranch([repo]);
-            }
+            execHelper('git clone --progress ' + createRepoUrl(repo));
         }
     });
 
-    var numCloned = repos.length - failures.length - numSkipped;
+    var numCloned = repos.length - numSkipped;
     if (numCloned) {
         print('Successfully cloned ' + numCloned + ' repositories.');
-    }
-    if (failures.length) {
-        fatal('The following repositories failed to clone: ' + failures.join(', '));
     }
 }
 
@@ -877,6 +884,10 @@ function repoStatusCommand(argv) {
     }
 
     forEachRepo(repos, function(repo) {
+        if (repo.svn) {
+            print('repo-status not implemented for svn repos');
+            return;
+        }
         // Determine remote name.
         updateRepos([repo], [], true);
         var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
@@ -1129,6 +1140,9 @@ function stashAndPop(repo, func) {
 function updateRepos(repos, branches, noFetch) {
     // Pre-fetch checks.
     forEachRepo(repos, function(repo) {
+        if (repo.svn) {
+            return;
+        }
         // Ensure it's on a named branch.
         retrieveCurrentBranchName();
         // Find the apache remote.
@@ -1139,6 +1153,9 @@ function updateRepos(repos, branches, noFetch) {
 
     if (!noFetch) {
         forEachRepo(repos, function(repo) {
+            if (repo.svn) {
+                return;
+            }
             // TODO - can these be combined? Fetching with --tags seems to not pull in changes...
             execHelper('git fetch --progress ' + repo.remoteName);
             execHelper('git fetch --progress --tags ' + repo.remoteName);
@@ -1147,6 +1164,10 @@ function updateRepos(repos, branches, noFetch) {
 
     if (branches && branches.length) {
         forEachRepo(repos, function(repo) {
+            if (repo.svn) {
+                execHelper('svn up');
+                return;
+            }
             var staleBranches = branches.filter(function(branchName) {
                 if (!remoteBranchExists(repo, branchName)) {
                     return false;

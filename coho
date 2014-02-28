@@ -532,6 +532,10 @@ function createArchiveCommand(argv) {
         .options('tag', {
             desc: 'The pre-existing tag to archive (defaults to newest tag on branch)'
          })
+        .options('sign', {
+            desc: 'Whether to create .asc, .md5, .sha files',
+            default: true
+         })
         .options('dest', {
             desc: 'The directory to hold the resulting files.',
             demand: true
@@ -559,16 +563,18 @@ function createArchiveCommand(argv) {
     var absOutDir = path.resolve(outDir);
 
     forEachRepo(repos, function(repo) {
-        var tag = findMostRecentTag();
+        var tag = argv.tag || findMostRecentTag();
         print('Creating archive of ' + repo.repoName + '@' + tag);
         var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
         execHelper('git archive --format zip -o "' + outPath + '" ' + tag);
-        execHelper('gpg --armor --detach-sig --output "' + outPath + '.asc" "' + outPath + '"');
-        fs.writeFileSync(outPath + '.md5', computeHash(outPath, 'MD5'));
-        fs.writeFileSync(outPath + '.sha', computeHash(outPath, 'SHA512'));
+        if (argv.sign) {
+            execHelper('gpg --armor --detach-sig --output "' + outPath + '.asc" "' + outPath + '"');
+            fs.writeFileSync(outPath + '.md5', computeHash(outPath, 'MD5'));
+            fs.writeFileSync(outPath + '.sha', computeHash(outPath, 'SHA512'));
+        }
     });
     print();
-    print('Archives created for repos: ' + argv.r.join(', '));
+    print('Archives created.');
     print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip'));
 }
 

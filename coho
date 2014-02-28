@@ -526,6 +526,95 @@ function createRepoUrl(repo) {
     return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
 }
 
+function createArchiveCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = opt
+        .options('tag', {
+            desc: 'The pre-existing tag to archive (defaults to newest tag on branch)'
+         })
+        .options('dest', {
+            desc: 'The directory to hold the resulting files.',
+            demand: true
+         });
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag.\n' +
+               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
+               '\n' +
+               'Usage: $0 create-archive -r plugman -r cli --dest cordova-dist-dev/CB-1111')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv.r);
+
+    if (!shjs.which('gpg')) {
+        fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
+    }
+
+    var outDir = argv.dest;
+    shjs.mkdir('-p', outDir);
+    var absOutDir = path.resolve(outDir);
+
+    forEachRepo(repos, function(repo) {
+        var tag = findMostRecentTag();
+        print('Creating archive of ' + repo.repoName + '@' + tag);
+        var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
+        execHelper('git archive --format zip -o "' + outPath + '" ' + tag);
+        execHelper('gpg --armor --detach-sig --output "' + outPath + '.asc" "' + outPath + '"');
+        fs.writeFileSync(outPath + '.md5', computeHash(outPath, 'MD5'));
+        fs.writeFileSync(outPath + '.sha', computeHash(outPath, 'SHA512'));
+    });
+    print();
+    print('Archives created for repos: ' + argv.r.join(', '));
+    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip'));
+}
+
+function computeHash(path, algo) {
+    print('Computing ' + algo + ' for: ' + path);
+    var result = execHelper('gpg --print-md ' + algo + ' "' + path + '"', true);
+    return extractHashFromOutput(result);
+}
+
+function extractHashFromOutput(output) {
+    return output.replace(/.*?:/, '').replace(/\s*/g, '').toLowerCase();
+}
+
+function verifyArchiveCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
+               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
+               '\n' +
+               'Usage: $0 verify-archive a.zip b.zip c.zip')
+        .argv;
+
+    var zipPaths = argv._.slice(1);
+    if (argv.h || !zipPaths.length) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    if (!shjs.which('gpg')) {
+        fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
+    }
+
+    zipPaths.forEach(function(zipPath) {
+        execHelper('gpg --verify "' + zipPath + '.asc" "' + zipPath + '"');
+        var md5 = computeHash(zipPath, 'MD5');
+        if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
+            fatal('MD5 does not match.');
+        }
+        var sha = computeHash(zipPath, 'SHA512');
+        if (extractHashFromOutput(fs.readFileSync(zipPath + '.sha', 'utf8')) !== sha) {
+            fatal('SHA512 does not match.');
+        }
+        print(zipPath + ' signature and hashes verified.');
+    });
+}
+
 function createReleaseCommand(argv) {
     var opt = registerRepoFlag(optimist)
     opt = opt
@@ -774,6 +863,10 @@ function retrieveCurrentBranchName(allowDetached) {
         throw new Error('Could not parse branch name from: ' + ref);
     }
     return match[1];
+}
+
+function findMostRecentTag() {
+    return execHelper('git describe --tags --abbrev=0 HEAD', true);
 }
 
 function retrieveCurrentTagName() {
@@ -1891,6 +1984,14 @@ function main() {
             name: 'create-release-bug',
             desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',
             entryPoint: createReleaseBugCommand
+        }, {
+            name: 'create-archive',
+            desc: 'Zips up a tag, signs it, and adds checksum files.',
+            entryPoint: createArchiveCommand
+        }, {
+            name: 'verify-archive',
+            desc: 'Checks that archives are properly signed and hashed.',
+            entryPoint: verifyArchiveCommand
         }, {
             name: 'upload-release',
             desc: 'Uploads a signed .zip to Cordova\'s webserver.',

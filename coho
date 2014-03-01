@@ -621,6 +621,28 @@ function verifyArchiveCommand(argv) {
     });
 }
 
+function printTagsCommand(argv) {
+    var opt = registerRepoFlag(optimist)
+    opt = registerHelpFlag(opt);
+    var argv = opt
+        .usage('Prints out tags & hashes for the given repos. Used in VOTE emails.\n' +
+               '\n' +
+               'Usage: $0 print-tags -r plugman -r cli')
+        .argv;
+
+    if (argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+    var repos = computeReposFromFlag(argv.r);
+
+    forEachRepo(repos, function(repo) {
+        var tag = findMostRecentTag();
+        var ref = execHelper('git show-ref ' + tag, true);
+        console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
+    });
+}
+
 function createReleaseCommand(argv) {
     var opt = registerRepoFlag(optimist)
     opt = opt
@@ -1998,6 +2020,10 @@ function main() {
             name: 'verify-archive',
             desc: 'Checks that archives are properly signed and hashed.',
             entryPoint: verifyArchiveCommand
+        }, {
+            name: 'print-tags',
+            desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
+            entryPoint: printTagsCommand
         }, {
             name: 'upload-release',
             desc: 'Uploads a signed .zip to Cordova\'s webserver.',

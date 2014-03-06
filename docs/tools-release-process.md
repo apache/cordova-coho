@@ -2,6 +2,8 @@
 
 Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
 
+If you have not done so already, create a GPG key (see: [setting-up-gpg.md](setting-up-gpg.md)).
+
 Plugman and CLI are released at most weekly (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
 
 A tools release is performed by a single person each week. We call this person the "Release Manager". How to select the Release Manager is still TDB.

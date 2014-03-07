@@ -207,6 +207,7 @@ Respond to the vote thread with:
     svn up
     svn rm $JIRA
     svn commit -m "$JIRA Removing release candidates from dist/dev"
+    cd ..
 
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
@@ -221,6 +222,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
     cd cordova-website
     rake build
+    svn st
+    svn add blah.blah.blah
     svn commit -m "$JIRA Published blog post for tools release."
 
 

@@ -199,6 +199,7 @@ Respond to the vote thread with:
     svn up
     svn rm $JIRA
     svn commit -m "$JIRA Removing release candidates from dist/dev"
+    cd ..
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
 

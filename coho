@@ -795,7 +795,7 @@ function apacheUpload(){
             '    Checking out Apache Cordova release repository if it does not already exist.\n' +
             '    Updating the repositoryvia svn update\n' +
             '    Optionally removing old release artifacts\n' +
-            '    Copying in new relase artifacts\n' +
+            '    Copying in new release artifacts\n' +
             '    Svn committing new release artifacts to the apache repo\n' +
             '\n' +
             'Usage: $0 upload-release --new-version 3.0.0 [--prev-version 2.9.0]')

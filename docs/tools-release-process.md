@@ -92,7 +92,11 @@ Update the version of plugman that CLI depends on:
     v="$(grep '"version"' cordova-plugman/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"plugman":.*/"plugman": "'$v'",/' cordova-cli/package.json
 
-Commit these two changes together into one commit
+Update CLI's npm-shrinkwrap.json with new version of plugman:
+
+    (cd cordova-cli; npm shrinkwrap)
+
+Commit these three changes together into one commit
 
     for l in cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 

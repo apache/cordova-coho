@@ -2052,7 +2052,13 @@ function main() {
     for (var i = 0; i < commandList.length; ++i) {
         usage += '    ' + commandList[i].name + ': ' + commandList[i].desc + '\n';
     }
-    usage += '\nFor help on a specific command: $0 command --help';
+    usage += '\nFor help on a specific command: $0 command --help\n\n';
+    usage += 'Some examples:\n';
+    usage += '    ./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli\n';
+    usage += '    ./cordova-coho/coho repo-update\n';
+    usage += '    ./cordova-coho/coho foreach -r plugins "git checkout master"\n';
+    usage += '    ./cordova-coho/coho foreach -r plugins "git clean -fd"\n';
+    usage += '    ./cordova-coho/coho last-week --me';
 
     var command;
     var argv = optimist

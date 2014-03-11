@@ -1,45 +1,22 @@
-COHO
-=======
+# COHO
 
-Coho is a script that contains commands that make it easier to work with Cordova's many repositories.
+This repository has the following purposes:
 
-Prerequisites
--------------
- - Have node installed
- - Must have git setup
- - Must install node dependencies via `npm install`
+1. To hold release processes documentation (`docs/*`)
 
-If you get the error:
-    Error: Cannot find module 'optimist'
-then you haven't run `npm install` yet.
+2. To hold release automation scripts
+  - e.g. coho create-archive && coho verify-archive
+  - e.g. CrowdIn scripts
 
-Suggested way to install `node` is to use `nvm`:
+3. To hold committer process documentation
+  - e.g. ProcessingPullRequests
 
-    curl https://raw.github.com/creationix/nvm/master/install.sh | sh
-    source ~/.bash_profile
-    nvm install 0.10
-    nvm alias default 0.10
+4. To hold generally useful dev scripts
+  - e.g. coho repo-clone
+  - e.g. coho --help
 
-Getting Coho
-------------
+
+## How to Clone
 
     mkdir cordova && cd cordova && git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
-
-Usage
------
-`./coho --help`
-
-Examples
---------
-`./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli`
-
-`./cordova-coho/coho repo-update -r auto`
-
-`./cordova-coho/coho foreach -r plugins "git checkout master"`
-
-`./cordova-coho/coho foreach -r plugins "git clean -fd"`
-
-`./cordova-coho/coho list-repos`
-
-`./cordova-coho/coho last-week --me`
 

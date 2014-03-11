@@ -4,6 +4,8 @@ Before cutting any releases, read the Apache's [Releases Policy](http://www.apac
 
 This page describes the technical steps for releasing a `Cadence Release` (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
 
+TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
+
 ## Getting Buy-in & Assigning a Release Manager
 
  1. Email the dev mailing-list and see if anyone has reason to postpone the release.

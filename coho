@@ -334,6 +334,11 @@ var otherRepos = [
         jiraComponentName: 'Coho',
         inactive: true
     }, {
+        title: 'Cordova Labs',
+        id: 'labs',
+        repoName: 'cordova-labs',
+        inactive: true
+    }, {
         title: 'Apache dist/release/cordova',
         id: 'dist',
         repoName: 'cordova-dist',

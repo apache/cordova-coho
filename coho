@@ -1935,7 +1935,8 @@ function listGitHubPullRequests(repo, maxAge, hideUser, callback) {
                 console.log(pullRequest.user.login + ': ' + pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
                 console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
                 console.log('* ' + pullRequest.html_url);
-                console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
+                // console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
+                console.log('To merge: git pull ' + pullRequest.head.repo.clone_url + ' ' + pullRequest.head.ref);
                 if (pullRequest.body) {
                     console.log(pullRequest.body);
                 }

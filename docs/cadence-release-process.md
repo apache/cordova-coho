@@ -51,14 +51,13 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
    * TODO: More details needed here
  3. For iOS only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/incubator-cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
-     * Add a new macro for the new version, e.g.
 
+by adding a new macro for the new version, e.g.
 
     #define __CORDOVA_2_1_0  20100
 
 
-* * * Update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
-
+and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
 
     #ifndef CORDOVA_VERSION_MIN_REQUIRED
         #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
@@ -289,5 +288,4 @@ Upload it to: https://dist.apache.org/repos/dist/release/cordova/
     ./cordova-coho/coho upload-release --new-version 3.0.0 --prev-version 2.9.0
 
 [Update the versions](https://wiki.apache.org/cordova/UpdatingVersionsOnTheCordovaWebsite) on the Cordova website
-
 

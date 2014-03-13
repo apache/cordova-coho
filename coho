@@ -294,6 +294,12 @@ var pluginRepos = [
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
         inactive: true
+    }, {
+        title: 'Plugin - Statusbar',
+        id: 'plugin-statusbar',
+        repoName: 'cordova-plugin-statusbar',
+        jiraComponentName: 'Plugin Statusbar',
+        inactive: true
     }/*, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',

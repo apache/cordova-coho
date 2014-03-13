@@ -339,6 +339,21 @@ var otherRepos = [
         repoName: 'cordova-labs',
         inactive: true
     }, {
+        title: 'Cordova Registry Website',
+        id: 'registry-web',
+        repoName: 'cordova-registry-web',
+        inactive: true
+    }, {
+        title: 'Cordova Registry DB',
+        id: 'registry',
+        repoName: 'cordova-registry',
+        inactive: true
+    }, {
+        title: 'Cordova Labs',
+        id: 'labs',
+        repoName: 'cordova-labs',
+        inactive: true
+    }, {
         title: 'Apache dist/release/cordova',
         id: 'dist',
         repoName: 'cordova-dist',

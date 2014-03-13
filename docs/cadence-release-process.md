@@ -152,9 +152,9 @@ To submit a fix:
 ### Documentation To Update
 
 For each repository:
- 1. Update RELEASENOTES.md (if the file is missing, use the iOS one as a reference: [[https://github.com/apache/cordova-ios/blob/master/RELEASENOTES.md | RELEASENOTES.md]])
-    * Grab changes from the previous release until now.
+ 1. Update RELEASENOTES.md (if the file is missing, use the iOS one as a reference: [RELEASENOTES.md](https://github.com/apache/cordova-ios/blob/master/RELEASENOTES.md))
 
+Grab changes from the previous release until now.
 
     # Changes:
     git log --pretty=format:'* %s' --topo-order --no-merges origin/3.2.x..origin/3.3.x
@@ -163,7 +163,8 @@ For each repository:
     # Author Count:
     git log --pretty=format:'%an' --topo-order --no-merges origin/3.2.x..origin/3.3.x | sort | uniq | wc -l
 
-    * Edit the commit descriptions - don't add the commits verbatim, usually they are meaningless to the user. Only show the ones relevant for the user (fixes, new features)
+Edit the commit descriptions - don't add the commits verbatim, usually they are meaningless to the user. Only show the ones relevant for the user (fixes, new features)
+
  2. Update README.md (if necessary)
  3. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
  4. Ensure the other guides listed in the sidebar are up-to-date for your platform
@@ -218,7 +219,7 @@ Refer to [tools-release-process.md](tools-release-process.md)
 
 ### Announce It!
  1. Announce the release to the world!
-   * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
+   * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
    * Announce to [G+ Page](https://plus.google.com/u/0/113178331525415522084/posts)
 

@@ -40,5 +40,5 @@ CLI exists in both lists because its version has the format: `CadVer-SemVer`
 Related docs:
 * [storing-repo-versions-design.md](storing-repo-versions-design.md)
 * [cadence-release-process.md](cadence-release-process.md)
-* [CommitterWorkflow](https://wiki.apache.org/cordova/CommitterWorkflow)
+* [committer-workflow.md](committer-workflow.md)
 

@@ -179,8 +179,6 @@ __Body:__
 
 ## Email the result of the vote
 Respond to the vote thread with:
- * Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc
-
 
     The vote has now closed. The results are:
 
@@ -194,6 +192,7 @@ Respond to the vote thread with:
 
     The vote has passed.
 
+_Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc_
 
 ## If the Vote does *not* Pass
 * Revert adding of `-dev`

@@ -4,19 +4,17 @@
  * Ensure you are familiar with [committer-workflow.md](committer-workflow.md)
 
 ## Step 0:
- * Find what requests need attention by looking a the GitHub page.
- * To look at them in aggregate:
+ Find what requests need attention by looking a the GitHub page.
 
+To look at them in aggregate:
 
     ./cordova-coho/coho list-pulls | tee pulls.list | less -R
 
- * To filter out those that you last commented on:
-
+To filter out those that you last commented on:
 
     ./cordova-coho/coho list-pulls --hide-user=agrieve
 
- * To show only certain repos:
-
+To show only certain repos:
 
     ./cordova-coho/coho list-pulls -r js -r android -r plugin-inappbrowser
 
@@ -33,7 +31,7 @@
  * If it is not there, respond with:
 
 _Thanks for the pull request. I've had a look at it and think it looks good. Before we can merge it though, you need to sign Apache's Contributor License Agreement (can be done online):  http://www.apache.org/licenses/#clas_
-   
+
 ## Step 3: Merge the change
 Run the following as an exemplary way to merge to master:
 

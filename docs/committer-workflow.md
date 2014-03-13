@@ -78,8 +78,8 @@ When possible, try to phrase things in the form of a proposal. If no one objects
  * When possible, rebase & squash your commits
    * Make sure you can figure out what your commit does by the first line of your commit discription.
  * If it fixes a regression, then also cherry-pick it into the appropriate release branch.
- * Here is an example workflow for committing a change when you've made it on a topic branch
 
+Here is an example workflow for committing a change when you've made it on a topic branch
 
     git pull
     git checkout topic_branch
@@ -89,20 +89,17 @@ When possible, try to phrase things in the form of a proposal. If no one objects
     git push
     git branch -d topic_branch
 
- * Here is an example workflow for committing a change when you've made it on master:
-
+Here is an example workflow for committing a change when you've made it on master:
 
     git pull --rebase
     git rebase origin/master -i # Squash & reword commit messages
     git push
 
- * If you ever end up with a merge commit on master that you don't want:
-
+If you ever end up with a merge commit on master that you don't want:
 
     git rebase origin/master
 
- * If you need to add your change to a release branch:
-
+If you need to add your change to a release branch:
 
     git checkout 2.9.x
     git cherry-pick -x COMMIT_HASH  # the -x flag adds "cherry-picked from <commit>" to the commit messages

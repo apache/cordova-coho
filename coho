@@ -481,8 +481,11 @@ function registerHelpFlag(opt) {
 }
 
 function execHelper(cmd, silent, allowError) {
-    // Don't allow failure if being silent.
-    allowError = allowError || silent;
+    // there are times where we want silent but not allowError.
+    if (null == allowError) {
+        // default to allow failure if being silent.
+        allowError = allowError || silent;
+    }
     if (/^git commit/.exec(cmd)) {
         gitCommitCount++;
     }
@@ -491,10 +494,12 @@ function execHelper(cmd, silent, allowError) {
     }
     // silent==2 is used only when modifying ulimit and re-exec'ing,
     // so don't be silent but allow whatever to happen.
-    var result = shjs.exec(cmd, {silent: (silent && silent !== 2)});
+    var result = shjs.exec(cmd, {silent: (silent && (silent !== 2))});
     if (result.code) {
         if (allowError) {
             return null;
+        } else if (!(silent === true)) {
+            print(result.output.trim());
         }
         process.exit(2);
     }
@@ -559,7 +564,8 @@ function createArchiveCommand(argv) {
             desc: 'The pre-existing tag to archive (defaults to newest tag on branch)'
          })
         .options('sign', {
-            desc: 'Whether to create .asc, .md5, .sha files',
+            desc: 'Whether to create .asc, .md5, .sha files (defaults to true)',
+            type: 'boolean',
             default: true
          })
         .options('dest', {
@@ -580,7 +586,7 @@ function createArchiveCommand(argv) {
     }
     var repos = computeReposFromFlag(argv.r);
 
-    if (!shjs.which('gpg')) {
+    if (argv.sign && !shjs.which('gpg')) {
         fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
     }
 
@@ -592,7 +598,7 @@ function createArchiveCommand(argv) {
         var tag = argv.tag || findMostRecentTag();
         print('Creating archive of ' + repo.repoName + '@' + tag);
         var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-        execHelper('git archive --format zip -o "' + outPath + '" ' + tag);
+        execHelper('git archive --format zip --prefix ' + repo.repoName + '/ -o "' + outPath + '" ' + tag);
         if (argv.sign) {
             execHelper('gpg --armor --detach-sig --output "' + outPath + '.asc" "' + outPath + '"');
             fs.writeFileSync(outPath + '.md5', computeHash(outPath, 'MD5'));
@@ -2103,8 +2109,8 @@ function main() {
     // ShellJS opens a lot of file handles, and the default on OS X is too small.
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
-        // re-run with the new ulimit
-        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '" --ulimit\'', 2);
+        // re-run with the new ulimit, hide the ulimit command but don't hide the output, don't allow failure
+        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '"\'', 2, false);
         return;
     }
 

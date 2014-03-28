@@ -20,6 +20,7 @@ under the License.
 
 var fs = require('fs');
 var path = require('path');
+var child_process = require('child_process');
 try {
     var optimist = require('optimist');
     var shjs = require('shelljs');
@@ -2114,7 +2115,7 @@ function main() {
     var ulimit = execHelper('ulimit -S -n', true, true);
     if (ulimit && ulimit < 2000) {
         // re-run with the new ulimit, hide the ulimit command but don't hide the output, don't allow failure
-        execHelper('/bin/bash -c \'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '"\'', 2, false);
+        child_process.spawn('/bin/bash', ['-c', 'ulimit -S -n 4096; exec "' + process.argv[0] + '" "' + process.argv.slice(1).join('" "') + '"'], {stdio:'inherit'});
         return;
     }
 

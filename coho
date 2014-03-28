@@ -1948,7 +1948,11 @@ function listGitHubPullRequests(repo, maxAge, hideUser, callback) {
                 console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
                 console.log('* ' + pullRequest.html_url);
                 // console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
-                console.log('To merge: git pull ' + pullRequest.head.repo.clone_url + ' ' + pullRequest.head.ref);
+                if (!pullRequest.head.repo) {
+                    console.log('NO REPO EXISTS!');
+                } else {
+                    console.log('To merge: git pull ' + pullRequest.head.repo.clone_url + ' ' + pullRequest.head.ref);
+                }
                 if (pullRequest.body) {
                     console.log(pullRequest.body);
                 }

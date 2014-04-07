@@ -1970,7 +1970,7 @@ function listPullRequestsCommand() {
         .options('max-age', {
             desc: 'Don\'t show pulls older than this (in days)',
             type: 'number',
-            default: 90
+            default: 1000
          })
         .options('hide-user', {
             desc: 'Hide PRs where the last comment\'s is by this github user.',

@@ -8,17 +8,7 @@ Plugman and CLI are released at most weekly (see: [versioning-and-release-strate
 
 A tools release is performed by a single person each week. We call this person the "Release Manager". How to select the Release Manager is still TDB.
 
-TODO: add in RAT instruction (via coho) for next release
-
-TODO: use npm pack instead of git archive (and have testers npm install path/to/archive.tgz)
-
 TODO: Use perl instead of sed in these commands so they work on Linux.
-
-TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
-
-TODO: Get blog post reviewed via GDocs / online collaborative markdown site?
-
-TODO: Add step about ensuring npm owner
 
 ## Get Buy-in
 
@@ -151,7 +141,7 @@ Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proofread.
+ * Get blog post proofread via [piratepad](http://piratepad.net/front-page/).
 
 ## Start VOTE Thread
 Send an email to dev ML with:
@@ -228,6 +218,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
     npm publish cordova-cli
     git checkout THEVERSIONTAG
     npm publish plugman
+
+If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
 
 
 ## Post Blog Post

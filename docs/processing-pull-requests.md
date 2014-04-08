@@ -4,7 +4,7 @@
  * Ensure you are familiar with [committer-workflow.md](committer-workflow.md)
 
 ## Step 0:
- Find what requests need attention by looking a the GitHub page.
+Find what requests need attention by looking a the GitHub page.
 
 To look at them in aggregate:
 

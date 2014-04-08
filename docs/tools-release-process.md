@@ -10,13 +10,15 @@ A tools release is performed by a single person each week. We call this person t
 
 TODO: add in RAT instruction (via coho) for next release
 
-TODO: use npm pack instead of git archive.
+TODO: use npm pack instead of git archive (and have testers npm install path/to/archive.tgz)
 
 TODO: Use perl instead of sed in these commands so they work on Linux.
 
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 
-TODO: Should publish to npm under RC version numbers (and remove the RC afterwards).
+TODO: Get blog post reviewed via GDocs / online collaborative markdown site?
+
+TODO: Add step about ensuring npm owner
 
 ## Get Buy-in
 
@@ -220,7 +222,8 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 ## Publish to NPM
-    
+
+    # Ensure you're at the tag and don't have -dev in version
     git checkout THEVERSIONTAG
     npm publish cordova-cli
     git checkout THEVERSIONTAG

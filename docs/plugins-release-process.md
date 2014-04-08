@@ -14,6 +14,12 @@ TODO: Use perl instead of sed in these commands so they work on Linux.
 
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 
+TODO: Add step about ensuring plugman owner
+
+TODO: Add step about releasing cordova-plugins
+
+TODO: Should not mention testing other than checking medic
+
 ## Get Buy-in
 
  1. Email the dev mailing-list and see if anyone has reason to postpone the release.

@@ -220,8 +220,10 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 ## Publish to NPM
-
+    
+    git checkout THEVERSIONTAG
     npm publish cordova-cli
+    git checkout THEVERSIONTAG
     npm publish plugman
 
 

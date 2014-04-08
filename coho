@@ -598,8 +598,15 @@ function createArchiveCommand(argv) {
     forEachRepo(repos, function(repo) {
         var tag = argv.tag || findMostRecentTag();
         print('Creating archive of ' + repo.repoName + '@' + tag);
-        var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-        execHelper('git archive --format zip --prefix ' + repo.repoName + '/ -o "' + outPath + '" ' + tag);
+
+        if(repo.id==='plugman'|| repo.id==='cli'){
+            var tgzname = execHelper('npm pack', true);
+            var outPath = path.join(absOutDir, 'cordova-' + tgzname);
+            shjs.mv(tgzname, outPath);
+        }else{
+            var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
+            execHelper('git archive --format zip --prefix ' + repo.repoName + '/ -o "' + outPath + '" ' + tag);
+        }
         if (argv.sign) {
             execHelper('gpg --armor --detach-sig --output "' + outPath + '.asc" "' + outPath + '"');
             fs.writeFileSync(outPath + '.md5', computeHash(outPath, 'MD5'));
@@ -608,7 +615,7 @@ function createArchiveCommand(argv) {
     });
     print();
     print('Archives created.');
-    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip'));
+    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip') + ' ' + path.join(outDir, '*.tgz'));
 }
 
 function computeHash(path, algo) {

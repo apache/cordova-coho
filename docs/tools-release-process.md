@@ -230,6 +230,13 @@ If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are a
     svn add blah.blah.blah
     svn commit -m "$JIRA Published blog post for tools release."
 
+## Email a release announcement to the mailing list
+Subject: [ANNOUNCEMENT] Tools Release
+
+    Cordova-cli@VERSION & Plugman@VERSION has been released!
+    
+    You can view the release blog post at LINK_TO_BLOG
+
 
 ## Close JIRA Issue
  * Double check that the issue has comments that record the steps you took

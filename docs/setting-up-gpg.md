@@ -35,7 +35,7 @@ Publish to `cordova-coho/KEYS`:
 Then copy the update KEYS to `dist/`:
 
     # Clone if you don't have it already:
-    ./cordova-coho repo-clone -r dist
+    ./cordova-coho/coho repo-clone -r dist
     cp cordova-coho/KEYS cordova-dist/KEYS
     # Make sure that's the only change to the file
     ( cd cordova-dist && svn diff )

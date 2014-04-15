@@ -24,23 +24,16 @@ Example Output:
 In this example, `8A496450` is your `$KEY_ID`
 
 
-Publish to `cordova-coho/KEYS`:
-
-    cd cordova-coho
-    gpg --armor --export $KEY_ID >> KEYS
-    git commit -am "Added my signing PGP key to KEYS"
-    git show # Verify
-    git push
-
-Then copy the update KEYS to `dist/`:
+Publish to `dist/KEYS`:
 
     # Clone if you don't have it already:
     ./cordova-coho/coho repo-clone -r dist
-    cp cordova-coho/KEYS cordova-dist/KEYS
+    gpg --armor --export $KEY_ID >> cordova-dist/KEYS
     # Make sure that's the only change to the file
     ( cd cordova-dist && svn diff )
     # Commit
-    ( cd cordova-dist && svn commit )
+    ( cd cordova-dist && svn commit -m "Added my signing PGP key to KEYS" )
+
 
 Publish to `keys.gnupg.net`
 
@@ -50,12 +43,14 @@ Visit http://pgp.mit.edu/ and paste in result of:
 
     gpg --armor --export $KEY_ID | pbcopy
 
-Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID):
-
 Copy to your Apache homedir:
 
     gpg --armor --export $KEY_ID > $KEY_ID.asc
     scp $KEY_ID.asc people.apache.org:
+
+Optional:
+Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID)
+  * This will cause emails from Apache to you to be encrypted.
 
 Phew! That was easy :P
 
@@ -66,5 +61,5 @@ Phew! That was easy :P
 
 Import any extra committer's keys via:
 
-    curl "https://git-wip-us.apache.org/repos/asf?p=cordova-coho.git;a=blob_plain;f=KEYS;hb=master" | gpg --import
+    curl "https://dist.apache.org/repos/dist//release/cordova/KEYS" | gpg --import
 

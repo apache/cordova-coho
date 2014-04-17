@@ -213,11 +213,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 ## Publish to NPM
 
-    # Ensure you're at the tag and don't have -dev in version
-    git checkout THEVERSIONTAG
-    npm publish cordova-cli
-    git checkout THEVERSIONTAG
-    npm publish plugman
+    npm publish cordova-dist/tools/cordova-cli-*.tgz
+    npm publish cordova-dist/tools/cordova-plugman-*.tgz
 
 If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
 

@@ -490,6 +490,7 @@ function execHelper(cmd, silent, allowError) {
     if (/^git commit/.exec(cmd)) {
         gitCommitCount++;
     }
+    cmd = cmd.replace(/^git /, 'git -c color.ui=always ');
     if (!silent) {
         print('Executing:', cmd);
     }
@@ -1021,15 +1022,15 @@ function repoStatusCommand(argv) {
             desc: 'The name of the branch to diff against. This is origin/$branch by default.'
          })
         .options('diff', {
-            desc: 'Show a diff of the changes (use --no-diff to disable)',
-            default: true
+            desc: 'Show a diff of the changes.',
+            default: false
          })
     opt = registerHelpFlag(opt);
     var argv = opt
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
                'Example usage: $0 repo-status -r auto -b master -b 2.9.x\n' +
-               'Example usage: $0 repo-status -r plugins -b dev --branch2 master --no-diff')
+               'Example usage: $0 repo-status -r plugins -b dev --branch2 master --diff')
         .argv;
 
     if (argv.h) {
@@ -1059,12 +1060,15 @@ function repoStatusCommand(argv) {
             var targetBranch = branches2 ? branches2[i] : (remoteBranchExists(repo, branchName) ? repo.remoteName + '/' + branchName : 'master');
             var changes = execHelper('git log --no-merges --oneline ' + targetBranch + '..' + branchName, true);
             if (changes) {
-                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): Commits exist.');
+                print('Local commits exist on ' + branchName + ':');
                 console.log(changes);
-            } else {
-                print(repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + '): No changes');
             }
         });
+        var gitStatus = execHelper('git status --short', true);
+        if (gitStatus) {
+            print('Uncommitted changes:');
+            console.log(gitStatus);
+        }
     });
     if (argv.diff) {
         forEachRepo(repos, function(repo) {

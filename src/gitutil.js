@@ -24,3 +24,7 @@ exports.findMostRecentTag = function() {
     return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 HEAD'), true);
 }
 
+exports.tagExists = function*(tagName) {
+    return !!(yield executil.execHelper(executil.ARGS('git tag --list ' + tagName), true));
+}
+

@@ -74,38 +74,6 @@ function createRepoUrl(repo) {
     return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
 }
 
-function *listReleaseUrls(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = opt
-        .options('version', {
-            desc: 'The version of the release. E.g. 2.7.1-rc2',
-            demand: true
-         })
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('.\n' +
-               'Usage: $0 list-release-urls')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var version = argv['version'];
-
-    var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        if (!(yield tagExists(version))) {
-            console.error('Tag "' + version + '" does not exist in repo ' + repo.repoName);
-            return;
-        }
-        var url = require('util').format(baseUrl, repo.repoName, version);
-        console.log(url);
-        yield executil.execHelper(executil.ARGS('git show-ref ' + version), 2, true);
-    });
-}
-
 function *localBranchExists(name) {
     return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
 }
@@ -134,10 +102,6 @@ function retrieveCurrentTagName() {
     // That's fine since all users of this function are meant to use the result
     // in an equality check.
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
-}
-
-function *tagExists(tagName) {
-    return !!(yield executil.execHelper(executil.ARGS('git tag --list ' + tagName), true));
 }
 
 function *listReposCommand(argv) {
@@ -716,7 +680,7 @@ function *tagReleaseBranchCommand(argv) {
             // Create/update the tag.
             var tagName = yield retrieveCurrentTagName();
             if (tagName != version) {
-                if (yield tagExists(version)) {
+                if (yield gitutil.tagExists(version)) {
                     yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));
                 } else {
                     yield execOrPretend(executil.ARGS('git tag ' + version));
@@ -801,7 +765,7 @@ function main() {
         }, {
             name: 'list-release-urls',
             desc: 'List the apache git repo urls for release artifacts.',
-            entryPoint: listReleaseUrls
+            entryPoint: require('./list-release-urls')
         }
     ];
     var commandMap = {};

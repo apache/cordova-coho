@@ -71,73 +71,6 @@ function retrieveCurrentTagName() {
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
 }
 
-function *repoResetCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    var opt = optimist
-        .options('b', {
-            alias: 'branch',
-            desc: 'The name of the branch to reset. Can be specified multiple times to specify multiple branches.',
-            default: 'master'
-         });
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Resets repository branches to match their upstream state.\n' +
-               'Performs the following commands on each:\n' +
-               '    git reset --hard origin/$BRANCH_NAME\n' +
-               '    git clean -f -d\n' +
-               '    if ($BRANCH_NAME exists only locally) then\n' +
-               '        git branch -D $BRANCH_NAME\n' +
-               '\n' +
-               'Usage: $0 repo-reset -r auto -b master -b 2.9.x')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = flagutil.computeReposFromFlag(argv.r);
-
-    function *cleanRepo(repo) {
-        for (var i = 0; i < branches.length; ++i) {
-            var branchName = branches[i];
-            if (!(yield gitutil.localBranchExists(branchName))) {
-                continue;
-            }
-            if (yield gitutil.remoteBranchExists(repo, branchName)) {
-                yield gitutil.gitCheckout(branchName);
-                var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
-                if (changes) {
-                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
-                    yield executil.execHelper(executil.ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));
-                } else {
-                    print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
-                }
-            } else {
-                if ((yield gitutil.retrieveCurrentBranchName()) == branchName) {
-                    yield gitutil.gitCheckout('master');
-                }
-                print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
-                yield executil.execHelper(executil.ARGS('git log --oneline -3 ' + branchName));
-                yield executil.execHelper(executil.ARGS('git branch -D ' + branchName));
-            }
-        }
-    }
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        // Determine remote name.
-        yield repoupdate.updateRepos([repo], [], true);
-        var branchName = yield gitutil.retrieveCurrentBranchName();
-        if (branches.indexOf(branchName) == -1) {
-            yield gitutil.stashAndPop(repo, function*() {
-                yield cleanRepo(repo);
-            });
-        } else {
-            yield executil.execHelper(executil.ARGS('git clean -f -d'));
-            yield cleanRepo(repo);
-        }
-    });
-}
-
 function *repoPushCommand(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     var opt = optimist
@@ -401,7 +334,7 @@ function main() {
         }, {
             name: 'repo-reset',
             desc: 'Performs git reset --hard origin/$BRANCH and git clean -f -d on all specified repositories.',
-            entryPoint: repoResetCommand
+            entryPoint: require('./repo-reset')
         }, {
             name: 'repo-status',
             desc: 'Lists changes that exist locally but have not yet been pushed.',

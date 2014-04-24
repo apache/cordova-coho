@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var apputil = require('./repoutil');
+var apputil = require('./apputil');
 var repoutil = require('./repoutil');
 
 exports.registerHelpFlag = function(opt) {

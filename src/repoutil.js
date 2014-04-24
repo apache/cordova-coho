@@ -19,6 +19,7 @@ under the License.
 
 var fs = require('fs');
 var path = require('path');
+var shelljs = require('shelljs');
 var apputil = require('./apputil');
 
 var platformRepos = [
@@ -389,4 +390,24 @@ function getRepoById(id, opt_repos) {
     return null;
 }
 exports.getRepoById = getRepoById;
+
+var isInForEachRepoFunction = false;
+
+exports.forEachRepo = function*(repos, func) {
+    for (var i = 0; i < repos.length; ++i) {
+        var repo = repos[i];
+        var origPath = isInForEachRepoFunction ? process.cwd() : '..';
+        var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
+
+        isInForEachRepoFunction = true;
+        shelljs.cd(newPath);
+        if (shelljs.error()) {
+            apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
+        }
+        yield func(repo);
+        shelljs.cd(origPath);
+
+        isInForEachRepoFunction = origPath != '..';
+    }
+}
 

@@ -20,9 +20,9 @@ under the License.
 var co = require('co');
 var fs = require('fs');
 var path = require('path');
-var superspawn = require('./superspawn');
 var flagutil = require('./flagutil');
 var apputil = require('./apputil');
+var executil = require('./executil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
 try {
@@ -32,37 +32,6 @@ try {
 } catch (e) {
     console.log('Please run "npm install" from this directory:\n\t' + __dirname);
     process.exit(2);
-}
-
-var COMMON_RAT_EXCLUDES = [
-    '*.wav',
-    '*.webloc',
-    '*jasmine-1.2.0*',
-    '*.xcodeproj',
-    '.*',
-    '*-Info.plist',
-    'VERSION',
-    'node_modules',
-    'thirdparty',
-    'package.json',
-    ];
-
-var gitCommitCount = 0;
-
-function reportGitPushResult(repos, branches) {
-    print('');
-    if (gitCommitCount) {
-        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
-        print('All work complete. ' + gitCommitCount + ' commits were made locally.');
-        print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' | less');
-        print('To push changes:');
-        print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
-        print('To revert all local commits:');
-        print('  ' + process.argv[1] + ' repo-reset ' + flagsStr);
-    } else {
-        print('All work complete. No commits were made.');
-    }
 }
 
 function createPlatformDevVersion(version) {
@@ -84,40 +53,6 @@ function getVersionBranchName(version) {
     return version.replace(/\d+(-?rc\d)?$/, 'x');
 }
 
-function ARGS(s, var_args) {
-    var ret = s.trim().split(/\s+/);
-    for (var i = 1; i < arguments.length; ++i) {
-        ret.push(arguments[i]);
-    }
-    return ret;
-}
-
-function execHelper(cmdAndArgs, silent, allowError) {
-    // there are times where we want silent but not allowError.
-    if (null == allowError) {
-        // default to allow failure if being silent.
-        allowError = allowError || silent;
-    }
-    if (/^git commit/.exec(cmdAndArgs.join(' '))) {
-        gitCommitCount++;
-    }
-    cmdAndArgs[0] = cmdAndArgs[0].replace(/^git /, 'git -c color.ui=always ');
-    if (!silent) {
-        print('Executing:', cmdAndArgs.join(' '));
-    }
-    // silent==2 is used only when modifying ulimit and re-exec'ing,
-    // so don't be silent but allow whatever to happen.
-    var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
-    return result.then(null, function(e) {
-        if (allowError) {
-            return null;
-        } else if (!(silent === true)) {
-            print(e.output);
-        }
-        process.exit(2);
-    });
-}
-
 function cpAndLog(src, dest) {
     print('Coping File:', src, '->', dest);
     // Throws upon failure.
@@ -130,27 +65,7 @@ function cpAndLog(src, dest) {
 function *gitCheckout(branchName) {
     var curBranch = yield retrieveCurrentBranchName(true);
     if (curBranch != branchName) {
-        return yield execHelper(ARGS('git checkout -q ', branchName));
-    }
-}
-
-var isInForEachRepoFunction = false;
-
-function *forEachRepo(repos, func) {
-    for (var i = 0; i < repos.length; ++i) {
-        var repo = repos[i];
-        var origPath = isInForEachRepoFunction ? process.cwd() : '..';
-        var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
-
-        isInForEachRepoFunction = true;
-        shjs.cd(newPath);
-        if (shjs.error()) {
-            apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
-        }
-        yield func(repo);
-        shjs.cd(origPath);
-
-        isInForEachRepoFunction = origPath != '..';
+        return yield executil.execHelper(executil.ARGS('git checkout -q ', branchName));
     }
 }
 
@@ -195,20 +110,20 @@ function *createArchiveCommand(argv) {
     shjs.mkdir('-p', outDir);
     var absOutDir = path.resolve(outDir);
 
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         var tag = argv.tag || (yield findMostRecentTag());
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
         if(repo.id==='plugman'|| repo.id==='cli'){
-            var tgzname = yield execHelper(ARGS('npm pack'), true);
+            var tgzname = yield executil.execHelper(executil.ARGS('npm pack'), true);
             var outPath = path.join(absOutDir, 'cordova-' + tgzname);
             shjs.mv(tgzname, outPath);
         }else{
             var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-            yield execHelper(ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
+            yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
         }
         if (argv.sign) {
-            yield execHelper(ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
+            yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
             fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
             fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
         }
@@ -220,7 +135,7 @@ function *createArchiveCommand(argv) {
 
 function *computeHash(path, algo) {
     print('Computing ' + algo + ' for: ' + path);
-    var result = yield execHelper(ARGS('gpg --print-md', algo, path), true);
+    var result = yield executil.execHelper(executil.ARGS('gpg --print-md', algo, path), true);
     return extractHashFromOutput(result);
 }
 
@@ -249,7 +164,7 @@ function *verifyArchiveCommand(argv) {
 
     for (var i = 0; i < zipPaths.length; ++i) {
         var zipPath = zipPaths[i];
-        yield execHelper(ARGS('gpg --verify', zipPath + '.asc', zipPath));
+        yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath));
         var md5 = yield computeHash(zipPath, 'MD5');
         if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
             apputil.fatal('MD5 does not match.');
@@ -277,9 +192,9 @@ function *printTagsCommand(argv) {
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         var tag = yield findMostRecentTag();
-        var ref = yield execHelper(ARGS('git show-ref ' + tag), true);
+        var ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
         console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
     });
 }
@@ -305,27 +220,27 @@ function *listReleaseUrls(argv) {
     var version = argv['version'];
 
     var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         if (!(yield tagExists(version))) {
             console.error('Tag "' + version + '" does not exist in repo ' + repo.repoName);
             return;
         }
         var url = require('util').format(baseUrl, repo.repoName, version);
         console.log(url);
-        yield execHelper(ARGS('git show-ref ' + version), 2, true);
+        yield executil.execHelper(executil.ARGS('git show-ref ' + version), 2, true);
     });
 }
 
 function *localBranchExists(name) {
-    return !!(yield execHelper(ARGS('git branch --list ' + name), true));
+    return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
 }
 
 function *remoteBranchExists(repo, name) {
-    return !!(yield execHelper(ARGS('git branch -r --list ' + repo.remoteName + '/' + name), true));
+    return !!(yield executil.execHelper(executil.ARGS('git branch -r --list ' + repo.remoteName + '/' + name), true));
 }
 
 function *retrieveCurrentBranchName(allowDetached) {
-    var ref = yield execHelper(ARGS('git symbolic-ref HEAD'), true, true);
+    var ref = yield executil.execHelper(executil.ARGS('git symbolic-ref HEAD'), true, true);
     if (!ref) {
         if (allowDetached) {
             return null;
@@ -340,18 +255,18 @@ function *retrieveCurrentBranchName(allowDetached) {
 }
 
 function findMostRecentTag() {
-    return execHelper(ARGS('git describe --tags --abbrev=0 HEAD'), true);
+    return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 HEAD'), true);
 }
 
 function retrieveCurrentTagName() {
     // This will return the tag name plus commit info it not directly at a tag.
     // That's fine since all users of this function are meant to use the result
     // in an equality check.
-    return execHelper(ARGS('git describe --tags HEAD'), true, true);
+    return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
 }
 
 function *tagExists(tagName) {
-    return !!(yield execHelper(ARGS('git tag --list ' + tagName), true));
+    return !!(yield executil.execHelper(executil.ARGS('git tag --list ' + tagName), true));
 }
 
 function *listReposCommand(argv) {
@@ -397,9 +312,9 @@ function *cloneRepos(repos, quiet) {
             if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else if (repo.svn) {
-            yield execHelper(ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName));
+            yield executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName));
         } else {
-            yield execHelper(ARGS('git clone --progress ' + createRepoUrl(repo)));
+            yield executil.execHelper(executil.ARGS('git clone --progress ' + createRepoUrl(repo)));
         }
     }
 
@@ -443,7 +358,7 @@ function *repoStatusCommand(argv) {
         apputil.fatal('Must specify the same number of --branch and --branch2 flags');
     }
 
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         if (repo.svn) {
             print('repo-status not implemented for svn repos');
             return;
@@ -457,20 +372,20 @@ function *repoStatusCommand(argv) {
                 continue;
             }
             var targetBranch = branches2 ? branches2[i] : ((yield remoteBranchExists(repo, branchName)) ? repo.remoteName + '/' + branchName : 'master');
-            var changes = yield execHelper(ARGS('git log --no-merges --oneline ' + targetBranch + '..' + branchName), true);
+            var changes = yield executil.execHelper(executil.ARGS('git log --no-merges --oneline ' + targetBranch + '..' + branchName), true);
             if (changes) {
                 print('Local commits exist on ' + branchName + ':');
                 console.log(changes);
             }
         }
-        var gitStatus = yield execHelper(ARGS('git status --short'), true);
+        var gitStatus = yield executil.execHelper(executil.ARGS('git status --short'), true);
         if (gitStatus) {
             print('Uncommitted changes:');
             console.log(gitStatus);
         }
     });
     if (argv.diff) {
-        yield forEachRepo(repos, function*(repo) {
+        yield repoutil.forEachRepo(repos, function*(repo) {
             var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
             for (var i = 0; i < actualBranches.length; ++i) {
                 var branchName = actualBranches[i];
@@ -478,7 +393,7 @@ function *repoStatusCommand(argv) {
                     return;
                 }
                 var targetBranch = branches2 ? branches2[i] : ((yield remoteBranchExists(repo, branchName)) ? repo.remoteName + '/' + branchName : 'master');
-                var diff = yield execHelper(ARGS('git diff ' + targetBranch + '...' + branchName), true);
+                var diff = yield executil.execHelper(executil.ARGS('git diff ' + targetBranch + '...' + branchName), true);
                 if (diff) {
                     print('------------------------------------------------------------------------------');
                     print('Diff for ' + repo.repoName + ' on branch ' + branchName + ' (vs ' + targetBranch + ')');
@@ -526,10 +441,10 @@ function *repoResetCommand(argv) {
             }
             if (yield remoteBranchExists(repo, branchName)) {
                 yield gitCheckout(branchName);
-                var changes = yield execHelper(ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
+                var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
                 if (changes) {
                     print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
-                    yield execHelper(ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));
+                    yield executil.execHelper(executil.ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));
                 } else {
                     print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
                 }
@@ -538,12 +453,12 @@ function *repoResetCommand(argv) {
                     yield gitCheckout('master');
                 }
                 print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
-                yield execHelper(ARGS('git log --oneline -3 ' + branchName));
-                yield execHelper(ARGS('git branch -D ' + branchName));
+                yield executil.execHelper(executil.ARGS('git log --oneline -3 ' + branchName));
+                yield executil.execHelper(executil.ARGS('git branch -D ' + branchName));
             }
         }
     }
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         // Determine remote name.
         yield updateRepos([repo], [], true);
         var branchName = yield retrieveCurrentBranchName();
@@ -552,7 +467,7 @@ function *repoResetCommand(argv) {
                 yield cleanRepo(repo);
             });
         } else {
-            yield execHelper(ARGS('git clean -f -d'));
+            yield executil.execHelper(executil.ARGS('git clean -f -d'));
             yield cleanRepo(repo);
         }
     });
@@ -580,7 +495,7 @@ function *repoPushCommand(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         // Update first.
         yield updateRepos([repo], branches, false);
         for (var i = 0; i < branches.length; ++i) {
@@ -593,11 +508,11 @@ function *repoPushCommand(argv) {
             yield gitCheckout(branchName);
 
             if (isNewBranch) {
-                yield execHelper(ARGS('git push --set-upstream ' + repo.remoteName + ' ' + branchName));
+                yield executil.execHelper(executil.ARGS('git push --set-upstream ' + repo.remoteName + ' ' + branchName));
             } else {
-                var changes = yield execHelper(ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName), true);
+                var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName), true);
                 if (changes) {
-                    yield execHelper(ARGS('git push ' + repo.remoteName + ' ' + branchName));
+                    yield executil.execHelper(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName));
                 } else {
                     print(repo.repoName + ' on branch ' + branchName + ': No local commits exist.');
                 }
@@ -621,8 +536,8 @@ function *repoPerformShellCommand(argv) {
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
     var cmd = argv._[1];
-    yield forEachRepo(repos, function*(repo) {
-         yield execHelper(argv._.slice(1), false, true);
+    yield repoutil.forEachRepo(repos, function*(repo) {
+         yield executil.execHelper(argv._.slice(1), false, true);
     });
 }
 
@@ -668,7 +583,7 @@ function *repoUpdateCommand(argv) {
 }
 
 function *determineApacheRemote(repo) {
-    var fields = (yield execHelper(ARGS('git remote -v'), true)).split(/\s+/);
+    var fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
     var ret = null;
     for (var i = 1; i < fields.length; i += 3) {
         ['git-wip-us.apache.org/repos/asf/', 'git.apache.org/'].forEach(function(validRepo) {
@@ -683,7 +598,7 @@ function *determineApacheRemote(repo) {
 }
 
 function *pendingChangesExist() {
-    return !!(yield execHelper(ARGS('git status --porcelain'), true));
+    return !!(yield executil.execHelper(executil.ARGS('git status --porcelain'), true));
 }
 
 function *stashAndPop(repo, func) {
@@ -691,20 +606,20 @@ function *stashAndPop(repo, func) {
     var branchName = yield retrieveCurrentBranchName();
 
     if (requiresStash) {
-        yield execHelper(ARGS('git stash save --all --quiet', 'coho stash'));
+        yield executil.execHelper(executil.ARGS('git stash save --all --quiet', 'coho stash'));
     }
 
     yield func();
 
     yield gitCheckout(branchName);
     if (requiresStash) {
-        yield execHelper(ARGS('git stash pop'));
+        yield executil.execHelper(executil.ARGS('git stash pop'));
     }
 }
 
 function *updateRepos(repos, branches, noFetch) {
     // Pre-fetch checks.
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         if (repo.svn) {
             return;
         }
@@ -717,27 +632,27 @@ function *updateRepos(repos, branches, noFetch) {
     });
 
     if (!noFetch) {
-        yield forEachRepo(repos, function*(repo) {
+        yield repoutil.forEachRepo(repos, function*(repo) {
             if (repo.svn) {
                 return;
             }
             // TODO - can these be combined? Fetching with --tags seems to not pull in changes...
-            yield execHelper(ARGS('git fetch --progress ' + repo.remoteName));
-            yield execHelper(ARGS('git fetch --progress --tags ' + repo.remoteName));
+            yield executil.execHelper(executil.ARGS('git fetch --progress ' + repo.remoteName));
+            yield executil.execHelper(executil.ARGS('git fetch --progress --tags ' + repo.remoteName));
         });
     }
 
     if (branches && branches.length) {
-        yield forEachRepo(repos, function*(repo) {
+        yield repoutil.forEachRepo(repos, function*(repo) {
             if (repo.svn) {
-                yield execHelper(ARGS('svn up'));
+                yield executil.execHelper(executil.ARGS('svn up'));
                 return;
             }
             var staleBranches = {};
             for (var i = 0; i < branches.length; ++i) {
                 var branchName = branches[i];
                 if (yield remoteBranchExists(repo, branches[i])) {
-                    var changes = yield execHelper(ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), true, true);
+                    var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), true, true);
                     staleBranches[branchName] = !!changes;
                 }
             }
@@ -752,7 +667,7 @@ function *updateRepos(repos, branches, noFetch) {
                     for (var i = 0; i < staleBranches.length; ++i) {
                         var branchName = staleBranches[i];
                         yield gitCheckout(branchName);
-                        var ret = yield execHelper(ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
+                        var ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
                         if (ret === null) {
                             console.log('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
                             process.exit(1);
@@ -788,14 +703,14 @@ function *updateJsSnapshot(repo, version) {
     function *ensureJsIsBuilt() {
         var cordovaJsRepo = repoutil.getRepoById('js');
         if (hasBuiltJs != version) {
-            yield forEachRepo([cordovaJsRepo], function*() {
+            yield repoutil.forEachRepo([cordovaJsRepo], function*() {
                 yield stashAndPop(cordovaJsRepo, function*() {
                     if (getVersionBranchName(version) == 'master') {
                         yield gitCheckout('master');
                     } else {
                         yield gitCheckout(version);
                     }
-                    yield execHelper(ARGS('grunt'));
+                    yield executil.execHelper(executil.ARGS('grunt'));
                     hasBuiltJs = version;
                 });
             });
@@ -813,7 +728,7 @@ function *updateJsSnapshot(repo, version) {
             cpAndLog(src, jsPath);
         });
         if (yield pendingChangesExist()) {
-            yield execHelper(ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
+            yield executil.execHelper(executil.ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
         }
     } else if (repoutil.repoGroups.all.indexOf(repo) != -1) {
         print('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
@@ -841,7 +756,7 @@ function *updateRepoVersion(repo, version) {
     }
 
     if (yield pendingChangesExist()) {
-        yield execHelper(ARGS('git commit -am', 'Set VERSION to ' + version + ' (via coho)'));
+        yield executil.execHelper(executil.ARGS('git commit -am', 'Set VERSION to ' + version + ' (via coho)'));
     }
 }
 
@@ -875,7 +790,7 @@ function *prepareReleaseBranchCommand() {
         repos.unshift(cordovaJsRepo);
     }
 
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         yield stashAndPop(repo, function*() {
             // git fetch + update master
             yield updateRepos([repo], ['master'], false);
@@ -887,10 +802,10 @@ function *prepareReleaseBranchCommand() {
                 yield updateRepos([repo], [branchName], true);
                 yield gitCheckout(branchName);
             } else if (yield localBranchExists(branchName)) {
-                yield execHelper(ARGS('git checkout ' + branchName));
+                yield executil.execHelper(executil.ARGS('git checkout ' + branchName));
             } else {
                 yield gitCheckout('master');
-                yield execHelper(ARGS('git checkout -b ' + branchName));
+                yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName));
             }
             yield updateJsSnapshot(repo, version);
             print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
@@ -905,7 +820,7 @@ function *prepareReleaseBranchCommand() {
         });
     });
 
-    reportGitPushResult(repos, ['master', branchName]);
+    executil.reportGitPushResult(repos, ['master', branchName]);
 }
 
 function *tagReleaseBranchCommand(argv) {
@@ -929,10 +844,10 @@ function *tagReleaseBranchCommand(argv) {
         if (pretend) {
             print('PRETENDING TO RUN: ' + cmd.join(' '));
         } else {
-            yield execHelper(cmd);
+            yield executil.execHelper(cmd);
         }
     }
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         yield stashAndPop(repo, function*() {
             // git fetch.
             yield updateRepos([repo], [], false);
@@ -951,11 +866,11 @@ function *tagReleaseBranchCommand(argv) {
             var tagName = yield retrieveCurrentTagName();
             if (tagName != version) {
                 if (yield tagExists(version)) {
-                    yield execOrPretend(ARGS('git tag ' + version + ' --force'));
+                    yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));
                 } else {
-                    yield execOrPretend(ARGS('git tag ' + version));
+                    yield execOrPretend(executil.ARGS('git tag ' + version));
                 }
-                yield execOrPretend(ARGS('git push --tags ' + repo.remoteName + ' ' + branchName));
+                yield execOrPretend(executil.ARGS('git push --tags ' + repo.remoteName + ' ' + branchName));
             } else {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }
@@ -983,19 +898,19 @@ function *lastWeekCommand() {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var filterByEmail = !!argv.me;
     var days = argv.days || 7;
-    var userEmail = filterByEmail && (yield execHelper(ARGS('git config user.email'), true));
+    var userEmail = filterByEmail && (yield executil.execHelper(executil.ARGS('git config user.email'), true));
     var commitCount = 0;
     var pullRequestCount = 0;
 
-    var cmd = ARGS('git log --no-merges --date=short --all-match --fixed-strings');
+    var cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
     if (filterByEmail) {
         cmd.push('--committer=' + userEmail, '--author=' + userEmail);
     }
 
     print('Running command: ' + cmd.join(' ') + ' --format="$REPO_NAME %s" --since="' + days + ' days ago"');
-    yield forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
         var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-        var output = yield execHelper(cmd.concat(['--format=' + repoName + ' %cd %s',
+        var output = yield executil.execHelper(cmd.concat(['--format=' + repoName + ' %cd %s',
             '--since=' + days + ' days ago']), true);
         if (output) {
             console.log(output);
@@ -1005,10 +920,10 @@ function *lastWeekCommand() {
 
     if (filterByEmail) {
         console.log('\nPull requests:');
-        cmd = ARGS('git log --no-merges --date=short --fixed-strings', '--committer=' + userEmail);
-        yield forEachRepo(repos, function*(repo) {
+        cmd = executil.ARGS('git log --no-merges --date=short --fixed-strings', '--committer=' + userEmail);
+        yield repoutil.forEachRepo(repos, function*(repo) {
             var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-            var output = yield execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
+            var output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
                 '--since=' + days + ' days ago']), true);
             if (output) {
                 output.split('\n').forEach(function(line) {
@@ -1028,53 +943,6 @@ function *lastWeekCommand() {
     } else {
         console.log('Total Commits: ' + commitCount);
     }
-}
-
-function *ratCommand() {
-    var opt = flagutil.registerRepoFlag(optimist);
-    opt = flagutil.registerHelpFlag(opt);
-    opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
-              '\n' +
-              'Usage: $0 audit-license-headers --repo=ios')
-    argv = opt.argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    // Check that RAT command exists.
-    var ratName = 'apache-rat-0.10';
-    var ratUrl = "https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz";
-    var ratPath;
-    yield forEachRepo([repoutil.getRepoById('coho')], function*() {
-        ratPath = path.join(process.cwd(), ratName, ratName+'.jar');
-    });
-    if (!fs.existsSync(ratPath)) {
-        print('RAT tool not found, downloading to: ' + ratPath);
-        yield forEachRepo([repoutil.getRepoById('coho')], function*() {
-            if (shjs.which('curl')) {
-                yield execHelper(['sh', '-c', 'curl "' + ratUrl + '" | tar xz']);
-            } else {
-                yield execHelper(['sh', '-c', 'wget -O - "' + ratUrl + '" | tar xz']);
-            }
-        });
-        if (!fs.existsSync(ratPath)) {
-            apputil.fatal('Download failed.');
-        }
-    }
-    print('\x1B[31mNote: ignore filters exist and often need updating within coho.\x1B[39m');
-    yield forEachRepo(repos, function*(repo) {
-        var allExcludes = COMMON_RAT_EXCLUDES;
-        if (repo.ratExcludes) {
-            allExcludes = allExcludes.concat(repo.ratExcludes);
-        }
-        var excludeFlags = [];
-        allExcludes.forEach(function(e) {
-            excludeFlags.push('-e', e);
-        });
-        yield execHelper(ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags));
-    });
 }
 
 function main() {
@@ -1118,7 +986,7 @@ function main() {
         }, {
             name: 'audit-license-headers',
             desc: 'Uses Apache RAT to look for missing license headers.',
-            entryPoint: ratCommand
+            entryPoint: require('./audit-license-headers')
         }, {
             name: 'create-release-bug',
             desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',

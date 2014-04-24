@@ -881,70 +881,6 @@ function *tagReleaseBranchCommand(argv) {
     print('All work complete.');
 }
 
-function *lastWeekCommand() {
-    var opt = flagutil.registerRepoFlag(optimist);
-    opt = flagutil.registerHelpFlag(opt);
-    opt.usage('Shows formatted git log for changes in the past 7 days.\n' +
-              '\n' +
-              'Usage: $0 last-week [--repo=ios] [--me] [--days=7]\n' +
-              '    --me: Show only your commits\n' +
-              '    --days=n: Show commits from the past n days');
-    argv = opt.argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var filterByEmail = !!argv.me;
-    var days = argv.days || 7;
-    var userEmail = filterByEmail && (yield executil.execHelper(executil.ARGS('git config user.email'), true));
-    var commitCount = 0;
-    var pullRequestCount = 0;
-
-    var cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
-    if (filterByEmail) {
-        cmd.push('--committer=' + userEmail, '--author=' + userEmail);
-    }
-
-    print('Running command: ' + cmd.join(' ') + ' --format="$REPO_NAME %s" --since="' + days + ' days ago"');
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-        var output = yield executil.execHelper(cmd.concat(['--format=' + repoName + ' %cd %s',
-            '--since=' + days + ' days ago']), true);
-        if (output) {
-            console.log(output);
-            commitCount += output.split('\n').length;
-        }
-    });
-
-    if (filterByEmail) {
-        console.log('\nPull requests:');
-        cmd = executil.ARGS('git log --no-merges --date=short --fixed-strings', '--committer=' + userEmail);
-        yield repoutil.forEachRepo(repos, function*(repo) {
-            var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-            var output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
-                '--since=' + days + ' days ago']), true);
-            if (output) {
-                output.split('\n').forEach(function(line) {
-                    line = line.replace(/(.*?)\|/, '');
-                    if (RegExp.lastParen.indexOf(userEmail) == -1) {
-                        console.log(line);
-                        pullRequestCount += 1;
-                    }
-                });
-            }
-        });
-    }
-
-    console.log('');
-    if (filterByEmail) {
-        console.log('Total Commits: ' + commitCount + ' Total Pull Requests: ' + pullRequestCount);
-    } else {
-        console.log('Total Commits: ' + commitCount);
-    }
-}
-
 function main() {
     var commandList = [
         {
@@ -1006,7 +942,7 @@ function main() {
         }, {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',
-            entryPoint: lastWeekCommand
+            entryPoint: require('./last-week')
         }, {
             name: 'foreach',
             desc: 'Runs a shell command in each repo.',

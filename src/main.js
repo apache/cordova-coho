@@ -17,6 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var path = require('path');
 try {
     var co = require('co');
     var optimist = require('optimist');
@@ -24,6 +25,7 @@ try {
     console.log('Please run "npm install" from this directory:\n\t' + __dirname);
     process.exit(2);
 }
+var apputil = require('./apputil');
 
 module.exports = function() {
     var repoCommands = [
@@ -131,6 +133,9 @@ module.exports = function() {
         .usage(usage)
         .check(function(argv) {
             command = argv._[0];
+            if (command == 'foreach') {
+                argv._[0] = command = 'for-each';
+            }
             if (!command) {
                 throw 'No command specified.';
             }
@@ -138,6 +143,9 @@ module.exports = function() {
                 throw 'Unknown command: ' + command;
             }
         }).argv;
+
+    // Change directory to be a sibling of coho.
+    apputil.initWorkingDir();
 
     var entry = commandMap[command].entryPoint;
     co(entry)();

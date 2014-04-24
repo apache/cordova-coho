@@ -21,6 +21,16 @@ var path = require('path');
 
 var origWorkingDir = process.cwd();
 
+exports.initWorkingDir = function() {
+    var curDir = path.resolve(origWorkingDir);
+    var newDir = path.resolve(path.join(__dirname), '..', '..');
+    if (curDir != newDir) {
+        console.log('Running from ' + newDir);
+        process.chdir(newDir);
+        origWorkingDir = newDir;
+    }
+}
+
 exports.fatal = function() {
     console.error.apply(console, arguments);
     process.exit(1);
@@ -31,7 +41,7 @@ exports.print = function() {
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
         var curDir = path.relative(origWorkingDir, process.cwd());
-        var prefix = curDir ? './' + curDir + '/ =' : './ =';
+        var prefix = curDir ? curDir + '/ =' : './ =';
         var PREFIX_LEN = 30;
         if (prefix.length < PREFIX_LEN) {
             prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');

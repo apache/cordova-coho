@@ -35,6 +35,7 @@ _Thanks for the pull request. I've had a look at it and think it looks good. Bef
 ## Step 3: Merge the change
 Run the following as an exemplary way to merge to master:
 
+    # Pro Tip: coho list-pulls will generate the following commands for copy&paste
     git pull https://github.com/GitHubUser/cordova-FOO BRANCH
     git rebase origin/MASTER_OR_DEV -i
 

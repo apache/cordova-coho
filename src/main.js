@@ -74,28 +74,6 @@ function createRepoUrl(repo) {
     return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
 }
 
-function *printTagsCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Prints out tags & hashes for the given repos. Used in VOTE emails.\n' +
-               '\n' +
-               'Usage: $0 print-tags -r plugman -r cli')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = yield gitutil.findMostRecentTag();
-        var ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
-        console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
-    });
-}
-
 function *listReleaseUrls(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = opt
@@ -811,7 +789,7 @@ function main() {
         }, {
             name: 'print-tags',
             desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
-            entryPoint: printTagsCommand
+            entryPoint: require('./print-tags')
         }, {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',

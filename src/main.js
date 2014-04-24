@@ -26,7 +26,7 @@ try {
 }
 
 module.exports = function() {
-    var commandList = [
+    var repoCommands = [
         {
             name: 'repo-clone',
             desc: 'Clones git repositories into the current working directory.',
@@ -51,11 +51,8 @@ module.exports = function() {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
             entryPoint: require('./list-repos')
-        }, {
-            name: 'list-pulls',
-            desc: 'Shows a list of GitHub pull requests for all specified repositories.',
-            entryPoint: require('./list-pulls')
-        }, {
+        }];
+    var releaseCommands = [{
             name: 'prepare-release-branch',
             desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
             entryPoint: require('./cadance-release').prepareReleaseBranchCommand
@@ -84,6 +81,15 @@ module.exports = function() {
             desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
             entryPoint: require('./print-tags')
         }, {
+            name: 'list-release-urls',
+            desc: 'List the apache git repo urls for release artifacts.',
+            entryPoint: require('./list-release-urls')
+        }];
+    var otherCommands = [{
+            name: 'list-pulls',
+            desc: 'Shows a list of GitHub pull requests for all specified repositories.',
+            entryPoint: require('./list-pulls')
+        }, {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',
             entryPoint: require('./last-week')
@@ -91,22 +97,27 @@ module.exports = function() {
             name: 'for-each',
             desc: 'Runs a shell command in each repo.',
             entryPoint: require('./for-each')
-        }, {
-            name: 'list-release-urls',
-            desc: 'List the apache git repo urls for release artifacts.',
-            entryPoint: require('./list-release-urls')
         }
     ];
     var commandMap = {};
-    for (var i = 0; i < commandList.length; ++i) {
-        commandMap[commandList[i].name] = commandList[i];
+    function addToCommandMap(cmd) {
+        commandMap[cmd.name] = cmd;
     }
-    var usage = 'Usage: $0 command [options]\n' +
-               '\n' +
-               'Valid commands:\n';
-    for (var i = 0; i < commandList.length; ++i) {
-        usage += '    ' + commandList[i].name + ': ' + commandList[i].desc + '\n';
+    repoCommands.forEach(addToCommandMap);
+    releaseCommands.forEach(addToCommandMap);
+    otherCommands.forEach(addToCommandMap);
+
+    var usage = 'Usage: $0 command [options]\n\n';
+    function addCommandUsage(cmd) {
+        usage += '    ' + cmd.name + ': ' + cmd.desc + '\n';
     }
+    usage += 'Repo Management:\n';
+    repoCommands.forEach(addCommandUsage);
+    usage += '\nRelease Management:\n';
+    releaseCommands.forEach(addCommandUsage);
+    usage += '\nOther Commands:\n';
+    otherCommands.forEach(addCommandUsage);
+
     usage += '\nFor help on a specific command: $0 command --help\n\n';
     usage += 'Some examples:\n';
     usage += '    ./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli\n';

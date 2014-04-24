@@ -208,6 +208,7 @@ exports.tagReleaseBranchCommand = function*(argv) {
                'Usage: $0 tag-release --version=2.8.0-rc1')
         .options('pretend', {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
+            type: 'boolean'
          })
     );
     var repos = flagutil.computeReposFromFlag(argv.r);

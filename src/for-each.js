@@ -23,13 +23,13 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*(argv) {
+module.exports = function*() {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
                '\n' +
-               'Usage: $0 foreach "shell command"')
+               'Usage: $0 for-each "shell command"')
         .argv;
 
     if (argv.h) {
@@ -37,9 +37,10 @@ module.exports = function*(argv) {
         process.exit(1);
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
-    var cmd = argv._[1];
+    var cmd = [process.env['SHELL'] || 'sh', '-c', argv._[1]];
+
     yield repoutil.forEachRepo(repos, function*(repo) {
-         yield executil.execHelper(argv._.slice(1), false, true);
+         yield executil.execHelper(cmd, false, true);
     });
 }
 

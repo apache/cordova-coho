@@ -108,6 +108,8 @@ module.exports = function() {
     repoCommands.forEach(addToCommandMap);
     releaseCommands.forEach(addToCommandMap);
     otherCommands.forEach(addToCommandMap);
+    // aliases:
+    commandMap['foreach'] = commandMap['for-each'];
 
     var usage = 'Usage: $0 command [options]\n\n';
     function addCommandUsage(cmd) {
@@ -124,18 +126,20 @@ module.exports = function() {
     usage += 'Some examples:\n';
     usage += '    ./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli\n';
     usage += '    ./cordova-coho/coho repo-update\n';
-    usage += '    ./cordova-coho/coho foreach -r plugins "git checkout master"\n';
-    usage += '    ./cordova-coho/coho foreach -r plugins "git clean -fd"\n';
+    usage += '    ./cordova-coho/coho for-each -r plugins "git checkout master"\n';
+    usage += '    ./cordova-coho/coho for-each -r plugins "git clean -fd"\n';
     usage += '    ./cordova-coho/coho last-week --me';
 
     var command;
     var argv = optimist
         .usage(usage)
+        .options('chdir', {
+            desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',
+            type: 'boolean',
+            default: true
+         })
         .check(function(argv) {
             command = argv._[0];
-            if (command == 'foreach') {
-                argv._[0] = command = 'for-each';
-            }
             if (!command) {
                 throw 'No command specified.';
             }
@@ -145,7 +149,7 @@ module.exports = function() {
         }).argv;
 
     // Change directory to be a sibling of coho.
-    apputil.initWorkingDir();
+    apputil.initWorkingDir(argv.chdir);
 
     var entry = commandMap[command].entryPoint;
     co(entry)();

@@ -360,21 +360,21 @@ var otherRepos = [
 
 var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat(otherRepos);
 
-function computeExistingRepos() {
-    return allRepos.filter(function(repo) {
-        return fs.existsSync(repo.repoName);
-    });
-}
-
 var repoGroups = {
     'all': allRepos,
-    'auto': computeExistingRepos(),
     'platform': platformRepos,
     'plugins': pluginRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
 repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('docs')]);
+
+repoGroups.__defineGetter__('auto', function() {
+    return allRepos.filter(function(repo) {
+        return fs.existsSync(repo.repoName);
+    });
+});
+
 
 exports.repoGroups = repoGroups;
 

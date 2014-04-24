@@ -21,14 +21,14 @@ var path = require('path');
 
 var origWorkingDir = process.cwd();
 
-exports.initWorkingDir = function() {
+exports.initWorkingDir = function(chdir) {
     var curDir = path.resolve(origWorkingDir);
-    var newDir = path.resolve(path.join(__dirname), '..', '..');
+    var newDir = chdir ? path.resolve(path.join(__dirname), '..', '..') : curDir;
     if (curDir != newDir) {
-        console.log('Running from ' + newDir);
         process.chdir(newDir);
         origWorkingDir = newDir;
     }
+    console.log('Running from ' + newDir);
 }
 
 exports.fatal = function() {

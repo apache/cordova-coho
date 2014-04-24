@@ -521,26 +521,6 @@ function *repoPushCommand(argv) {
     });
 }
 
-function *repoPerformShellCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Performs the supplied shell command in each repo directory.\n' +
-               '\n' +
-               'Usage: $0 foreach "shell command"')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var cmd = argv._[1];
-    yield repoutil.forEachRepo(repos, function*(repo) {
-         yield executil.execHelper(argv._.slice(1), false, true);
-    });
-}
-
 function *repoUpdateCommand(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     var opt = opt
@@ -944,9 +924,9 @@ function main() {
             desc: 'Prints out git logs of things that happened last week.',
             entryPoint: require('./last-week')
         }, {
-            name: 'foreach',
+            name: 'for-each',
             desc: 'Runs a shell command in each repo.',
-            entryPoint: repoPerformShellCommand
+            entryPoint: require('./for-each')
         }, {
             name: 'list-release-urls',
             desc: 'List the apache git repo urls for release artifacts.',

@@ -17,8 +17,29 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var path = require('path');
+
+var origWorkingDir = process.cwd();
+
 exports.fatal = function() {
     console.error.apply(console, arguments);
     process.exit(1);
 };
+
+exports.print = function() {
+    var newArgs = Array.prototype.slice.call(arguments);
+    // Prefix any prints() to distinguish them from command output.
+    if (newArgs.length > 1 || newArgs[0]) {
+        var curDir = path.relative(origWorkingDir, process.cwd());
+        var prefix = curDir ? './' + curDir + '/ =' : './ =';
+        var PREFIX_LEN = 30;
+        if (prefix.length < PREFIX_LEN) {
+            prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');
+        }
+        newArgs.unshift(prefix);
+        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n' + prefix + ' ') });
+    }
+
+    console.log.apply(console, newArgs);
+}
 

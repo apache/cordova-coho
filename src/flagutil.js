@@ -59,3 +59,12 @@ exports.computeReposFromFlag = function(flagValue) {
     return ret;
 }
 
+exports.validateVersionString = function(version, opt_allowNonSemver) {
+    var pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
+    if (!pattern.test(version)) {
+        apputil.fatal('Versions must be in the form #.#.#-[rc#]');
+    }
+    return version;
+}
+
+

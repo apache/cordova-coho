@@ -85,9 +85,8 @@ function *updateRepos(repos, branches, noFetch) {
             if (repo.svn) {
                 return;
             }
-            // TODO - can these be combined? Fetching with --tags seems to not pull in changes...
-            yield executil.execHelper(executil.ARGS('git fetch --progress ' + repo.remoteName));
-            yield executil.execHelper(executil.ARGS('git fetch --progress --tags ' + repo.remoteName));
+            // Note: this does the same as git fetch --tags origin && git fetch origin
+            yield executil.execHelper(executil.ARGS('git remote update ', repo.remoteName));
         });
     }
 

@@ -24,4 +24,4 @@ try {
     console.log('Node v0.11.0 or higher is required. You have ' + process.version);
     process.exit(1);
 }
-require('./src/main');
+require('./src/main')();

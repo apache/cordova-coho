@@ -63,7 +63,7 @@ exports.reportGitPushResult = function(repos, branches) {
         var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' | less');
+        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' --diff | less');
         print('To push changes:');
         print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
         print('To revert all local commits:');

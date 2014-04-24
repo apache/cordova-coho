@@ -79,3 +79,11 @@ exports.localBranchExists = function*(name) {
     return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
 }
 
+exports.retrieveCurrentTagName = function() {
+    // This will return the tag name plus commit info it not directly at a tag.
+    // That's fine since all users of this function are meant to use the result
+    // in an equality check.
+    return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
+}
+
+

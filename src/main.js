@@ -23,6 +23,7 @@ var path = require('path');
 var flagutil = require('./flagutil');
 var apputil = require('./apputil');
 var executil = require('./executil');
+var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
 try {
@@ -73,110 +74,6 @@ function createRepoUrl(repo) {
     return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
 }
 
-function *createArchiveCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = opt
-        .options('tag', {
-            desc: 'The pre-existing tag to archive (defaults to newest tag on branch)'
-         })
-        .options('sign', {
-            desc: 'Whether to create .asc, .md5, .sha files (defaults to true)',
-            type: 'boolean',
-            default: true
-         })
-        .options('dest', {
-            desc: 'The directory to hold the resulting files.',
-            demand: true
-         });
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag.\n' +
-               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
-               '\n' +
-               'Usage: $0 create-archive -r plugman -r cli --dest cordova-dist-dev/CB-1111')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-
-    if (argv.sign && !shjs.which('gpg')) {
-        apputil.fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
-    }
-
-    var outDir = argv.dest;
-    shjs.mkdir('-p', outDir);
-    var absOutDir = path.resolve(outDir);
-
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = argv.tag || (yield findMostRecentTag());
-        print('Creating archive of ' + repo.repoName + '@' + tag);
-
-        if(repo.id==='plugman'|| repo.id==='cli'){
-            var tgzname = yield executil.execHelper(executil.ARGS('npm pack'), true);
-            var outPath = path.join(absOutDir, 'cordova-' + tgzname);
-            shjs.mv(tgzname, outPath);
-        }else{
-            var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-            yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
-        }
-        if (argv.sign) {
-            yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
-            fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
-            fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
-        }
-    });
-    print();
-    print('Archives created.');
-    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip') + ' ' + path.join(outDir, '*.tgz'));
-}
-
-function *computeHash(path, algo) {
-    print('Computing ' + algo + ' for: ' + path);
-    var result = yield executil.execHelper(executil.ARGS('gpg --print-md', algo, path), true);
-    return extractHashFromOutput(result);
-}
-
-function extractHashFromOutput(output) {
-    return output.replace(/.*?:/, '').replace(/\s*/g, '').toLowerCase();
-}
-
-function *verifyArchiveCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
-               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
-               '\n' +
-               'Usage: $0 verify-archive a.zip b.zip c.zip')
-        .argv;
-
-    var zipPaths = argv._.slice(1);
-    if (argv.h || !zipPaths.length) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    if (!shjs.which('gpg')) {
-        apputil.fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
-    }
-
-    for (var i = 0; i < zipPaths.length; ++i) {
-        var zipPath = zipPaths[i];
-        yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath));
-        var md5 = yield computeHash(zipPath, 'MD5');
-        if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
-            apputil.fatal('MD5 does not match.');
-        }
-        var sha = yield computeHash(zipPath, 'SHA512');
-        if (extractHashFromOutput(fs.readFileSync(zipPath + '.sha', 'utf8')) !== sha) {
-            apputil.fatal('SHA512 does not match.');
-        }
-        print(zipPath + ' signature and hashes verified.');
-    }
-}
-
 function *printTagsCommand(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = flagutil.registerHelpFlag(opt);
@@ -193,7 +90,7 @@ function *printTagsCommand(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = yield findMostRecentTag();
+        var tag = yield gitutil.findMostRecentTag();
         var ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
         console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
     });
@@ -252,10 +149,6 @@ function *retrieveCurrentBranchName(allowDetached) {
         throw new Error('Could not parse branch name from: ' + ref);
     }
     return match[1];
-}
-
-function findMostRecentTag() {
-    return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 HEAD'), true);
 }
 
 function retrieveCurrentTagName() {
@@ -910,11 +803,11 @@ function main() {
         }, {
             name: 'create-archive',
             desc: 'Zips up a tag, signs it, and adds checksum files.',
-            entryPoint: createArchiveCommand
+            entryPoint: require('./create-verify-archive').createCommand
         }, {
             name: 'verify-archive',
             desc: 'Checks that archives are properly signed and hashed.',
-            entryPoint: verifyArchiveCommand
+            entryPoint: require('./create-verify-archive').verifyCommand
         }, {
             name: 'print-tags',
             desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',

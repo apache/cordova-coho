@@ -70,10 +70,6 @@ function *gitCheckout(branchName) {
     }
 }
 
-function createRepoUrl(repo) {
-    return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
-}
-
 function *localBranchExists(name) {
     return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
 }
@@ -102,44 +98,6 @@ function retrieveCurrentTagName() {
     // That's fine since all users of this function are meant to use the result
     // in an equality check.
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
-}
-
-function *repoCloneCommand(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
-        .usage('Clones git repositories into the current working directory. If the repositories are already cloned, then this is a no-op.\n\n' +
-               'Usage: $0 clone --repo=name [--repo=othername]')
-        .argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    yield cloneRepos(repos, false);
-}
-
-function *cloneRepos(repos, quiet) {
-    var failures = [];
-    var numSkipped = 0;
-
-    for (var i = 0; i < repos.length; ++i) {
-        var repo = repos[i];
-        if (shjs.test('-d', repo.repoName)) {
-            if(!quiet) print('Repo already cloned: ' + repo.repoName);
-            numSkipped +=1 ;
-        } else if (repo.svn) {
-            yield executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName));
-        } else {
-            yield executil.execHelper(executil.ARGS('git clone --progress ' + createRepoUrl(repo)));
-        }
-    }
-
-    var numCloned = repos.length - numSkipped;
-    if (numCloned) {
-        print('Successfully cloned ' + numCloned + ' repositories.');
-    }
 }
 
 function *repoStatusCommand(argv) {
@@ -376,7 +334,7 @@ function *repoUpdateCommand(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     // ensure that any missing repos are cloned
-    yield cloneRepos(repos,true);
+    yield require('./repo-clone').cloneRepos(repos,true);
     yield updateRepos(repos, branches, !argv.fetch);
 }
 
@@ -684,7 +642,7 @@ function main() {
         {
             name: 'repo-clone',
             desc: 'Clones git repositories into the current working directory.',
-            entryPoint: repoCloneCommand
+            entryPoint: require('./repo-clone')
         }, {
             name: 'repo-update',
             desc: 'Performs git pull --rebase on all specified repositories.',

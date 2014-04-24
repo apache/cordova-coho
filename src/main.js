@@ -104,23 +104,6 @@ function retrieveCurrentTagName() {
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
 }
 
-function *listReposCommand(argv) {
-    console.log('Valid values for the --repo flag:');
-    console.log('');
-    console.log('Repositories:');
-    repoutil.repoGroups.all.forEach(function(repo) {
-        console.log('    ' + repo.id);
-    });
-    console.log('');
-    console.log('Repository Groups:');
-    var groupNames = Object.keys(repoutil.repoGroups);
-    groupNames.sort();
-    groupNames.forEach(function(groupName) {
-        console.log('    ' + groupName + ' (' + repoutil.repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
-    });
-    process.exit(0);
-}
-
 function *repoCloneCommand(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = flagutil.registerHelpFlag(opt);
@@ -721,7 +704,7 @@ function main() {
         }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
-            entryPoint: listReposCommand
+            entryPoint: require('./list-repos')
         }, {
             name: 'list-pulls',
             desc: 'Shows a list of GitHub pull requests for all specified repositories.',

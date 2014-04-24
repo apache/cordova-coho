@@ -1,4 +1,3 @@
-#!/usr/bin/env node --harmony-generators
 /*
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -18,10 +17,4 @@ specific language governing permissions and limitations
 under the License.
 */
 
-try {
-    require('./src/harmonytest');
-} catch (e) {
-    console.log('Node v0.11.0 or higher is required. You have ' + process.version);
-    process.exit(1);
-}
-require('./src/main');
+module.exports = function*() {};

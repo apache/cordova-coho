@@ -1,1 +1,1 @@
-@node "%~dpn0" %*
+@node --harmony-generators "%~dpn0" %*

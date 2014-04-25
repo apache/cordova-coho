@@ -31,7 +31,7 @@ module.exports = function*(argv) {
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
-            default: ['master', 'dev']
+            default: ['master']
          })
         .options('fetch', {
             type: 'boolean',

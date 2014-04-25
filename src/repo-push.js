@@ -32,7 +32,7 @@ module.exports = function*(argv) {
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
-            default: ['master', 'dev']
+            default: ['master']
          });
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt

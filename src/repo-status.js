@@ -46,7 +46,7 @@ module.exports = function*(argv) {
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
                'Example usage: $0 repo-status -r auto -b master -b 2.9.x\n' +
-               'Example usage: $0 repo-status -r plugins -b dev --branch2 master --diff')
+               'Example usage: $0 repo-status -r plugins --diff')
         .argv;
 
     if (argv.h) {
@@ -68,7 +68,7 @@ module.exports = function*(argv) {
         }
         // Determine remote name.
         yield repoupdate.updateRepos([repo], [], true);
-        var actualBranches = branches ? branches : /^plugin/.test(repo.id) ? ['dev', 'master'] : ['master'];
+        var actualBranches = branches ? branches : ['master'];
         for (var i = 0; i < actualBranches.length; ++i) {
             var branchName = actualBranches[i];
             if (!(yield gitutil.localBranchExists(branchName))) {
@@ -89,7 +89,7 @@ module.exports = function*(argv) {
     });
     if (argv.diff) {
         yield repoutil.forEachRepo(repos, function*(repo) {
-            var actualBranches = branches ? branches : [/^plugin/.test(repo.id) ? 'dev' : 'master'];
+            var actualBranches = branches ? branches : ['master'];
             for (var i = 0; i < actualBranches.length; ++i) {
                 var branchName = actualBranches[i];
                 if (!(yield gitutil.localBranchExists(branchName))) {

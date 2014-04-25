@@ -23,16 +23,18 @@ TODO: Should not mention testing other than checking medic
 ## Get Buy-in
 
  1. Email the dev mailing-list and see if anyone has reason to postpone the release.
+   * Subject should be "[DISCUSS] Plugins release
    * If so, agree upon a branching date / time.
 
 ## Create JIRA issues
 
  * Create a JIRA issue to track the status of the release.
    * Make it of type "Task"
-   * Title should be "Plugins Release _Feb 2, 2014_"
+   * Subject should be "Plugins Release _Feb 2, 2014_" (Use the current date, not the expected release date)
    * Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md"
+   * Assignee should be the Release Manager
  * Comments should be added to this bug after each top-level step below is taken
- * Set a variable for use later on:
+ * Set an environment variable in your terminal for use later on:
 
 
     JIRA="CB-????" # Set this to the release bug.
@@ -46,10 +48,11 @@ TODO: Should not mention testing other than checking medic
     coho foreach -r plugins "git checkout dev"
 
     # Merge any commits mistakenly made to master into dev:
-    (for l in cordova-plugin-*; do ( cd $l; git merge master ); done
+    (for l in cordova-plugin-*; do ( echo $l; cd $l; git merge master ); done
 
     # Sanity check and push if needed:
     coho repo-status -r plugins -b dev
+    coho foreach -r plugins "git status -s"
     coho repo-push -r plugins -b dev
 
 ## Identify which plugins have changes
@@ -65,7 +68,7 @@ TODO: Should not mention testing other than checking medic
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ $v = *-dev ); then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ $v != $v2 ]; then echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
 
 If the changes merit it, manually bump the major / minor version instead of the micro. Manual process, but list the changes via:
 
@@ -79,6 +82,10 @@ Update its RELEASENOTES.md file with changes
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
+Print all changes for plugins (save this text for the blog post):
+
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; id=$(grep -o '\bid=\"[^\"]*\"' plugin.xml | head -n1 | cut -d'"' -f2);  echo -e "\n\`$id@$v\`"; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version"); done
+
 Add a comment to the JIRA issue with the output from:
 
     for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo $id@$v; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
@@ -91,18 +98,19 @@ Commit these two changes together to the `dev` branch
 
     for l in $ACTIVE; do ( cd $l; v="r$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
 
-## Update dev branch's version
-
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ $v != *-dev ); then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
-    for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version on dev branch." ); done
-
 ## Test
  * Create mobilespec using the old versions of plugins (by checking them out to the previous tag)
  * Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
 
+## Update dev branch's version
+
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ $v = $v_no_dev ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version on dev branch." ); done
+
 ## Push Dev Branch
     # Sanity check:
     coho repo-status -r plugins -b dev
+    coho foreach -r plugins "git status -s"
     # Push:
     for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git dev); done
 
@@ -137,7 +145,7 @@ Send an email to dev ML with:
 
 __Subject:__
 
-    [Vote] Plugins Release
+    [VOTE] Plugins Release
 
 __Body:__
 
@@ -161,6 +169,12 @@ __Body:__
 ## Email the result of the vote
 Respond to the vote thread with:
 
+__Subject:__
+
+    [RESULT][VOTE] Plugins Release
+
+__Body:__
+
     The vote has now closed. The results are:
 
     Positive Binding Votes: (# of PMC members that +1'ed)
@@ -170,6 +184,10 @@ Respond to the vote thread with:
     Negative Binding Votes: (# of PMC members that -1'ed)
 
     .. names of all -1 PMC members ..
+
+    Other Votes:
+
+    .. list any non-binding votes, from non-PMC members ..
 
     The vote has passed.
 

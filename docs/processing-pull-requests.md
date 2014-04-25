@@ -8,15 +8,15 @@ Find what requests need attention by looking a the GitHub page.
 
 To look at them in aggregate:
 
-    ./cordova-coho/coho list-pulls | tee pulls.list | less -R
+    coho list-pulls | tee pulls.list | less -R
 
 To filter out those that you last commented on:
 
-    ./cordova-coho/coho list-pulls --hide-user=agrieve
+    coho list-pulls --hide-user=agrieve
 
 To show only certain repos:
 
-    ./cordova-coho/coho list-pulls -r js -r android -r plugin-inappbrowser
+    coho list-pulls -r js -r android -r plugin-inappbrowser
 
 ## Step 1: Review the change (part 1)
  * Ensure that we actually want the change (if unsure, bring it up on the ML)

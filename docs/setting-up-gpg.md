@@ -27,7 +27,7 @@ In this example, `8A496450` is your `$KEY_ID`
 Publish to `dist/KEYS`:
 
     # Clone if you don't have it already:
-    ./cordova-coho/coho repo-clone -r dist
+    coho repo-clone -r dist
     gpg --armor --export $KEY_ID >> cordova-dist/KEYS
     # Make sure that's the only change to the file
     ( cd cordova-dist && svn diff )

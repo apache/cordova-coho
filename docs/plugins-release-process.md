@@ -41,26 +41,26 @@ TODO: Should not mention testing other than checking medic
 ## Make sure you're up-to-date
 
     # Update your repos
-    ./cordova-coho/coho repo-status -r plugins -b dev -b master
-    ./cordova-coho/coho repo-update -r plugins
-    ./cordova-coho/coho foreach -r plugins "git checkout dev"
+    coho repo-status -r plugins -b dev -b master
+    coho repo-update -r plugins
+    coho foreach -r plugins "git checkout dev"
 
     # Merge any commits mistakenly made to master into dev:
     (for l in cordova-plugin-*; do ( cd $l; git merge master ); done
 
     # Sanity check and push if needed:
-    ./cordova-coho/coho repo-status -r plugins -b dev
-    ./cordova-coho/coho repo-push -r plugins -b dev
+    coho repo-status -r plugins -b dev
+    coho repo-push -r plugins -b dev
 
 ## Identify which plugins have changes
 
-    ./cordova-coho/coho repo-update -r plugins
-    ./cordova-coho/coho foreach -r plugins "git checkout dev"
+    coho repo-update -r plugins
+    coho foreach -r plugins "git checkout dev"
     ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
 
 ## Ensure license headers are present everywhere:
 
-    ./cordova-coho/coho audit-license-headers -r plugins | less
+    coho audit-license-headers -r plugins | less
 
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
@@ -102,24 +102,24 @@ Commit these two changes together to the `dev` branch
 
 ## Push Dev Branch
     # Sanity check:
-    ./cordova-coho/coho repo-status -r plugins -b dev
+    coho repo-status -r plugins -b dev
     # Push:
     for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git dev); done
 
 ## Publish to dist/dev
 Ensure you have the svn repos checked out:
 
-    ./cordova-coho/coho repo-clone -r dist -r dist/dev
+    coho repo-clone -r dist -r dist/dev
 
 Create archives from your tags:
 
-    ./cordova-coho/coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$JIRA
+    coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
 
     # Manually double check version numbers are correct on the file names
     # Then run:
-    ./cordova-coho/coho verify-archive cordova-dist-dev/$JIRA/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.zip
 
 Upload:
 
@@ -149,7 +149,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: ./cordova-coho/coho print-tags -r ${ACTIVE// / -r }
+    PASTE OUTPUT OF: coho print-tags -r ${ACTIVE// / -r }
 
     Upon a successful vote I will upload the archives to dist/, upload them to the Plugins Registry, and post the corresponding blog post.
 
@@ -189,7 +189,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     for l in $ACTIVE; do ( cd $l; v=$(git describe --tags --abbrev=0 dev); git merge $v ); done
 
     # Sanity check:
-    ./cordova-coho/coho repo-status -r plugins -b master
+    coho repo-status -r plugins -b master
     # Push:
     for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git master); done
 

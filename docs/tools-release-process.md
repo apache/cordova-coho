@@ -30,12 +30,12 @@ Email the dev mailing-list and see if anyone has reason to postpone the release.
 ## Test
 Ensure license headers are present everywhere:
 
-    ./cordova-coho/coho audit-license-headers -r cli | less
-    ./cordova-coho/coho audit-license-headers -r plugman | less
+    coho audit-license-headers -r cli | less
+    coho audit-license-headers -r plugman | less
 
 Ensure you're up-to-date:
 
-    ./cordova-coho/coho repo-update -r cli -r plugman
+    coho repo-update -r cli -r plugman
     (cd cordova-plugman && npm install)
     (cd cordova-cli && npm install)
     (cd cordova-cli && npm install ../cordova-plugman)
@@ -121,15 +121,15 @@ If the push fails due to not being fully up-to-date, either:
 ## Publish to dist/dev
 Ensure you have the svn repos checked out:
 
-    ./cordova-coho/coho repo-clone -r dist -r dist/dev
+    coho repo-clone -r dist -r dist/dev
 
 Create archives from your tags:
 
-    ./cordova-coho/coho create-archive -r plugman -r cli --dest cordova-dist-dev/$JIRA
+    coho create-archive -r plugman -r cli --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
 
-    ./cordova-coho/coho verify-archive cordova-dist-dev/$JIRA/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.zip
 
 Upload:
 
@@ -160,7 +160,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: ./cordova-coho/coho print-tags -r plugman -r cli
+    PASTE OUTPUT OF: coho print-tags -r plugman -r cli
 
     Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
 

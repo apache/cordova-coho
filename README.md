@@ -12,8 +12,10 @@ This repository has the following purposes:
   - e.g. coho repo-clone
   - e.g. coho --help
 
-## How to Clone & Use
+## How to Clone & Use `coho`
 
     mkdir -p cordova && cd cordova && git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
-    cordova-coho/coho --help
+    npm install
+    npm link
+    coho --help
 

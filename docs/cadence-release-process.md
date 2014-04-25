@@ -16,7 +16,7 @@ TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basic
 
 Create the release bug for the Release Candidate:
 
-    ./cordova-coho/coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword
+    coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword
 
 This bug contains subtasks for each top-level step involved in creating a release.
 ***For each completed step, add a comment to the relevant JIRA issue.***
@@ -32,11 +32,11 @@ This step involves:
 
 Coho automates these steps:
 
-    ./cordova-coho/coho prepare-release-branch --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
-    ./cordova-coho/coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho prepare-release-branch --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
     # If changes look right:
-    ./cordova-coho/coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
-    ./cordova-coho/coho tag-release --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho tag-release --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
 
 If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then re-run the `prepare-release-branch` command for the platform repos.
 
@@ -45,7 +45,7 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
 ### Before creating the release branch:
 
  1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
-   * `./cordova-coho/coho audit-license-headers -r android | less`
+   * `coho audit-license-headers -r android | less`
  2. Update the copy of app-hello-world (if there were any changes to it)
    * This usually lives within bin/templates somewhere
    * TODO: More details needed here
@@ -73,11 +73,11 @@ This step involves:
 
 Coho automates these steps (replace android with your platform):
 
-    ./cordova-coho/coho prepare-release-branch --version 2.8.0-rc1 -r android
-    ./cordova-coho/coho repo-status -r android -b master -b 2.8.x
+    coho prepare-release-branch --version 2.8.0-rc1 -r android
+    coho repo-status -r android -b master -b 2.8.x
     # If changes look right:
-    ./cordova-coho/coho repo-push -r android -b master -b 2.8.x
-    ./cordova-coho/coho tag-release --version 2.8.0-rc1 -r android
+    coho repo-push -r android -b master -b 2.8.x
+    coho tag-release --version 2.8.0-rc1 -r android
 
 ## Tagging RC1 of cordova-cli
 
@@ -119,17 +119,17 @@ To submit a fix:
    * Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
  * Test Project Upgrades (old-style):
    1. Create a project using the previous version of cordova
-     * `./cordova-coho/coho foreach "git checkout 2.9.0"`
-     * `./cordova-coho/coho foreach -r active-platform "./bin/create foo org.apache.foo foo"`
+     * `coho foreach "git checkout 2.9.0"`
+     * `coho foreach -r active-platform "./bin/create foo org.apache.foo foo"`
    2. Upgrade the project via the bin/update_project script:
-     * `./cordova-coho/coho foreach "git checkout 3.0.x"`
-     * `./cordova-coho/coho foreach -r active-platform "cd foo && ../bin/update_project"`
+     * `coho foreach "git checkout 3.0.x"`
+     * `coho foreach -r active-platform "cd foo && ../bin/update_project"`
    3. Test the result:
      * Project should run
      * cordova/version should report the new version
  * Test Project Upgrades (new-style):
    1. Create a project using the previous version of cordova
-     * `./cordova-coho/coho foreach "git checkout 2.9.0"`
+     * `coho foreach "git checkout 2.9.0"`
      * `./cordova-mobile-spec/createmobilespec.sh`
    2. Upgrade the project via the update command:
      * `../cordova-cli/bin/cordova platform update PLATFORM`
@@ -174,11 +174,11 @@ This is done for all repos once testing is complete, and documentation is up-to-
 
 Use the same coho commands as for the RCs (it will update JS & VERSION):
 
-    ./cordova-coho/coho prepare-release-branch --version 2.8.0 -r js -r app-hello-world -r mobile-spec
-    ./cordova-coho/coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho prepare-release-branch --version 2.8.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
     # If changes look right:
-    ./cordova-coho/coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
-    ./cordova-coho/coho tag-release --version 2.8.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho tag-release --version 2.8.0 -r js -r app-hello-world -r mobile-spec
 
 ## Branching & Tagging cordova-docs
 
@@ -281,11 +281,11 @@ The `/cordova-VERSION-src.zip/` is the official release artifact and contains th
 
 Create the release .zip with coho:
 
-    ./cordova-coho/coho create-release-snapshot --prev-version 2.7.0 --new-version 2.8.0-rc1 -r release-repos
+    coho create-release-snapshot --prev-version 2.7.0 --new-version 2.8.0-rc1 -r release-repos
 
 Upload it to: https://dist.apache.org/repos/dist/release/cordova/
 
-    ./cordova-coho/coho upload-release --new-version 3.0.0 --prev-version 2.9.0
+    coho upload-release --new-version 3.0.0 --prev-version 2.9.0
 
 [Update the versions](https://wiki.apache.org/cordova/UpdatingVersionsOnTheCordovaWebsite) on the Cordova website
 

@@ -19,6 +19,7 @@ under the License.
 
 var fs = require('fs');
 var path = require('path');
+var chalk = require('chalk');
 var shelljs = require('shelljs');
 var optimist = require('optimist');
 var apputil = require('./apputil');
@@ -72,8 +73,8 @@ module.exports = function*() {
             apputil.fatal('Download failed.');
         }
     }
-    console.log('\x1B[31mNote: ignore filters exist and often need updating within coho.\x1B[39m');
-    console.log('\x1B[31mLook at audit-license-headers.js (COMMON_RAT_EXCLUDES) as well as repo.ratExcludes property\x1B[39m');
+    console.log(chalk.red('Note: ignore filters exist and often need updating within coho.'));
+    console.log(chalk.red('Look at audit-license-headers.js (COMMON_RAT_EXCLUDES) as well as repo.ratExcludes property'));
     yield repoutil.forEachRepo(repos, function*(repo) {
         var allExcludes = COMMON_RAT_EXCLUDES;
         if (repo.ratExcludes) {

@@ -21,6 +21,8 @@ var path = require('path');
 try {
     var co = require('co');
     var optimist = require('optimist');
+    // Ensure npm install has been run.
+    Object.keys(require('../package').dependencies).forEach(require);
 } catch (e) {
     console.log('Please run "npm install" from this directory:\n\t' + __dirname);
     process.exit(2);

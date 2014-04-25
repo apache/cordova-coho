@@ -18,6 +18,7 @@ under the License.
 */
 
 var path = require('path');
+var chalk = require('chalk');
 
 var origWorkingDir = process.cwd();
 
@@ -41,11 +42,13 @@ exports.print = function() {
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
         var curDir = path.relative(origWorkingDir, process.cwd());
-        var prefix = curDir ? curDir + '/ =' : './ =';
+        curDir = curDir ? curDir + '/' : './';
+        var banner = ' =';
         var PREFIX_LEN = 30;
-        if (prefix.length < PREFIX_LEN) {
-            prefix += new Array(PREFIX_LEN - prefix.length + 1).join('=');
+        if (curDir.length < PREFIX_LEN) {
+            banner += new Array(PREFIX_LEN - curDir.length + 1).join('=');
         }
+        var prefix = chalk.magenta.bold(curDir) + chalk.yellow(banner);
         newArgs.unshift(prefix);
         newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n' + prefix + ' ') });
     }

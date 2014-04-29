@@ -138,11 +138,6 @@ The `git rebase -i` step is your chance to clean up the commit messages and to c
  * If it fixes a regression, cherry-pick into the release branch (see CuttingReleases)
    * e.g. To cherry pick the last commit from master: `git cherry-pick -x master`
 
-### Plugins
- * Commit all changes to branch: `dev`
-   * Through '''Cordova 3.0''', `plugman` installed from `master`, which means we couldn't use `master` for development.
-   * Post '''Cordova 3.0''', `plugman` has support for a registry...
-
 ### All other Repos:
  * Commit all changes to branch: `master`
 

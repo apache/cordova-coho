@@ -29,6 +29,9 @@ var commentFailed = false;
 
 function addLastCommentInfo(repo, pullRequests, callback) {
     var remaining = pullRequests.length;
+    if (remaining === 0) {
+        callback();
+    }
     pullRequests.forEach(function(pullRequest) {
         // review_comments_url is always empty, so resort to scraping.
         request.get({ url: 'https://github.com/apache/' + repo + '/pull/' + pullRequest.number, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, payload) {

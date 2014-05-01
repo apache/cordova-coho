@@ -161,9 +161,14 @@ __Body:__
 
     Upon a successful vote I will upload the archives to dist/, upload them to the Plugins Registry, and post the corresponding blog post.
 
+    Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
+
     Voting will go on for a minimum of 48 hours.
 
-    I vote +1.
+    I vote +1:
+    * Ran coho audit-license-headers over the relevant repos
+    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ensured continuous build was green when repos were tagged
 
 
 ## Email the result of the vote

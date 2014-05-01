@@ -1,0 +1,53 @@
+# Release Voting Guidelines
+
+Reference: https://www.apache.org/dev/release-publishing.html
+
+Apache releases require at least 3 +1 votes, and there must be more +1s than -1s.
+
+**Note**: There is no benefit in having more than 3 +1 votes. Don't waste your time if a vote already looks in good shape.
+
+How to start / close a vote thread is described in the release process docs.
+This page focuses on what it means to +1 a vote thread.
+
+When we (or at least, members of the PMC), vote on a release, we
+are expressing confidence that:
+1. Our sources are properly licenses*
+2. We have only compatibly licensed dependencies (and appropriate NOTICE lines)*
+3. No IP was added without the concent of its owner**
+4. Archives are properly signed & hashed
+5. Repo tags match sha1 stated in vote email
+6. We believe the quality of the release is better than the previous one
+
+_* These items are generally checked by the Release Manager.
+The Release Manager should state that they've checked them when they +1 the vote._
+
+_** It is the responsibility of committers to ensure that no
+invalid IP enters the codebase. It's not something that we need to re-check
+at each release. For more info, see [this discussion](http://markmail.org/thread/7gqwzrdie46f4qtx)_
+
+When you +1 a vote. You should say what work you did in order to gain confidence in the release.
+
+For example, the Release Manager would say:
+
+    +1
+
+    * Ran coho audit-license-headers over the relevant repos
+    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ensured continuous build was green when repos were tagged
+
+For example, someone else might say:
+
+    +1
+
+    * Confirmed sigs & hashes with `coho verify-archive`
+    * Verified sha1s match tags
+    * Re-created archives to ensure contents match release candidate
+
+About #6 (quality of the release):
+  - We strive to maintain release-worth quality at all times
+  - cordova-medic runs automated tests for each commit
+
+Given these:
+  - Manual testing can be done with release candidates, but is not strictly necessary
+  - Bugs don't block releases, but regressions generally do
+

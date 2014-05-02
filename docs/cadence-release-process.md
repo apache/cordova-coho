@@ -14,12 +14,15 @@ TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basic
 
 ## Creating JIRA issues
 
-Create the release bug for the Release Candidate:
+* Create the release bug for the Release Candidate:
 
-    coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword
+      `coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword`
+    
+* Comments should be added to this bug after each top-level step below is taken
 
-This bug contains subtasks for each top-level step involved in creating a release.
-***For each completed step, add a comment to the relevant JIRA issue.***
+* Set a variable for use later on:
+
+    `JIRA="CB-????"` # Set this to the release bug.
 
 ## Branch & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world
 
@@ -32,11 +35,11 @@ This step involves:
 
 Coho automates these steps:
 
-    coho prepare-release-branch --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho prepare-release-branch --version 3.5.0-rc.1 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
     # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
-    coho tag-release --version 2.8.0-rc1 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
+    coho tag-release --version 3.5.0-rc.1 -r js -r app-hello-world -r mobile-spec
 
 If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then re-run the `prepare-release-branch` command for the platform repos.
 
@@ -90,6 +93,26 @@ Instead of the normal `npm publish` flow:
     npm publish --tag rc
 
 ** WATCH OUT! You may have to run `npm tag cordova@x.x.x latest` due to a bug in npm: https://github.com/npm/npm/issues/4837
+
+## Publish RC to dist/dev
+Ensure you have the svn repos checked out:
+
+    coho repo-clone -r dist -r dist/dev
+    
+Create archives from your tags:
+
+    coho foreach -r cadence "git checkout 3.4.x"
+    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/rc
+
+Sanity Check:
+
+    coho verify-archive cordova-dist-dev/$JIRA/rc/*.zip
+
+Upload:
+
+    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for cadence release")
+
+Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Testing & Documentation
 
@@ -174,22 +197,131 @@ This is done for all repos once testing is complete, and documentation is up-to-
 
 Use the same coho commands as for the RCs (it will update JS & VERSION):
 
-    coho prepare-release-branch --version 2.8.0 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
+    coho prepare-release-branch --version 3.5.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
     # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 2.8.x
-    coho tag-release --version 2.8.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
+    coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
 
 ## Branching & Tagging cordova-docs
 
- 1. Cherry pick relevant commits from master to 2.8.x branch
- 2. Generate the docs for the release on the 2.8.x branch.
- 3. Commit & tag on the 2.8.x branch.
+ 1. Cherry pick relevant commits from master to 3.5.x branch
+ 2. Generate the docs for the release on the 3.5.x branch.
+ 3. Commit & tag on the 3.5.x branch.
  4. Cherry pick commit into master.
 
 
 See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cordova-docs.git;a=blob;f=README.md#l127) for more details.
 
+## Publish final archives to dist/dev
+Create archives from your tags:
+
+    coho foreach -r cadence "git checkout 3.4.x"
+    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/final
+
+Sanity Check:
+
+    coho verify-archive cordova-dist-dev/$JIRA/final/*.zip
+
+Upload:
+
+    (cd cordova-dist-dev && svn add $JIRA/final && svn commit -m "$JIRA Uploading archives for cadence release vote")
+
+Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+
+## Prepare Blog Post
+ * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
+   * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
+ * Get blog post proofread via [piratepad](http://piratepad.net/front-page/).
+
+## Start VOTE Thread
+Send an email to dev ML with:
+
+__Subject:__
+
+    [Vote] 3.5.0 Cadence Release
+
+__Body:__
+
+    Please review and vote on this 3.5.0 Cadence Release.
+
+    Release issue: https://issues.apache.org/jira/browse/CB-XXXX
+
+    Repos ready to be released have been published to dist/dev:
+    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/final
+
+    The packages were published from their corresponding git tags:
+    PASTE OUTPUT OF: coho print-tags -r cadence
+
+    Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
+
+    Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
+
+    Voting will go on for a minimum of 48 hours.
+
+    I vote +1:
+    * Ran coho audit-license-headers over the relevant repos
+    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ensured continuous build was green when repos were tagged
+
+
+## Email the result of the vote
+Respond to the vote thread with:
+
+    The vote has now closed. The results are:
+
+    Positive Binding Votes: (# of PMC members that +1'ed)
+
+    .. names of all +1 PMC members ..
+
+    Negative Binding Votes: (# of PMC members that -1'ed)
+
+    .. names of all -1 PMC members ..
+
+    The vote has passed.
+
+_Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc_
+
+## If the Vote does *not* Pass
+* Revert adding of `-dev`
+* Address the concerns
+* Re-tag release using `git tag -f`
+* Add back `-dev`
+* Start a new vote
+
+## Otherwise: Publish to dist/
+
+    cd cordova-dist
+    svn up
+    svn rm tools/cordova-cli-*
+    svn rm tools/cordova-js*
+    svn rm platforms/*
+    cp ../cordova-dist-dev/$JIRA/final/cordova-js* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-cli* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-mobile-spec* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-app-hello* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-docs* docs/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-ios* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-blackberry* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-windows* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-wp8* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-firefoxos* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-ubuntu* platforms/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-amazon-fireos* platforms/
+    svn add tools/*
+    svn add platforms/*
+    svn add docs/*
+    svn commit -m "$JIRA Published cadence release to dist"
+
+    cd ../cordova-dist-dev
+    svn up
+    svn rm $JIRA
+    svn commit -m "$JIRA Removing release candidates from dist/dev"
+    cd ..
+
+
+Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ## Final Details
 
@@ -245,37 +377,6 @@ If you need to move a tag before the release, here is how to do that:
 Then send a note to the mailing list:
 
     To verify you have the updated tag in your local clone, doing a "git rev-parse 3.1.0" in cordova-docs should reply with "7cf9fea03d7d02a13aef97a09a459e8128bd3198". If it is wrong, do "git fetch --tags".
-
-# Official Apache Releases
-
-An official source release contains the source code for the repositories of the Apache Cordova platform, the signing keys and various checks to prove the validity of the release.
-
-Pre-3.0, official source releases were how end-users downloaded Cordova. Now that we use CLI, they are more for historical purposes and are done only for major releases.
-
-A release contains:
-
-    /
-    |- KEYS .................................. signing keys
-    |- cordova-VERSION-src.zip ............... zip file that contains the src of all platform repos
-    |- .md5 .................................. md5 file containing the MD5 Checksum of the src zip
-    |- .sha .................................. sha file containing the SHA Hash of the src zip
-    |- .asc .................................. asc file that contains the ASCII Armoring of the zip
-
-
-The `/cordova-VERSION-src.zip/` is the official release artifact and contains the source code for all the platforms, the top level documents concerning licences, notices, disclaimer, and as well the readme for the Apache Cordova project.
-
-    /
-    |-changelog
-    |-DISCLAIMER
-    |-cordova-$PLATFORM.zip  (per platform)
-    |-cordova-app-hello-world.zip
-    |-cordova-docs.zip
-    |-cordova-js.zip
-    |-cordova-mobile-spec.zip
-    |-LICENSE
-    |-NOTICE
-    |-README.MD
-
 
 ## Uploading a Release
 

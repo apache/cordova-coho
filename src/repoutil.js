@@ -301,6 +301,12 @@ var otherRepos = [
         jiraComponentName: 'Plugman',
         inactive: true
     }, {
+        title: 'Cordova Lib',
+        id: 'lib',
+        repoName: 'cordova-lib',
+        jiraComponentName: 'CordovaLib',
+        inactive: true
+    }, {
         title: 'Cordova Medic',
         id: 'medic',
         repoName: 'cordova-medic',

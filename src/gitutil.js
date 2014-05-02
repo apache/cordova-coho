@@ -35,7 +35,7 @@ exports.retrieveCurrentBranchName = function*(allowDetached) {
         if (allowDetached) {
             return null;
         }
-        throw new Error('Aborted due to repo ' + shjs.pwd() + ' not being on a named branch');
+        throw new Error('Aborted due to repo ' + process.cwd() + ' not being on a named branch');
     }
     var match = /refs\/heads\/(.*)/.exec(ref);
     if (!match) {

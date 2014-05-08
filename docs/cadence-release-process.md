@@ -24,7 +24,7 @@ TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basic
 
     `JIRA="CB-????"` # Set this to the release bug.
 
-## Branch & Tag RC1 for: cordova-js, cordova-mobile-spec and cordova-app-hello-world
+## Branch & Tag for: cordova-js, cordova-mobile-spec and cordova-app-hello-world
 
 This should be done *before* creating branches on other repos.
 
@@ -35,15 +35,15 @@ This step involves:
 
 Coho automates these steps:
 
-    coho prepare-release-branch --version 3.5.0-rc.1 -r js -r app-hello-world -r mobile-spec
+    coho prepare-release-branch --version 3.5.0 -r js -r app-hello-world -r mobile-spec
     coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
     # If changes look right:
     coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    coho tag-release --version 3.5.0-rc.1 -r js -r app-hello-world -r mobile-spec
+    coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
 
 If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then re-run the `prepare-release-branch` command for the platform repos.
 
-## Branch & Tag RC1 for Platform Repositories
+## Branch & Tag for Platform Repositories
 
 ### Before creating the release branch:
 
@@ -73,14 +73,15 @@ This step involves:
  * Updating version numbers
  * Creating release branches
  * Creating git tags
+ * For now, please manually updated the version in package.json file until coho adds that to prepare-release-branch
 
 Coho automates these steps (replace android with your platform):
 
-    coho prepare-release-branch --version 2.8.0-rc1 -r android
-    coho repo-status -r android -b master -b 2.8.x
+    coho prepare-release-branch --version 3.5.0 -r android
+    coho repo-status -r android -b master -b 3.5.x
     # If changes look right:
-    coho repo-push -r android -b master -b 2.8.x
-    coho tag-release --version 2.8.0-rc1 -r android
+    coho repo-push -r android -b master -b 3.5.x
+    coho tag-release --version 3.5.0 -r android
 
 ## Tagging RC1 of cordova-cli
 
@@ -193,7 +194,9 @@ Edit the commit descriptions - don't add the commits verbatim, usually they are 
 
 ## Final Tagging (non-RC)
 
-This is done for all repos once testing is complete, and documentation is up-to-date.
+This is done for all repos once testing is complete, and documentation is up-to-date. If nothing has changed since the earlier tag, no need to run the steps below. If changes have occured, make sure to cherry-pick them into the release branch and rerun commands below.
+
+Note: If you get an error due to the tag already existing on the server, view the moving tags section at the bottom of this readme on how to delete a remote git tag.
 
 Use the same coho commands as for the RCs (it will update JS & VERSION):
 

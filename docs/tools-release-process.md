@@ -1,4 +1,4 @@
-# Release Process for ''Plugman and CLI''
+# Release Process for ''Plugman and CLI and Cordova-lib''
 
 Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
 
@@ -32,10 +32,11 @@ Ensure license headers are present everywhere:
 
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
+    coho audit-license-headers -r cordova-lib | less
 
 Ensure you're up-to-date:
 
-    coho repo-update -r cli -r plugman
+    coho repo-update -r cli -r plugman -r cordova-lib
     (cd cordova-plugman && npm install)
     (cd cordova-cli && npm install)
     (cd cordova-cli && npm install ../cordova-plugman)
@@ -58,6 +59,7 @@ Ensure unit tests pass:
 
     (cd cordova-plugman; npm test)
     (cd cordova-cli; npm test)
+    (cd cordova-lib; npm test)
 
 Add a comment to the JIRA issue stating what you tested, and what the results were.
 
@@ -88,9 +90,9 @@ Update the version of plugman that CLI depends on:
     v="$(grep '"version"' cordova-plugman/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"plugman":.*/"plugman": "'$v'",/' cordova-cli/package.json
 
-Update CLI's npm-shrinkwrap.json with new version of plugman:
+Update cordova-lib's npm-shrinkwrap.json:
 
-    (cd cordova-cli; npm shrinkwrap)
+    (cd cordova-lib; npm shrinkwrap)
 
 Commit these three changes together into one commit
 

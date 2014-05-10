@@ -373,7 +373,7 @@ var repoGroups = {
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
-repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('docs')]);
+repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('cordova-lib')]);
 
 repoGroups.__defineGetter__('auto', function() {
     return allRepos.filter(function(repo) {

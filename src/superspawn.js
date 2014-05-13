@@ -92,7 +92,7 @@ exports.spawn = function(cmd, args, opts) {
     if (opts.stdio == 'ignore') {
         spawnOpts.stdio = 'ignore';
     } else if (pipeOutput) {
-        spawnOpts.stdio = ['inherit', 'pipe', 'inherit'];
+        spawnOpts.stdio = [process.stdin, 'pipe', process.stderr];
     }
     if (opts.cwd) {
         spawnOpts.cwd = opts.cwd;

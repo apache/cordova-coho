@@ -136,6 +136,7 @@ To submit a fix:
 ### What to Test
 
  * Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git)
+   * Don't forget to checkout mobile-spec at the appropriate tag instead of using master.
    * Don't forget to set up your white-list
    * Don't forget to run through the manual tests in addition to the automatic tests
    * Test loading the app over HTTP (via "cordova serve" and setting the config.xml start page)

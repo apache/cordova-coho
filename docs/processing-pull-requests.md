@@ -37,7 +37,7 @@ Run the following as an exemplary way to merge to master:
 
     # Pro Tip: coho list-pulls will generate the following commands for copy&paste
     git pull https://github.com/GitHubUser/cordova-FOO BRANCH
-    git rebase origin/MASTER_OR_DEV -i
+    git rebase origin/master -i
 
 The rebase step will let you interactively review the changes being made to master. You should:
 

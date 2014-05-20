@@ -11,12 +11,13 @@ This page focuses on what it means to +1 a vote thread.
 
 When we (or at least, members of the PMC), vote on a release, we
 are expressing confidence that:
-1. Our sources are properly licenses*
-2. We have only compatibly licensed dependencies (and appropriate NOTICE lines)*
-3. No IP was added without the concent of its owner**
-4. Archives are properly signed & hashed
-5. Repo tags match sha1 stated in vote email
-6. We believe the quality of the release is better than the previous one
+
+1. Our sources are properly licensed*.
+1. We have only compatibly licensed dependencies (and appropriate NOTICE lines)*.
+1. No IP was added without the consent of its owner**.
+1. Archives are properly signed & hashed.
+1. Repo tags match sha1 stated in vote email.
+1. We believe the quality of the release is better than the previous one.
 
 _* These items are generally checked by the Release Manager.
 The Release Manager should state that they've checked them when they +1 the vote._
@@ -43,11 +44,11 @@ For example, someone else might say:
     * Verified sha1s match tags
     * Re-created archives to ensure contents match release candidate
 
-About #6 (quality of the release):
-  - We strive to maintain release-worth quality at all times
-  - cordova-medic runs automated tests for each commit
+About the quality of the release (in the list above):
+  - We strive to maintain release-worthy quality at all times.
+  - cordova-medic runs automated tests for each commit.
 
 Given these:
-  - Manual testing can be done with release candidates, but is not strictly necessary
-  - Bugs don't block releases, but regressions generally do
+  - Manual testing can be done with release candidates, but is not strictly necessary.
+  - Bugs don't block releases, but regressions generally do.
 

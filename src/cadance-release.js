@@ -124,6 +124,8 @@ function *updateRepoVersion(repo, version) {
         if (repo.id == 'android') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
+        } else if (repo.id == 'firefoxos') {
+            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
         }
         shelljs.config.fatal = false;
         if (!(yield gitutil.pendingChangesExist())) {

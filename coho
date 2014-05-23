@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony-generators
+#!/usr/bin/env node
 /*
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -21,8 +21,7 @@ under the License.
 try {
     eval('(function*(){})');
 } catch (e) {
-    console.log('Using gnode to polyfill missing --harmony-generators');
-    console.log();
+    console.log('Using gnode to polyfill missing support for ES6 Generators\n');
     require('gnode'); // Enable generators support
 }
 require('./src/main')();

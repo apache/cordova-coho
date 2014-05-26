@@ -343,8 +343,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
    * Repository README.md explains [How to update the HTTP redirect](https://github.com/apache/cordova-labs/tree/redirect-docs-cordova-io#usage)
    * Nodejitsu is limited to one deployer, so Michael Brooks is currently the point of contact.
 
-### Push CLI to npm
-
+### Push platforms and tools to npm
 Refer to [tools-release-process.md](tools-release-process.md)
 
 ### Tell JIRA it's Released

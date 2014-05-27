@@ -287,26 +287,32 @@ var pluginRepos = [
     }*/
 ];
 
-var otherRepos = [
+var toolRepos = [
     {
         title: 'Cordova CLI',
         id: 'cli',
         repoName: 'cordova-cli',
-        jiraComponentName: 'CLI',
-        inactive: true
+        jiraComponentName: 'CLI'
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
-        jiraComponentName: 'Plugman',
-        inactive: true
+        jiraComponentName: 'Plugman'
     }, {
         title: 'Cordova Lib',
         id: 'lib',
         repoName: 'cordova-lib',
-        jiraComponentName: 'CordovaLib',
-        inactive: true
+        jiraComponentName: 'CordovaLib'
     }, {
+        title: 'Cordova Coho',
+        id: 'coho',
+        repoName: 'cordova-coho',
+        jiraComponentName: 'Coho'
+    }
+];
+
+var otherRepos = [
+    {
         title: 'Cordova Medic',
         id: 'medic',
         repoName: 'cordova-medic',
@@ -317,12 +323,6 @@ var otherRepos = [
         repoName: 'cordova-app-harness',
         inactive: true,
         jiraComponentName: 'AppHarness'
-    }, {
-        title: 'Cordova Coho',
-        id: 'coho',
-        repoName: 'cordova-coho',
-        jiraComponentName: 'Coho',
-        inactive: true
     }, {
         title: 'Cordova Labs',
         id: 'labs',
@@ -364,12 +364,13 @@ var otherRepos = [
     }
 ];
 
-var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat(otherRepos);
+var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat(toolRepos).concat(otherRepos);
 
 var repoGroups = {
     'all': allRepos,
     'platform': platformRepos,
     'plugins': pluginRepos,
+    'tools': toolRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };

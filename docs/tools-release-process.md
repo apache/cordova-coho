@@ -225,6 +225,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
 
+If you have already published the package under the `rc` tag, then you will have to run `npm tag cordova@version latest`
+
 
 ## Post Blog Post
 

@@ -382,15 +382,3 @@ Then send a note to the mailing list:
 
     To verify you have the updated tag in your local clone, doing a "git rev-parse 3.1.0" in cordova-docs should reply with "7cf9fea03d7d02a13aef97a09a459e8128bd3198". If it is wrong, do "git fetch --tags".
 
-## Uploading a Release
-
-Create the release .zip with coho:
-
-    coho create-release-snapshot --prev-version 2.7.0 --new-version 2.8.0-rc1 -r release-repos
-
-Upload it to: https://dist.apache.org/repos/dist/release/cordova/
-
-    coho upload-release --new-version 3.0.0 --prev-version 2.9.0
-
-[Update the versions](https://wiki.apache.org/cordova/UpdatingVersionsOnTheCordovaWebsite) on the Cordova website
-

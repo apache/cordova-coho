@@ -81,13 +81,18 @@ function *updateRepos(repos, branches, noFetch) {
     });
 
     if (!noFetch) {
+        var fetchPromises = [];
         yield repoutil.forEachRepo(repos, function*(repo) {
             if (repo.svn) {
                 return;
             }
             // Note: this does the same as git fetch --tags origin && git fetch origin
-            yield executil.execHelper(executil.ARGS('git remote update ', repo.remoteName));
+            fetchPromises.push(executil.execHelper(executil.ARGS('git remote update ', repo.remoteName), 3));
         });
+        if (fetchPromises.length > 1) {
+          print('Waiting for concurrent fetches to finish...');
+        }
+        yield fetchPromises;
     }
 
     if (branches && branches.length) {

@@ -31,6 +31,10 @@ exports.ARGS = function(s, var_args) {
     return ret;
 }
 
+// silent = false ==> print command and output
+// silent == true or 1 ==> don't print command, don't print output
+// silent == 2 ==> don't print command, print output
+// silent == 3 ==> print command, don't print output
 exports.execHelper = function(cmdAndArgs, silent, allowError) {
     // there are times where we want silent but not allowError.
     if (null == allowError) {
@@ -41,16 +45,14 @@ exports.execHelper = function(cmdAndArgs, silent, allowError) {
         gitCommitCount++;
     }
     cmdAndArgs[0] = cmdAndArgs[0].replace(/^git /, 'git -c color.ui=always ');
-    if (!silent) {
+    if (!silent || silent === 3) {
         print('Executing:', cmdAndArgs.join(' '));
     }
-    // silent==2 is used only when modifying ulimit and re-exec'ing,
-    // so don't be silent but allow whatever to happen.
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
     return result.then(null, function(e) {
         if (allowError) {
             return null;
-        } else if (!(silent === true)) {
+        } else if (+silent != 1) {
             print(e.output);
         }
         process.exit(2);

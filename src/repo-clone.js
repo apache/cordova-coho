@@ -48,17 +48,23 @@ function *cloneRepos(repos, quiet) {
     var failures = [];
     var numSkipped = 0;
 
+    var clonePromises = [];
     for (var i = 0; i < repos.length; ++i) {
         var repo = repos[i];
         if (fs.existsSync(repo.repoName)) {
             if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else if (repo.svn) {
-            yield executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName));
+            clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName)));
         } else {
-            yield executil.execHelper(executil.ARGS('git clone --progress ' + createRepoUrl(repo)));
+            clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + createRepoUrl(repo))));
         }
     }
+
+    if (clonePromises.length > 1) {
+        print('Waiting for clones to finish...');
+    }
+    yield clonePromises;
 
     var numCloned = repos.length - numSkipped;
     if (numCloned) {

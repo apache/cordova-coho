@@ -93,6 +93,8 @@ exports.spawn = function(cmd, args, opts) {
         spawnOpts.stdio = 'ignore';
     } else if (pipeOutput) {
         spawnOpts.stdio = [process.stdin, 'pipe', process.stderr];
+    } else {
+        spawnOpts.stdio = [process.stdin, 'pipe', 'pipe'];
     }
     if (opts.cwd) {
         spawnOpts.cwd = opts.cwd;

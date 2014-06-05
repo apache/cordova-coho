@@ -98,6 +98,10 @@ module.exports = function() {
             desc: 'Prints out git logs of things that happened last week.',
             entryPoint: require('./last-week')
         }, {
+            name: 'shortlog',
+            desc: 'A version of `git shortlog -s` aggregated across multiple repos.',
+            entryPoint: require('./shortlog')
+        }, {
             name: 'for-each',
             desc: 'Runs a shell command in each repo.',
             entryPoint: require('./for-each')

@@ -66,20 +66,12 @@ TODO: Should not mention testing other than checking medic
     # Update your repos
     coho repo-status -r plugins -b dev -b master
     coho repo-update -r plugins
-    coho foreach -r plugins "git checkout dev"
-
-    # Merge any commits mistakenly made to master into dev:
-    (for l in cordova-plugin-*; do ( echo $l; cd $l; git merge master ); done
-
-    # Sanity check and push if needed:
-    coho repo-status -r plugins -b dev
-    coho foreach -r plugins "git status -s"
-    coho repo-push -r plugins -b dev
+    coho foreach -r plugins "git checkout master"
 
 ## Identify which plugins have changes
 
     coho repo-update -r plugins
-    coho foreach -r plugins "git checkout dev"
+    coho foreach -r plugins "git checkout master"
     ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
 
 ## Ensure license headers are present everywhere:
@@ -111,11 +103,11 @@ Add a comment to the JIRA issue with the output from:
 
     for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo $id@$v; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
 
-Commit these two changes together to the `dev` branch
+Commit these two changes together
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
 
-## Tag on Dev Branch
+## Tag
 
     for l in $ACTIVE; do ( cd $l; v="r$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
 
@@ -123,14 +115,14 @@ Commit these two changes together to the `dev` branch
  * Create mobilespec using the old versions of plugins (by checking them out to the previous tag)
  * Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
 
-## Update dev branch's version
+## Update master branch's version
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ $v = $v_no_dev ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
-    for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version on dev branch." ); done
+    for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done
 
 ## Push Dev Branch
     # Sanity check:
-    coho repo-status -r plugins -b dev
+    coho repo-status -r plugins
     coho foreach -r plugins "git status -s"
     # Push:
     for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git dev); done
@@ -257,7 +249,6 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugi
 
 ## Publish to Plugins Registry
 
-    for l in $ACTIVE; do ( cd $l; git checkout master ); done
     for l in $ACTIVE; do ( cd $l; echo -n "$l: "; plugman publish . ); done
 
 ## Post blog Post

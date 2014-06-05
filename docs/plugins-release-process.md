@@ -72,7 +72,7 @@ TODO: Should not mention testing other than checking medic
 
     coho repo-update -r plugins
     coho foreach -r plugins "git checkout master"
-    ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
+    ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
 
 ## Ensure license headers are present everywhere:
 
@@ -85,19 +85,19 @@ Remove the ''-dev'' suffix on the version in plugin.xml.
 
 If the changes merit it, manually bump the major / minor version instead of the micro. Manual process, but list the changes via:
 
-    for l in $ACTIVE; do ( cd $l; echo $l; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version" ); done
+    for l in $ACTIVE; do ( cd $l; echo $l; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" ); done
 
 Update its RELEASENOTES.md file with changes
 
     # Add new heading to release notes with version and date
     DATE=$(date "+%h %d, %Y")
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
 Print all changes for plugins (save this text for the blog post):
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; id=$(grep -o '\bid=\"[^\"]*\"' plugin.xml | head -n1 | cut -d'"' -f2);  echo -e "\n\`$id@$v\`"; git log --pretty=format:'* %s' --topo-order --no-merges master..dev | grep -v "Incremented plugin version"); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; id=$(grep -o '\bid=\"[^\"]*\"' plugin.xml | head -n1 | cut -d'"' -f2);  echo -e "\n\`$id@$v\`"; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version"); done
 
 Add a comment to the JIRA issue with the output from:
 
@@ -115,17 +115,17 @@ Commit these two changes together
  * Create mobilespec using the old versions of plugins (by checking them out to the previous tag)
  * Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
 
-## Update master branch's version
+## Update version
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ $v = $v_no_dev ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
     for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done
 
-## Push Dev Branch
+## Push tags and changes
     # Sanity check:
     coho repo-status -r plugins
     coho foreach -r plugins "git status -s"
     # Push:
-    for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git dev); done
+    for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git master); done
 
 ## Publish to dist/dev
 Ensure you have the svn repos checked out:
@@ -218,16 +218,6 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 * Re-tag release using `git tag -f`
 * Add back `-dev`
 * Start a new vote
-
-## Otherwise: Merge & Push Master Branch
-
-    for l in $ACTIVE; do ( cd $l; git checkout master ); done
-    for l in $ACTIVE; do ( cd $l; v=$(git describe --tags --abbrev=0 dev); git merge $v ); done
-
-    # Sanity check:
-    coho repo-status -r plugins -b master
-    # Push:
-    for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git master); done
 
 
 ## Publish to dist/

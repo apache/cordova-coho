@@ -29,82 +29,90 @@ try {
 }
 var apputil = require('./apputil');
 
+function *lazyRequire(name, opt_prop) {
+    if (opt_prop) {
+        yield require(name)[opt_prop];
+    } else {
+        yield require(name);
+    }
+}
+
 module.exports = function() {
     var repoCommands = [
         {
             name: 'repo-clone',
             desc: 'Clones git repositories into the current working directory.',
-            entryPoint: require('./repo-clone')
+            entryPoint: lazyRequire('./repo-clone')
         }, {
             name: 'repo-update',
             desc: 'Performs git pull --rebase on all specified repositories.',
-            entryPoint: require('./repo-update')
+            entryPoint: lazyRequire('./repo-update')
         }, {
             name: 'repo-reset',
             desc: 'Performs git reset --hard origin/$BRANCH and git clean -f -d on all specified repositories.',
-            entryPoint: require('./repo-reset')
+            entryPoint: lazyRequire('./repo-reset')
         }, {
             name: 'repo-status',
             desc: 'Lists changes that exist locally but have not yet been pushed.',
-            entryPoint: require('./repo-status')
+            entryPoint: lazyRequire('./repo-status')
         }, {
             name: 'repo-push',
             desc: 'Push changes that exist locally but have not yet been pushed.',
-            entryPoint: require('./repo-push')
+            entryPoint: lazyRequire('./repo-push')
         }, {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
-            entryPoint: require('./list-repos')
+            entryPoint: lazyRequire('./list-repos')
         }];
     var releaseCommands = [{
             name: 'prepare-release-branch',
             desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
-            entryPoint: require('./cadance-release').prepareReleaseBranchCommand
+            entryPoint: lazyRequire('./cadance-release', 'prepareReleaseBranchCommand')
         }, {
             name: 'tag-release',
             desc: 'Tags repos for a release.',
-            entryPoint: require('./cadance-release').tagReleaseBranchCommand
+            entryPoint: lazyRequire('./cadance-release', 'tagReleaseBranchCommand')
         }, {
             name: 'audit-license-headers',
             desc: 'Uses Apache RAT to look for missing license headers.',
-            entryPoint: require('./audit-license-headers')
+            entryPoint: lazyRequire('./audit-license-headers')
         }, {
             name: 'create-release-bug',
             desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',
-            entryPoint: require('./create-release-bug')
+            entryPoint: lazyRequire('./create-release-bug')
         }, {
             name: 'create-archive',
             desc: 'Zips up a tag, signs it, and adds checksum files.',
-            entryPoint: require('./create-verify-archive').createCommand
+            entryPoint: lazyRequire('./create-verify-archive', 'createCommand')
         }, {
             name: 'verify-archive',
             desc: 'Checks that archives are properly signed and hashed.',
-            entryPoint: require('./create-verify-archive').verifyCommand
+            entryPoint: lazyRequire('./create-verify-archive', 'verifyCommand')
         }, {
             name: 'print-tags',
             desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
-            entryPoint: require('./print-tags')
+            entryPoint: lazyRequire('./print-tags')
         }, {
             name: 'list-release-urls',
             desc: 'List the apache git repo urls for release artifacts.',
-            entryPoint: require('./list-release-urls')
+            entryPoint: lazyRequire('./list-release-urls')
         }];
     var otherCommands = [{
             name: 'list-pulls',
             desc: 'Shows a list of GitHub pull requests for all specified repositories.',
-            entryPoint: require('./list-pulls')
+            entryPoint: lazyRequire('./list-pulls')
         }, {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',
-            entryPoint: require('./last-week')
+            entryPoint: lazyRequire('./last-week')
         }, {
             name: 'shortlog',
             desc: 'A version of `git shortlog -s` aggregated across multiple repos.',
-            entryPoint: require('./shortlog')
+            entryPoint: lazyRequire('./shortlog')
         }, {
             name: 'for-each',
             desc: 'Runs a shell command in each repo.',
-            entryPoint: require('./for-each')
+            entryPoint: lazyRequire('./for-each')
         }
     ];
     var commandMap = {};

@@ -62,7 +62,7 @@ For example, someone else might say:
     +1
 
     * Confirmed sigs & hashes with `coho verify-archive`
-    * Verified sha1s match tags
+    * Verified sha1s match tags with `coho verify-tags`
     * Re-created archives to ensure contents match release candidate
 
 About the quality of the release (in the list above):

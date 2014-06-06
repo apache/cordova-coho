@@ -86,4 +86,8 @@ exports.retrieveCurrentTagName = function() {
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
 }
 
+exports.hashForRef = function(ref) {
+    return executil.execHelper(executil.ARGS('git rev-parse', ref), true, true);
+};
+
 

@@ -93,6 +93,10 @@ module.exports = function() {
             desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
             entryPoint: lazyRequire('./print-tags')
         }, {
+            name: 'verify-tags',
+            desc: 'Verify the tags match the hashes within VOTE emails.',
+            entryPoint: lazyRequire('./verify-tags')
+        }, {
             name: 'list-release-urls',
             desc: 'List the apache git repo urls for release artifacts.',
             entryPoint: lazyRequire('./list-release-urls')

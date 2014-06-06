@@ -80,6 +80,7 @@ When possible, try to phrase things in the form of a proposal. If no one objects
 
 ### Step 4: Make your changes
  * Thank you for making the world a better place.
+ * Please beign your commit with the issue. Ex. `CB-XXXX **PLATFORM** Fixed broken scrolling`
 
 ### Step 5: Test your changes ###
  * You are responsible for testing the commits you push.

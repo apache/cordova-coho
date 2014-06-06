@@ -21,7 +21,6 @@ under the License.
 try {
     eval('(function*(){})');
 } catch (e) {
-    console.log('Using gnode to polyfill missing support for ES6 Generators\n');
     require('gnode'); // Enable generators support
 }
 require('./src/main')();

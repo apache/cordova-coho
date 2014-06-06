@@ -113,16 +113,18 @@ function *updateRepos(repos, branches, noFetch) {
                 return !!staleBranches[branchName];
             });
             if (!staleBranches.length) {
-                print('Confirmed already up-to-date: ' + repo.repoName);
+                print('Already up-to-date: ' + repo.repoName);
             } else {
-                print('Updating ' + repo.repoName);
                 yield gitutil.stashAndPop(repo, function*() {
                     for (var i = 0; i < staleBranches.length; ++i) {
                         var branchName = staleBranches[i];
                         yield gitutil.gitCheckout(branchName);
-                        var ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
+                        var ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName), false, true);
                         if (ret === null) {
-                            apputil.fatal('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
+                            ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
+                            if (ret === null) {
+                                apputil.fatal('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
+                            }
                         }
                     }
                 });

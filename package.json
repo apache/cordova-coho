@@ -21,7 +21,8 @@
   },
   "authors": [
     "Andrew Grieve",
-    "steven gill"
+    "steven gill",
+    "Brian LeRoux"
   ],
-  "license": "apachev2"
+  "license": "apache2"
 }

@@ -22,7 +22,7 @@ var executil = require('./executil');
 var gitutil = exports;
 
 exports.findMostRecentTag = function() {
-    return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 HEAD'), true);
+    return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 master'), true);
 }
 
 exports.tagExists = function*(tagName) {

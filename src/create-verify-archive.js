@@ -19,6 +19,7 @@ under the License.
 
 var optimist = require('optimist');
 var shelljs = require('shelljs');
+var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
 var apputil = require('./apputil');
@@ -61,19 +62,23 @@ exports.createCommand = function*(argv) {
         apputil.fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
     }
 
-    var outDir = argv.dest;
+    var outDir = apputil.resolveUserSpecifiedPath(argv.dest);
     shelljs.mkdir('-p', outDir);
     var absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         var tag = argv.tag || (yield gitutil.findMostRecentTag());
         print('Creating archive of ' + repo.repoName + '@' + tag);
+        yield gitutil.gitCheckout('master');
 
-        if(repo.id==='plugman'|| repo.id==='cli'){
+        if (repo.id==='plugman'|| repo.id==='cli') {
+            if (yield gitutil.pendingChangesExist()) {
+                apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
+            }
             var tgzname = yield executil.execHelper(executil.ARGS('npm pack'), true);
             var outPath = path.join(absOutDir, 'cordova-' + tgzname);
             shelljs.mv(tgzname, outPath);
-        }else{
+        } else {
             var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
             yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
         }
@@ -108,7 +113,7 @@ exports.verifyCommand = function*(argv) {
     }
 
     for (var i = 0; i < zipPaths.length; ++i) {
-        var zipPath = zipPaths[i];
+        var zipPath = apputil.resolveUserSpecifiedPath(zipPaths[i]);
         yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath));
         var md5 = yield computeHash(zipPath, 'MD5');
         if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
@@ -118,8 +123,9 @@ exports.verifyCommand = function*(argv) {
         if (extractHashFromOutput(fs.readFileSync(zipPath + '.sha', 'utf8')) !== sha) {
             apputil.fatal('SHA512 does not match.');
         }
-        print(zipPath + ' signature and hashes verified.');
+        print(zipPath + chalk.green(' signature and hashes verified.'));
     }
+    print(chalk.green('Verified ' + zipPaths.length + ' signatures and hashes.'));
 }
 
 function *computeHash(path, algo) {

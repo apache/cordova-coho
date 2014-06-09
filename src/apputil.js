@@ -21,13 +21,18 @@ var path = require('path');
 var chalk = require('chalk');
 
 var origWorkingDir = process.cwd();
+var baseWorkingDir = origWorkingDir;
+
+exports.resolveUserSpecifiedPath = function(p) {
+    return path.resolve(origWorkingDir, p);
+};
 
 exports.initWorkingDir = function(chdir) {
     var curDir = path.resolve(origWorkingDir);
     var newDir = chdir ? path.resolve(path.join(__dirname), '..', '..') : curDir;
     if (curDir != newDir) {
         process.chdir(newDir);
-        origWorkingDir = newDir;
+        baseWorkingDir = newDir;
     }
     console.log('Running from ' + newDir);
 }
@@ -41,7 +46,7 @@ exports.print = function() {
     var newArgs = Array.prototype.slice.call(arguments);
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
-        var curDir = path.relative(origWorkingDir, process.cwd());
+        var curDir = path.relative(baseWorkingDir, process.cwd());
         curDir = curDir ? curDir + '/' : './';
         var banner = ' =';
         var PREFIX_LEN = 30;

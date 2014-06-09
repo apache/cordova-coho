@@ -18,11 +18,7 @@ under the License.
 */
 
 var optimist = require('optimist');
-var shelljs = require('shelljs');
-var fs = require('fs');
-var path = require('path');
 var apputil = require('./apputil');
-var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');

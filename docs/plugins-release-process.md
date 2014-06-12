@@ -248,6 +248,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugi
     svn add NEW_FILES_HERE
     svn commit
 
+## Do other announcements
+
+    Do the same things regarding announcements as described in cadence-release-process, where they make sense.
+
 ## Close JIRA Issue
  * Double check that the issue has comments that record the steps you took
  * Mark it as fixed

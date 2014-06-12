@@ -264,6 +264,9 @@ Subject: [ANNOUNCEMENT] Tools Release
     
     You can view the release blog post at LINK_TO_BLOG
 
+## Do other announcements
+
+    Do the same things regarding announcements as described in cadence-release-process, where they make sense.
 
 ## Close JIRA Issue
  * Double check that the issue has comments that record the steps you took

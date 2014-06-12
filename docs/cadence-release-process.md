@@ -377,7 +377,8 @@ Refer to [tools-release-process.md](tools-release-process.md)
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
    * Announce to [G+ Page](https://plus.google.com/u/0/113178331525415522084/posts)
-
+   * Get it posted to Apache's announce mailing list: send an mail to announce@apache.org, sent from your @apache.org email address. You'll then need to wait for the moderator to accept the message. The www.a.o home page is automatically updated with the announcement after the moderator approves.
+   * For major project milestones, email press@apache.org and they can provide custom help.
 
 # Additional Information
  * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)

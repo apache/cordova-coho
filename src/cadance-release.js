@@ -134,6 +134,22 @@ function *updateRepoVersion(repo, version) {
     } else {
         console.warn('No VERSION file exists in repo ' + repo.repoName);
     }
+    
+    // Update the package.json VERSION.
+    var packageFilePaths = repo.packageFilePaths || ['package.json'];
+    if (fs.existsSync(packageFilePaths[0])) {
+        fs.readFile(packageFilePaths[0], {encoding: 'utf-8'},function (err, data) {
+            if (err) throw err;
+            var packageJSON = JSON.parse(data);
+            packageJSON.version = version;
+            fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, "    "));
+        }); 
+        if (!(yield gitutil.pendingChangesExist())) {
+            print('package.json file was already up-to-date.');
+        }
+    } else {
+        console.warn('No package.json file exists in repo ' + repo.repoName);
+    }
 
     if (yield gitutil.pendingChangesExist()) {
         yield executil.execHelper(executil.ARGS('git commit -am', 'Set VERSION to ' + version + ' (via coho)'));

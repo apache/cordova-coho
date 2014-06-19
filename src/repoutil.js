@@ -48,12 +48,9 @@ var platformRepos = [
         repoName: 'cordova-blackberry',
         jiraComponentName: 'BlackBerry',
         cordovaJsSrcName: 'cordova.blackberry10.js',
-        cordovaJsPaths: [
-            path.join('blackberry10', 'javascript', 'cordova.blackberry10.js')
-            ],
-        versionFilePaths: [
-            path.join('blackberry10', 'VERSION'),
-            ]
+        cordovaJsPaths: [path.join('blackberry10', 'javascript', 'cordova.blackberry10.js')],
+        versionFilePaths: [path.join('blackberry10', 'VERSION')],
+        packageFilePaths: [path.join('blackberry10', 'package.json')]
     }, {
         title: 'Windows',
         id: 'windows',
@@ -61,14 +58,16 @@ var platformRepos = [
         jiraComponentName: 'Windows 8',
         cordovaJsSrcName: 'cordova.windows8.js',
         cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
-        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')]
+        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')],
+        packageFilePaths: [path.join('windows8', 'package.json')]
     }, {
         title: 'Windows Phone 7 & 8',
         id: 'wp8',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
         cordovaJsSrcName: 'cordova.windowsphone.js',
-        cordovaJsPaths: ['common/www/cordova.js']
+        cordovaJsPaths: ['common/www/cordova.js'],
+        packageFilePaths: [path.join('wp8', 'package.json')]
     }, {
         title: 'Firefox OS',
         id: 'firefoxos',

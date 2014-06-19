@@ -94,7 +94,7 @@ This step involves:
  * Updating version numbers
  * Creating release branches
  * Creating git tags
- * For now, please manually updated the version in package.json file until coho adds that to prepare-release-branch
+ * Updating version in package.json files
 
 Coho automates these steps (replace android with your platform):
 

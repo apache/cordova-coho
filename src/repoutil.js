@@ -278,13 +278,13 @@ var pluginRepos = [
         repoName: 'cordova-plugin-statusbar',
         jiraComponentName: 'Plugin Statusbar',
         inactive: true
-    }/*, {
+    }, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
         inactive: true
-    }*/
+    }
 ];
 
 var toolRepos = [

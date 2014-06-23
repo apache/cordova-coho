@@ -34,7 +34,16 @@ TODO: Use perl instead of sed in these commands so they work on Linux.
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.
- * If so, agree upon a branching date / time.
+
+E.g.:
+
+    Subject: [DISCUSS] Tools Release
+
+    Does anyone have any reason to delay a tools release?
+    Any outstanding patches to land?
+
+    If not, I will start the release tomorrow.
+
 
 ## Create JIRA issues
 
@@ -49,23 +58,23 @@ Email the dev mailing-list and see if anyone has reason to postpone the release.
     JIRA="CB-????" # Set this to the release bug.
 
 ## Test
+Ensure you're up-to-date:
+
+    coho repo-update -r tools
+    (cd cordova-lib/cordova-lib && npm install)
+    (cd cordova-plugman && npm install)
+    (cd cordova-cli && npm install)
+
 Ensure license headers are present everywhere:
 
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
     coho audit-license-headers -r cordova-lib | less
 
-Ensure you're up-to-date:
-
-    coho repo-update -r cli -r plugman -r cordova-lib
-    (cd cordova-plugman && npm install)
-    (cd cordova-cli && npm install)
-    (cd cordova-cli && npm install ../cordova-plugman)
-
 Ensure that mobilespec creates okay via CLI:
 
-    cordova-mobile-spec/createmobilespec.sh
-    (cd mobilespec && cordova run android)
+    cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
+    (cd mobilespec && cordova build && cordova run android)
 
 Ensure uninstall doesn't cause errors:
 

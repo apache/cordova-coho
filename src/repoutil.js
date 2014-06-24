@@ -355,6 +355,12 @@ var otherRepos = [
         inactive: true,
         svn: 'https://dist.apache.org/repos/dist/dev/cordova'
     }, {
+        title: 'Apache dist/private/pmc/cordova',
+        id: 'private-pmc',
+        repoName: 'cordova-private-pmc',
+        inactive: true,
+        svn: 'https://svn.apache.org/repos/private/pmc/cordova'
+    }, {
         title: 'Cordova Website',
         id: 'website',
         repoName: 'cordova-website',

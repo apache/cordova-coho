@@ -68,14 +68,16 @@ exports.createCommand = function*(argv) {
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         var tag = argv.tag || (yield gitutil.findMostRecentTag());
+        yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
-        yield gitutil.gitCheckout('master');
 
-        if (repo.id==='plugman'|| repo.id==='cli') {
+        if (repo.id==='plugman' || repo.id==='cli' || repo.id==='lib') {
             if (yield gitutil.pendingChangesExist()) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }
-            var tgzname = yield executil.execHelper(executil.ARGS('npm pack'), true);
+            var cmd = 'npm pack';
+            if (repo.id==='lib') cmd = 'npm pack cordova-lib'
+            var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
             var outPath = path.join(absOutDir, 'cordova-' + tgzname);
             shelljs.mv(tgzname, outPath);
         } else {
@@ -136,4 +138,3 @@ function *computeHash(path, algo) {
 function extractHashFromOutput(output) {
     return output.replace(/.*?:/, '').replace(/\s*/g, '').toLowerCase();
 }
-

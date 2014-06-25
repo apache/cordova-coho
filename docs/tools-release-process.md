@@ -115,10 +115,11 @@ Update each repo's RELEASENOTES.md file with changes
     # Then curate:
     vim cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md
 
-Update the version of plugman that CLI depends on:
+Update the version of cordova-lib that cli and plugman depend on:
 
-    v="$(grep '"version"' cordova-plugman/package.json | cut -d'"' -f4)"
-    sed -i '' -E 's/"plugman":.*/"plugman": "'$v'",/' cordova-cli/package.json
+    v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
+    sed -i '' -E 's/"cordova-lib":.*/"cordova-lib"*: "'$v'",/' cordova-cli/package.json
+    sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
 Update cordova-lib's npm-shrinkwrap.json:
 
@@ -131,9 +132,9 @@ Commit these three changes together into one commit
 ## Tag
 
     # Review commits:
-    for l in cordova-plugman cordova-cli; do ( cd $l; git log -p origin/master..master ); done  
+    for l in cordova-plugman cordova-cli cordova-lib; do ( cd $l; git log -p origin/master..master ); done
     # Tag
-    for l in cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    for l in cordova-plugman cordova-cli cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
 ## Re-introduce -dev suffix to versions
 
@@ -157,11 +158,11 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r plugman -r cli --dest cordova-dist-dev/$JIRA
+    coho create-archive -r plugman -r cli -r lib --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
 
 Upload:
 
@@ -192,7 +193,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r plugman -r cli
+    PASTE OUTPUT OF: coho print-tags -r lib -r cli -r plugman
 
     Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
 
@@ -250,8 +251,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 ## Publish to NPM
 
+    npm publish cordova-dist/tools/cordova-lib-*.tgz
     npm publish cordova-dist/tools/cordova-cli-*.tgz
     npm publish cordova-dist/tools/cordova-plugman-*.tgz
+
 
 If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
 
@@ -270,7 +273,7 @@ If you have already published the package under the `rc` tag, then you will have
 Subject: [ANNOUNCEMENT] Tools Release
 
     Cordova-cli@VERSION & Plugman@VERSION has been released!
-    
+
     You can view the release blog post at LINK_TO_BLOG
 
 ## Do other announcements

@@ -33,7 +33,7 @@ exports.createCommand = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = opt
         .options('tag', {
-            desc: 'The pre-existing tag to archive (defaults to newest tag on branch)'
+            desc: 'The pre-existing tag or hash to archive (defaults to newest tag on branch)'
          })
         .options('sign', {
             desc: 'Whether to create .asc, .md5, .sha files (defaults to true)',
@@ -46,7 +46,7 @@ exports.createCommand = function*(argv) {
          });
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
-        .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag.\n' +
+        .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag or hash.\n' +
                'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
                '\n' +
                'Usage: $0 create-archive -r plugman -r cli --dest cordova-dist-dev/CB-1111')
@@ -94,8 +94,7 @@ exports.createCommand = function*(argv) {
 }
 
 exports.verifyCommand = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    opt = flagutil.registerHelpFlag(opt);
+    var opt = flagutil.registerHelpFlag(optimist);
     var argv = opt
         .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
                'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +

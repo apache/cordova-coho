@@ -35,12 +35,11 @@ This repository has the following purposes:
 
 ## How to Clone & Use `coho`
 
-    mkdir -p cordova 
+    mkdir -p cordova
     cd cordova
     git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
     cd cordova-coho
     npm install
     sudo npm link
     coho --help
-
 

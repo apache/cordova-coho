@@ -43,3 +43,8 @@ This repository has the following purposes:
     sudo npm link
     coho --help
 
+## How to Install Node:
+
+Easiest way on OS X & Linux: https://github.com/creationix/nvm
+
+Easiest way on Win: http://nodejs.org/

@@ -115,7 +115,10 @@ exports.verifyCommand = function*(argv) {
 
     for (var i = 0; i < zipPaths.length; ++i) {
         var zipPath = apputil.resolveUserSpecifiedPath(zipPaths[i]);
-        yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath));
+        var result = yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath), false, true);
+        if (result === null) {
+            apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
+        }
         var md5 = yield computeHash(zipPath, 'MD5');
         if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
             apputil.fatal('MD5 does not match.');

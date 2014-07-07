@@ -121,9 +121,10 @@ Update the version of cordova-lib that cli and plugman depend on:
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib"*: "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
-Update cordova-lib's npm-shrinkwrap.json:
+Create npm-shrinkwrap.json in cli and plugman:
 
-    (cd cordova-lib; npm shrinkwrap)
+    (cd cordova-cli; npm shrinkwrap;)
+    (cd cordova-plugman; npm shrinkwrap;)
 
 Commit these three changes together into one commit
 
@@ -136,7 +137,10 @@ Commit these three changes together into one commit
     # Tag
     for l in cordova-plugman cordova-cli cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
-## Re-introduce -dev suffix to versions
+## Re-introduce -dev suffix to versions and remove shrinkwrap
+
+    (cd cordova-cli; git rm npm-shrinkwrap.json;)
+    (cd cordova-plugman; git rm npm-shrinkwrap.json;)
 
     for l in cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
     for l in cordova-plugman cordova-cli; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done

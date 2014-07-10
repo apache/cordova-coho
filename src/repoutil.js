@@ -283,6 +283,12 @@ var pluginRepos = [
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
         inactive: true
+    }, {
+        title: 'Plugin - Test Framework',
+        id: 'plugin-test-framework',
+        repoName: 'cordova-plugin-test-framework',
+        jiraComponentName: 'Plugin TestFramework',
+        inactive: true
     }
 ];
 

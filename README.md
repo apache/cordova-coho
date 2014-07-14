@@ -48,3 +48,4 @@ This repository has the following purposes:
 Easiest way on OS X & Linux: https://github.com/creationix/nvm
 
 Easiest way on Win: http://nodejs.org/
+

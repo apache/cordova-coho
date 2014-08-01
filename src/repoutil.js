@@ -234,7 +234,13 @@ var pluginRepos = [
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
-        inactive: true
+        inactive: true,
+        ratExcludes: [
+            // zlib/libpng approved by Apache legal
+            // http://www.apache.org/legal/resolved.html
+            'tokenizer.cpp',
+            'tokenizer.h'
+        ]
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',

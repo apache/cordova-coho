@@ -69,7 +69,7 @@ Ensure license headers are present everywhere:
 
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
-    coho audit-license-headers -r cordova-lib | less
+    coho audit-license-headers -r lib | less
 
 Ensure that mobilespec creates okay via CLI:
 

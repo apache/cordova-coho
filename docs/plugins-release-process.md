@@ -64,7 +64,7 @@ TODO: Should not mention testing other than checking medic
 ## Make sure you're up-to-date
 
     # Update your repos
-    coho repo-status -r plugins -b dev -b master
+    coho repo-status -r plugins -b master
     coho repo-update -r plugins
     coho foreach -r plugins "git checkout master"
 
@@ -212,9 +212,8 @@ __Body:__
 _Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc_
 
 ## If the Vote does *not* Pass
-* Revert adding of `-dev` on dev branch
-* Address the concerns (on dev branch)
-* Merge changes into master
+* Revert adding of `-dev` on master branch
+* Address the concerns (on master branch)
 * Re-tag release using `git tag -f`
 * Add back `-dev`
 * Start a new vote

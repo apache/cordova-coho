@@ -139,5 +139,5 @@ function *computeHash(path, algo) {
 }
 
 function extractHashFromOutput(output) {
-    return output.replace(/.*?:/, '').replace(/\s*/g, '').toLowerCase();
+    return output.slice(output.lastIndexOf(':') + 1).replace(/\s*/g, '').toLowerCase();
 }

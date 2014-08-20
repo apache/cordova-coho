@@ -138,8 +138,12 @@ function *determineApacheRemote(repo) {
     var fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
     var ret = null;
     for (var i = 1; i < fields.length; i += 3) {
-        ['git-wip-us.apache.org/repos/asf/', 'git.apache.org/'].forEach(function(validRepo) {
-            if (fields[i].indexOf(validRepo + repo.repoName) != -1) {
+        [
+          'git-wip-us.apache.org/repos/asf/',
+          'git.apache.org/',
+          'github.com/apache/',
+        ].forEach(function(validRepo) {
+            if (!ret && fields[i].indexOf(validRepo + repo.repoName) != -1) {
                 ret = fields[i - 1];
             }
         });

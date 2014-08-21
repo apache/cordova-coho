@@ -51,7 +51,7 @@ TODO: Create a new release bug script for independant platform releases.
 
 TODO: mobile-spec should have it's own release process instead of being a part of platform release process
 
-TODO: app-hello-world should be tagged with tools
+TODO: app-hello-world should be tagged with tools instead of platform release
 
 This should be done *before* creating branches on other repos.
 
@@ -129,16 +129,16 @@ Ensure you have the svn repos checked out:
     
 Create archives from your tags:
 
-    coho foreach -r cadence "git checkout 3.4.x"
-    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/rc
+    coho foreach -r android "git checkout 3.4.x"
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA/rc
 
 Sanity Check:
 
     coho verify-archive cordova-dist-dev/$JIRA/rc/*.zip
 
-Upload:
+Upload: (replace `android` with your platform)
 
-    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for cadence release")
+    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -235,6 +235,7 @@ Use the same coho commands as for the RCs (it will update JS & VERSION):
     coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
 
 ## Branching & Tagging cordova-docs
+TODO: Update to new docs release process. Not apart of platofrms release process anymore
 
  1. Cherry pick relevant commits from master to 3.5.x branch
  2. Generate the docs for the release on the 3.5.x branch.
@@ -247,34 +248,34 @@ See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cor
 ## Publish final archives to dist/dev
 Create archives from your tags:
 
-    coho foreach -r cadence "git checkout 3.4.x"
-    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/final
+    coho foreach -r android "git checkout 3.4.x"
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA/final
 
 Sanity Check:
 
     coho verify-archive cordova-dist-dev/$JIRA/final/*.zip
 
-Upload:
+Upload: (replace `android` with your platform) 
 
-    (cd cordova-dist-dev && svn add $JIRA/final && svn commit -m "$JIRA Uploading archives for cadence release vote")
+    (cd cordova-dist-dev && svn add $JIRA/final && svn commit -m "$JIRA Uploading archives for android release vote")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proofread via [piratepad](http://piratepad.net/front-page/).
+ * Get blog post proofread via [Github](http://github.com/cordova/apache-blog-posts).
 
 ## Start VOTE Thread
-Send an email to dev ML with:
+Send an email to dev ML with: (replace `android` with your platform)
 
 __Subject:__
 
-    [Vote] 3.5.0 Cadence Release
+    [Vote] 3.5.0 Android Release
 
 __Body:__
 
-    Please review and vote on this 3.5.0 Cadence Release.
+    Please review and vote on this 3.5.0 Android Release.
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 
@@ -282,7 +283,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/final
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r cadence
+    PASTE OUTPUT OF: coho print-tags -r android
 
     Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
 
@@ -322,28 +323,18 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 ## Otherwise: Publish to dist/
 
+(replace `android` with your platform)
+
     cd cordova-dist
     svn up
     svn rm tools/cordova-cli-*
     svn rm tools/cordova-js*
-    svn rm platforms/*
-    cp ../cordova-dist-dev/$JIRA/final/cordova-js* tools/
+    svn rm platforms/cordova-android*
     cp ../cordova-dist-dev/$JIRA/final/cordova-cli* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-mobile-spec* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-app-hello* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-docs* docs/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-ios* platforms/
     cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-blackberry* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-windows* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-wp8* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-firefoxos* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-ubuntu* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-amazon-fireos* platforms/
     svn add tools/*
     svn add platforms/*
-    svn add docs/*
-    svn commit -m "$JIRA Published cadence release to dist"
+    svn commit -m "$JIRA Published android release to dist"
 
     cd ../cordova-dist-dev
     svn up
@@ -362,6 +353,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
  * And the instructions at https://svn.apache.org/repos/asf/cordova/site/README.md
 
 ### Update the Docs
+TODO: Change this to new docs release process
  1. Upload the new docs to http://cordova.apache.org/docs
    * Website README.md explains [How to update the docs](https://svn.apache.org/repos/asf/cordova/site/README.md)
    * Commit should look like [this one](http://svn.apache.org/viewvc?view=revision&revision=r1478171)

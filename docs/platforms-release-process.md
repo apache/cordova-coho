@@ -80,6 +80,7 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
 ### Creating the release branch
 
 This step involves:
+
  * Updating cordova.js snapshot
  * Updating version numbers
  * Creating a release branch
@@ -203,7 +204,6 @@ Edit the commit descriptions - don't add the commits verbatim, usually they are 
  2. Update README.md (if necessary)
  3. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
  4. Ensure the other guides listed in the sidebar are up-to-date for your platform
-
 
 ## Publish final archives to dist/dev
 Create archives from your tags:

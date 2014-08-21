@@ -36,7 +36,7 @@ exports.registerRepoFlag = function(opt) {
 }
 
 exports.computeReposFromFlag = function(flagValue) {
-    var values = Array.isArray(flagValue) ? flagValue : [flagValue];
+    var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
     var addedIds = {};
     function addRepo(repo) {

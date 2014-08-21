@@ -164,6 +164,9 @@ module.exports = function() {
             if (!commandMap[command]) {
                 throw 'Unknown command: ' + command;
             }
+            if (argv.r === true) {
+                throw 'No repositories specified, see list-repos';
+            }
         }).argv;
 
     // Change directory to be a sibling of coho.

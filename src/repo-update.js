@@ -60,6 +60,10 @@ module.exports = function*(argv) {
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
+    apputil.prefixLength = Math.max.apply(null,
+        [apputil.prefixLength].concat(
+            repos.map(function (r) { return r.repoName.length + 2; }))
+        );
 
     // ensure that any missing repos are cloned
     yield require('./repo-clone').cloneRepos(repos,true);

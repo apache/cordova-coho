@@ -42,6 +42,8 @@ exports.fatal = function() {
     process.exit(1);
 };
 
+exports.prefixLength = 30;
+
 exports.print = function() {
     var newArgs = Array.prototype.slice.call(arguments);
     // Prefix any prints() to distinguish them from command output.
@@ -49,7 +51,7 @@ exports.print = function() {
         var curDir = path.relative(baseWorkingDir, process.cwd());
         curDir = curDir ? curDir + '/' : './';
         var banner = ' =';
-        var PREFIX_LEN = 30;
+        var PREFIX_LEN = exports.prefixLength;
         if (curDir.length < PREFIX_LEN) {
             banner += new Array(PREFIX_LEN - curDir.length + 1).join('=');
         }

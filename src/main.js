@@ -67,11 +67,11 @@ module.exports = function() {
     var releaseCommands = [{
             name: 'prepare-release-branch',
             desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
-            entryPoint: lazyRequire('./cadence-release', 'prepareReleaseBranchCommand')
+            entryPoint: lazyRequire('./platform-release', 'prepareReleaseBranchCommand')
         }, {
             name: 'tag-release',
             desc: 'Tags repos for a release.',
-            entryPoint: lazyRequire('./cadence-release', 'tagReleaseBranchCommand')
+            entryPoint: lazyRequire('./platform-release', 'tagReleaseBranchCommand')
         }, {
             name: 'audit-license-headers',
             desc: 'Uses Apache RAT to look for missing license headers.',

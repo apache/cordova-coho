@@ -27,50 +27,34 @@ This page describes the technical steps for releasing a `Platforms Release` (see
 
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 
-## Getting Buy-in & Assigning a Release Manager
+Replace `Android` with the platform you are releasing. 
 
- 1. Email the dev mailing-list and see if anyone has reason to postpone the release.
-   * If so, agree upon a branching date / time.
- 1. Ask for a volunteer to be Release Manager for the release (or volunteer yourself)
+## Get Buy-in
+
+Email the dev mailing-list and see if anyone has reason to postpone the release.
+
+E.g.:
+
+    Subject: [DISCUSS] Cordova-Android Release
+
+    Does anyone have any reason to delay a cordova-android platform release?
+    Any outstanding patches to land?
+
+    If not, I will start the release tomorrow.
 
 ## Creating JIRA issues
 
-TODO: Create a new release bug script for independant platform releases.
+ * Create a JIRA issue to track the status of the release.
+   * Make it of type "Task"
+   * Title should be "Cordova-Android Platform Release _August 21, 2014_"
+   * Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
+ * Comments should be added to this bug after each top-level step below is taken
+ * Set a variable in your terminal for use later on:
 
-* Create the release bug for the Release Candidate:
 
-      `coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword`
-    
-* Comments should be added to this bug after each top-level step below is taken
+    JIRA="CB-????" # Set this to the release bug.
 
-* Set a variable for use later on:
-
-    `JIRA="CB-????"` # Set this to the release bug.
-
-## Branch & Tag for: cordova-mobile-spec and cordova-app-hello-world 
-
-TODO: mobile-spec should have it's own release process instead of being a part of platform release process
-
-TODO: app-hello-world should be tagged with tools instead of platform release
-
-This should be done *before* creating branches on other repos.
-
-This step involves:
- * Updating version numbers
- * Creating release branches
- * Creating git tags
-
-Coho automates these steps:
-
-    coho prepare-release-branch --version 3.5.0 -r app-hello-world -r mobile-spec
-    coho repo-status -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    # If changes look right:
-    coho repo-push -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    coho tag-release --version 3.5.0 -r app-hello-world -r mobile-spec
-
-If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then re-run the `prepare-release-branch` command for the platform repos.
-
-## Branch & Tag for Platform Repositories
+## Branch & Tag for Platform Repository
 
 ### Before creating the release branch:
 
@@ -96,13 +80,13 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
 ### Creating the release branch
 
 This step involves:
- * Updating cordova.js snapshots
+ * Updating cordova.js snapshot
  * Updating version numbers
- * Creating release branches
- * Creating git tags
- * Updating version in package.json files
+ * Creating a release branch
+ * Creating git tags for platform and js
+ * Updating version in package.json file
 
-Coho automates these steps (replace android with your platform):
+Coho automates these steps:
 
     coho prepare-release-branch --version 3.5.0 -r android
     coho repo-status -r android -b master -b 3.5.x
@@ -129,7 +113,7 @@ Ensure you have the svn repos checked out:
     
 Create archives from your tags:
 
-    coho foreach -r android "git checkout 3.4.x"
+    coho foreach -r android "git checkout 3.5.x"
     coho create-archive -r android --dest cordova-dist-dev/$JIRA/rc
 
 Sanity Check:
@@ -156,9 +140,9 @@ To submit a fix:
     git commit -am 'Your commit message'
     git push origin master
     git log     # note the first five or six digits of the commit hash
-    git checkout 2.7.x
+    git checkout 3.5.x
     git cherry-pick -x commit_hash
-    git push origin 2.7.x
+    git push origin 3.5.x
 
 ### What to Test
 
@@ -167,24 +151,24 @@ To submit a fix:
    * Don't forget to set up your white-list
    * Don't forget to run through the manual tests in addition to the automatic tests
    * Test loading the app over HTTP (via "cordova serve" and setting the config.xml start page)
- * Run each platform's ./bin/create script
+ * Run your platform's ./bin/create script
    * Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
  * Test Project Upgrades (old-style):
    1. Create a project using the previous version of cordova
-     * `coho foreach "git checkout 2.9.0"`
-     * `coho foreach -r active-platform "./bin/create foo org.apache.foo foo"`
+     * `coho foreach -r android "git checkout 3.4.0"`
+     * `coho foreach -r android "./bin/create foo org.apache.foo foo"`
    2. Upgrade the project via the bin/update_project script:
-     * `coho foreach "git checkout 3.0.x"`
-     * `coho foreach -r active-platform "cd foo && ../bin/update_project"`
+     * `coho foreach -r android "git checkout 3.5.x"`
+     * `coho foreach -r android "cd foo && ../bin/update_project"`
    3. Test the result:
      * Project should run
      * cordova/version should report the new version
  * Test Project Upgrades (new-style):
    1. Create a project using the previous version of cordova
-     * `coho foreach "git checkout 2.9.0"`
+     * `coho foreach "git checkout 3.4.0"`
      * `./cordova-mobile-spec/createmobilespec.sh`
    2. Upgrade the project via the update command:
-     * `../cordova-cli/bin/cordova platform update PLATFORM`
+     * `../cordova-cli/bin/cordova platform update android`
    3. Test the result:
      * Project should run
      * cordova/version should report the new version
@@ -202,17 +186,17 @@ To submit a fix:
 
 ### Documentation To Update
 
-For each repository:
+For your platform:
  1. Update RELEASENOTES.md (if the file is missing, use the iOS one as a reference: [RELEASENOTES.md](https://github.com/apache/cordova-ios/blob/master/RELEASENOTES.md))
 
 Grab changes from the previous release until now.
 
     # Changes:
-    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.2.x..origin/3.3.x
+    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..origin/3.5.x
     # Commit count:
-    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.2.x..origin/3.3.x | wc -l
+    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..origin/3.5.x | wc -l
     # Author Count:
-    git log --pretty=format:'%an' --topo-order --no-merges origin/3.2.x..origin/3.3.x | sort | uniq | wc -l
+    git log --pretty=format:'%an' --topo-order --no-merges origin/3.4.x..origin/3.5.x | sort | uniq | wc -l
 
 Edit the commit descriptions - don't add the commits verbatim, usually they are meaningless to the user. Only show the ones relevant for the user (fixes, new features)
 
@@ -220,35 +204,11 @@ Edit the commit descriptions - don't add the commits verbatim, usually they are 
  3. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
  4. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
-## Final Tagging (non-RC)
-
-This is done for all repos once testing is complete, and documentation is up-to-date. If nothing has changed since the earlier tag, no need to run the steps below. If changes have occured, make sure to cherry-pick them into the release branch and rerun commands below.
-
-Note: If you get an error due to the tag already existing on the server, view the moving tags section at the bottom of this readme on how to delete a remote git tag.
-
-Use the same coho commands as for the RCs (it will update JS & VERSION):
-
-    coho prepare-release-branch --version 3.5.0 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
-
-## Branching & Tagging cordova-docs
-TODO: Update to new docs release process. Not apart of platofrms release process anymore
-
- 1. Cherry pick relevant commits from master to 3.5.x branch
- 2. Generate the docs for the release on the 3.5.x branch.
- 3. Commit & tag on the 3.5.x branch.
- 4. Cherry pick commit into master.
-
-
-See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cordova-docs.git;a=blob;f=README.md#l127) for more details.
 
 ## Publish final archives to dist/dev
 Create archives from your tags:
 
-    coho foreach -r android "git checkout 3.4.x"
+    coho foreach -r android "git checkout 3.5.x"
     coho create-archive -r android --dest cordova-dist-dev/$JIRA/final
 
 Sanity Check:
@@ -262,7 +222,7 @@ Upload: (replace `android` with your platform)
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Prepare Blog Post
- * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
+ * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
  * Get blog post proofread via [Github](http://github.com/cordova/apache-blog-posts).
 
@@ -294,7 +254,7 @@ __Body:__
     I vote +1:
     * Ran coho audit-license-headers over the relevant repos
     * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
-    * Ensured continuous build was green when repos were tagged
+    * Ensured continuous build was green when repo was tagged
 
 
 ## Email the result of the vote
@@ -327,13 +287,9 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
     cd cordova-dist
     svn up
-    svn rm tools/cordova-cli-*
-    svn rm tools/cordova-js*
     svn rm platforms/cordova-android*
-    cp ../cordova-dist-dev/$JIRA/final/cordova-cli* tools/
     cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
-    svn add tools/*
-    svn add platforms/*
+    svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
 
     cd ../cordova-dist-dev
@@ -353,7 +309,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
  * And the instructions at https://svn.apache.org/repos/asf/cordova/site/README.md
 
 ### Update the Docs
-TODO: Change this to new docs release process
+TODO: Change this to new docs release process; maybe with tools process?
+
  1. Upload the new docs to http://cordova.apache.org/docs
    * Website README.md explains [How to update the docs](https://svn.apache.org/repos/asf/cordova/site/README.md)
    * Commit should look like [this one](http://svn.apache.org/viewvc?view=revision&revision=r1478171)

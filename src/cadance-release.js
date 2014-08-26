@@ -126,6 +126,8 @@ function *updateRepoVersion(repo, version) {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
         } else if (repo.id == 'firefoxos') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
+        } else if (repo.id == 'ubuntu') {
+            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'build', 'version'));
         }
         shelljs.config.fatal = false;
         if (!(yield gitutil.pendingChangesExist())) {

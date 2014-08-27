@@ -415,23 +415,23 @@ function getRepoById(id, opt_repos) {
 }
 exports.getRepoById = getRepoById;
 
-var isInForEachRepoFunction = '';
+var isInForEachRepoFunction = false;
 
 exports.forEachRepo = function*(repos, func) {
     for (var i = 0; i < repos.length; ++i) {
         var repo = repos[i];
-        var origPath = isInForEachRepoFunction || '..';
-        var newPath = path.join(isInForEachRepoFunction, repo.repoName);
+        var origPath = isInForEachRepoFunction ? process.cwd() : '..';
+        var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
 
-        isInForEachRepoFunction = isInForEachRepoFunction || process.cwd();
+        isInForEachRepoFunction = true;
         shelljs.cd(newPath);
         if (shelljs.error()) {
             apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
         }
         yield func(repo);
-        shelljs.cd(isInForEachRepoFunction);
+        shelljs.cd(origPath);
 
-        isInForEachRepoFunction = origPath != '..' && isInForEachRepoFunction || '';
+        isInForEachRepoFunction = origPath != '..';
     }
 }
 

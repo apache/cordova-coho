@@ -48,9 +48,9 @@ var platformRepos = [
         repoName: 'cordova-blackberry',
         jiraComponentName: 'BlackBerry',
         cordovaJsSrcName: 'cordova.blackberry10.js',
-        cordovaJsPaths: [path.join('blackberry10', 'javascript', 'cordova.blackberry10.js')],
-        versionFilePaths: [path.join('blackberry10', 'VERSION')],
-        packageFilePaths: [path.join('blackberry10', 'package.json')]
+        cordovaJsPaths: [path.join('javascript', 'cordova.blackberry10.js')],
+        versionFilePaths: [path.join('VERSION')],
+        packageFilePaths: [path.join('package.json')]
     }, {
         title: 'Windows',
         id: 'windows',

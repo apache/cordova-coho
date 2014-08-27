@@ -89,6 +89,7 @@ Ensure that mobilespec creates okay via plugman:
 Ensure unit tests pass:
 
     (cd cordova-lib/cordova-lib; npm test)
+    (cd cordova-js; grunt test --platformVersion=3.6.0)
 
     # plugman tests are included in cordova-lib above
     (cd cordova-cli; npm test)
@@ -121,7 +122,7 @@ Update each repo's RELEASENOTES.md file with changes
     # Then curate:
     vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md
 
-Update the version of cordova-js that lib depends on. (TODO: why does this dependency exist?)
+Update the version of cordova-js that lib depends on. 
 
 Update the version of cordova-lib that cli and plugman depend on:
 
@@ -196,8 +197,6 @@ Commit these four changes together into one commit
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
 
 ## Push
-
-    # Push
 
     for l in cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; git push && git push --tags ); done
 

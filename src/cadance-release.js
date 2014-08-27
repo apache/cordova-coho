@@ -121,7 +121,7 @@ function *updateRepoVersion(repo, version) {
             fs.writeFileSync(versionFilePath, version + '\n');
         });
         shelljs.config.fatal = true;
-        if (repo.id == 'android') {
+        if (repo.id == 'android' || repo.id == 'amazon-fireos') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
         } else if (repo.id == 'firefoxos') {

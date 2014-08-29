@@ -76,6 +76,7 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
  3. Update your local cordova-js
    * `coho repo-update -r js`
  4. For iOS only:
+   * Update [RELEASENOTES.md](https://github.com/apache/cordova-ios/blob/master/RELEASENOTES.md) (see instruction at the top of the file)
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.

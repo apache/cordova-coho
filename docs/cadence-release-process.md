@@ -37,7 +37,7 @@ TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basic
 
 * Create the release bug for the Release Candidate:
 
-      `coho create-release-bug --version=3.0.0 --username=JiraUser --password=JiraPassword`
+      `coho create-release-bug --version=3.6.0 --username=JiraUser --password=JiraPassword`
     
 * Comments should be added to this bug after each top-level step below is taken
 
@@ -56,11 +56,11 @@ This step involves:
 
 Coho automates these steps:
 
-    coho prepare-release-branch --version 3.5.0 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
+    coho prepare-release-branch --version 3.6.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
     # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
+    coho tag-release --version 3.6.0 -r js -r app-hello-world -r mobile-spec
 
 If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then re-run the `prepare-release-branch` command for the platform repos.
 
@@ -81,13 +81,13 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
 
 by adding a new macro for the new version, e.g.
 
-    #define __CORDOVA_2_1_0  20100
+    #define __CORDOVA_3_6_0  30600
 
 
 and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
 
     #ifndef CORDOVA_VERSION_MIN_REQUIRED
-        #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
+        #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_3_6_0
     #endif
 
 ### Creating the release branch
@@ -101,11 +101,11 @@ This step involves:
 
 Coho automates these steps (replace android with your platform):
 
-    coho prepare-release-branch --version 3.5.0 -r android
-    coho repo-status -r android -b master -b 3.5.x
+    coho prepare-release-branch --version 3.6.x -r android
+    coho repo-status -r android -b master -b 3.6.x
     # If changes look right:
-    coho repo-push -r android -b master -b 3.5.x
-    coho tag-release --version 3.5.0 -r android
+    coho repo-push -r android -b master -b 3.6.x
+    coho tag-release --version 3.6.0 -r android
 
 ## Tagging RC1 of cordova-cli
 
@@ -126,7 +126,7 @@ Ensure you have the svn repos checked out:
     
 Create archives from your tags:
 
-    coho foreach -r cadence "git checkout 3.4.x"
+    coho foreach -r cadence "git checkout 3.6.x"
     coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/rc
 
 Sanity Check:
@@ -153,9 +153,9 @@ To submit a fix:
     git commit -am 'Your commit message'
     git push origin master
     git log     # note the first five or six digits of the commit hash
-    git checkout 2.7.x
+    git checkout 3.6.x
     git cherry-pick -x commit_hash
-    git push origin 2.7.x
+    git push origin 3.6.x
 
 ### What to Test
 
@@ -225,17 +225,17 @@ Note: If you get an error due to the tag already existing on the server, view th
 
 Use the same coho commands as for the RCs (it will update JS & VERSION):
 
-    coho prepare-release-branch --version 3.5.0 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
+    coho prepare-release-branch --version 3.6.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
     # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.5.x
-    coho tag-release --version 3.5.0 -r js -r app-hello-world -r mobile-spec
+    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
+    coho tag-release --version 3.6.0 -r js -r app-hello-world -r mobile-spec
 
 ## Branching & Tagging cordova-docs
 
- 1. Cherry pick relevant commits from master to 3.5.x branch
- 2. Generate the docs for the release on the 3.5.x branch.
- 3. Commit & tag on the 3.5.x branch.
+ 1. Cherry pick relevant commits from master to 3.6.x branch
+ 2. Generate the docs for the release on the 3.6.x branch.
+ 3. Commit & tag on the 3.6.x branch.
  4. Cherry pick commit into master.
 
 
@@ -244,7 +244,7 @@ See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cor
 ## Publish final archives to dist/dev
 Create archives from your tags:
 
-    coho foreach -r cadence "git checkout 3.4.x"
+    coho foreach -r cadence "git checkout 3.6.x"
     coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/final
 
 Sanity Check:
@@ -267,11 +267,11 @@ Send an email to dev ML with:
 
 __Subject:__
 
-    [Vote] 3.5.0 Cadence Release
+    [Vote] 3.6.0 Cadence Release
 
 __Body:__
 
-    Please review and vote on this 3.5.0 Cadence Release.
+    Please review and vote on this 3.6.0 Cadence Release.
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 
@@ -391,18 +391,18 @@ Refer to [tools-release-process.md](tools-release-process.md)
 
 If you need to move a tag before the release, here is how to do that:
 
-    $ git tag -d 3.1.0
-    Deleted tag '3.1.0' (was 2a9bc20)
-    $ git push origin :refs/tags/3.1.0
+    $ git tag -d 3.6.0
+    Deleted tag '3.6.0' (was 2a9bc20)
+    $ git push origin :refs/tags/3.6.0
     To https://git-wip-us.apache.org/repos/asf/cordova-docs.git
-     - [deleted]         3.1.0
-    $ git tag 3.1.0 7cf9fea03d7d02a13aef97a09a459e8128bd3198
-    $ git push origin 3.1.0 --tags
+     - [deleted]         3.6.0
+    $ git tag 3.6.0 7cf9fea03d7d02a13aef97a09a459e8128bd3198
+    $ git push origin 3.6.0 --tags
     Total 0 (delta 0), reused 0 (delta 0)
     To https://git-wip-us.apache.org/repos/asf/cordova-docs.git
-     * [new tag]         3.1.0 -> 3.1.0
+     * [new tag]         3.6.0 -> 3.6.0
 
 Then send a note to the mailing list:
 
-    To verify you have the updated tag in your local clone, doing a "git rev-parse 3.1.0" in cordova-docs should reply with "7cf9fea03d7d02a13aef97a09a459e8128bd3198". If it is wrong, do "git fetch --tags".
+    To verify you have the updated tag in your local clone, doing a "git rev-parse 3.6.0" in cordova-docs should reply with "7cf9fea03d7d02a13aef97a09a459e8128bd3198". If it is wrong, do "git fetch --tags".
 

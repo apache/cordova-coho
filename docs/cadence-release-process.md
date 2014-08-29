@@ -73,7 +73,9 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
  2. Update the copy of app-hello-world (if there were any changes to it)
    * This usually lives within bin/templates somewhere
    * TODO: More details needed here
- 3. For iOS only:
+ 3. Update your local cordova-js
+   * `coho repo-update -r js`
+ 4. For iOS only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.

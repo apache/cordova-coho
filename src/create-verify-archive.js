@@ -71,17 +71,18 @@ exports.createCommand = function*(argv) {
         yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
-        if (repo.id==='plugman' || repo.id==='cli' || repo.id==='lib') {
+        if (!(repo.id==='mobile-spec' || repo.id==='app-hello-world')) {
             if (yield gitutil.pendingChangesExist()) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }
             var cmd = 'npm pack';
-            if (repo.id==='lib') cmd = 'npm pack cordova-lib'
+            if (repo.id==='lib' || repo.id==='windows' || repo.id==='wp8') cmd = 'npm pack cordova-'+repo.id;
             var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
-            var outPath = path.join(absOutDir, 'cordova-' + tgzname);
+            var outPath = path.join(absOutDir, tgzname);
             shelljs.mv(tgzname, outPath);
         } else {
             var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
+            console.log(outPath);
             yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
         }
         if (argv.sign) {

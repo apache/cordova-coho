@@ -39,7 +39,11 @@ module.exports = function*(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = yield gitutil.findMostRecentTag();
+        if (argv.tag){
+            var tag = argv.tag;
+        } else {
+            var tag = yield gitutil.findMostRecentTag();
+        }
         if (!tag) {
             console.log('    ' + repo.repoName + ': NO TAGS');
             return;

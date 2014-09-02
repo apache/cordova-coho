@@ -150,11 +150,6 @@ var nonPlatformRepos = [
           'uubench.js',
         ]
     }, {
-        title: 'Cordova JS',
-        id: 'js',
-        repoName: 'cordova-js',
-        jiraComponentName: 'CordovaJS'
-    }, {
         title: 'Hello World App',
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
@@ -315,6 +310,11 @@ var toolRepos = [
         repoName: 'cordova-lib',
         jiraComponentName: 'CordovaLib'
     }, {
+        title: 'Cordova JS',
+        id: 'js',
+        repoName: 'cordova-js',
+        jiraComponentName: 'CordovaJS'
+    }, {
         title: 'Cordova Coho',
         id: 'coho',
         repoName: 'cordova-coho',
@@ -391,7 +391,7 @@ var repoGroups = {
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
-repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('js'), getRepoById('mobile-spec'), getRepoById('app-hello-world'), getRepoById('cordova-lib')]);
+repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);
 
 repoGroups.__defineGetter__('auto', function() {
     return allRepos.filter(function(repo) {

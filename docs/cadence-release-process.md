@@ -75,8 +75,8 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
    * TODO: More details needed here
  3. Update your local cordova-js
    * `coho repo-update -r js`
+ 4. Update `RELEASENOTES.md` by pasting the output from `git log --pretty=format:'* %s' --topo-order --no-merges origin/3.6.x..HEAD`
  4. For iOS only:
-   * Update [RELEASENOTES.md](https://github.com/apache/cordova-ios/blob/master/RELEASENOTES.md) (see instruction at the top of the file)
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.
@@ -101,23 +101,21 @@ This step involves:
 
 Coho automates these steps (replace android with your platform):
 
-    coho prepare-release-branch --version 3.6.x -r android
+    coho prepare-release-branch --version 3.6.0 -r android
     coho repo-status -r android -b master -b 3.6.x
     # If changes look right:
     coho repo-push -r android -b master -b 3.6.x
     coho tag-release --version 3.6.0 -r android
 
-## Tagging RC1 of cordova-cli
+## Tagging RC of cordova-cli, cordova-lib, cordova-plugman
 
-cordova-cli doesn't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
+These tools don't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
 
-Update the tool to point to the new repo versions (within `cordova-lib/cordova-lib/src/cordova/platforms.js`)
+Update the tools to point to the new repo versions (within `cordova-lib/cordova-lib/src/cordova/platforms.js`)
 
-Instead of the normal `npm publish` flow:
+Make sure to update `cordova-js` dependency for `cordova-lib`
 
-    npm publish --tag rc
-
-** WATCH OUT! You may have to run `npm tag cordova@x.x.x latest` due to a bug in npm: https://github.com/npm/npm/issues/4837
+Also update `cordova-lib` dependency for `corodva-cli` and `cordova-plugman`
 
 ## Publish RC to dist/dev
 Ensure you have the svn repos checked out:
@@ -126,18 +124,40 @@ Ensure you have the svn repos checked out:
     
 Create archives from your tags:
 
-    coho foreach -r cadence "git checkout 3.6.x"
-    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/rc
+    coho create-archive -r tools --dest cordova-dist-dev/$JIRA
+    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA --tag 3.6.0
+
+If JS was branched then you will also have to run:
+
+    coho create-archive -r js --dest cordova-dist-dev/$JIRA --tag 3.6.0
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/rc/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.zip cordova-dist-dev/$JIRA/*.tgz
 
 Upload:
 
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for cadence release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+
+## Publish RC to NPM
+
+    cd cordova-dist-dev
+    
+publish all at once
+
+    for package in $(find *.tgz); do $(npm publish --tag rc $package); done;
+    
+publish one package at a time
+
+    npm publish --tag rc cordova-android-3.6.0.tgz
+
+Note: You need to be an owner for each of these repos and the versions can't already have been published 
+
+For testing, you can now download all of the above repos with:
+
+    npm install -g cordova@rc
 
 ## Testing & Documentation
 
@@ -217,20 +237,6 @@ Edit the commit descriptions - don't add the commits verbatim, usually they are 
  3. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
  4. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
-## Final Tagging (non-RC)
-
-This is done for all repos once testing is complete, and documentation is up-to-date. If nothing has changed since the earlier tag, no need to run the steps below. If changes have occured, make sure to cherry-pick them into the release branch and rerun commands below.
-
-Note: If you get an error due to the tag already existing on the server, view the moving tags section at the bottom of this readme on how to delete a remote git tag.
-
-Use the same coho commands as for the RCs (it will update JS & VERSION):
-
-    coho prepare-release-branch --version 3.6.0 -r js -r app-hello-world -r mobile-spec
-    coho repo-status -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
-    # If changes look right:
-    coho repo-push -r js -r app-hello-world -r mobile-spec -b master -b 3.6.x
-    coho tag-release --version 3.6.0 -r js -r app-hello-world -r mobile-spec
-
 ## Branching & Tagging cordova-docs
 
  1. Cherry pick relevant commits from master to 3.6.x branch
@@ -240,22 +246,6 @@ Use the same coho commands as for the RCs (it will update JS & VERSION):
 
 
 See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cordova-docs.git;a=blob;f=README.md#l127) for more details.
-
-## Publish final archives to dist/dev
-Create archives from your tags:
-
-    coho foreach -r cadence "git checkout 3.6.x"
-    coho create-archive -r cadence --dest cordova-dist-dev/$JIRA/final
-
-Sanity Check:
-
-    coho verify-archive cordova-dist-dev/$JIRA/final/*.zip
-
-Upload:
-
-    (cd cordova-dist-dev && svn add $JIRA/final && svn commit -m "$JIRA Uploading archives for cadence release vote")
-
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
@@ -285,7 +275,7 @@ __Body:__
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
 
-    Voting will go on for a minimum of 48 hours.
+    Voting will go on for a minimum of 72 hours.
 
     I vote +1:
     * Ran coho audit-license-headers over the relevant repos
@@ -317,7 +307,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 * Add back `-dev`
 * Start a new vote
 
-## Otherwise: Publish to dist/
+## Otherwise: Publish to dist/ & npm
 
     cd cordova-dist
     svn up
@@ -326,9 +316,10 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     svn rm platforms/*
     cp ../cordova-dist-dev/$JIRA/final/cordova-js* tools/
     cp ../cordova-dist-dev/$JIRA/final/cordova-cli* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-lib* tools/
+    cp ../cordova-dist-dev/$JIRA/final/cordova-plugman* tools/
     cp ../cordova-dist-dev/$JIRA/final/cordova-mobile-spec* tools/
     cp ../cordova-dist-dev/$JIRA/final/cordova-app-hello* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-docs* docs/
     cp ../cordova-dist-dev/$JIRA/final/cordova-ios* platforms/
     cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
     cp ../cordova-dist-dev/$JIRA/final/cordova-blackberry* platforms/
@@ -339,8 +330,16 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     cp ../cordova-dist-dev/$JIRA/final/cordova-amazon-fireos* platforms/
     svn add tools/*
     svn add platforms/*
-    svn add docs/*
     svn commit -m "$JIRA Published cadence release to dist"
+    
+For each package to be released, replace `cordova-android` with the package name and `3.6.0` with the new version. 
+
+Protip: The version is in the filename. `latest` is the public release tag on npm. 
+
+    cd ../cordova-dist-dev
+    npm tag cordova-android@3.6.0 latest cordova-android-3.6.0.tgz
+    
+Remove RCs from dist/dev
 
     cd ../cordova-dist-dev
     svn up
@@ -366,9 +365,6 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
    * Check out the branch `cordova-labs:redirect-docs-cordova-io`
    * Repository README.md explains [How to update the HTTP redirect](https://github.com/apache/cordova-labs/tree/redirect-docs-cordova-io#usage)
    * Nodejitsu is limited to one deployer, so Michael Brooks is currently the point of contact.
-
-### Push platforms and tools to npm
-Refer to [tools-release-process.md](tools-release-process.md)
 
 ### Tell JIRA it's Released
 

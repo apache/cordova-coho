@@ -87,6 +87,8 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
     for l in $ACTIVE; do ( cd $l; echo $l; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" ); done
 
+For each of the plugins that have a test project inside it, update the version number there (cordova-plugin-*/tests/plugin.xml) to match the version of the plugin itself (cordova-plugin-*/plugin.xml).
+
 Update its RELEASENOTES.md file with changes
 
     # Add new heading to release notes with version and date

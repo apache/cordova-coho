@@ -75,7 +75,7 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
    * TODO: More details needed here
  3. Update your local cordova-js
    * `coho repo-update -r js`
- 4. Update `RELEASENOTES.md` by pasting the output from `git log --pretty=format:'* %s' --topo-order --no-merges origin/3.6.x..HEAD`
+ 4. Update `RELEASENOTES.md` by pasting the output from `git log --pretty=format:'* %s' --topo-order --no-merges origin/3.5.x..origin/3.6.x`
  4. For iOS only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 

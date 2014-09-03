@@ -76,7 +76,9 @@ exports.createCommand = function*(argv) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }
             var cmd = 'npm pack';
-            if (repo.id==='lib' || repo.id==='windows' || repo.id==='wp8') cmd = 'npm pack cordova-'+repo.id;
+            if (repo.id==='lib') cmd = 'npm pack cordova-'+repo.id;
+            if (repo.id==='windows' || repo.id==='wp8') cmd = 'npm pack '+repo.id;
+
             var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
             var outPath = path.join(absOutDir, tgzname);
             shelljs.mv(tgzname, outPath);

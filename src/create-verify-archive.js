@@ -81,6 +81,10 @@ exports.createCommand = function*(argv) {
 
             var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
             var outPath = path.join(absOutDir, tgzname);
+            if (fs.existsSync(outPath)) {
+                // remove what is already there, or else "npm pack" will fail
+                fs.unlinkSync(outPath);
+            }
             shelljs.mv(tgzname, outPath);
         } else {
             var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');

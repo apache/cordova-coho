@@ -143,7 +143,7 @@ Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Publish RC to NPM
 
-    cd cordova-dist-dev
+    cd cordova-dist-dev/$JIRA
     
 publish all at once
 

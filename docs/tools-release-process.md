@@ -121,7 +121,7 @@ Update each repo's RELEASENOTES.md file with changes
 Update the version of cordova-lib that cli and plugman depend on:
 
     v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
-    sed -i '' -E 's/"cordova-lib":.*/"cordova-lib"*: "'$v'",/' cordova-cli/package.json
+    sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
 Create npm-shrinkwrap.json in lib, cli, and plugman:

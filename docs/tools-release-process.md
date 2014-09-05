@@ -115,7 +115,7 @@ Update each repo's RELEASENOTES.md file with changes
     # Add new heading to release notes with version and date
     DATE=$(date "+%h %d, %Y")
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
-    # Then curate:
+    # Then curate: (note that the newest notes are at the bottom of the file and should be manually moved to the top)
     vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md
 
 Update the version of cordova-lib that cli and plugman depend on:

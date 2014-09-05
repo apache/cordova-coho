@@ -57,6 +57,11 @@ For example, the Release Manager would say:
     * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
     * Ensured continuous build was green when repos were tagged
 
+Note: here are the repos with continuous builds:
+
+  * https://github.com/apache/cordova-lib
+  * https://github.com/apache/cordova-wp8
+
 For example, someone else might say:
 
     +1

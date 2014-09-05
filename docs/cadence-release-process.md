@@ -239,11 +239,8 @@ Edit the commit descriptions - don't add the commits verbatim, usually they are 
 
 ## Branching & Tagging cordova-docs
 
- 1. Cherry pick relevant commits from master to 3.6.x branch
- 2. Generate the docs for the release on the 3.6.x branch.
- 3. Commit & tag on the 3.6.x branch.
- 4. Cherry pick commit into master.
-
+ 1. Generate the en docs for the release (i.e., en/3.5.0)
+ 2. Commit this new version directory & tag on master.
 
 See [Generating a Version Release](https://git-wip-us.apache.org/repos/asf?p=cordova-docs.git;a=blob;f=README.md#l127) for more details.
 

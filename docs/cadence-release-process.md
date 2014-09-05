@@ -141,23 +141,9 @@ Upload:
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
-## Publish RC to NPM
+## Do not publish the RC to NPM
 
-    cd cordova-dist-dev/$JIRA
-    
-publish all at once
-
-    for package in $(find *.tgz); do $(npm publish --tag rc $package); done;
-    
-publish one package at a time
-
-    npm publish --tag rc cordova-android-3.6.0.tgz
-
-Note: You need to be an owner for each of these repos and the versions can't already have been published 
-
-For testing, you can now download all of the above repos with:
-
-    npm install -g cordova@rc
+Once a name-version is published to the npm registry, it cannot be updated. Ever. And the name-version is parsed from the package.json file. So to move from an RC to final would require a change in the package.json file, which would invalidate any Apache vote. Defer the npm publishing until after the vote is complete and has passed.
 
 ## Testing & Documentation
 
@@ -333,8 +319,21 @@ For each package to be released, replace `cordova-android` with the package name
 
 Protip: The version is in the filename. `latest` is the public release tag on npm. 
 
-    cd ../cordova-dist-dev
-    npm tag cordova-android@3.6.0 latest cordova-android-3.6.0.tgz
+    cd ../cordova-dist-dev/$JIRA
+
+publish all at once
+
+    for package in $(find *.tgz); do $(npm publish --tag rc $package); done;
+    
+publish one package at a time
+
+    npm publish --tag rc cordova-android-3.6.0.tgz
+
+Note: You need to be an owner for each of these repos and the versions can't already have been published 
+
+Tag this new version in npm as the latest
+
+    npm tag cordova-android@3.6.0 latest
     
 Remove RCs from dist/dev
 
@@ -343,7 +342,6 @@ Remove RCs from dist/dev
     svn rm $JIRA
     svn commit -m "$JIRA Removing release candidates from dist/dev"
     cd ..
-
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 

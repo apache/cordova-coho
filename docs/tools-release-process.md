@@ -132,7 +132,7 @@ Create npm-shrinkwrap.json in lib, cli, and plugman:
 
 Commit these three changes together into one commit
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do ( cd $l; git add npm-shrinkwrap.json; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 
 ## Tag
 

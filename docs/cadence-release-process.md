@@ -252,7 +252,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/final
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r cadence
+    PASTE OUTPUT OF: coho print-tags -r cadence --tag 3.6.0
 
     Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
 

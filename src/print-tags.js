@@ -24,9 +24,9 @@ var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 
 module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
+    var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    argv = opt
         .usage('Prints out tags & hashes for the given repos. Used in VOTE emails.\n' +
                '\n' +
                'Usage: $0 print-tags -r plugman -r cli [--tag 3.6.0]')
@@ -39,11 +39,12 @@ module.exports = function*(argv) {
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
 
+    var tag;
     yield repoutil.forEachRepo(repos, function*(repo) {
         if (argv.tag){
-            var tag = argv.tag;
+            tag = argv.tag;
         } else {
-            var tag = yield gitutil.findMostRecentTag();
+            tag = yield gitutil.findMostRecentTag();
         }
         if (!tag) {
             console.log('    ' + repo.repoName + ': NO TAGS');
@@ -52,5 +53,5 @@ module.exports = function*(argv) {
         var ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
         console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
     });
-}
+};
 

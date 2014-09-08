@@ -109,15 +109,13 @@ Coho automates these steps (replace android with your platform):
 
 ## Tagging RC of cordova-cli, cordova-lib, cordova-plugman
 
-These tools don't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
+These tools don't use a release branch. There is a different process:
 
-Update the tools to point to the new repo versions (within `cordova-lib/cordova-lib/src/cordova/platforms.js`)
-
-Make sure to update `cordova-js` dependency for `cordova-lib`
-
-Also update `cordova-lib` dependency for `corodva-cli` and `cordova-plugman`
+  1. Follow the instructions at [tools-release-process.md](tools-release-process.md). This should include updating `cordova-js` dependency for `cordova-lib`, and updating `cordova-lib` dependency for `corodva-cli` and `cordova-plugman`.
+  2. Update the tools to point to the new repo versions (within `cordova-lib/cordova-lib/src/cordova/platforms.js`). This is necessary for the tools to use the new platform versions.
 
 ## Publish RC to dist/dev
+
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev

@@ -29,7 +29,8 @@ module.exports = function*(argv) {
     var argv = opt
         .usage('Prints out tags & hashes for the given repos. Used in VOTE emails.\n' +
                '\n' +
-               'Usage: $0 print-tags -r plugman -r cli')
+               'Usage: $0 print-tags -r plugman -r cli [--tag 3.6.0]')
+        .options('tag', {desc: 'Print a specific tag instead of the "most recent" tag'})
         .argv;
 
     if (argv.h) {

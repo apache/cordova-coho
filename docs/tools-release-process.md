@@ -167,7 +167,9 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r plugman -r cli -r lib --dest cordova-dist-dev/$JIRA
+    coho create-archive -r lib --dest cordova-dist-dev/$JIRA --tag 0.21.10
+    coho create-archive -r plugman --dest cordova-dist-dev/$JIRA --tag 0.22.7
+    coho create-archive -r cli --dest cordova-dist-dev/$JIRA --tag 3.6.1-0.2.10
 
 Sanity Check:
 

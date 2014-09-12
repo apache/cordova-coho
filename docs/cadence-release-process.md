@@ -54,6 +54,11 @@ This step involves:
  * Creating release branches
  * Creating git tags
 
+Before going further, make sure all your repos are on a named branch and not in a "detached head" state:
+   * `coho for-each -r android -r js -r app-hello-world -r mobile-spec "git checkout master"`
+
+If you are trying to use a different version between the JS and the platforms (ie, 3.6.1 vs 3.6.3), the coho scripts won't behave nicely. It is highly recommended to use the same major.minor.patch number throughout all items in this cadence release (except the tools (lib, plugman, cli)).
+
 Coho automates these steps:
 
     coho prepare-release-branch --version 3.6.0 -r js -r app-hello-world -r mobile-spec
@@ -70,13 +75,13 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
 
  1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
    * `coho audit-license-headers -r android | less`
- 2. Update the copy of app-hello-world (if there were any changes to it)
+ 1. Update the copy of app-hello-world (if there were any changes to it)
    * This usually lives within bin/templates somewhere
    * TODO: More details needed here
- 3. Update your local cordova-js
+ 1. Update your local cordova-js
    * `coho repo-update -r js`
- 4. Update `RELEASENOTES.md` by pasting the output from `git log --pretty=format:'* %s' --topo-order --no-merges origin/3.5.x..origin/3.6.x`
- 4. For iOS only:
+ 1. Update `RELEASENOTES.md` by pasting the output from `git log --pretty=format:'* %s' --topo-order --no-merges origin/3.5.x..origin/3.6.x`
+ 1. For iOS only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.

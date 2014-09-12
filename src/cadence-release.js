@@ -58,7 +58,7 @@ function cpAndLog(src, dest) {
 }
 
 function configureReleaseCommandFlags(opt) {
-    var opt = flagutil.registerRepoFlag(opt)
+    opt = flagutil.registerRepoFlag(opt);
     opt = opt
         .options('version', {
             desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]',
@@ -223,10 +223,10 @@ exports.prepareReleaseBranchCommand = function*() {
     });
 
     executil.reportGitPushResult(repos, ['master', branchName]);
-}
+};
 
 exports.tagReleaseBranchCommand = function*(argv) {
-    var argv = configureReleaseCommandFlags(optimist
+    argv = configureReleaseCommandFlags(optimist
         .usage('Tags a release branches.\n' +
                '\n' +
                'Usage: $0 tag-release --version=2.8.0-rc1')

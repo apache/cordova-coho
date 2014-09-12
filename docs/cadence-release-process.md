@@ -292,23 +292,25 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
     cd cordova-dist
     svn up
-    svn rm tools/cordova-cli-*
     svn rm tools/cordova-js*
+    svn rm tools/cordova-lib*
+    svn rm tools/plugman-*
+    svn rm tools/cordova-3*
     svn rm platforms/*
-    cp ../cordova-dist-dev/$JIRA/final/cordova-js* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-cli* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-lib* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-plugman* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-mobile-spec* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-app-hello* tools/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-ios* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-blackberry* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-windows* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-wp8* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-firefoxos* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-ubuntu* platforms/
-    cp ../cordova-dist-dev/$JIRA/final/cordova-amazon-fireos* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-js* tools/
+    cp ../cordova-dist-dev/$JIRA/cordova-3* tools/
+    cp ../cordova-dist-dev/$JIRA/cordova-lib* tools/
+    cp ../cordova-dist-dev/$JIRA/plugman* tools/
+    cp ../cordova-dist-dev/$JIRA/cordova-mobile-spec* tools/
+    cp ../cordova-dist-dev/$JIRA/cordova-app-hello* tools/
+    cp ../cordova-dist-dev/$JIRA/cordova-ios* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-blackberry* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-windows* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-wp8* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-firefoxos* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-ubuntu* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-amazon-fireos* platforms/
     svn add tools/*
     svn add platforms/*
     svn commit -m "$JIRA Published cadence release to dist"
@@ -316,6 +318,8 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 For each package to be released, replace `cordova-android` with the package name and `3.6.0` with the new version. 
 
 Protip: The version is in the filename. `latest` is the public release tag on npm. 
+
+Note: when doing the `npm publish` make sure you are using a recent version of node stable (v0.10 or greater). Do not use an experimental version of node such as v0.11 since behavior may be unpredictable when using something other than a stable version of node.
 
     cd ../cordova-dist-dev/$JIRA
 
@@ -327,11 +331,15 @@ publish one package at a time
 
     npm publish --tag rc cordova-android-3.6.0.tgz
 
-Note: You need to be an owner for each of these repos and the versions can't already have been published 
+Note: You need to be an owner for each of these repos and the versions can't already have been published. You want to publish with the rc tag, so you can move everything to "latest" all at once after they have all been published.
 
 Tag this new version in npm as the latest
 
     npm tag cordova-android@3.6.0 latest
+
+Repeat the tagging as "latest" for all the npm packages. You can check your work by running "npm info cordova-android" and look at the value for 'dist-tags'.
+
+Note that it is not possible to remove the "rc" tag. But it should now point to the same place as "latest".
     
 Remove RCs from dist/dev
 
@@ -347,7 +355,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ### Update cordova.apache.org
 
- * Refer to [this commit](http://svn.apache.org/viewvc?view=revision&revision=r1478146) (also includes updating the DOAP file)
+ * cd ../cordova-website
+ * svn update
+ * Refer to [this commit](http://svn.apache.org/viewvc?view=revision&revision=r1478146) which also includes updating the DOAP file. But instead of editing `bin/config.json` you should edit `_config.yml` instead. And don't bother updating `public/index.html` as it gets automatically generated from `www/index.html` and `_config.yml` instead.
+ * If you have already written a blog entry, insert it now.
  * And the instructions at https://svn.apache.org/repos/asf/cordova/site/README.md
 
 ### Update the Docs

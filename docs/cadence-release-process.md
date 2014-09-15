@@ -338,8 +338,19 @@ publish one package at a time
 
 Note: You need to be an owner for each of these repos and the versions can't already have been published. You want to publish with the rc tag, so you can move everything to "latest" all at once after they have all been published.
 
+Do a quick test of the rc version
+
+    npm -g uninstall cordova
+    npm -g install cordova@rc
+    cordova create mytest com.example.mytest MyTest
+    cd mytest
+    cordova platform add android
+    cordova plugin add org.apache.cordova.device
+    cordova run android
+
 Tag this new version in npm as the latest
 
+    npm tag cordova@3.6.0-0.2.8 latest
     npm tag cordova-android@3.6.0 latest
 
 Repeat the tagging as "latest" for all the npm packages. You can check your work by running "npm info cordova-android" and look at the value for 'dist-tags'.

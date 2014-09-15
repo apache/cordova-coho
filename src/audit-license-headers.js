@@ -31,6 +31,8 @@ var COMMON_RAT_EXCLUDES = [
     '*.wav',
     '*.webloc',
     '*jasmine-1.2.0*',
+    'jasmine-2.0.0',
+    'topcoat-0.7.5',
     '*.xcodeproj',
     '.*',
     '*-Info.plist',

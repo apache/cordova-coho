@@ -23,6 +23,7 @@ Release Process:
 * [cadence-release-process.md](cadence-release-process.md)
 * [plugins-release-process.md](plugins-release-process.md)
 * [tools-release-process.md](tools-release-process.md)
+* [doc-translation-process.md](doc-translation-process.md)
 
 Design:
 * [storing-repo-versions-design.md](storing-repo-versions-design.md)

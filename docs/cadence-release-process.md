@@ -301,6 +301,8 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     svn rm tools/cordova-lib*
     svn rm tools/plugman-*
     svn rm tools/cordova-3*
+    svn rm tools/cordova-app-hello*
+    svn rm tools/cordova-mobile-spec*
     svn rm platforms/*
     cp ../cordova-dist-dev/$JIRA/cordova-js* tools/
     cp ../cordova-dist-dev/$JIRA/cordova-3* tools/
@@ -328,17 +330,17 @@ Note: when doing the `npm publish` make sure you are using a recent version of n
 
     cd ../cordova-dist-dev/$JIRA
 
-publish all at once
+Publish all at once:
 
     for package in $(find *.tgz); do $(npm publish --tag rc $package); done;
     
-publish one package at a time
+Or publish one package at a time:
 
     npm publish --tag rc cordova-android-3.6.0.tgz
 
 Note: You need to be an owner for each of these repos and the versions can't already have been published. You want to publish with the rc tag, so you can move everything to "latest" all at once after they have all been published.
 
-Do a quick test of the rc version
+Do a quick test of the rc version:
 
     npm -g uninstall cordova
     npm -g install cordova@rc
@@ -348,12 +350,12 @@ Do a quick test of the rc version
     cordova plugin add org.apache.cordova.device
     cordova run android
 
-Tag this new version in npm as the latest
+Tag this new version in npm as the latest:
 
     npm tag cordova@3.6.0-0.2.8 latest
     npm tag cordova-android@3.6.0 latest
 
-Repeat the tagging as "latest" for all the npm packages. You can check your work by running "npm info cordova-android" and look at the value for 'dist-tags'.
+Repeat the tagging as "latest" for all the npm packages (platforms and tools). You can check your work by running "npm info cordova-android" and look at the value for 'dist-tags'.
 
 Note that it is not possible to remove the "rc" tag. But it should now point to the same place as "latest".
     

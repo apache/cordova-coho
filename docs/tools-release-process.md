@@ -124,7 +124,7 @@ Update the version of cordova-lib that cli and plugman depend on:
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
-Create npm-shrinkwrap.json in lib, cli, and plugman:
+Create npm-shrinkwrap.json in lib, cli, and plugman. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
 
     (cd cordova-lib/cordova-lib; npm shrinkwrap;)
     (cd cordova-cli; npm shrinkwrap;)

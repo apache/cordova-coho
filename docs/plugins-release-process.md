@@ -81,13 +81,15 @@ TODO: Should not mention testing other than checking medic
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ $v != $v2 ]; then echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ "$v" != "$v2" ]; then echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
 
 If the changes merit it, manually bump the major / minor version instead of the micro. Manual process, but list the changes via:
 
     for l in $ACTIVE; do ( cd $l; echo $l; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" ); done
 
-For each of the plugins that have a test project inside it, update the version number there (cordova-plugin-*/tests/plugin.xml) to match the version of the plugin itself (cordova-plugin-*/plugin.xml).
+For each of the plugins that have a test project inside it, update the version number there (`cordova-plugin-*/tests/plugin.xml`) to match the version of the plugin itself (`cordova-plugin-*/plugin.xml`).
+
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
 Update its RELEASENOTES.md file with changes
 
@@ -97,15 +99,15 @@ Update its RELEASENOTES.md file with changes
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
-Print all changes for plugins (save this text for the blog post):
+Print the curated changes for plugins (save this text for the blog post, after deleting the unnecessary lines):
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; id=$(grep -o '\bid=\"[^\"]*\"' plugin.xml | head -n1 | cut -d'"' -f2);  echo -e "\n\`$id@$v\`"; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version"); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; id=$(grep -o '\bid=\"[^\"]*\"' plugin.xml | head -n1 | cut -d'"' -f2);  echo -e "\n\`$id@$v\`"; git diff -U0 RELEASENOTES.md | sed 's/^\+//' ); done
 
 Add a comment to the JIRA issue with the output from:
 
     for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo $id@$v; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
 
-Commit these two changes together
+Commit these changes together (plugin.xml, RELEASENOTES.md, tests/plugin.xml)
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
 
@@ -119,7 +121,10 @@ Commit these two changes together
 
 ## Update version
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ $v = $v_no_dev ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    # update the plugin
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    # update the nested test
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
     for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done
 
 ## Push tags and changes
@@ -128,6 +133,9 @@ Commit these two changes together
     coho foreach -r plugins "git status -s"
     # Push:
     for l in $ACTIVE; do ( cd $l; git push --tags https://git-wip-us.apache.org/repos/asf/$l.git master); done
+    # Check that it was all successful:
+    coho repo-update -r plugins
+    coho repo-status -r plugins
 
 ## Publish to dist/dev
 Ensure you have the svn repos checked out:

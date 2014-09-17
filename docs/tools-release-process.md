@@ -82,7 +82,7 @@ Ensure uninstall doesn't cause errors:
 
 Ensure that mobilespec creates okay via plugman:
 
-    cordova-mobile-spec/createmobilespecandroid-usingplugman.sh
+    cordova-mobile-spec/createmobilespec/createmobilespec.js --plugman --android
     (cd mobilespec-android && cordova/run)
 
 Ensure unit tests pass:
@@ -123,6 +123,8 @@ Update the version of cordova-lib that cli and plugman depend on:
     v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
+
+Update the version of cordova-js that cordova-lib depends on. (TODO: why does this dependency exist?)
 
 Create npm-shrinkwrap.json in lib, cli, and plugman. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
 

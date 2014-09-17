@@ -126,6 +126,15 @@ Update the version of cordova-lib that cli and plugman depend on:
 
 Update the version of cordova-js that cordova-lib depends on. (TODO: why does this dependency exist?)
 
+Before creating the shrinkwrap, do the following so that the shrinkwrap will have the correct content.
+
+ * If you have used "npm link ..." across cordova dependencies, remove that. If you don't, then the devDependencies of the child module will be included in the dependent's shrinkwrap since the shrinkwrap process walks the node_modules directory tree instead of inspecting the package.json file of each dependency. Using npm link is great for development time, bad for packaging time. This should be taken care of in the `rm -r node_modules` step below.
+ * Clear the npm cache. If you don't then the `from` and `resolved` fields in the shrinkwrap may not be generated properly.
+    npm cache clear
+ * For each cordova module that you want to shrinkwrap, do a clean install of its dependencies. (TODO: at this point it appears I would first need to "npm publish cordova-js" before I could do a clean install of the cordova-lib dependencies and create the shrinkwrap for cordova-lib. And then the same to "npm publish cordova-lib" before I could do a clean install of the cordova-cli/cordova-plugman dependencies and create the shrinkwrap for cordova-cli and cordova-plugman).
+    rm -r node_modules
+    npm install
+
 Create npm-shrinkwrap.json in lib, cli, and plugman. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
 
     (cd cordova-lib/cordova-lib; npm shrinkwrap;)

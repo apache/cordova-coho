@@ -65,7 +65,7 @@ Ensure you're up-to-date:
     (cd cordova-plugman && npm install)
     (cd cordova-cli && npm install)
 
-Ensure license headers are present everywhere:
+Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html).
 
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less

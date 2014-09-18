@@ -73,7 +73,7 @@ If the JS ever needs to be re-tagged, rerun the `tag-release` command, and then 
 
 ### Before creating the release branch:
 
- 1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
+ 1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present. Also see this [background](http://www.apache.org/legal/src-headers.html).
    * `coho audit-license-headers -r android | less`
  1. Update the copy of app-hello-world (if there were any changes to it)
    * This usually lives within bin/templates somewhere

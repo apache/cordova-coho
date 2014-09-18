@@ -78,6 +78,8 @@ TODO: Should not mention testing other than checking medic
 
     coho audit-license-headers -r plugins | less
 
+For reference, see this [background](http://www.apache.org/legal/src-headers.html)
+
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
 

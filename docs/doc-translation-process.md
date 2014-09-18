@@ -37,21 +37,26 @@ If you know another language and are willing to help translate Apache Cordova, h
 
 ## Crowdin Administrative Scripts
 
-There are two scripts that need to be in place in your environment in order to automate the crowdin translation process.
+There are two scripts and one jar file that need to be in place in your environment in order to automate the crowdin translation process.
 
+- crowdin-cli.jar
 - crowdin.yaml
 - github-crowdin.sh
-Additionally, the crowdin-cli.jar file needs to be installed on the system. 
+
 Information on the crowdin command line interface and tooling can be found here: http://crowdin.net/page/cli-tool. It includes a link to download the jar file for Windows, Mac, and Linux.
 
-## crowdin.yaml
+### Demo video
+
+Lisa DeLuca has created a demo video showing the process of translating as an adminstrator that can be viewed on youtube here: http://www.youtube.com/watch?v=LSnk3lAd7bo
+
+### crowdin.yaml
 
 By default, the crowdin-cli will look for a configuration file called crowdin.yaml. For cordova, our crowdin.yaml file looks like this:
 
 
     project_identifier: cordova
     api_key: ____ourAPIkey________
-    base_path: /Users/ldeluca/git/cordova     #working copy path
+    base_path: /Users/pathTO/git/cordova     #working copy path
 
     files:
       -
@@ -78,9 +83,9 @@ translated. Finally, it pushes the translated language files back into github.
     DOMAIN_NAME='http://api.crowdin.net'
     
     #---CHANGE THE VARIABLES BELOW---
-    BASE_GIT_REPO_PATH=/Users/ldeluca/git/cordova
-    GIT_REPO_PATH=/Users/ldeluca/git/cordova/cordova-docs
-    CROWDIN_CLI_PATH=/Users/ldeluca/crowdin
+    BASE_GIT_REPO_PATH=/Users/pathTo/git/cordova
+    GIT_REPO_PATH=/Users/pathTo/git/cordova/cordova-docs
+    CROWDIN_CLI_PATH=/Users/pathTo/crowdin
     PROJECT_IDENTIFIER='cordova'
     PROJECT_KEY='----insertkeyhere------'
     

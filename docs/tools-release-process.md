@@ -29,8 +29,6 @@ Plugman and CLI are released at most weekly (see: [versioning-and-release-strate
 
 A tools release is performed by a single person each week. We call this person the "Release Manager". How to select the Release Manager is still TDB.
 
-TODO: Use perl instead of sed in these commands so they work on Linux.
-
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.
@@ -61,12 +59,14 @@ E.g.:
 Ensure you're up-to-date:
 
     coho repo-update -r tools
-    (cd cordova-lib/cordova-lib && npm install)
-    (cd cordova-plugman && npm install)
-    (cd cordova-cli && npm install)
+    (cd cordova-js && npm link)
+    (cd cordova-lib/cordova-lib && rm -r node_modules && npm link cordova-js && npm install && npm link)
+    (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
+    (cd cordova-cli && rpm npm-shrinkwrap.json && rm -r node_modules && npm link cordova-lib && npm install)
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html).
 
+    coho audit-license-headers -r js | less
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
     coho audit-license-headers -r lib | less
@@ -74,11 +74,11 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 Ensure that mobilespec creates okay via CLI:
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
-    (cd mobilespec && cordova build && cordova run android)
+    (cd mobilespec && ./cordova build && ./cordova run android)
 
 Ensure uninstall doesn't cause errors:
 
-    cordova plugin remove org.cordova.mobile-spec-dependencies
+    (cd mobilespec && ./cordova plugin remove org.cordova.mobile-spec-dependencies)
 
 Ensure that mobilespec creates okay via plugman:
 
@@ -87,9 +87,9 @@ Ensure that mobilespec creates okay via plugman:
 
 Ensure unit tests pass:
 
-    (cd cordova-plugman; npm test)
-    (cd cordova-cli; npm test)
     (cd cordova-lib/cordova-lib; npm test)
+    # plugman tests are included in cordova-lib above
+    (cd cordova-cli; npm test)
 
 Add a comment to the JIRA issue stating what you tested, and what the results were.
 
@@ -103,12 +103,9 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
     ( cd cordova-lib/cordova-lib; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
 
-
     ( cd cordova-plugman; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
 
-
     ( cd cordova-cli; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
-
 
 Update each repo's RELEASENOTES.md file with changes
 
@@ -118,54 +115,76 @@ Update each repo's RELEASENOTES.md file with changes
     # Then curate: (note that the newest notes are at the bottom of the file and should be manually moved to the top)
     vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md
 
+Update the version of cordova-js that lib depends on. (TODO: why does this dependency exist?)
+
 Update the version of cordova-lib that cli and plugman depend on:
 
     v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
-Update the version of cordova-js that cordova-lib depends on. (TODO: why does this dependency exist?)
+Before creating the shrinkwrap on the cli, do the following so that the shrinkwrap will have the correct content.
 
-Before creating the shrinkwrap, do the following so that the shrinkwrap will have the correct content.
+ * Publish any dependent modules (cordova-lib, cordova-js) to npm before creating a shrinkwrap of the parent (cordova-cli). This enables the "from" field in the shrinkwrap to have the correct URL. And it prevents any of the submodule's devDependenies from appearing in a parent's shrinkwrap. If you have already packaged and published cordova-js, then you can omit that from the rest of the steps in this bullet level.
 
- * If you have used "npm link ..." across cordova dependencies, remove that. If you don't, then the devDependencies of the child module will be included in the dependent's shrinkwrap since the shrinkwrap process walks the node_modules directory tree instead of inspecting the package.json file of each dependency. Using npm link is great for development time, bad for packaging time. This should be taken care of in the `rm -r node_modules` step below.
+    * First, commit everything in the dependent modules, tag, and push.
+    # Commit:
+    for l in cordova-lib/cordova-lib cordova-js; do ( cd $l; git add .; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    # Review commits:
+    for l in cordova-lib cordova-js; do ( cd $l; git log -p origin/master..master ); done
+    # Tag
+    for l in cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    # Push
+    for l in cordova-lib cordova-js; do ( cd $l; git push && git push --tags ); done
+
+    * Create an npm pack archive of the dependencies
+    coho create-archive -r js --dest cordova-dist-dev/$JIRA --tag 3.6.3
+    coho create-archive -r lib --dest cordova-dist-dev/$JIRA --tag 0.21.13
+
+    * You may want to check out the master branch of these again, as the `create-archive` command will leave them in a detached-head state at the desired tag
+    coho foreach -r js -r lib "git checkout master"
+
+    * Verify the archives
+    coho verify-archive cordova-dist-dev/$JIRA/cordova-js-*.tgz
+    coho verify-archive cordova-dist-dev/$JIRA/cordova-lib-*.tgz
+
+    * Next, publish these to npm, and be sure to use the "rc" tag in npm.
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
+ 
  * Clear the npm cache. If you don't then the `from` and `resolved` fields in the shrinkwrap may not be generated properly.
     npm cache clear
- * For each cordova module that you want to shrinkwrap, do a clean install of its dependencies. (TODO: at this point it appears I would first need to "npm publish cordova-js" before I could do a clean install of the cordova-lib dependencies and create the shrinkwrap for cordova-lib. And then the same to "npm publish cordova-lib" before I could do a clean install of the cordova-cli/cordova-plugman dependencies and create the shrinkwrap for cordova-cli and cordova-plugman).
-    rm -r node_modules
-    npm install
+ * Do a fresh install of the dependencies in cordova-lib, cordova-plugman, and cordova-cli, so that the `npm link` entries are gone, and cli installs lib and js from the npm instead of locally. This is so the "from" field appears correctly in the shrinkwrap. And so that none of the devDependencies are included from a dependent module (since the shrinkwrap process walks the node_modules directory tree instead of inspecting the package.json file of each dependency. Using npm link is great for development time, bad for packaging time).
+    (cd cordova-lib && rm -r node_modules && npm install)
+    (cd cordova-plugman && rm -r node_modules && npm install)
+    (cd cordova-cli && rm -r node_modules && npm install)
 
-Create npm-shrinkwrap.json in lib, cli, and plugman. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
+Create npm-shrinkwrap.json in the cli. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
 
-    (cd cordova-lib/cordova-lib; npm shrinkwrap;)
     (cd cordova-cli; npm shrinkwrap;)
-    (cd cordova-plugman; npm shrinkwrap;)
 
 Commit these three changes together into one commit
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do ( cd $l; git add npm-shrinkwrap.json; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    for l in cordova-plugman cordova-cli; do ( cd $l; git add npm-shrinkwrap.json; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 
 ## Tag
 
     # Review commits:
-    for l in cordova-plugman cordova-cli cordova-lib; do ( cd $l; git log -p origin/master..master ); done
+    for l in cordova-plugman cordova-cli; do ( cd $l; git log -p origin/master..master ); done
     # Tag
-    for l in cordova-plugman cordova-cli cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    for l in cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
 ## Re-introduce -dev suffix to versions and remove shrinkwrap
 
-    (cd cordova-lib/cordova-lib; git rm npm-shrinkwrap.json;)
-    (cd cordova-cli; git rm npm-shrinkwrap.json;)
-    (cd cordova-plugman; git rm npm-shrinkwrap.json;)
+    (cd cordova-cli; git rm npm-shrinkwrap.json)
 
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
 
-
 ## Push
 
     # Push
-    for l in cordova-lib cordova-plugman cordova-cli; do ( cd $l; git push && git push --tags ); done
+    for l in cordova-plugman cordova-cli; do ( cd $l; git push && git push --tags ); done
 
 If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag
@@ -176,22 +195,21 @@ Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
 
-Create archives from your tags:
+Create archives from your tags: (the archives for lib were already created above)
 
-    coho create-archive -r lib --dest cordova-dist-dev/$JIRA --tag 0.21.10
-    coho create-archive -r plugman --dest cordova-dist-dev/$JIRA --tag 0.22.7
-    coho create-archive -r cli --dest cordova-dist-dev/$JIRA --tag 3.6.1-0.2.10
+    coho create-archive -r plugman --dest cordova-dist-dev/$JIRA --tag 0.22.10
+    coho create-archive -r cli --dest cordova-dist-dev/$JIRA --tag 3.6.3-0.2.13
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho verify-archive cordova-dist-dev/$JIRA/plugman-*.tgz
+    coho verify-archive cordova-dist-dev/$JIRA/cordova-3*.tgz
 
 Upload:
 
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for tools release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
-
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
@@ -215,7 +233,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r lib -r cli -r plugman
+    PASTE OUTPUT OF: coho print-tags -r js -r lib -r plugman -r cli
 
     Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
 
@@ -273,15 +291,27 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
 ## Publish to NPM
 
-    npm publish cordova-dist/tools/cordova-lib-*.tgz
-    npm publish cordova-dist/tools/cordova-cli-*.tgz
-    npm publish cordova-dist/tools/cordova-plugman-*.tgz
-
+    npm publish --tag rc cordova-dist/tools/cordova-cli-*.tgz
+    npm publish --tag rc cordova-dist/tools/cordova-plugman-*.tgz
 
 If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
 
-If you have already published the package under the `rc` tag, then you will have to run `npm tag cordova@version latest`
+## Test from NPM
 
+    npm -g uninstall cordova
+    npm -g install cordova@3.6.3-0.2.13
+    cordova create mytest
+    cd mytest
+    cordova platform add android
+    cordova plugin add org.apache.cordova.device
+    cordova build
+
+## Promote to `latest` in NPM
+
+    npm tag cordova-js@3.6.4 latest
+    npm tag cordova-lib@0.21.13 latest
+    npm tag cordova-plugman@0.22.10 latest
+    npm tag cordova@3.6.3-0.2.13 latest
 
 ## Post Blog Post
 

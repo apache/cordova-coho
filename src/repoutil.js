@@ -277,7 +277,13 @@ var pluginRepos = [
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
-        inactive: true
+        inactive: true,
+        ratExcludes: [
+            // zlib/libpng approved by Apache legal
+            // http://www.apache.org/legal/resolved.html
+            'tokenizer.cpp',
+            'tokenizer.h'
+        ]
     }, {
         title: 'Plugin - Statusbar',
         id: 'plugin-statusbar',

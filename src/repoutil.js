@@ -259,7 +259,13 @@ var pluginRepos = [
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
-        inactive: true
+        inactive: true,
+        ratExcludes: [
+            // Apple license is BSD compatible:
+            // http://markmail.org/message/3ok5cottuxt5wpub
+            'CDVReachability.m',
+            'CDVReachability.h'
+        ]
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',

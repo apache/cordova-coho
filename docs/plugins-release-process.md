@@ -31,8 +31,6 @@ A plugins release is performed by a single person each week. We call this person
 
 TODO: add in RAT instruction (via coho) for next release
 
-TODO: Use perl instead of sed in these commands so they work on Linux.
-
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 
 TODO: Add step about ensuring plugman owner
@@ -250,7 +248,14 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugi
 
 ## Publish to Plugins Registry
 
+Note that plugman works on directories, in contrast to `npm publish` that works on tarballs. So be aware that the following command will use your development directories, so make sure they are checked out to the correct tag before running the `plugman publish` command:
+
     for l in $ACTIVE; do ( cd $l; echo -n "$l: "; plugman publish . ); done
+
+Actually a better alternative would be to unzip the voted content to a temporary location and publish with that:
+
+    cd cordova-dist-dev/$JIRA; mkdir tmp_publish; cd tmp_publish; for l in $ACTIVE; do (unzip ../$l-r*.zip; cd $l; echo -n "$l: "; plugman publish .; cd ..) done; cd ..; rm -r tmp_publish
+
 
 ## Post blog Post
 

@@ -270,10 +270,11 @@ See [full instructions](http://svn.apache.org/viewvc/cordova/site/README.md?view
     rake build
     # correct any build errors, and repeat until clean run
     rake serve
-    # preview contents at localhost:4000
-    (cd apache-blog-posts && git add . & git commit)
+    # preview contents at localhost:4000 and repeat until satisfied
+    (cd apache-blog-posts && git add . && git commit)
     svn status
     svn add NEW_FILES_HERE
+    # commit the new and modified files
     svn commit
 
 ## Do other announcements

@@ -259,8 +259,20 @@ Actually a better alternative would be to unzip the voted content to a temporary
 
 ## Post blog Post
 
+See [full instructions](http://svn.apache.org/viewvc/cordova/site/README.md?view=markup).
+
+    cd cordova-website
+    svn update
+    cd apache-blog-posts
+    git pull
+    cd ..
+    grunt updateBlog
     rake build
-    svn st
+    # correct any build errors, and repeat until clean run
+    rake serve
+    # preview contents at localhost:4000
+    (cd apache-blog-posts && git add . & git commit)
+    svn status
     svn add NEW_FILES_HERE
     svn commit
 

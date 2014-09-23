@@ -383,10 +383,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
  1. Upload the new docs to http://cordova.apache.org/docs
    * Website README.md explains [How to update the docs](https://svn.apache.org/repos/asf/cordova/site/README.md)
    * Commit should look like [this one](http://svn.apache.org/viewvc?view=revision&revision=r1478171)
- 1. Ask Michael Brooks to update the docs.cordova.io redirect.
+ 1. Have a Heroku collaborator update the docs.cordova.io redirect to the new version.
    * Check out the branch `cordova-labs:redirect-docs-cordova-io`
    * Repository README.md explains [How to update the HTTP redirect](https://github.com/apache/cordova-labs/tree/redirect-docs-cordova-io#usage)
-   * Nodejitsu is limited to one deployer, so Michael Brooks is currently the point of contact.
+   * If you would like to become a Heroku collaborator, get an account on heroku.com and email the dev list with your Heroku id so someone can add you.
 
 ### Tell JIRA it's Released
 

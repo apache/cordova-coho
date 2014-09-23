@@ -332,6 +332,15 @@ Subject: [ANNOUNCEMENT] Tools Release
 
     Do the same things regarding announcements as described in cadence-release-process, where they make sense.
 
+## Update dependencies going forward
+
+For each of the tools (including cordova-js):
+
+    git checkout master
+    npm outdated --depth 0
+
+If there are any dependencies or devDependencies that are out of date, open a Jira item for that tool.
+
 ## Close JIRA Issue
  * Double check that the issue has comments that record the steps you took
  * Mark it as fixed

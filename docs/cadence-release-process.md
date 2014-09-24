@@ -398,7 +398,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
    * Announce to [G+ Page](https://plus.google.com/u/0/113178331525415522084/posts)
-   * Get it posted to Apache's announce mailing list: send an mail to announce@apache.org, sent from [your @apache.org email address](https://reference.apache.org/committer/email). Send in plain text, and copy the model of other announcements in the archive(s). You'll then need to wait for the moderator to accept the message. The www.a.o home page is automatically updated with the announcement after the moderator approves.
+   * Get it posted to Apache's announce mailing list: send an mail to announce@apache.org, sent from [your @apache.org email address](https://reference.apache.org/committer/email). Send in plain text, and copy the model of other announcements in the archive(s). You'll then need to wait for the moderator to accept the message. The www.a.o home page is automatically updated with the announcement after the moderator approves. And it will get sent out to subscribers. Be aware that your email will be distributed exactly as you send it, so don't add any comments for the moderator, and do get the formatting (including the subject line) exactly as you want it to appear to users.
    * For major project milestones, email press@apache.org and they can provide custom help.
 
 # Additional Information

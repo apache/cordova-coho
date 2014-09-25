@@ -101,6 +101,13 @@ var platformRepos = [
             'proguard-project.txt'
         ]
     }, {
+        title: 'Browser',
+        id: 'browser',
+        repoName: 'cordova-browser',
+        jiraComponentName: 'Browser',
+        cordovaJsSrcName: 'cordova.browser.js',
+        cordovaJsPaths: ['cordova-lib/cordova.js']
+    }, {
         title: 'Bada',
         id: 'bada',
         repoName: 'cordova-bada',

@@ -52,7 +52,6 @@ E.g.:
  * Comments should be added to this bug after each top-level step below is taken
  * Set a variable for use later on:
 
-
     JIRA="CB-????" # Set this to the release bug.
 
 ## Test
@@ -135,11 +134,12 @@ Update the version of cordova-js that cordova-lib depends on:
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-js":.*/"cordova-js"*: "'$v'",/' cordova-lib/cordova-lib/package.json
 
-Before creating the shrinkwrap on the cli, do the following so that the shrinkwrap will have the correct content.
+Before creating the shrinkwrap on the cli, do the following so that the shrinkwrap will have the correct content:
 
- * Publish any dependent modules (cordova-lib, cordova-js) to npm before creating a shrinkwrap of the parent (cordova-cli). This enables the "from" field in the shrinkwrap to have the correct URL. And it prevents any of the submodule's devDependenies from appearing in a parent's shrinkwrap. If you have already packaged and published cordova-js, then you can omit that from the rest of the steps in this bullet level.
+Publish any dependent modules (cordova-lib, cordova-js) to npm before creating a shrinkwrap of the parent (cordova-cli). This enables the "from" field in the shrinkwrap to have the correct URL. And it prevents any of the submodule's devDependenies from appearing in a parent's shrinkwrap. If you have already packaged and published cordova-js, then you can omit that from the rest of the steps in this bullet level. Here are the steps to do that:
 
-    * First, commit everything in the dependent modules, tag, and push.
+First, commit everything in the dependent modules, tag, and push.
+
     # Commit:
     for l in cordova-lib/cordova-lib cordova-js; do ( cd $l; git add .; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
     # Review commits:
@@ -149,33 +149,40 @@ Before creating the shrinkwrap on the cli, do the following so that the shrinkwr
     # Push
     for l in cordova-lib cordova-js; do ( cd $l; git push && git push --tags ); done
 
-    * Create an npm pack archive of the dependencies
+Create an npm pack archive of the dependencies
+
     coho create-archive -r js --dest cordova-dist-dev/$JIRA --tag 3.6.3
     coho create-archive -r lib --dest cordova-dist-dev/$JIRA --tag 0.21.13
 
-    * You may want to check out the master branch of these again, as the `create-archive` command will leave them in a detached-head state at the desired tag
+You may want to check out the master branch of these again, as the `create-archive` command will leave them in a detached-head state at the desired tag
+
     coho foreach -r js -r lib "git checkout master"
 
-    * Verify the archives
+Verify the archives
+
     coho verify-archive cordova-dist-dev/$JIRA/cordova-js-*.tgz
     coho verify-archive cordova-dist-dev/$JIRA/cordova-lib-*.tgz
 
-    * Next, publish these to npm, and be sure to use the "rc" tag in npm.
+Next, publish these to npm, and be sure to use the "rc" tag in npm.
+
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
  
- * Clear the npm cache. If you don't then the `from` and `resolved` fields in the shrinkwrap may not be generated properly.
+Clear the npm cache. If you don't then the `from` and `resolved` fields in the shrinkwrap may not be generated properly.
+
     npm cache clear
- * Do a fresh install of the dependencies in cordova-lib, cordova-plugman, and cordova-cli, so that the `npm link` entries are gone, and cli installs lib and js from the npm instead of locally. This is so the "from" field appears correctly in the shrinkwrap. And so that none of the devDependencies are included from a dependent module (since the shrinkwrap process walks the node_modules directory tree instead of inspecting the package.json file of each dependency. Using npm link is great for development time, bad for packaging time).
+
+Do a fresh install of the dependencies in cordova-lib, cordova-plugman, and cordova-cli, so that the `npm link` entries are gone, and cli installs lib and js from the npm instead of locally. This is so the "from" field appears correctly in the shrinkwrap. And so that none of the devDependencies are included from a dependent module (since the shrinkwrap process walks the node_modules directory tree instead of inspecting the package.json file of each dependency. Using npm link is great for development time, bad for packaging time).
+
     (cd cordova-lib && rm -r node_modules && npm install)
     (cd cordova-plugman && rm -r node_modules && npm install)
     (cd cordova-cli && rm -r node_modules && npm install)
 
 Create npm-shrinkwrap.json in the cli. This is important especially when the cli depends on specific versions of lib and similar, because the shrinkwrap overrules the version dependencies in package.json. If the tools have any specific version dependencies, verify they are correct in the shrinkwrap after you complete this step.
 
-    (cd cordova-cli; npm shrinkwrap;)
+    (cd cordova-cli; npm shrinkwrap)
 
-Commit these four changes together into one commit
+Commit these changes together into one commit
 
     for l in cordova-plugman cordova-cli; do ( cd $l; git add npm-shrinkwrap.json; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 

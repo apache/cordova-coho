@@ -77,10 +77,13 @@ exports.createCommand = function*(argv) {
             }
             var cmd = 'npm pack';
             if (repo.id==='lib') cmd = 'npm pack cordova-'+repo.id;
-            if (repo.id==='windows' || repo.id==='wp8') cmd = 'npm pack '+repo.id;
+            if (repo.id==='windows') cmd = 'npm pack '+repo.id;
+
+            if (repo.id==='windowsphone') cmd = 'npm pack wp8';
 
             var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
             var outPath = path.join(absOutDir, tgzname);
+            console.log(outPath);
             if (fs.existsSync(outPath)) {
                 // remove what is already there, or else "npm pack" will fail
                 fs.unlinkSync(outPath);

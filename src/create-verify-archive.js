@@ -77,9 +77,11 @@ exports.createCommand = function*(argv) {
             }
             var cmd = 'npm pack';
             if (repo.id==='lib') cmd = 'npm pack cordova-'+repo.id;
+            /* Not needed anymore due to package.json moving to root
             if (repo.id==='windows') cmd = 'npm pack '+repo.id;
 
             if (repo.id==='windowsphone') cmd = 'npm pack wp8';
+            */
 
             var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
             var outPath = path.join(absOutDir, tgzname);

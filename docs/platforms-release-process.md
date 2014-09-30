@@ -132,11 +132,11 @@ Ensure you have the svn repos checked out:
 Create archives from your tags:
 
     coho foreach -r android "git checkout 3.5.x"
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA/rc
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/rc/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.zip
 
 Upload: (replace `android` with your platform)
 
@@ -208,22 +208,6 @@ For your platform:
  1. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
  2. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
-## Publish final archives to dist/dev
-Create archives from your tags:
-
-    coho foreach -r android "git checkout 3.5.x"
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA/final
-
-Sanity Check:
-
-    coho verify-archive cordova-dist-dev/$JIRA/final/*.zip
-
-Upload: (replace `android` with your platform) 
-
-    (cd cordova-dist-dev && svn add $JIRA/final && svn commit -m "$JIRA Uploading archives for android release vote")
-
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
-
 ## Prepare Blog Post
  * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
@@ -243,7 +227,7 @@ __Body:__
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 
     Repos ready to be released have been published to dist/dev:
-    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/final
+    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
     The packages were published from their corresponding git tags:
     PASTE OUTPUT OF: coho print-tags -r android
@@ -291,7 +275,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     cd cordova-dist
     svn up
     svn rm platforms/cordova-android*
-    cp ../cordova-dist-dev/$JIRA/final/cordova-android* platforms/
+    cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
 
@@ -304,7 +288,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
-## Final Details
+##  Details
 
 ### Update cordova.apache.org
 

@@ -229,10 +229,10 @@ __Body:__
     Repos ready to be released have been published to dist/dev:
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
-    The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r android
+    The package was published from its corresponding git tag:
+    PASTE OUTPUT OF: coho print-tags -r android --tag 3.5.0
 
-    Upon a successful vote I will upload the archives to dist/, publish them to NPM, and post the corresponding blog post.
+    Upon a successful vote I will upload the archive to dist/, publish it to NPM, and post the corresponding blog post.
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
 

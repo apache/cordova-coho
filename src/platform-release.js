@@ -83,7 +83,6 @@ function *updateJsSnapshot(repo, version) {
         
         if (hasBuiltJs != version) {
             yield repoutil.forEachRepo([cordovaJsRepo], function*() {
-yield executil.execHelper(executil.ARGS('ls'));
                 yield gitutil.stashAndPop(cordovaJsRepo, function*() {
                     //git fetch and update master for cordovajs
                     yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
@@ -286,8 +285,6 @@ exports.tagReleaseBranchCommand = function*(argv) {
 
             // Create/update the tag.
             var tagName = yield gitutil.retrieveCurrentTagName();
-            console.log(tagName);
-            console.log(repo);
             if (tagName != version) {
                 if (yield gitutil.tagExists(version)) {
                     yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));

@@ -56,18 +56,18 @@ var platformRepos = [
         id: 'windows',
         repoName: 'cordova-windows',
         jiraComponentName: 'Windows 8',
-        cordovaJsSrcName: 'cordova.windows8.js',
-        cordovaJsPaths: ['windows8/cordova.js', 'windows8/template/www/cordova.js'],
-        versionFilePaths: [path.join('windows8', 'VERSION'), path.join('windows8', 'template', 'VERSION')],
-        packageFilePaths: [path.join('windows8', 'package.json')]
+        cordovaJsSrcName: 'cordova.windows.js',
+        cordovaJsPaths: ['windows/template/www/cordova.js'],
+        versionFilePaths: [path.join('windows', 'VERSION')],
+        packageFilePaths: [path.join('windows', 'package.json')]
     }, {
         title: 'Windows Phone 7 & 8',
-        id: 'wp8',
+        id: 'windowsphone',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
         cordovaJsSrcName: 'cordova.windowsphone.js',
-        cordovaJsPaths: ['common/www/cordova.js'],
-        packageFilePaths: [path.join('wp8', 'package.json')]
+        cordovaJsPaths: ['template/www/cordova.js'],
+        packageFilePaths: ['package.json']
     }, {
         title: 'Firefox OS',
         id: 'firefoxos',

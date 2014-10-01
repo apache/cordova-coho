@@ -112,11 +112,11 @@ Tag:
     
     coho tag-release --version 3.5.0 -r android
 
-## Tagging RC1 of cordova-cli
+## Tagging RC of cordova-cli
 
 cordova-cli doesn't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
 
-Update the tool to point to the new repo versions (within `cordova-cli/platforms.js`)
+Update the tool to point to the new repo versions (within `cordova-lib/platforms.js`)
 
 Instead of the normal `npm publish` flow:
 
@@ -268,7 +268,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 * Add back `-dev`
 * Start a new vote
 
-## Otherwise: Publish to dist/
+## Otherwise: Publish to dist/ & npm
 
 (replace `android` with your platform)
 
@@ -278,6 +278,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
+    npm publish cordova-android-3.5.0.tgz
 
     cd ../cordova-dist-dev
     svn up

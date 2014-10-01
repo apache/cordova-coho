@@ -61,7 +61,7 @@ Ensure you're up-to-date:
     (cd cordova-js && npm link)
     (cd cordova-lib/cordova-lib && rm -r node_modules && npm link cordova-js && npm install && npm link)
     (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
-    (cd cordova-cli && rpm npm-shrinkwrap.json && rm -r node_modules && npm link cordova-lib && npm install)
+    (cd cordova-cli && rm npm-shrinkwrap.json && rm -r node_modules && npm link cordova-lib && npm install)
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html).
 

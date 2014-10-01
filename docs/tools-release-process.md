@@ -120,8 +120,6 @@ Update each repo's RELEASENOTES.md file with changes
     # Then curate:
     vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md
 
-Update the version of cordova-js that lib depends on. 
-
 Update the version of cordova-lib that cli and plugman depend on:
 
     v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
@@ -131,7 +129,7 @@ Update the version of cordova-lib that cli and plugman depend on:
 Update the version of cordova-js that cordova-lib depends on:
     
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
-    sed -i '' -E 's/"cordova-js":.*/"cordova-js"*: "'$v'",/' cordova-lib/cordova-lib/package.json
+    sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' cordova-lib/cordova-lib/package.json
 
 Before creating the shrinkwrap on the cli, do the following so that the shrinkwrap will have the correct content:
 

@@ -106,7 +106,9 @@ Manually copy output into RELEASENOTES.md.
 
 Edit the commit descriptions - don't add the commits verbatim, usually they are meaningless to the user. Only show the ones relevant for the user (fixes, new features)
 
-    cd cordova-android && git commit -am "$JIRA updated release notes"
+    cd cordova-android && git commit -am "$JIRA updated RELEASENOTES"
+
+Cherry-pick the RELEASENOTES commit back into master branch
 
 Tag:
     

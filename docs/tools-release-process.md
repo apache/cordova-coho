@@ -127,7 +127,7 @@ Update the version of cordova-lib that cli and plugman depend on:
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
     
 Update the version of cordova-js that cordova-lib depends on:
-    
+
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' cordova-lib/cordova-lib/package.json
 
@@ -190,6 +190,11 @@ Commit these changes together into one commit
     # Tag
     for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
+## Create release branches
+
+    (cd cordova-cli; git checkout -b 3.7.x master)
+    (cd cordova-lib/cordova-lib; git checkout -b 3.7.x master) 
+
 ## Re-introduce -dev suffix to versions and remove shrinkwrap
 
     (cd cordova-lib/cordova-lib; git rm npm-shrinkwrap.json;)
@@ -227,6 +232,16 @@ Upload:
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for tools release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+
+## Test from NPM
+
+    npm -g uninstall cordova
+    npm -g install cordova@rc
+    cordova create mytest
+    cd mytest
+    cordova platform add android
+    cordova plugin add org.apache.cordova.device
+    cordova build
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
@@ -283,10 +298,12 @@ Respond to the vote thread with:
 _Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc_
 
 ## If the Vote does *not* Pass
-* Revert adding of `-dev`
+
+* git checkout release branch if exists
 * Address the concerns
-* Re-tag release using `git tag -f`
-* Add back `-dev`
+* Bump the version number in package.json
+* Create new tag based on new version number
+* Cherry-pick relevant commits to master if applicable
 * Start a new vote
 
 ## Otherwise: Publish to dist/
@@ -307,31 +324,13 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
-## Publish to NPM
-
-    npm publish --tag cordova-dist/tools/cordova-lib-*.tgz
-    npm publish --tag cordova-dist/tools/cordova-cli-*.tgz
-    npm publish --tag cordova-dist/tools/cordova-plugman-*.tgz
-    npm publish --tag cordova-dist/tools/cordova-js-*.tgz
-
-If npm publish fails for you, run `npm owner ls PACKAGENAME` to see if you are an owner. If you aren't, ask one of the owners to add you.
-
-## Test from NPM
-
-    npm -g uninstall cordova
-    npm -g install cordova@3.6.3-0.2.13
-    cordova create mytest
-    cd mytest
-    cordova platform add android
-    cordova plugin add org.apache.cordova.device
-    cordova build
-
 ## Promote to `latest` in NPM
 
-    npm tag cordova-js@3.6.4 latest
-    npm tag cordova-lib@0.21.13 latest
-    npm tag cordova-plugman@0.22.10 latest
-    npm tag cordova@3.6.3-0.2.13 latest
+    cd cordova-dist/tools
+    npm tag cordova-js*.tgz latest
+    npm tag cordova-lib*.tgz latest
+    npm tag plugman*.tgz latest
+    npm tag cordova-3*.tgz latest
 
 ## Post Blog Post
 

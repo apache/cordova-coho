@@ -117,6 +117,10 @@ module.exports = function() {
             name: 'for-each',
             desc: 'Runs a shell command in each repo.',
             entryPoint: lazyRequire('./for-each')
+        }, {
+            name: 'npm-link',
+            desc: 'Does an "npm link" of dependent modules that we own.',
+            entryPoint: lazyRequire('./npm-link')
         }
     ];
     var commandMap = {};

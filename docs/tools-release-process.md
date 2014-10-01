@@ -231,7 +231,7 @@ Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proofread via [piratepad](http://piratepad.net/front-page/).
+ * Get blog post proofread via [GitHub](http://github.com/cordova/apache-blog-posts).
 
 ## Start VOTE Thread
 Send an email to dev ML with:

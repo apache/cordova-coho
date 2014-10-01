@@ -88,7 +88,6 @@ Ensure that mobilespec creates okay via plugman:
 Ensure unit tests pass:
 
     (cd cordova-lib/cordova-lib; npm test)
-    (cd cordova-js; grunt test --platformVersion=3.6.0)
 
     # plugman tests are included in cordova-lib above
     (cd cordova-cli; npm test)

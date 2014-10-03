@@ -121,6 +121,10 @@ module.exports = function() {
             name: 'npm-link',
             desc: 'Does an "npm link" of dependent modules that we own.',
             entryPoint: lazyRequire('./npm-link')
+        }, {
+            name: 'check-license',
+            desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
+            entryPoint: lazyRequire('./check-license')
         }
     ];
     var commandMap = {};

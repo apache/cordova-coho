@@ -13,7 +13,9 @@
     "optimist": "0.4",
     "q": "~0.9",
     "request": "2.22.0",
-    "shelljs": "0.1.4"
+    "shelljs": "0.1.4",
+    "nlf": "1.1.0",
+    "treeify": "1.0.1"
   },
   "repository": {
     "type": "git",

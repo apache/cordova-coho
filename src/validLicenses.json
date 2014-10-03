@@ -1,0 +1,24 @@
+{
+	"validLicenses": [
+	    "Apache",
+	    "BSD",
+	    "MIT(\\/X11)?",
+	    "ICU",
+	    "NCSA",
+	    "W3C",
+	    "Xnet",
+	    "zlib",
+	    "FSF",
+	    "A(cademic )?F(ree )?L(icense)?",
+	    "(OOXML|XSD|ECMA)",
+	    "CC-A",
+	    "B(oost )?S(oftware )?L(icense)?",
+	    "dejavu",
+	    "M(icro)?S((-|oft ))?P(ublic )?L(icense)?",
+	    "Creative Commons Copyright-Only Dedication",
+	    "Adobe Postscript(\\(R\\))? AFM",
+	    "S(ervice )?C(omponent )?A(rchitecture)? Specifications",
+	    "E(clipse )?D(istribution )?L(icense)?",
+	    "P(ython )?S(oftware )?F(oundation )?L(icense)?"
+  	]
+}

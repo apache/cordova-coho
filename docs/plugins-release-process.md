@@ -78,6 +78,10 @@ TODO: Should not mention testing other than checking medic
 
 For reference, see this [background](http://www.apache.org/legal/src-headers.html)
 
+## Ensure all dependencies and subdependencies have Apache-compatible licenses
+
+    coho check-license -r plugins
+
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
 
@@ -190,7 +194,7 @@ __Body:__
 
     I vote +1:
     * Ran coho audit-license-headers over the relevant repos
-    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repos were tagged
 
 

@@ -60,6 +60,8 @@ E.g.:
 
  1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
    * `coho audit-license-headers -r android | less`
+ 1. Run check-license to ensure all dependencies and subdependencies have valid licenses
+   * `coho check-license -r platform`
  2. Update the copy of app-hello-world (if there were any changes to it)
    * This usually lives within bin/templates somewhere
    * TODO: More details needed here
@@ -242,7 +244,7 @@ __Body:__
 
     I vote +1:
     * Ran coho audit-license-headers over the relevant repos
-    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repo was tagged
 
 

@@ -71,6 +71,10 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
     coho audit-license-headers -r lib | less
     coho audit-license-headers -r js | less
 
+Ensure all dependencies and subdependencies have Apache-compatible licenses
+
+    coho check-license -r tools
+
 Ensure that mobilespec creates okay via CLI:
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
@@ -276,7 +280,7 @@ __Body:__
 
     I vote +1:
     * Ran coho audit-license-headers over the relevant repos
-    * Used `license-checker` to ensure all dependencies have Apache-compatible licenses
+    * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repos were tagged
 
 

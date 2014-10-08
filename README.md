@@ -33,6 +33,12 @@ This repository has the following purposes:
   - e.g. coho repo-clone
   - e.g. coho --help
 
+## How to Install Node:
+
+Easiest way on OS X & Linux: https://github.com/creationix/nvm
+
+Easiest way on Win: http://nodejs.org/
+
 ## How to Clone & Use `coho`
 
     mkdir -p cordova
@@ -40,13 +46,10 @@ This repository has the following purposes:
     git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
     cd cordova-coho
     npm install
-    sudo npm link
+    npm link # Might need sudo for some configurations
     coho --help
 
-## How to Install Node:
+## How to Clone Other Repos
 
-Easiest way on OS X & Linux: https://github.com/creationix/nvm
-
-Easiest way on Win: http://nodejs.org/
-
-
+    coho repo-clone -r plugins -r tools -r android -r ios -r ...
+    coho npm-link

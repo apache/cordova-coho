@@ -35,6 +35,13 @@ exports.registerRepoFlag = function(opt) {
     });
 }
 
+exports.registerDepthFlag = function(opt) {
+	return opt.options('d', {
+		alias: 'depth',
+		desc: 'Value of --depth flag for git repos.'
+	});
+}
+
 exports.computeReposFromFlag = function(flagValue) {
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];

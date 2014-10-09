@@ -27,6 +27,7 @@ var print = apputil.print;
 module.exports = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = flagutil.registerHelpFlag(opt);
+    opt = flagutil.registerDepthFlag(opt);
     var argv = opt
         .usage('Clones git repositories into the current working directory. If the repositories are already cloned, then this is a no-op.\n\n' +
                'Usage: $0 clone --repo=name [--repo=othername]')
@@ -36,15 +37,18 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
+
+    var depth = argv.d ? argv.d: null;
+    
     var repos = flagutil.computeReposFromFlag(argv.r);
-    yield cloneRepos(repos, false);
+    yield cloneRepos(repos, false, depth);
 }
 
 function createRepoUrl(repo) {
     return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
 }
 
-function *cloneRepos(repos, quiet) {
+function *cloneRepos(repos, quiet, depth) {
     var failures = [];
     var numSkipped = 0;
 
@@ -57,7 +61,8 @@ function *cloneRepos(repos, quiet) {
         } else if (repo.svn) {
             clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName)));
         } else {
-            clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + createRepoUrl(repo))));
+            var depthArg = depth == null ? '' : '--depth ' + depth + ' ';			
+            clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + depthArg + createRepoUrl(repo))));
         }
     }
 

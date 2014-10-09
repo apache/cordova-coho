@@ -27,6 +27,7 @@ var print = apputil.print;
 
 module.exports = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
+    opt = flagutil.registerDepthFlag(opt);
     var opt = opt
         .options('b', {
             alias: 'branch',
@@ -58,6 +59,9 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
+
+    var depth = argv.d ? argv.d: null;
+    
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
     apputil.prefixLength = Math.max.apply(null,
@@ -66,7 +70,7 @@ module.exports = function*(argv) {
         );
 
     // ensure that any missing repos are cloned
-    yield require('./repo-clone').cloneRepos(repos,true);
+    yield require('./repo-clone').cloneRepos(repos,true,depth);
     yield updateRepos(repos, branches, !argv.fetch);
 }
 

@@ -217,7 +217,7 @@ If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag
 2. Pull in new changes via `git pull`, and do *not* include them in the release.
 
-## Publish to dist/dev
+## Publish to dist/dev & npm
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
@@ -236,6 +236,14 @@ Upload:
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for tools release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+
+
+Next, publish these to npm, and be sure to use the "rc" tag in npm.
+
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-3.7.0.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/plugman-*.tgz
 
 ## Test from NPM
 

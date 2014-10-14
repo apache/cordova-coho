@@ -27,7 +27,7 @@
 version format for all components, including platforms, plugman, CLI, core
 plugins. Doing so is important when describing dependencies in a sane way
 (e.g. within plugin.xml files). Although the CLI previously used a
-`CadVer-SemVer` format, it now uses a simple SemVer format. The `CadVer` format
+`CadVer-SemVer` format, it now uses a simple `SemVer` format. The `CadVer` format
 is no longer used in any Cordova components. The plugins no longer have an `r`
 prefix.
 
@@ -83,18 +83,24 @@ numbers of each of the tool components should be appropriate to the new
 content being added to that individual component. The exception to this
 is that when a new platform is released, and the platform pin in the CLI
 is correspondingly updated, the CLI receives a bump to its third digit, no
-matter the size of the version bump to those platform(s).
+matter the size of the version bump to those platform(s). If the CLI requires
+a change (beyond updating the pin) to handle the new platform, then the second
+digit of the CLI version may get bumped. Tools docs should be stored in each
+tool repo, so that the docs are versioned with their source code.
 
 When a user updates the version of the CLI they have installed, this CLI
 update has no effect on the platform and plugin versions that are already
 installed in their project, but they may receive a warning or notice if
 the installed platform versions are older than the versions pinned by
-the CLI. However, if they subsequently do a "cordova platform update"
+the CLI. However, if they subsequently do a `cordova platform update`
 they will get the pinned version specified in their newer CLI.
 
 The CLI version number will be the "name" of the Cordova version. Thus
 tools and platform updates will cause a bump of the "Cordova version",
 but plugins will not.
+
+Release notes should be easy for users to find and understand. This is important
+because of the non-trivial number of components.
 
 Where Cordova components have dependencies upon other Cordova components
 (i.e., CLI depends on `cordova-lib`) or upon third-party components (i.e.,
@@ -107,9 +113,9 @@ of all the Cordova components, there are two ways to do that:
 
 - using specific version numbers:
 
-    npm install cordova@3.8.0
-    cordova platform add android@4.0.1
-    cordova plugin add org.apache.cordova.device@1.2.3
+        npm install cordova@3.8.0
+        cordova platform add android@4.0.1
+        cordova plugin add org.apache.cordova.device@1.2.3
 
 - `cordova --experimental save` and `cordova --experimental restore`.
 
@@ -136,6 +142,31 @@ across the whole tree. Until then, only part of the tree is properly pinned.
  3. __Platform Releases__
    * Release whenever platform maintainers decide they want to release
    * Tools also get updated with a platform release
+
+When a component is released, it is tested against the most recent released
+version of its peer components. Note that this is the only combination that is
+tested by the community. For example, when a new Android platform is
+released, it was tested against the latest released tools and plugins. Another
+example, when a plugin is released, it is tested against the latest released
+platforms and tools.
+
+Users are encouraged to use versions that are "date clustered". The reason for
+this is the testing described in the previous paragraph. Attemping to use a
+component that is an outlier in age compared to the other components may yield
+unpredictable behavior, since that combination may not have been tested by
+the community.
+
+In general, there are no support streams for Cordova components. If there is
+a defect to be fixed or a new feature to be added, it will be done in the master
+(trunk) stream only, and made available in the next release. Fixes are not
+backported to already-released branches. There may be exceptions to this, such
+as an important security vulnerability, but these exceptions are rare.
+
+For the reason in the previous paragraph, users are encouraged to use recent
+versions of Cordova components, and to stay reasonably current with new versions
+of Cordova components. This becomes important not just for bug fixes,
+but also for any enablement of new versions of device operating systems (i.e.,
+iOS 8, Android L, etc). This enablement is not backported to older versions.
 
 Related docs:
 * [storing-repo-versions-design.md](storing-repo-versions-design.md)

@@ -97,7 +97,7 @@ but plugins will not.
 Where Cordova components have dependencies upon other Cordova components
 (i.e., CLI depends on `cordova-lib`) or upon third-party components (i.e.,
 CLI depends on `nopt`), the `package.json` should fully pin the version of
-the dependent component (i.e., "nopt: "2.3.4") (dependency pinning).
+the dependent component (i.e., "nopt": "2.3.4") (dependency pinning).
 This is in lieu of npm-shrinkwrap since npm-shrinkwrap is not reasonably mature.
 
 For users that want to install a "fixed recipie" of specific versions
@@ -114,7 +114,7 @@ of all the Cordova components, there are two ways to do that:
 Do note that third-party dependencies which themselves have dependencies on
 other third-party content (i.e., `nopt` depends on `abbrev`), those relationships
 may not be fully pinned since we don't have control of those third-party
-contents. For example, `nopt` 2.2.1 may specify a dependency on version 1.x.x of
+contents. For example, `nopt` 2.2.1 may specify a non-pinned dependency on version 1.x.x of
 `abbrev`. So a user may get different versions of `abbrev` at different times
 even though they consistently executed `npm install cordova@3.8.0`. As
 npm-shrinkwrap matures, we hope that it will take care of dependency pinning

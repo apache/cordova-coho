@@ -26,7 +26,7 @@
 `SemVer` ([Semantic Version](http://www.semver.org)) will be used as the
 version format for all components, including platforms, plugman, CLI, core
 plugins. Doing so is important when describing dependencies in a sane way
-(e.g. within plugin.xml files). Although the CLI previously used a 
+(e.g. within plugin.xml files). Although the CLI previously used a
 `CadVer-SemVer` format, it now uses a simple SemVer format. The `CadVer` format
 is no longer used in any Cordova components. The plugins no longer have an `r`
 prefix.
@@ -53,7 +53,7 @@ the most recent version of that plugin by default, though alternately the user
 may manually specify an explicit version of that plugin to be installed (i.e.,
 `cordova plugin add org.apache.cordova.device@1.2.0`). Plugin docs should be
 stored in each plugin repo, so that the docs are versioned with their source
-code
+code.
 
 Platform versions will all be separate and independent. So there may be a
 "3.7.0" of the iOS platform and a "4.0.0" of the Android platform at the same
@@ -70,11 +70,11 @@ Platforms will have an &lt;engine&gt; tag or equivalent, to specify when a
 platform needs a newer version of the CLI.
 
 `cordova-js` versions should continue to be single-sourced, meaning that when
-`cordova-js` is used by multiple components such as `cordova-lib` or 
+`cordova-js` is used by multiple components such as `cordova-lib` or
 `cordova-android`, the `cordova-js` version number should not be manually
 modified upon insertion to the consuming component, but instead should retain
-its build-time value. This means that there may be different versions of 
-`cordova-js` in use across each Cordova component.
+its build-time value. This means that there may be different versions of
+`cordova-js` in use across Cordova components.
 
 `cordova-lib`, `plugman`, and CLI versions will all be separate. So there
 may be a "0.25.3" version of `plugman` and a "1.3.2" version of `cordova-lib`
@@ -89,7 +89,7 @@ When a user updates the version of the CLI they have installed, this CLI
 update has no effect on the platform and plugin versions that are already
 installed in their project, but they may receive a warning or notice if
 the installed platform versions are older than the versions pinned by
-the CLI. However, if they subsequently do a "cordova platform upgrade"
+the CLI. However, if they subsequently do a "cordova platform update"
 they will get the pinned version based on the CLI.
 
 The CLI version number will be the "name" of the Cordova version. Thus
@@ -99,18 +99,28 @@ but plugins will not.
 Where Cordova components have dependencies upon other Cordova components
 (i.e., CLI depends on `cordova-lib`) or upon third-party components (i.e.,
 CLI depends on `nopt`), the `package.json` should fully pin the version of
-the dependent component (i.e., "nopt: "2.3.4"). This is in lieu of 
-npm-shrinkwrap since npm-shrinkwrap is not reasonably mature.
+the dependent component (i.e., "nopt: "2.3.4") (dependency pinning).
+This is in lieu of npm-shrinkwrap since npm-shrinkwrap is not reasonably mature.
 
 For users that want to install a "fixed recipie" of specific versions
-of these components, there are two ways to do that:
+of all the Cordova components, there are two ways to do that:
 
-- `cordova --save` and `cordova --restore`
 - using specific version numbers:
 
     npm install cordova@3.8.0
     cordova platform add android@4.0.1
     cordova plugin add org.apache.cordova.device@1.2.3
+
+- `cordova --experimental save` and `cordova --experimental restore`.
+
+Do note that third-party dependencies which themselves have dependencies on
+other third-party content (i.e., `nopt` depends on `abbrev`), those relationships
+may not be fully pinned since we don't have control of those third-party
+content. For example, `nopt` 2.2.1 may specify a dependency on version 1.x.x of
+`abbrev`. So a user may get different versions of `abbrev` at different times
+even though they consistently executed `npm install cordova@3.8.0`. As
+npm-shrinkwrap matures, we hope that it will take care of dependency pinning
+across the whole tree. Until then, only part of the tree is properly pinned.
 
 # Release Strategies
  1. __On-Demand Releases__

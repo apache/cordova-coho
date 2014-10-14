@@ -84,23 +84,15 @@ content being added to that individual component. The exception to this
 is that when a new platform is released, and the platform pin in the CLI
 is correspondingly updated, the CLI receives a bump to its third digit, no
 matter the size of the version bump to those platform(s). If the CLI requires
-a change (beyond updating the pin) to handle the new platform, then the second
-digit of the CLI version may get bumped. Tools docs should be stored in each
+a change (beyond updating the pin) to handle the new platform, or if the CLI
+has other changes, then the second or even first
+digit of the CLI version may get bumped - the `SemVer` semantics still
+apply for the CLI. Tools docs should be stored in each
 tool repo, so that the docs are versioned with their source code.
-
-When a user updates the version of the CLI they have installed, this CLI
-update has no effect on the platform and plugin versions that are already
-installed in their project, but they may receive a warning or notice if
-the installed platform versions are older than the versions pinned by
-the CLI. However, if they subsequently do a `cordova platform update`
-they will get the pinned version specified in their newer CLI.
 
 The CLI version number will be the "name" of the Cordova version. Thus
 tools and platform updates will cause a bump of the "Cordova version",
 but plugins will not.
-
-Release notes should be easy for users to find and understand. This is important
-because of the non-trivial number of components.
 
 Where Cordova components have dependencies upon other Cordova components
 (i.e., CLI depends on `cordova-lib`) or upon third-party components (i.e.,
@@ -127,6 +119,24 @@ contents. For example, `nopt` 2.2.1 may specify a dependency on version 1.x.x of
 even though they consistently executed `npm install cordova@3.8.0`. As
 npm-shrinkwrap matures, we hope that it will take care of dependency pinning
 across the whole tree. Until then, only part of the tree is properly pinned.
+
+## Upgrade Behavior
+
+When a user updates the version of the CLI they have installed, this CLI
+update has no effect on the platform and plugin versions that are already
+installed in their project, but they may receive a warning or notice if
+the installed platform versions are older than the versions pinned by
+the CLI. However, if they subsequently do a `cordova platform update`
+they will get the pinned version specified in their newer CLI.
+
+Release notes should be easy for users to find and understand. This is important
+because of the non-trivial number of components.
+
+At some future time, there may be added a `cordova upgrade` command,
+which would install the new pinned versions of all platforms (possibly
+replacing, or possibly alongside existing platforms), and not attempt to update
+a specific platform in-place. There are cases where users have modified platform
+native code.
 
 # Release Strategies
  1. __On-Demand Releases__

@@ -49,7 +49,7 @@ Plugin versions will all be separate and independent. So there may be a "1.2.0"
 of the Device plugin, and a "3.4.5" of the Camera plugin at the same time.
 The bumping of the version numbers of each plugin should be appropriate to the
 new content added to that plugin. The `cordova plugin add` command will add
-the most recent version of that plugin by default, though alternately the user
+the most recent compatible version of that plugin by default, though alternately the user
 may manually specify an explicit version of that plugin to be installed (i.e.,
 `cordova plugin add org.apache.cordova.device@1.2.0`). Plugin docs should be
 stored in each plugin repo, so that the docs are versioned with their source
@@ -67,7 +67,7 @@ The CLI will hold the list of default versions for each platform
 platform repo, so that the docs are versioned with their source code.
 
 Platforms will have an &lt;engine&gt; tag or equivalent, to specify when a
-platform needs a newer version of the CLI.
+platform requires a newer version of the CLI.
 
 `cordova-js` versions should continue to be single-sourced, meaning that when
 `cordova-js` is used by multiple components such as `cordova-lib` or
@@ -90,7 +90,7 @@ update has no effect on the platform and plugin versions that are already
 installed in their project, but they may receive a warning or notice if
 the installed platform versions are older than the versions pinned by
 the CLI. However, if they subsequently do a "cordova platform update"
-they will get the pinned version based on the CLI.
+they will get the pinned version specified in their newer CLI.
 
 The CLI version number will be the "name" of the Cordova version. Thus
 tools and platform updates will cause a bump of the "Cordova version",
@@ -116,7 +116,7 @@ of all the Cordova components, there are two ways to do that:
 Do note that third-party dependencies which themselves have dependencies on
 other third-party content (i.e., `nopt` depends on `abbrev`), those relationships
 may not be fully pinned since we don't have control of those third-party
-content. For example, `nopt` 2.2.1 may specify a dependency on version 1.x.x of
+contents. For example, `nopt` 2.2.1 may specify a dependency on version 1.x.x of
 `abbrev`. So a user may get different versions of `abbrev` at different times
 even though they consistently executed `npm install cordova@3.8.0`. As
 npm-shrinkwrap matures, we hope that it will take care of dependency pinning

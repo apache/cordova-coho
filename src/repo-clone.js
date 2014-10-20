@@ -33,7 +33,7 @@ module.exports = function*(argv) {
                'Usage: $0 clone --repo=name [--repo=othername]')
         .argv;
 
-    if (argv.h) {
+    if (argv.h || argv.r == 'auto') {
         optimist.showHelp();
         process.exit(1);
     }

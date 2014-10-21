@@ -40,6 +40,10 @@ var COMMON_RAT_EXCLUDES = [
     'node_modules',
     'thirdparty',
     'package.json',
+    'component.json',
+    '*.xcworkspacedata',
+    '*.xccheckout',
+    '*.xcscheme',
     ];
 
 module.exports = function*() {

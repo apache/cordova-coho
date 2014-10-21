@@ -41,7 +41,13 @@ var platformRepos = [
         repoName: 'cordova-ios',
         jiraComponentName: 'iOS',
         cordovaJsPaths: ['CordovaLib/cordova.js'],
-        versionFilePaths: [path.join('CordovaLib', 'VERSION')]
+        versionFilePaths: [path.join('CordovaLib', 'VERSION')],
+        ratExcludes: [
+            // yes, not .gitignore
+            'gitignore',
+            // licenses for both below are in the cordova-ios LICENSE file
+            'NSData+Base64.h',
+            'NSData+Base64.m'        ]
     }, {
         title: 'BlackBerry',
         id: 'blackberry',

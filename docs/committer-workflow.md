@@ -153,6 +153,17 @@ The `git rebase -i` step is your chance to clean up the commit messages and to c
  * Click the "Resolve Issue" button
    * Add a comment saying what version the commit is in (e.g. Fixed in 0.1.3-dev).
 
+### Step 9: Delete your topic branch
+
+If you created a topic branch above, and you've merged your work to master,
+delete your topic branch. This is because we don't want to accumulate a bunch
+of topic branches which don't have anything that hasn't already been merged
+to master.
+
+If your topic branch doesn't get merged to master and sits around for a long
+time to the point of becoming stale or abandoned, also please consider
+deleting those topic branches. No sense in letting cruft accumulate.
+
 # Which Branch to Commit To
 
 ### Platforms, mobile-spec, cordova-js, cordova-docs:

@@ -184,7 +184,7 @@ module.exports = function*() {
     });
     opt.usage('Creates an issue in JIRA for releasing a new version of Cordova, including creating all subtasks.\n' +
               '\n' +
-              'Usage: $0 create-release-bug --version=3.0.0 --username=Alice --password=Passw0rd');
+              'Usage: $0 create-release-bug [--pretend] --version=3.0.0 --username=Alice --password=Passw0rd');
     var argv = opt.argv;
 
     if (argv.h) {

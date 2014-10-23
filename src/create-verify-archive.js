@@ -49,7 +49,7 @@ exports.createCommand = function*(argv) {
         .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag or hash.\n' +
                'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
                '\n' +
-               'Usage: $0 create-archive -r plugman -r cli --dest cordova-dist-dev/CB-1111')
+               'Usage: $0 create-archive [--tag tagname] [--sign] --repo=name [-r repos] --dest cordova-dist-dev/CB-1111')
         .argv;
 
     if (argv.h) {

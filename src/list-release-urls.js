@@ -32,8 +32,9 @@ module.exports = function*(argv) {
          })
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
-        .usage('.\n' +
-               'Usage: $0 list-release-urls')
+        .usage('List the apache git repo urls for release artifacts.\n' +
+               '\n' +
+               'Usage: $0 list-release-urls [-r repos] --version=2.7.1-rc2')
         .argv;
 
     if (argv.h) {

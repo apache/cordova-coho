@@ -36,7 +36,7 @@ module.exports = function*(argv) {
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.\n\n' +
-               'Usage: $0 check-license --repo=name [--repo=othername]')
+               'Usage: $0 check-license --repo=name [-r repos]')
         .argv;
 
     if (argv.h) {

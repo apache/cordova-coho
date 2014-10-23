@@ -32,7 +32,7 @@ module.exports = function*() {
                'Usage: $0 for-each "shell command"')
         .argv;
 
-    if (argv.h) {
+    if (argv.h || argv._.length <= 1) {
         optimist.showHelp();
         process.exit(1);
     }

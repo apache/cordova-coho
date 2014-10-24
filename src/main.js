@@ -125,6 +125,10 @@ module.exports = function() {
             name: 'check-license',
             desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
             entryPoint: lazyRequire('./check-license')
+        }, {
+            name: 'nightly',
+            desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
+            entryPoint: lazyRequire('./nightly')
         }
     ];
     var commandMap = {};

@@ -417,6 +417,7 @@ var repoGroups = {
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
 repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);
+repoGroups['nightly'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('lib')]);
 
 repoGroups.__defineGetter__('auto', function() {
     return allRepos.filter(function(repo) {

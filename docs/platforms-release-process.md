@@ -120,7 +120,7 @@ Tag:
 
 cordova-cli doesn't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
 
-Update the tool to point to the new repo versions (within `cordova-lib/platforms.js`)
+Update the tool to point to the new repo versions (within `cordova-lib/src/cordova/platformsConfig.json`)
 
 Instead of the normal `npm publish` flow:
 

@@ -53,20 +53,21 @@ module.exports = function*(argv) {
 
     //Update Repos
     yield repoupdate.updateRepos(repos);
-    
-    //Remove any local changes for cli & lib
-    yield repoutil.forEachRepo([cordovaLib, cli], function*() {
-        gitutil.resetFromOrigin();
-    });
-    
+
+    //remove local changes and sync up with remote master
+    yield repoutil.forEachRepo(repos, function*() {
+        yield gitutil.gitClean();
+        yield gitutil.resetFromOrigin();
+    })
+        
     //get SHAS from platforms
     var SHAJSON = yield retrieveSha(repos);
     
     //save SHAJSON in cordova-cli repo
     yield repoutil.forEachRepo([cli], function*() {
         //need to get the path to cordova-cli using executil
-        var cordovaclidir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
-        fs.writeFile((path.join(cordovaclidir, 'shas.json')), JSON.stringify(SHAJSON, null, 4), 'utf8', function(err) {
+        var cordovaclidir = process.cwd(); 
+        fs.writeFileSync((path.join(cordovaclidir, 'shas.json')), JSON.stringify(SHAJSON, null, 4), 'utf8', function(err) {
             if (err) return console.log (err);
         });
 
@@ -76,7 +77,7 @@ module.exports = function*(argv) {
     var cordovalibdir;
     yield repoutil.forEachRepo([cordovaLib], function*() {
         //need to get the path to cordova-lib using executil
-        cordovalibdir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
+        cordovalibdir = process.cwd(); 
     });
 
     yield updatePlatformsFile(path.join(cordovalibdir, 'src/cordova/platformsConfig.json'), SHAJSON);
@@ -88,7 +89,7 @@ module.exports = function*(argv) {
     var cordovaLibVersion;
     //update package.json version for cli + lib, update lib reference for cli
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
-        var dir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
+        var dir = process.cwd(); 
         var packageJSON = require(dir+'/package.json');
         packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion;
 
@@ -98,7 +99,7 @@ module.exports = function*(argv) {
             packageJSON.dependencies['cordova-lib'] = cordovaLibVersion;
         }
 
-        fs.writeFile(dir+'/package.json', JSON.stringify(packageJSON, null, 4), 'utf8', function(err) {
+        fs.writeFileSync(dir+'/package.json', JSON.stringify(packageJSON, null, 4), 'utf8', function(err) {
             if (err) return console.log (err);
         });
     });
@@ -132,17 +133,13 @@ function *updatePlatformsFile(file, shajson) {
         }
     });
 
-    fs.writeFile(file, JSON.stringify(platformsJS, null, 4), 'utf8', function(err) {
+    fs.writeFileSync(file, JSON.stringify(platformsJS, null, 4), 'utf8', function(err) {
         if (err) return console.log (err);
     });
 }
 
 function *runTests(cli, lib) {
     yield repoutil.forEachRepo([cli, lib], function *(repo) {
-        if (repo.id === 'lib'){
            yield executil.execHelper(executil.ARGS('npm test'), false, false);
-        } else {
-           yield executil.execHelper(executil.ARGS('npm test'), false, false);
-        }
     });
 }

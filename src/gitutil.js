@@ -93,3 +93,7 @@ exports.hashForRef = function(ref) {
 exports.resetFromOrigin = function() {
     return executil.execHelper(executil.ARGS('git reset --hard origin/master'), false, true);
 }
+
+exports.gitClean = function() {
+    return executil.execHelper(executil.ARGS('git clean -d -f'), false, true);
+}

@@ -451,8 +451,10 @@ exports.forEachRepo = function*(repos, func) {
 
         isInForEachRepoFunction = true;
         
+        //cordova-lib lives inside of a top level cordova-lib directory
         if(repo.id === 'lib'){
-            newPath = newPath + '/cordova-lib'
+            newPath = newPath + '/cordova-lib';
+            origPath = origPath + '/..';
         } 
         shelljs.cd(newPath);
 
@@ -461,9 +463,6 @@ exports.forEachRepo = function*(repos, func) {
         }
         yield func(repo);
         
-        if(repo.id === 'lib'){
-            origPath = origPath + '/..';
-        }
         shelljs.cd(origPath);
 
         isInForEachRepoFunction = !((origPath === '..')||(origPath === '../..'));

@@ -140,7 +140,7 @@ Create archives from your tags:
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
 
 Upload: (replace `android` with your platform)
 

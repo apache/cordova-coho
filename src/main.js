@@ -129,6 +129,10 @@ module.exports = function() {
             name: 'nightly',
             desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
             entryPoint: lazyRequire('./nightly')
+        }, {
+            name:'npm-publish-tag',
+            desc: 'Publishes current version of repo to specified tag',
+            entryPoint: lazyRequire('./npm-publish', 'publishTag')
         }
     ];
     var commandMap = {};

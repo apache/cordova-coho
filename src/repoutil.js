@@ -450,14 +450,23 @@ exports.forEachRepo = function*(repos, func) {
         var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
 
         isInForEachRepoFunction = true;
+        
+        if(repo.id === 'lib'){
+            newPath = newPath + '/cordova-lib'
+        } 
         shelljs.cd(newPath);
+
         if (shelljs.error()) {
             apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
         }
         yield func(repo);
+        
+        if(repo.id === 'lib'){
+            origPath = origPath + '/..';
+        }
         shelljs.cd(origPath);
 
-        isInForEachRepoFunction = origPath != '..';
+        isInForEachRepoFunction = !((origPath === '..')||(origPath === '../..'));
     }
 }
 

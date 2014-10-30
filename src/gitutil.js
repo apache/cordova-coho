@@ -90,4 +90,6 @@ exports.hashForRef = function(ref) {
     return executil.execHelper(executil.ARGS('git rev-parse', ref), true, true);
 };
 
-
+exports.resetFromOrigin = function() {
+    return executil.execHelper(executil.ARGS('git reset --hard origin/master'), false, true);
+}

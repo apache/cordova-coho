@@ -23,19 +23,20 @@ var print = apputil.print;
 
 var gitCommitCount = 0;
 
-exports.ARGS = function(s, var_args) {
+function ARGS(s, var_args) {
     var ret = s.trim().split(/\s+/);
     for (var i = 1; i < arguments.length; ++i) {
         ret.push(arguments[i]);
     }
     return ret;
 }
+exports.ARGS = ARGS;
 
 // silent = false ==> print command and output
 // silent == true or 1 ==> don't print command, don't print output
 // silent == 2 ==> don't print command, print output
 // silent == 3 ==> print command, don't print output
-exports.execHelper = function(cmdAndArgs, silent, allowError) {
+function execHelper(cmdAndArgs, silent, allowError) {
     // there are times where we want silent but not allowError.
     if (null == allowError) {
         // default to allow failure if being silent.
@@ -58,8 +59,9 @@ exports.execHelper = function(cmdAndArgs, silent, allowError) {
         process.exit(2);
     });
 }
+exports.execHelper = execHelper;
 
-exports.reportGitPushResult = function(repos, branches) {
+function reportGitPushResult(repos, branches) {
     print('');
     if (gitCommitCount) {
         var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
@@ -75,3 +77,13 @@ exports.reportGitPushResult = function(repos, branches) {
     }
 }
 
+exports.reportGitPushResult = reportGitPushResult;
+
+function *execOrPretend(cmd, pretend) {
+    if (pretend) {
+        print('PRETENDING TO RUN: ' + cmd.join(' '));
+    } else {
+        return yield execHelper(cmd);
+    }
+}
+exports.execOrPretend = execOrPretend;

@@ -17,48 +17,109 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
 var executil = require('./executil');
+var optimist = require('optimist');
 var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var retrieveSha = require('./retrieve-sha');
-var print = apputil.print;
+var npmpublish = require('./npm-publish');
+var versionutil = require('./versionutil');
+var gitutil = require('./gitutil');
 var fs = require('fs');
 var path = require('path');
 
-module.exports = function*() {
-    var repos = flagutil.computeReposFromFlag('nightly');    
-    console.log(repos);
-    //Update Repos
-    yield repoupdate.updateRepos(repos, []);
-
-    var SHAJSON = yield retrieveSha(repos);
-
-    //console.log(SHAJSON['android']);
-    //save SHAJSON in cordova-cli repo
-
-    //Update platforms at cordova-lib/src/cordova/platforms.js
-    //console.log(repos);
+module.exports = function*(argv) {
+    var repos = flagutil.computeReposFromFlag('nightly');
+    var cli = repoutil.getRepoById('cli');
     var cordovaLib = repoutil.getRepoById('lib');
-    //Need to run forEachRepo 
-    yield repoutil.forEachRepo([cordovaLib], function*() {
-        //need to get the path to cordova-lib using executil
-        var cordovalibdir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
-        yield updatePlatformsFile(path.join(cordovalibdir, 'cordova-lib/src/cordova/platforms.js'), SHAJSON);
+    var opt = flagutil.registerHelpFlag(optimist);
+
+    argv = opt
+        .usage('Publish CLI & LIB to NPM under nightly tag. \n' +
+               'Cordova platform add uses latest commits to the platforms. \n' +
+               'Usage: $0 nightly'
+        )
+        .options('pretend', {
+            desc: 'Don\'t actually publish to npm, just print what would be run.',
+            type:'boolean'
+        })
+        .argv;    
+
+    if(argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+
+    //Update Repos
+    yield repoupdate.updateRepos(repos);
+    
+    //Remove any local changes for cli & lib
+    yield repoutil.forEachRepo([cordovaLib, cli], function*() {
+        gitutil.resetFromOrigin();
+    });
+    
+    //get SHAS from platforms
+    var SHAJSON = yield retrieveSha(repos);
+    
+    //save SHAJSON in cordova-cli repo
+    yield repoutil.forEachRepo([cli], function*() {
+        //need to get the path to cordova-cli using executil
+        var cordovaclidir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
+        fs.writeFile((path.join(cordovaclidir, 'shas.json')), JSON.stringify(SHAJSON, null, 4), 'utf8', function(err) {
+            if (err) return console.log (err);
+        });
+
     });
 
+    //Update platform references at cordova-lib/src/cordova/platformsConfig.json
+    var cordovalibdir;
+    yield repoutil.forEachRepo([cordovaLib], function*() {
+        //need to get the path to cordova-lib using executil
+        cordovalibdir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
+    });
+
+    yield updatePlatformsFile(path.join(cordovalibdir, 'src/cordova/platformsConfig.json'), SHAJSON);
+
+
+    var currentDate = new Date();
+    var nightlyVersion = '-nightly.' + currentDate.getFullYear() + '.' +
+                        currentDate.getMonth() + '.' + currentDate.getDate();
+    var cordovaLibVersion;
+    //update package.json version for cli + lib, update lib reference for cli
+    yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
+        var dir = yield executil.execHelper(executil.ARGS('pwd'), true, true);
+        var packageJSON = require(dir+'/package.json');
+        packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion;
+
+        if(repo.id === 'lib'){
+            cordovaLibVersion = packageJSON.version;
+        } else {
+            packageJSON.dependencies['cordova-lib'] = cordovaLibVersion;
+        }
+
+        fs.writeFile(dir+'/package.json', JSON.stringify(packageJSON, null, 4), 'utf8', function(err) {
+            if (err) return console.log (err);
+        });
+    });
+
+    //run CLI + cordova-lib tests
+    //TODO: Link cli to use local lib (done on my machine, need to automate this for others)
+    yield runTests(cli, cordovaLib);
+
+    //publish to npm under nightly tag
+    argv.tag = 'nightly';
+    argv.r = ['lib', 'cli'];
+    yield npmpublish.publishTag(argv);
 }
 
 //updates platforms.js with the SHA
-function *updatePlatformsFile(file, shajson){
-    platformsJS = require(file);
-    var repos = flagutil.computeReposFromFlag('active-platform');
-    //console.log(platformsJS);
+function *updatePlatformsFile(file, shajson) {
+    var platformsJS = require(file);
+
+    var repos = flagutil.computeReposFromFlag('active-platform');  
+
     yield repoutil.forEachRepo(repos, function*(repo) {
-        console.log(repo);
         if(repo.id === 'windowsphone'){
             platformsJS['wp8'].version = shajson[repo.id]; 
         } else if(repo.id === 'windows') {
@@ -71,16 +132,17 @@ function *updatePlatformsFile(file, shajson){
         }
     });
 
-    fs.readFile(file, 'utf8', function (err, data) {
-    if (err) {
-        console.log(err);
-    }
-    var result = data.replace(/(({(.\n)*(.|\n)*)version:\s[\d\w'.]*(\n)(.)*(\n)})/g, JSON.stringify(platformsJS, null, 4));
-    
-    fs.writeFile(file, result, 'utf8', function(err) {
+    fs.writeFile(file, JSON.stringify(platformsJS, null, 4), 'utf8', function(err) {
         if (err) return console.log (err);
     });
-
-    }); 
 }
 
+function *runTests(cli, lib) {
+    yield repoutil.forEachRepo([cli, lib], function *(repo) {
+        if (repo.id === 'lib'){
+           yield executil.execHelper(executil.ARGS('npm test'), false, false);
+        } else {
+           yield executil.execHelper(executil.ARGS('npm test'), false, false);
+        }
+    });
+}

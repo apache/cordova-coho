@@ -61,12 +61,16 @@ Ensure you're up-to-date:
 
 See if any dependencies are outdated
 
-    (cd cordova-js && npm outdated)
-    (cd cordova-lib/cordova-lib && npm outdated)
-    (cd cordova-plugman && npm outdated)
-    (cd cordova-cli && npm outdated)
+    (cd cordova-js && npm outdated --depth=0)
+    (cd cordova-lib/cordova-lib && npm outdated --depth=0)
+    (cd cordova-plugman && npm outdated --depth=0)
+    (cd cordova-cli && npm outdated --depth=0)
 
-Update them in each project's `pacakge.json` file. Make sure to run through the test section below for compatability issues.
+Update them in each project's `pacakge.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies. As of this writing, the following packages are behind and are not safe to upgrade:
+ * semver - in latest versions of semver-node "^0.x.y" is always equivalent to "=0.x.y" (for major=0). This breaks some cordova engine compat checks. [Background](https://github.com/npm/npm/issues/5695#issuecomment-49765893).
+ * npm & npmconf - npm 2.x includes the above semver change among other things. More info [here](http://blog.npmjs.org/post/98131109725/npm-2-0-0).
+ * nopt for plugman - see [CB-7915](https://issues.apache.org/jira/browse/CB-7915)
+ * elementtree - elementtree@0.1.6 breaks tests in cordova-lib, investigation needed.
 
 ## Test
 Link repos:
@@ -123,7 +127,7 @@ If the changes merit it, manually bump the major / minor version instead of the 
     ( cd cordova-plugman; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
 
     ( cd cordova-cli; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
-    
+
     ( cd cordova-js; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
 
 Update each repo's RELEASENOTES.md file with changes
@@ -140,7 +144,7 @@ Update the version of cordova-lib that cli and plugman depend on:
     v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova.lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
-    
+
 Update the version of cordova-js that cordova-lib depends on:
 
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
@@ -161,9 +165,9 @@ Commit these changes together into one commit
 ## Create release branches
 
     (cd cordova-cli; git checkout -b 4.0.x master)
-    (cd cordova-lib/cordova-lib; git checkout -b 4.0.x master) 
+    (cd cordova-lib/cordova-lib; git checkout -b 4.0.x master)
     (cd cordova-js; git checkout -b 3.7.x master)
-    (cd cordova-plugman; git checkout -b 0.2.x master) 
+    (cd cordova-plugman; git checkout -b 0.2.x master)
 
 ## Re-introduce -dev suffix to versions
 
@@ -342,7 +346,7 @@ If there are any dependencies or devDependencies that are out of date, open a Ji
 ## Finally:
 
  * Update *these instructions* if they were missing anything.
- 
+
 ## Outdated Shrinkwrap
 
 These instructions are being kept here inscase we decide to start using shrinkwrap again.
@@ -380,7 +384,7 @@ Next, publish these to npm, and be sure to use the "rc" tag in npm.
 
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
- 
+
 Clear the npm cache. If you don't then the `from` and `resolved` fields in the shrinkwrap may not be generated properly.
 
     npm cache clear

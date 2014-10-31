@@ -112,9 +112,11 @@ module.exports = function*(argv) {
     yield runTests(cli, cordovaLib);
 
     //publish to npm under nightly tag
-    argv.tag = 'nightly';
-    argv.r = ['lib', 'cli'];
-    yield npmpublish.publishTag(argv);
+    var options = {};
+    options.tag = 'nightly';
+    options.r = ['lib', 'cli'];
+    optoins.pretend = argv.pretend;
+    yield npmpublish.publishTag(options);
 }
 
 //updates platforms.js with the SHA

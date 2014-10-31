@@ -28,6 +28,7 @@ var versionutil = require('./versionutil');
 var gitutil = require('./gitutil');
 var fs = require('fs');
 var path = require('path');
+var npmlink = require('./npm-link');
 
 module.exports = function*(argv) {
     var repos = flagutil.computeReposFromFlag('nightly');
@@ -104,8 +105,10 @@ module.exports = function*(argv) {
         });
     });
 
+    //npm link repos that should be linked
+    yield npmlink();
+
     //run CLI + cordova-lib tests
-    //TODO: Link cli to use local lib (done on my machine, need to automate this for others)
     yield runTests(cli, cordovaLib);
 
     //publish to npm under nightly tag

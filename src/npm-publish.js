@@ -24,17 +24,20 @@ var repoutil = require('./repoutil');
 var executil = require('./executil');
 var print = apputil.print;
 
-exports.publishTag = function*(argv) {
+exports.publishTag = function*(options) {
     var opt = flagutil.registerHelpFlag(optimist);
    
     //argv was passed through another function, set defaults to appease demand.
-    if(argv) {
+    if(options) {
         opt = opt
             .options('tag', {
-                default:argv.tag
+                default:options.tag
             })
             .options('r',  {
-                default:argv.r
+                default:options.r
+            })
+            .options('pretend', {
+                default:options.pretend
             })
     }
 

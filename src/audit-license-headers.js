@@ -51,7 +51,7 @@ module.exports = function*() {
     opt = flagutil.registerHelpFlag(opt);
     opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
               '\n' +
-              'Usage: $0 audit-license-headers --repo=ios')
+              'Usage: $0 audit-license-headers --repo=name [-r repos]')
     argv = opt.argv;
 
     if (argv.h) {

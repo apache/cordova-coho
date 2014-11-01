@@ -174,7 +174,7 @@ exports.prepareReleaseBranchCommand = function*() {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-release-branch --version=2.8.0-rc1')
+               'XXX Usage: $0 prepare-release-branch --version=2.8.0-rc1')
     );
     var repos = flagutil.computeReposFromFlag(argv.r);
     var version = flagutil.validateVersionString(argv.version);
@@ -227,9 +227,9 @@ exports.prepareReleaseBranchCommand = function*() {
 
 exports.tagReleaseBranchCommand = function*(argv) {
     argv = configureReleaseCommandFlags(optimist
-        .usage('Tags a release branches.\n' +
+        .usage('Tags release branches.\n' +
                '\n' +
-               'Usage: $0 tag-release --version=2.8.0-rc1')
+               'XXX Usage: $0 tag-release [--pretend] --version=2.8.0-rc1 [-r repo]')
         .options('pretend', {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
             type: 'boolean'

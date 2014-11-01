@@ -29,10 +29,10 @@ module.exports = function*() {
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
                '\n' +
-               'Usage: $0 for-each "shell command"')
+               'Usage: $0 for-each [-r reponame] "shell command"')
         .argv;
 
-    if (argv.h) {
+    if (argv.h || argv._.length <= 1) {
         optimist.showHelp();
         process.exit(1);
     }

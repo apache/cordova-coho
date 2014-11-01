@@ -47,7 +47,7 @@ module.exports = function*() {
                    })
         .usage('Shows formatted git log for changes in the past 7 days.\n' +
                '\n' +
-               'Usage: $0 last-week [--repo=ios] [--me] [--days=7]');
+               'Usage: $0 last-week [--repo=ios] [--me] [--days=7] [--cherry-picks] [--user=someone]');
     argv = opt.argv;
 
     if (argv.h) {

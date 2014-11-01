@@ -30,7 +30,7 @@ module.exports = function*(argv) {
     opt = flagutil.registerDepthFlag(opt);
     var argv = opt
         .usage('Clones git repositories into the current working directory. If the repositories are already cloned, then this is a no-op.\n\n' +
-               'Usage: $0 clone --repo=name [--repo=othername]')
+               'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos]')
         .argv;
 
     if (argv.h || argv.r == 'auto') {

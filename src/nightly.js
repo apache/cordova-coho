@@ -115,7 +115,7 @@ module.exports = function*(argv) {
     var options = {};
     options.tag = 'nightly';
     options.r = ['lib', 'cli'];
-    optoins.pretend = argv.pretend;
+    options.pretend = argv.pretend;
     yield npmpublish.publishTag(options);
 }
 

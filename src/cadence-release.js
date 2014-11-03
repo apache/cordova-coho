@@ -140,7 +140,7 @@ function *updateRepoVersion(repo, version) {
     } else {
         console.warn('No VERSION file exists in repo ' + repo.repoName);
     }
-    
+
     // Update the package.json VERSION.
     var packageFilePaths = repo.packageFilePaths || ['package.json'];
     if (fs.existsSync(packageFilePaths[0])) {
@@ -149,7 +149,7 @@ function *updateRepoVersion(repo, version) {
             var packageJSON = JSON.parse(data);
             packageJSON.version = version;
             fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, "    "));
-        }); 
+        });
         if (!(yield gitutil.pendingChangesExist())) {
             print('package.json file was already up-to-date.');
         }

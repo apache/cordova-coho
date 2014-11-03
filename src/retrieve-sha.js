@@ -21,7 +21,7 @@ var executil = require('./executil');
 
 module.exports = function *(repos) {
     var shas = {};
-    yield repoutil.forEachRepo(repos, function*(repo) { 
+    yield repoutil.forEachRepo(repos, function*(repo) {
         shas[repo.id] = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), true, true);
     });
     return shas;

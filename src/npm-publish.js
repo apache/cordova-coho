@@ -20,13 +20,13 @@ under the License.
 var optimist = require('optimist');
 var apputil = require('./apputil');
 var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');   
+var repoutil = require('./repoutil');
 var executil = require('./executil');
 var print = apputil.print;
 
 exports.publishTag = function*(options) {
     var opt = flagutil.registerHelpFlag(optimist);
-   
+
     //argv was passed through another function, set defaults to appease demand.
     if(options) {
         opt = opt
@@ -63,7 +63,7 @@ exports.publishTag = function*(options) {
         optimist.showHelp();
         process.exit(1);
     }
-    
+
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     //npm publish --tag argv.tag

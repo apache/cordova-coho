@@ -461,19 +461,19 @@ exports.forEachRepo = function*(repos, func) {
         var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
 
         isInForEachRepoFunction = true;
-        
+
         //cordova-lib lives inside of a top level cordova-lib directory
         if(repo.id === 'lib'){
             newPath = newPath + '/cordova-lib';
             origPath = origPath + '/..';
-        } 
+        }
         shelljs.cd(newPath);
 
         if (shelljs.error()) {
             apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
         }
         yield func(repo);
-        
+
         shelljs.cd(origPath);
 
         isInForEachRepoFunction = !((origPath === '..')||(origPath === '../..'));

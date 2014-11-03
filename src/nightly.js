@@ -45,7 +45,7 @@ module.exports = function*(argv) {
             desc: 'Don\'t actually publish to npm, just print what would be run.',
             type:'boolean'
         })
-        .argv;    
+        .argv;
 
     if(argv.h) {
         optimist.showHelp();
@@ -60,14 +60,14 @@ module.exports = function*(argv) {
         yield gitutil.gitClean();
         yield gitutil.resetFromOrigin();
     })
-        
+
     //get SHAS from platforms
     var SHAJSON = yield retrieveSha(repos);
-    
+
     //save SHAJSON in cordova-cli repo
     yield repoutil.forEachRepo([cli], function*() {
         //need to get the path to cordova-cli using executil
-        var cordovaclidir = process.cwd(); 
+        var cordovaclidir = process.cwd();
         fs.writeFileSync((path.join(cordovaclidir, 'shas.json')), JSON.stringify(SHAJSON, null, 4), 'utf8', function(err) {
             if (err) return console.log (err);
         });
@@ -78,7 +78,7 @@ module.exports = function*(argv) {
     var cordovalibdir;
     yield repoutil.forEachRepo([cordovaLib], function*() {
         //need to get the path to cordova-lib using executil
-        cordovalibdir = process.cwd(); 
+        cordovalibdir = process.cwd();
     });
 
     yield updatePlatformsFile(path.join(cordovalibdir, 'src/cordova/platformsConfig.json'), SHAJSON);
@@ -90,7 +90,7 @@ module.exports = function*(argv) {
     var cordovaLibVersion;
     //update package.json version for cli + lib, update lib reference for cli
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
-        var dir = process.cwd(); 
+        var dir = process.cwd();
         var packageJSON = require(dir+'/package.json');
         packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion;
 
@@ -123,18 +123,18 @@ module.exports = function*(argv) {
 function *updatePlatformsFile(file, shajson) {
     var platformsJS = require(file);
 
-    var repos = flagutil.computeReposFromFlag('active-platform');  
+    var repos = flagutil.computeReposFromFlag('active-platform');
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         if(repo.id === 'windowsphone'){
-            platformsJS['wp8'].version = shajson[repo.id]; 
+            platformsJS['wp8'].version = shajson[repo.id];
         } else if(repo.id === 'windows') {
-            platformsJS[repo.id].version = shajson[repo.id];     
-            platformsJS['windows8'].version = shajson[repo.id]; 
+            platformsJS[repo.id].version = shajson[repo.id];
+            platformsJS['windows8'].version = shajson[repo.id];
         } else if(repo.id === 'blackberry') {
-            platformsJS['blackberry10'].version = shajson[repo.id]; 
+            platformsJS['blackberry10'].version = shajson[repo.id];
         } else {
-            platformsJS[repo.id].version = shajson[repo.id]; 
+            platformsJS[repo.id].version = shajson[repo.id];
         }
     });
 

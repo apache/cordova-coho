@@ -80,13 +80,13 @@ var hasBuiltJs = '';
 function *updateJsSnapshot(repo, version) {
     function *ensureJsIsBuilt() {
         var cordovaJsRepo = repoutil.getRepoById('js');
-        
+
         if (hasBuiltJs != version) {
             yield repoutil.forEachRepo([cordovaJsRepo], function*() {
                 yield gitutil.stashAndPop(cordovaJsRepo, function*() {
                     //git fetch and update master for cordovajs
                     yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
-                    yield gitutil.gitCheckout('master'); 
+                    yield gitutil.gitCheckout('master');
                     yield executil.execHelper(executil.ARGS('grunt compile:' +repo.id + ' --platformVersion='+version));
                     hasBuiltJs = version;
                 });
@@ -124,14 +124,14 @@ function *updateRepoVersion(repo, version) {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
         } else if (repo.id == 'ios') {
-            shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '"', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));   
+            shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '"', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
         } else if (repo.id == 'blackberry') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'lib', 'version.js'));
         } else if (repo.id == 'firefoxos') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
         } else if (repo.id == 'ubuntu') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'build', 'version'));
-        } 
+        }
         shelljs.config.fatal = false;
         if (!(yield gitutil.pendingChangesExist())) {
             print('VERSION file was already up-to-date.');
@@ -139,7 +139,7 @@ function *updateRepoVersion(repo, version) {
     } else {
         console.warn('No VERSION file exists in repo ' + repo.repoName);
     }
-    
+
     // Update the package.json VERSION.
     var packageFilePaths = repo.packageFilePaths || ['package.json'];
     if (fs.existsSync(packageFilePaths[0])) {
@@ -148,7 +148,7 @@ function *updateRepoVersion(repo, version) {
             var packageJSON = JSON.parse(data);
             packageJSON.version = version;
             fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, "    "));
-        }); 
+        });
         if (!(yield gitutil.pendingChangesExist())) {
             print('package.json file was already up-to-date.');
         }
@@ -181,7 +181,7 @@ exports.prepareReleaseBranchCommand = function*() {
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
-    
+
     yield repoutil.forEachRepo(repos, function*(repo) {
         yield gitutil.stashAndPop(repo, function*() {
             // git fetch + update master
@@ -237,7 +237,7 @@ function *tagJs(repo, version, pretend) {
             } else {
                 yield execOrPretend(executil.ARGS('git tag ' + repo.id + '-' + version));
             }
-            yield execOrPretend(executil.ARGS('git push --tags ' + repo.remoteName)); 
+            yield execOrPretend(executil.ARGS('git push --tags ' + repo.remoteName));
         });
     });
 }
@@ -296,7 +296,7 @@ exports.tagReleaseBranchCommand = function*(argv) {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }
             yield tagJs(repo, version, pretend);
-                
+
         });
     });
 

@@ -80,7 +80,7 @@ Link repos:
     (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
     (cd cordova-cli && rm -r node_modules && npm link cordova-lib && npm install)
 
-Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html).
+Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 
     coho audit-license-headers -r js | less
     coho audit-license-headers -r cli | less

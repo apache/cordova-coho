@@ -323,17 +323,28 @@ var toolRepos = [
         title: 'Cordova CLI',
         id: 'cli',
         repoName: 'cordova-cli',
-        jiraComponentName: 'CLI'
+        jiraComponentName: 'CLI',
+        ratExcludes: [
+          '*.txt',
+          'cordova.cmd'
+        ]
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
-        jiraComponentName: 'Plugman'
+        jiraComponentName: 'Plugman',
+        ratExcludes: [
+          'help.txt'
+        ]
     }, {
         title: 'Cordova Lib',
         id: 'lib',
         repoName: 'cordova-lib',
-        jiraComponentName: 'CordovaLib'
+        jiraComponentName: 'CordovaLib',
+        ratExcludes: [
+            'fixtures',
+            'platformsConfig.json'
+        ]
     }, {
         title: 'Cordova JS',
         id: 'js',

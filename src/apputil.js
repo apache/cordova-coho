@@ -20,7 +20,7 @@ under the License.
 var path = require('path');
 var chalk = require('chalk');
 
-var origWorkingDir = process.cwd();
+var origWorkingDir = path.resolve(process.cwd());
 var baseWorkingDir = origWorkingDir;
 
 exports.resolveUserSpecifiedPath = function(p) {
@@ -28,13 +28,16 @@ exports.resolveUserSpecifiedPath = function(p) {
 };
 
 exports.initWorkingDir = function(chdir) {
-    var curDir = path.resolve(origWorkingDir);
-    var newDir = chdir ? path.resolve(path.join(__dirname), '..', '..') : curDir;
-    if (curDir != newDir) {
+    if(chdir) {
+        var newDir = path.resolve(__dirname, '..', '..');
         process.chdir(newDir);
         baseWorkingDir = newDir;
     }
-    console.log('Running from ' + newDir);
+    console.log('Running from ' + baseWorkingDir);
+}
+
+exports.getBaseDir = function() {
+    return baseWorkingDir;
 }
 
 exports.fatal = function() {

@@ -458,16 +458,19 @@ exports.forEachRepo = function*(repos, func) {
     for (var i = 0; i < repos.length; ++i) {
         var repo = repos[i];
         var origPath = isInForEachRepoFunction ? process.cwd() : '..';
-        var newPath = isInForEachRepoFunction ? path.join('..', repo.repoName) : repo.repoName;
 
+        // The crazy dance with isInForEachRepoFunction and origPath is needed
+        // for nested forEachRepo calls to work. E.g repo-reset calls
+        // repo-update([oneRepo]) internally.
+        // TODO: rely less on process.cwd()
         isInForEachRepoFunction = true;
 
         //cordova-lib lives inside of a top level cordova-lib directory
         if(repo.id === 'lib'){
-            newPath = newPath + '/cordova-lib';
             origPath = origPath + '/..';
         }
-        shelljs.cd(newPath);
+        var repoDir = getRepoDir(repo);
+        shelljs.cd(repoDir);
 
         if (shelljs.error()) {
             apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
@@ -480,3 +483,13 @@ exports.forEachRepo = function*(repos, func) {
     }
 }
 
+
+function getRepoDir(repo) {
+    var baseWorkingDir = apputil.getBaseDir();
+    var repoDir = path.join(baseWorkingDir, repo.repoName);
+    if(repo.id === 'lib'){
+        repoDir = path.join(repoDir, 'cordova-lib');
+    }
+    return repoDir;
+}
+exports.getRepoDir = getRepoDir;

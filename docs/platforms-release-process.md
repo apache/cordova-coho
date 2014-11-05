@@ -282,7 +282,7 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
     cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
-    npm publish cordova-android-3.5.0.tgz
+    npm publish platforms/cordova-android-3.5.0.tgz
 
     cd ../cordova-dist-dev
     svn up

@@ -42,6 +42,12 @@ E.g.:
 
     If not, I will start the release tomorrow.
 
+    The versions to be released are:
+     - lib@x.y.z
+     - cli@
+     - plugman@
+     - cordova-js@
+
 
 ## Create JIRA issues
 
@@ -86,7 +92,6 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
     coho audit-license-headers -r lib | less
-    coho audit-license-headers -r js | less
 
 Ensure all dependencies and subdependencies have Apache-compatible licenses
 
@@ -153,7 +158,7 @@ Update the version of cordova-js that cordova-lib depends on:
 
 Commit these changes together into one commit
 
-    for l in cordova-plugman cordova-cli cordova-js cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    for l in cordova-plugman cordova-cli cordova-js cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 
 ## Tag
 
@@ -187,7 +192,7 @@ Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
 
-Create archives from your tags: (the archives for lib were already created above)
+Create archives from your tags:
 
     coho create-archive -r plugman -r cli -r lib -r js --dest cordova-dist-dev/$JIRA
 

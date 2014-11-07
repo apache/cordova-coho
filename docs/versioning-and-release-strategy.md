@@ -49,7 +49,7 @@ Plugin versions will all be separate and independent. So there may be a "1.2.0"
 of the Device plugin, and a "3.4.5" of the Camera plugin at the same time.
 The bumping of the version numbers of each plugin should be appropriate to the
 new content added to that plugin. The `cordova plugin add` command will add
-the most recent compatible version of that plugin by default, though alternately the user
+the most recent compatible version of that plugin by default. Alternately the user
 may manually specify an explicit version of that plugin to be installed (i.e.,
 `cordova plugin add org.apache.cordova.device@1.2.0`). Plugin docs should be
 stored in each plugin repo, so that the docs are versioned with their source
@@ -59,8 +59,8 @@ Platform versions will all be separate and independent. So there may be a
 "3.7.0" of the iOS platform and a "4.0.0" of the Android platform at the same
 time. The bumping of version numbers of each platform should be appropriate
 to the new content being added to that platform. The `cordova platform add`
-command will add a platform version specific to the CLI by default, though
-alternatively the user may manually specify an explicit version of that
+command will add a platform version specific to the CLI by default.
+Alternatively the user may manually specify an explicit version of that
 platform to be installed (i.e., `cordova platform add android@4.0.1`).
 The CLI will hold the list of default versions for each platform
 (i.e., platform version pinning). Platform docs should be stored in each
@@ -80,14 +80,17 @@ its build-time value. This means that there may be different versions of
 may be a "0.25.3" version of `plugman` and a "1.3.2" version of `cordova-lib`
 and a "3.8.0" version of the CLI at the same time. The bumping of version
 numbers of each of the tool components should be appropriate to the new
-content being added to that individual component. The exception to this
-is that when a new platform is released, and the platform pin in the CLI
-is correspondingly updated, the CLI receives a bump to its third digit, no
+content being added to that individual component. One exception to this
+is that when a new platform is released, and if the only update in the CLI
+is the platform pin, then the CLI receives a bump to its third digit, no
 matter the size of the version bump to those platform(s). If the CLI requires
 a change (beyond updating the pin) to handle the new platform, or if the CLI
-has other changes, then the second or even first
-digit of the CLI version may get bumped - the `SemVer` semantics still
-apply for the CLI. Tools docs should be stored in each
+has other changes, then the `SemVer` semantics still apply for the CLI -
+the second or even first digit of the CLI version may get bumped. Further,
+if `cordova-lib` or `plugman` have a version bump due to new content (beyond,
+update the pin), then the same digit of the CLI version should get bumped,
+since the CLI is primarily composed of `cordova-lib` and `plugman`.
+Tools docs should be stored in each
 tool repo, so that the docs are versioned with their source code.
 
 The CLI version number will be the "name" of the Cordova version. Thus

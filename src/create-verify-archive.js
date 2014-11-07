@@ -76,7 +76,9 @@ exports.createCommand = function*(argv) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }
             var cmd = 'npm pack';
+            /* Not needed since for-each cds to cordova-lib/cordova-lib for lib
             if (repo.id==='lib') cmd = 'npm pack cordova-'+repo.id;
+            */
             /* Not needed anymore due to package.json moving to root
             if (repo.id==='windows') cmd = 'npm pack '+repo.id;
 

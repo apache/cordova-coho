@@ -84,12 +84,12 @@ content being added to that individual component. One exception to this
 is that when a new platform is released, and if the only update in the CLI
 is the platform pin, then the CLI receives a bump to its third digit, no
 matter the size of the version bump to those platform(s). If the CLI requires
-a change (beyond updating the pin) to handle the new platform, or if the CLI
+a change beyond updating the pin to handle the new platform, or if the CLI
 has other changes, then the `SemVer` semantics still apply for the CLI -
 the second or even first digit of the CLI version may get bumped. Further,
-if `cordova-lib` or `plugman` have a version bump due to new content (beyond,
-update the pin), then the same digit of the CLI version should get bumped,
-since the CLI is primarily composed of `cordova-lib` and `plugman`.
+if `cordova-lib` or `plugman` have a version bump due to new content (beyond
+updating the pin), then at least the same digit of the CLI version should get
+bumped, since the CLI is primarily composed of `cordova-lib` and `plugman`.
 Tools docs should be stored in each
 tool repo, so that the docs are versioned with their source code.
 

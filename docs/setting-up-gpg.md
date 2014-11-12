@@ -62,7 +62,10 @@ Publish to `keys.gnupg.net`
 
 Visit http://pgp.mit.edu/ and paste in result of:
 
+    // Mac
     gpg --armor --export $KEY_ID | pbcopy
+    // Windows
+    gpg --armor --export $KEY_ID | clip
 
 Copy to your Apache homedir:
 

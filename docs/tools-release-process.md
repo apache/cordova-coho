@@ -29,6 +29,9 @@ Plugman and CLI are released at most weekly (see: [versioning-and-release-strate
 
 A tools release is performed by a single person each week. We call this person the "Release Manager". How to select the Release Manager is still TDB.
 
+## Decide on the next version numbers
+According [versioning-and-release-strategy.md](versioning-and-release-strategy.md) patch version bumps (the last of 3 numbers) should only be used for fixes and updates of references to platform versions. For any change in functionality, the second (minor) part of the version should be bumped and new branch created. Instructions for creating a new release branch are further down on this page.
+
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.
@@ -167,14 +170,15 @@ Commit these changes together into one commit
     # Tag
     for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
-## Create release branches
+## Create release branches if they don't yet exist
+Note, if you are only bumping the patch version (3rd number), use existing branch. See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md).
 
-    (cd cordova-cli; git checkout -b 4.0.x master)
-    (cd cordova-lib/cordova-lib; git checkout -b 4.0.x master)
-    (cd cordova-js; git checkout -b 3.7.x master)
-    (cd cordova-plugman; git checkout -b 0.2.x master)
+    (cd cordova-cli; git branch 4.2.x)
+    (cd cordova-lib; git branch 4.2.x)
+    (cd cordova-js; git branch 3.8.x)
+    (cd cordova-plugman; git branch 0.23.x)
 
-## Re-introduce -dev suffix to versions
+## Re-introduce -dev suffix to versions on master
 
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
@@ -186,6 +190,8 @@ Commit these changes together into one commit
 If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag
 2. Pull in new changes via `git pull`, and do *not* include them in the release.
+
+If you created new release branches, push them as well e.g: `git push origin 4.2.x`
 
 ## Publish to dist/dev & npm
 Ensure you have the svn repos checked out:

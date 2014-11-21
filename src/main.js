@@ -137,6 +137,10 @@ module.exports = function() {
             name: 'npm-publish-tag',
             desc: 'Publishes current version of repo to specified tag',
             entryPoint: lazyRequire('./npm-publish', 'publishTag')
+        }, {
+            name: 'npm-unpublish-nightly',
+            desc: 'Unpublishes last nightly versions for cli and lib',
+            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
         }
     ];
     var commandMap = {};

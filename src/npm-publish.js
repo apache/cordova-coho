@@ -24,7 +24,7 @@ var repoutil = require('./repoutil');
 var executil = require('./executil');
 var print = apputil.print;
 
-exports.publishTag = function*(options) {
+function *publishTag(options) {
     var opt = flagutil.registerHelpFlag(optimist);
 
     //argv was passed through another function, set defaults to appease demand.
@@ -69,12 +69,61 @@ exports.publishTag = function*(options) {
     //npm publish --tag argv.tag
     yield repoutil.forEachRepo(repos, function*(repo) {
         yield executil.execOrPretend(executil.ARGS('npm publish --tag ' + argv.tag), argv.pretend);
-        //yield executil.execOrPretend(executil.ARGS('ls'), argv.pretend);
     });
 }
 
+module.exports.publishTag = publishTag;
+
 //TODO: Does npm tag cordova-js*.tgz latest
-exports.setLatest = function *(argv) {
+exports.setLatest = function*(argv) {
 
 
 }
+
+//Gets last nightly tag and unpublishes it
+function *unpublish(options) {
+    var opt = flagutil.registerHelpFlag(optimist);
+
+    if(options) {
+        opt = opt
+            .options('pretend', {
+                default:options.pretend
+            })
+            .options('r', {
+                default:options.r
+            })
+            .options('version', {
+                default:options.version
+            })
+    }
+
+    argv = opt
+        .usage("Unpublishes the nightly version for the cli & lib from npm \n" +
+                "Usage: $0 npm-unpublish-nightly")
+        .options("pretend", {
+            desc: "Don't actually run commands, just print what would be run",
+            type: "boolean"
+        })
+        .options('r', {
+            desc: "Which repo(s) to publish",
+            demand: true
+        })
+        .options('version', {
+            desc: "Which version to unpublish",
+            demand: true
+        })
+        .argv;
+
+    if(argv.h) {
+        optimist.showHelp();
+        process.exit(1);
+    }
+
+    var repos = flagutil.computeReposFromFlag(argv.r);
+
+    yield repoutil.forEachRepo(repos, function*(repo) {
+        yield executil.execOrPretend(executil.ARGS('npm unpublish '+ repo.id + '@' + argv.version), argv.pretend);
+    })
+}
+
+module.exports.unpublish = unpublish;

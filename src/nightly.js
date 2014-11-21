@@ -51,6 +51,11 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
+    
+    //Grab currently published nightly version so we can unpublish it later
+    //Assumes lib and cli have same version
+    var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view cordova dist-tags.nightly'));
+    console.log(oldNightlyVersion);
 
     //Update Repos
     yield repoupdate.updateRepos(repos);
@@ -111,12 +116,18 @@ module.exports = function*(argv) {
     //run CLI + cordova-lib tests
     yield runTests(cli, cordovaLib);
 
-    //publish to npm under nightly tag
+    //create options object
     var options = {};
     options.tag = 'nightly';
     options.r = ['lib', 'cli'];
     options.pretend = argv.pretend;
+
+    //publish to npm under nightly tag
     yield npmpublish.publishTag(options);
+
+    //unpublish old nightly
+    options.version = oldNightlyVersion;
+    yield npmpublish.unpublish(options);
 }
 
 //updates platforms.js with the SHA

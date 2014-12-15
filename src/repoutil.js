@@ -71,7 +71,7 @@ var platformRepos = [
         id: 'windowsphone',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
-        cordovaJsSrcName: 'cordova.windowsphone.js',
+        cordovaJsSrcName: 'cordova.wp8.js',
         cordovaJsPaths: ['template/www/cordova.js'],
         packageFilePaths: ['package.json']
     }, {

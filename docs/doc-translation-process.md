@@ -446,3 +446,4 @@ When a header is not consistently translated between pages then a link will appe
 Code snippets should be marked as "Do not translate" which will not allow individual translators to come in and translate the code snippets. However, when new code snippets or commands are entered in the code the administrator will need to come in and mark that new section which could lead to it going unmarked and manual or automated translations of the code might occur. To remedy this, an administrator can go into the code snippet and delete the suggested translation and mark the phrase as "Do not translate".
 
 Another example is the use of method names, constants, etc. scattered throughout the documentation. It is not currently possible for an administrator to mark each of these elements as "Do not translate", so our proofreaders will need to go through and verify they are not translated by translators or by the automated translation services.
+

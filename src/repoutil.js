@@ -72,7 +72,7 @@ var platformRepos = [
             '*.appxbundle'
         ]
     }, {
-        title: 'Windows Phone 7 & 8',
+        title: 'Windows Phone 8.0',
         id: 'wp8',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',

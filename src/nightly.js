@@ -139,9 +139,7 @@ function *updatePlatformsFile(file, shajson) {
     var repos = flagutil.computeReposFromFlag('active-platform');
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        if(repo.id === 'windowsphone'){
-            platformsJS['wp8'].version = shajson[repo.id];
-        } else if(repo.id === 'windows') {
+        if(repo.id === 'windows') {
             platformsJS[repo.id].version = shajson[repo.id];
             platformsJS['windows8'].version = shajson[repo.id];
         } else if(repo.id === 'blackberry') {

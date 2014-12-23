@@ -23,6 +23,7 @@ var apputil = require('./apputil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
+var cuttingReleases = path.resolve(path.dirname(__dirname), 'docs', 'cadence-release-process.md');
 
 var JIRA_API_URL = "https://issues.apache.org/jira/rest/api/latest/";
 var JIRA_PROJECT_KEY = "CB";
@@ -90,7 +91,7 @@ function makeSubtask(parent_key, summary, description, component_ids, version_id
 
 function createReleaseBug(version, root_version, prev_version, version_id, username, password, component_map, pretend) {
     var subjectPrefix = '[Release + ' + version + '] ';
-    var workflow_link = 'Workflow here:\nhttp://wiki.apache.org/cordova/CuttingReleases';
+    var workflow_link = 'Workflow here:\n' + cuttingReleases;
     var parent_issue = {
         'fields':{
             'project':{

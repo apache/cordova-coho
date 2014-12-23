@@ -28,6 +28,7 @@ var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
+var settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
 
 exports.createCommand = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
@@ -47,7 +48,7 @@ exports.createCommand = function*(argv) {
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag or hash.\n' +
-               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
+               'Refer to ' + settingUpGpg + ' for how to set up gpg\n' +
                '\n' +
                'Usage: $0 create-archive [--tag tagname] [--sign] --repo=name [-r repos] --dest cordova-dist-dev/CB-1111')
         .argv;
@@ -59,7 +60,7 @@ exports.createCommand = function*(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     if (argv.sign && !shelljs.which('gpg')) {
-        apputil.fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
+        apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
     var outDir = apputil.resolveUserSpecifiedPath(argv.dest);
@@ -113,7 +114,7 @@ exports.verifyCommand = function*(argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     var argv = opt
         .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
-               'Refer to https://wiki.apache.org/cordova/SetUpGpg for how to set up gpg\n' +
+               'Refer to ' + settingUpGpg + ' for how to set up gpg\n' +
                '\n' +
                'Usage: $0 verify-archive a.zip b.zip c.zip')
         .argv;
@@ -124,7 +125,7 @@ exports.verifyCommand = function*(argv) {
         process.exit(1);
     }
     if (!shelljs.which('gpg')) {
-        apputil.fatal('gpg command not found on your PATH. Refer to https://wiki.apache.org/cordova/SetUpGpg');
+        apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
     for (var i = 0; i < zipPaths.length; ++i) {

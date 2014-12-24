@@ -67,7 +67,7 @@ exports.createCommand = function*(argv) {
         results.push({repoId: m[1], tagName: m[2], hash: m[3]});
     }
     if (results.length === 0) {
-        fatal('Error processing input.');
+        apputil.fatal('Error processing input.');
     }
     var hadErrors = false;
     for (var i = 0, entry; entry = results[i]; ++i) {

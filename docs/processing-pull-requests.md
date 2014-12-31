@@ -39,6 +39,13 @@ To show only certain repos:
 
     coho list-pulls -r js -r android -r plugin-inappbrowser
 
+### Stale Pull Requests
+
+To close a pull request that is no longer relevant / active:
+
+ * Create an empty commit in the repo of the pull request via:
+   * `git commit --allow-empty -m "Closing stale pull request: close #99"
+
 ## Step 1: Review the change (part 1)
  * Ensure that we actually want the change (if unsure, bring it up on the ML)
  * If there is no JIRA issue for the change, create one

@@ -349,7 +349,10 @@ var toolRepos = [
         title: 'Cordova JS',
         id: 'js',
         repoName: 'cordova-js',
-        jiraComponentName: 'CordovaJS'
+        jiraComponentName: 'CordovaJS',
+        ratExcludes: [
+            'tasks/vendor'
+        ]
     }, {
         title: 'Cordova Coho',
         id: 'coho',

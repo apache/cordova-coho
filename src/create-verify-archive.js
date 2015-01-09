@@ -36,14 +36,18 @@ exports.createCommand = function*(argv) {
         .options('tag', {
             desc: 'The pre-existing tag or hash to archive (defaults to newest tag on branch)'
          })
+        .options('allow-pending', {
+            desc: 'Whether to allow uncommitted changes to exist when packing (use only for testing)',
+            type: 'boolean'
+         })
         .options('sign', {
             desc: 'Whether to create .asc, .md5, .sha files (defaults to true)',
             type: 'boolean',
-            default: true
+            default: 'true'
          })
         .options('dest', {
             desc: 'The directory to hold the resulting files.',
-            demand: true
+            default: '.'
          });
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
@@ -52,6 +56,9 @@ exports.createCommand = function*(argv) {
                '\n' +
                'Usage: $0 create-archive [--tag tagname] [--sign] --repo=name [-r repos] --dest cordova-dist-dev/CB-1111')
         .argv;
+    // Optimist doesn't cast from string :(
+    argv.sign = argv.sign === true || argv.sign == 'true';
+    argv['allow-pending'] = argv['allow-pending'] === true || argv['allow-pending'] == 'true';
 
     if (argv.h) {
         optimist.showHelp();
@@ -73,31 +80,21 @@ exports.createCommand = function*(argv) {
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
         if (!(repo.id==='mobile-spec' || repo.id==='app-hello-world' || repo.id.indexOf('plugin-')==0)) {
-            if (yield gitutil.pendingChangesExist()) {
+            if (!argv['allow-pending'] && (yield gitutil.pendingChangesExist())) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }
-            var cmd = 'npm pack';
-            /* Not needed since for-each cds to cordova-lib/cordova-lib for lib
-            if (repo.id==='lib') cmd = 'npm pack cordova-'+repo.id;
-            */
-            /* Not needed anymore due to package.json moving to root
-            if (repo.id==='windows') cmd = 'npm pack '+repo.id;
-
-            if (repo.id==='windowsphone') cmd = 'npm pack wp8';
-            */
-
-            var tgzname = yield executil.execHelper(executil.ARGS(cmd), true);
+            var pkgInfo = require(path.resolve('package'));
+            var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';
+            yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
             var outPath = path.join(absOutDir, tgzname);
-            console.log(outPath);
-            if (fs.existsSync(outPath)) {
-                // remove what is already there, or else "npm pack" will fail
-                fs.unlinkSync(outPath);
+            if (path.resolve(tgzname) != outPath) {
+                shelljs.mv(tgzname, outPath);
             }
-            shelljs.mv(tgzname, outPath);
+            print('Created archive: ' + outPath);
         } else {
             var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-            console.log(outPath);
             yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
+            print('Created archive: ' + outPath);
         }
         if (argv.sign) {
             yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));

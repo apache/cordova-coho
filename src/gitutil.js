@@ -20,9 +20,16 @@ under the License.
 var path = require('path');
 var executil = require('./executil');
 var gitutil = exports;
+var semver = require('semver');
 
-exports.findMostRecentTag = function() {
-    return executil.execHelper(executil.ARGS('git describe --tags --abbrev=0 master'), true);
+exports.findMostRecentTag = function*() {
+    // Returns the greatest semver-looking tag in the repo
+    return (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
+    .reduce(function(curBest, value) {
+        if (semver.valid(value)) {
+            return !curBest ? value : semver.gt(curBest, value) ? curBest : value;
+        }
+    });
 }
 
 exports.tagExists = function*(tagName) {

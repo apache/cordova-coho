@@ -168,6 +168,7 @@ module.exports = function() {
     usage += 'Some examples:\n';
     usage += '    ./cordova-coho/coho repo-clone -r plugins -r mobile-spec -r android -r ios -r cli\n';
     usage += '    ./cordova-coho/coho repo-update\n';
+    usage += '    ./cordova-coho/coho list-pulls -r .\n';
     usage += '    ./cordova-coho/coho for-each -r plugins "git checkout master"\n';
     usage += '    ./cordova-coho/coho for-each -r plugins "git clean -fd"\n';
     usage += '    ./cordova-coho/coho last-week --me';

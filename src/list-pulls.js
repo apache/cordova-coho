@@ -144,7 +144,7 @@ function *listPullRequestsCommand() {
     opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
                '\n' +
                'Example usage: $0 list-pulls --hide-user="agrieve" | tee pulls.list | less -R\n' +
-               'Example usage: $0 list-pulls --max-age=365 -r plugins\n' +
+               'Example usage: $0 list-pulls --max-age=365 --repo=.\n' +
                '\n' +
                'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n');
     var argv = opt.argv;

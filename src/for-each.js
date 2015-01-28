@@ -24,7 +24,7 @@ var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
 module.exports = function*() {
-    var opt = flagutil.registerRepoFlag(optimist)
+    var opt = flagutil.registerRepoFlag(optimist), cmd;
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
@@ -37,7 +37,11 @@ module.exports = function*() {
         process.exit(1);
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
-    var cmd = [process.env['SHELL'] || 'sh', '-c', argv._[1]];
+    if (process.platform === 'win32') {
+        cmd = ['cmd', '/s', '/c', argv._[1]];
+    } else {
+        cmd = [process.env['SHELL'] || 'sh', '-c', argv._[1]];
+    }
 
     yield repoutil.forEachRepo(repos, function*(repo) {
          yield executil.execHelper(cmd, false, true);

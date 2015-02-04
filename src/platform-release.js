@@ -232,12 +232,13 @@ function *tagJs(repo, version, pretend) {
             // git fetch
             yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
 
-            if (yield gitutil.tagExists(repo.id + '-' + version)) {
-                yield execOrPretend(executil.ARGS('git tag ' + repo.id + '-' + version + ' --force'));
+            var tagName = repo.id + '-' + version;
+            if (yield gitutil.tagExists(tagName)) {
+                yield execOrPretend(executil.ARGS('git tag ' + tagName + ' --force'));
             } else {
-                yield execOrPretend(executil.ARGS('git tag ' + repo.id + '-' + version));
+                yield execOrPretend(executil.ARGS('git tag ' + tagName));
             }
-            yield execOrPretend(executil.ARGS('git push --tags ' + repo.remoteName));
+            yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' refs/tags/' + tagName));
         });
     });
 }

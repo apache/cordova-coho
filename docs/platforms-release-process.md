@@ -114,6 +114,8 @@ Cherry-pick the RELEASENOTES commit back into master branch
 
 Tag:
     
+    coho tag-release --version 3.5.0 -r android --pretend
+    # Seems okay:
     coho tag-release --version 3.5.0 -r android
 
 ## Tagging RC of cordova-cli

@@ -76,6 +76,9 @@ exports.createCommand = function*(argv) {
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         var tag = argv.tag || (yield gitutil.findMostRecentTag());
+        if (!tag) {
+            apputil.fatal('Could not find most recent tag. Try running with --tag');
+        }
         yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
 

@@ -26,9 +26,15 @@ exports.findMostRecentTag = function*() {
     // Returns the greatest semver-looking tag in the repo
     return (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
     .reduce(function(curBest, value) {
-        if (semver.valid(value)) {
-            return !curBest ? value : semver.gt(curBest, value) ? curBest : value;
+        // Strip the "r" prefix that plugin repos use (ugh), but also make them look higher than 3.0.0 tag that exists
+        var modifiedCurBest = curBest.replace(/^r/, '9');
+        var modifiedValue = value.replace(/^r/, '9');
+        if (semver.valid(modifiedValue)) {
+            return !curBest ? modifiedValue : semver.gt(modifiedCurBest, modifiedValue) ? curBest : value;
+        } else if (curBest && semver.valid(modifiedCurBest)) {
+            return curBest;
         }
+        return null;
     });
 }
 

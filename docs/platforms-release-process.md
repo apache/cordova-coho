@@ -343,7 +343,7 @@ If you need to move a tag before the release, here is how to do that:
     To https://git-wip-us.apache.org/repos/asf/cordova-docs.git
      - [deleted]         3.1.0
     $ git tag 3.1.0 7cf9fea03d7d02a13aef97a09a459e8128bd3198
-    $ git push origin 3.1.0 --tags
+    $ git push origin 3.1.0 && git push origin refs/tags/3.1.0
     Total 0 (delta 0), reused 0 (delta 0)
     To https://git-wip-us.apache.org/repos/asf/cordova-docs.git
      * [new tag]         3.1.0 -> 3.1.0

@@ -143,6 +143,7 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
+    TODO: As soon as plugins have package.json files checked in update coho to use "npm pack", and then delete this TODO.
     coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
@@ -234,6 +235,13 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 ## Publish to dist/
 
+If you've lost your list of ACTIVE:
+
+    TODO: As soon as plugins use tgz, update zip->tgz here.
+    ACTIVE=$(cd cordova-dist-dev/$JIRA; ls *.zip | sed -E 's:-[^-]*$::')
+
+Publish:
+
     cd cordova-dist
     svn up
     for l in $ACTIVE; do ( svn rm plugins/$l* ); done
@@ -251,13 +259,16 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugi
 
 ## Publish to Plugins Registry
 
-Note that plugman works on directories, in contrast to `npm publish` that works on tarballs. So be aware that the following command will use your development directories, so make sure they are checked out to the correct tag before running the `plugman publish` command:
+Unzip the voted content to a temporary location and publish with that:
 
-    for l in $ACTIVE; do ( cd $l; echo -n "$l: "; plugman publish . ); done
-
-Actually a better alternative would be to unzip the voted content to a temporary location and publish with that:
-
-    cd cordova-dist-dev/$JIRA; mkdir tmp_publish; cd tmp_publish; for l in $ACTIVE; do (unzip ../$l-r*.zip; cd $l; echo -n "$l: "; plugman publish .; cd ..) done; cd ..; rm -r tmp_publish
+    cd cordova-dist/plugins
+    for l in $ACTIVE; do (
+        set -e; set -x
+        rm -rf tmp_publish; mkdir tmp_publish; cd tmp_publish
+        # TODO: As soon as plugins use tgz, update unzip -> tar xzf
+        unzip ../$l-r*.zip > /dev/null
+        cd $l; plugman publish .
+    ) done;
 
 
 ## Post blog Post

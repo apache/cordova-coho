@@ -107,7 +107,7 @@ exports.createCommand = function*(argv) {
     });
     print();
     print('Archives created.');
-    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.zip') + ' ' + path.join(outDir, '*.tgz'));
+    print('Verify them using: coho verify-archive ' + path.join(outDir, '*.tgz'));
 }
 
 exports.verifyCommand = function*(argv) {

@@ -65,7 +65,11 @@ var platformRepos = [
         cordovaJsSrcName: 'cordova.windows.js',
         cordovaJsPaths: ['template/www/cordova.js'],
         versionFilePaths: ['VERSION'],
-        packageFilePaths: ['package.json']
+        packageFilePaths: ['package.json'],
+        ratExcludes: [
+            '*.appx',
+            '*.appxbundle'
+        ]
     }, {
         title: 'Windows Phone 7 & 8',
         id: 'windowsphone',

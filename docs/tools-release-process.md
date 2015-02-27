@@ -80,6 +80,7 @@ Update them in each project's `pacakge.json` file. Make sure to run through the 
  * npm & npmconf - npm 2.x includes the above semver change among other things. More info [here](http://blog.npmjs.org/post/98131109725/npm-2-0-0).
  * nopt for plugman - see [CB-7915](https://issues.apache.org/jira/browse/CB-7915)
  * elementtree - elementtree@0.1.6 breaks tests in cordova-lib, investigation needed.
+ * npm for cordova-lib & plugman - Needs to stay at 1.3.4 due to our plugins registry
 
 ## Test
 Link repos:

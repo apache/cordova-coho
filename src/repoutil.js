@@ -362,6 +362,13 @@ var toolRepos = [
         id: 'coho',
         repoName: 'cordova-coho',
         jiraComponentName: 'Coho'
+    }, {
+        title: 'Cordova Utility',
+        id: 'utility',
+        repoName: 'cordova-utility',
+        ratExcludes: [
+            'fixtures'
+        ]
     }
 ];
 

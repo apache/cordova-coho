@@ -50,6 +50,7 @@ E.g.:
      - cli@
      - plugman@
      - cordova-js@
+     - cordova-local@
 
 
 ## Create JIRA issues
@@ -74,6 +75,7 @@ See if any dependencies are outdated
     (cd cordova-lib/cordova-lib && npm outdated --depth=0)
     (cd cordova-plugman && npm outdated --depth=0)
     (cd cordova-cli && npm outdated --depth=0)
+    (cd cordova-utility/cordova-local && npm outdated --depth=0)
 
 Update them in each project's `pacakge.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies. As of this writing, the following packages are behind and are not safe to upgrade:
  * semver - in latest versions of semver-node "^0.x.y" is always equivalent to "=0.x.y" (for major=0). This breaks some cordova engine compat checks. [Background](https://github.com/npm/npm/issues/5695#issuecomment-49765893).
@@ -95,6 +97,7 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
     coho audit-license-headers -r cli | less
     coho audit-license-headers -r plugman | less
     coho audit-license-headers -r lib | less
+    coho audit-license-headers -r utility | less
 
 Ensure all dependencies and subdependencies have Apache-compatible licenses
 
@@ -119,6 +122,7 @@ Ensure unit tests pass (plugman tests are included in lib):
     (cd cordova-lib/cordova-lib; npm test)
     (cd cordova-cli; npm test)
     (cd cordova-js; grunt test --platformVersion=3.7.0)
+    (cd cordova-utility/cordova-local; npm test)
 
 Add a comment to the JIRA issue stating what you tested, and what the results were.
 
@@ -126,7 +130,7 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
 
 Increase the version within package.json using SemVer, and remove the ''-dev'' suffix
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
+    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-utility/cordova-local; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
 If the changes merit it, manually bump the major / minor version instead of the micro. List the changes via:
 
@@ -138,14 +142,16 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
     ( cd cordova-js; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
 
+    ( cd cordova-utility/cordova-local; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" )
+
 Update each repo's RELEASENOTES.md file with changes
 
     # Add new heading to release notes with version and date
     DATE=$(date "+%h %d, %Y")
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
+    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-utility/cordova-local; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
     # Then curate:
-    vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md
+    vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md cordova-utility/cordova-local/RELEASENOTES.md
 
 Update the version of cordova-lib that cli and plugman depend on:
 
@@ -161,14 +167,14 @@ Update the version of cordova-js that cordova-lib depends on:
 
 Commit these changes together into one commit
 
-    for l in cordova-plugman cordova-cli cordova-js cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    for l in cordova-plugman cordova-cli cordova-js cordova-lib/cordova-lib cordova-utility/cordova-local; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 
 ## Tag
 
     # Review commits:
-    for l in cordova-plugman cordova-cli cordova-lib cordova-js; do ( cd $l; git log -p origin/master..master ); done
+    for l in cordova-plugman cordova-cli cordova-lib cordova-js cordova-utility; do ( cd $l; git log -p origin/master..master ); done
     # Tag
-    for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js cordova-utility/cordova-local; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
 ## Create release branches if they don't yet exist
 Note, if you are only bumping the patch version (3rd number), use existing branch. See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md).
@@ -177,15 +183,16 @@ Note, if you are only bumping the patch version (3rd number), use existing branc
     (cd cordova-lib; git branch 4.2.x)
     (cd cordova-js; git branch 3.8.x)
     (cd cordova-plugman; git branch 0.23.x)
+    (cd cordova-utility; git branch 0.1.x)
 
 ## Re-introduce -dev suffix to versions on master
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
+    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-utility/cordova-local; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
+    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-utility/cordova-local; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
 
 ## Push
 
-    for l in cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; git push && git push --tags ); done
+    for l in cordova-lib cordova-plugman cordova-cli cordova-js cordova-utility; do ( cd $l; git push && git push --tags ); done
 
 If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag
@@ -200,7 +207,7 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r plugman -r cli -r lib -r js --dest cordova-dist-dev/$JIRA
+    coho create-archive -r plugman -r cli -r lib -r js -r utility --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
 
@@ -208,6 +215,7 @@ Sanity Check:
     coho verify-archive cordova-dist-dev/$JIRA/cordova-4*.tgz
     coho verify-archive cordova-dist-dev/$JIRA/cordova-lib*.tgz
     coho verify-archive cordova-dist-dev/$JIRA/cordova-js*.tgz
+    coho verify-archive cordova-dist-dev/$JIRA/cordova-utility*.tgz
 
 Upload:
 
@@ -222,6 +230,7 @@ Next, publish these to npm, and be sure to use the "rc" tag in npm.
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-4.*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/plugman-*.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-utility*.tgz
 
 ## Test from NPM
 
@@ -321,6 +330,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
     npm tag cordova-lib*.tgz latest
     npm tag plugman*.tgz latest
     npm tag cordova-3*.tgz latest
+    npm tag cordova-utility*.tgz latest
 
 ## Post Blog Post
 

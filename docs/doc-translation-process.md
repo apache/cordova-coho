@@ -21,7 +21,9 @@
 
 # Translating Apache Cordova
 
-Apache Cordova's documentation is written in English but translations are available in a number of different languages. These languages are chosen based on volunteers who are willing to help translate from English to their native tongue. We use Crowdin, a translation and localization management platform to collaborate amongst translators and our core team.
+- Apache Cordova's documentation is written in English but translations are available in a number of different languages.
+- These languages are chosen based on volunteers who are willing to help translate from English to their native tongue.
+- We use Crowdin, a translation and localization management platform to collaborate amongst translators and our core team.
 
 # The Process of Translating
 

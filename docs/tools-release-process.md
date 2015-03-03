@@ -318,10 +318,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 ## Promote to `latest` in NPM
 
     cd cordova-dist/tools
-    npm tag cordova-js*.tgz latest
-    npm tag cordova-lib*.tgz latest
-    npm tag plugman*.tgz latest
-    npm tag cordova-3*.tgz latest
+    npm dist-tag cordova-js@VERSION latest
+    npm dist-tag cordova-lib@VERSION latest
+    npm dist-tag plugman@VERSION latest
+    npm dist-tag cordova@VERSION latest
 
 ## Post Blog Post
 

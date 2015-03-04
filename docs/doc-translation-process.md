@@ -21,39 +21,46 @@
 
 # Translating Apache Cordova
 
-- Apache Cordova's documentation is written in English but translations are available in a number of different languages.
-- These languages are chosen based on volunteers who are willing to help translate from English to their native tongue.
-- We use Crowdin, a translation and localization management platform to collaborate amongst translators and our core team.
+- **Apache Cordova**'s documentation is written in *English* but translations are available in a number of different languages.
+- These languages are chosen based on volunteers who are willing to help translate from *English* to their *native tongue*.
+- We use **Crowdin**, a translation and localization management platform to collaborate amongst translators and our core team.
 
 # The Process of Translating
 
-If you know another language and are willing to help translate Apache Cordova, here are the steps to get started:
+If you know another language and are willing to help translate **Apache Cordova**, here are the steps to get started:
 
-- Create a free account with Crowdin.net http://crowdin.net
-- Search for and find the Cordova project http://crowdin.net/project/cordova/
+- Create a free account with [Crowdin.net]
+- Search for and find the [Crowdin Cordova project]
 - Scroll down to find the languages that are currently being translated.
-- Choose a language and click on the language to start contributing. e.g. Spanish http://crowdin.net/project/cordova/es-ES
-- Next to each of the markdown files you will see a button labelled "Translate". Clicking that button will open a translate page where the English version of the file is on the left.
-- Click on a phrase in the left-hand panel. Then type a translation in the textarea to the right. Click the "Commit Translation" button.
-- If a translation is already provided for a phrase you can vote it up or down. If you vote it down be sure to also include what you believe to be the correct translation.
+- Choose a language and click on the language to start contributing.
+	- e.g. [Spanish Cordova project]
+- Next to each of the markdown files you will see a button labelled `Translate`.
+	- Clicking that button will open a translate page where the *English* version of the file is on the left.
+	- Click on a phrase in the left-hand panel.
+	- Then type a translation in the textarea to the right.
+	- Click the `Commit Translation` button.
+	- If a translation is already provided for a phrase you can vote it **up** or **down**.
+	- If you vote it **down**, be sure to also include what you believe to be the correct translation.
 
 ## Crowdin Administrative Scripts
 
 There are two scripts and one jar file that need to be in place in your environment in order to automate the crowdin translation process.
 
-- crowdin-cli.jar
-- crowdin.yaml
-- github-crowdin.sh
+- `crowdin-cli.jar`
+- `crowdin.yaml`
+- `github-crowdin.sh`
 
-Information on the crowdin command line interface and tooling can be found here: http://crowdin.net/page/cli-tool. It includes a link to download the jar file for Windows, Mac, and Linux.
+Information on the crowdin command line interface and tooling can be found here: [Crowdin cli].
+ It includes a link to download the jar file for **Windows**, **Mac OS X**, and **Linux**.
 
 ### Demo video
 
-Lisa DeLuca has created a demo video showing the process of translating as an adminstrator that can be viewed on youtube here: http://www.youtube.com/watch?v=LSnk3lAd7bo
+**Lisa DeLuca** has created a demo video showing the process of translating as an adminstrator that can be viewed on youtube here: [Crowdin YouTube demo]
 
 ### crowdin.yaml
 
-By default, the crowdin-cli will look for a configuration file called crowdin.yaml. For cordova, our crowdin.yaml file looks like this:
+By default, the `crowdin-cli` will look for a configuration file called `crowdin.yaml`.
+For **Cordova**, our `crowdin.yaml` file looks like this:
 
 
     project_identifier: cordova
@@ -69,17 +76,22 @@ By default, the crowdin-cli will look for a configuration file called crowdin.ya
       -
         source: "/**/doc/*.md"
         translation: "/**/doc/%two_letters_code%/%original_file_name%"
-        ignore: 
+        ignore:
           - /.git
 
-It is recommended that Crowdin be pulled from a fork of the cordova-docs github project rather than directly from the main project. This script grabs the markdown .md files from the docs/en/edge directory and pushes them into the Crowdin service for each of the lanuages that are available within crowdin. For information on the api_key value, please email the crowdin project administrator: ldeluca@apache.org
+It is recommended that **Crowdin** be pulled from a *fork* of the `cordova-docs` github project rather than directly from the main project.
+
+This script grabs the **markdown** `.md` files from the `docs/en/edge` directory and pushes them into the Crowdin service for each of the lanuages that are available within crowdin.
+
+For information on the `api_key` value,
+please email the [crowdin project administrator].
 
 ## github-crowdin.sh
 
-The github-crowdin.sh script is the script that is run to initiate the translation flow. 
-It is a custom script that first pushes any of the changed markdown files into crowdin. 
-It then searches through all of the languages from crowdin and downloads only those languages that are 100% 
-translated. Finally, it pushes the translated language files back into github.
+The `github-crowdin.sh` script is the script that is run to initiate the translation flow.
+It is a custom script that first pushes any of the changed **markdown** files into crowdin.
+It then searches through all of the languages from crowdin and downloads only those languages that are 100% translated.
+Finally, it pushes the translated language files back into github.
 
     #!/bin/bash
     DOMAIN_NAME='http://api.crowdin.net'
@@ -400,36 +412,58 @@ The script will print out the name of each file being downloaded
 
 ### Crowdin Error Debugging
 
-After running the github-crowdin.sh script, some common messages might include:
+After running the `github-crowdin.sh` script, some common messages might include:
 
-  Warning: Downloaded translations does not match current project configuration. Some of the resulted files will be omitted.
-   - `docs/zh/README.md'
-  Crowdin has internal caching mechanisms that prevents us from overload. Please try to download translations later.
+```
+ Warning: Downloaded translations does not match current project configuration.
+ Some of the resulted files will be omitted.
 
-This message can be ignored. It does not affect the downloaded files. 
-It simply means that that markdown file no longer exists. Please open a JIRA issue and assign to Lisa DeLuca to let her know if you see this error. Then the file can be removed from the crowdin file manager.
+   - docs/zh/README.md
+```
 
+```
+Crowdin has internal caching mechanisms that prevents us from overload.
+Please try to download translations later.
+```
 
+This message can be ignored.
+It does not affect the downloaded files.
+It simply means that that **markdown** file no longer exists.
+Please [open a JIRA] issue and assign to `Lisa DeLuca` to let her know if you see this error.
+Then the file can be removed from the crowdin file manager.
+
+```
 A communication error occured: ""
 </FONT>
 </TD></TR>
 <TR><TD>
 <FONT face="Helvetica">
 The Web Server may be down, too busy, or experiencing other problems preventing it from responding to requests.  You may wish to try again at a later time.
-It is often the case where you will see a message that crowdin is down, like the one shown above. In which case you'll need to wait until Crowdin is back up or email their support team at: mailto:support@crowdin.net . Alternatively, it could just mean that a manual build needs to be kicked off within the Crowdin tool. Under Settings > Translation > click the button to build a fresh package.
+```
+
+It is often the case where you will see a message that crowdin is down, like the one shown above.
+In which case you'll need to wait until Crowdin is back up or email the [crowdin support team].
+Alternatively, it could just mean that a manual build needs to be kicked off within the Crowdin tool.
+Under `Settings > Translation >` click the button to `build a fresh package`.
 
 ### Testing Translations
 
-Before performing a pull request it is recommended that each language be built locally and tested for accuracy. To do this, run the following script
+Before performing a pull request it is recommended that each language be built locally and tested for accuracy.
+To do this, run the following script:
 
-~/git/cordova-docs$ bin/generate ru edge
-ru in this case would run the Russian language. See the cordova-docs documentation for more information on building the documentation.
+    ~/git/cordova-docs$ bin/generate ru edge
+
+`ru` in this case would run the Russian language.
+See the `cordova-docs` documentation for more information on building the documentation.
 
 ### Viewing Translations
 
-After the translations have been pulled into the main Apache Cordova branch they can be viewed here 
-http://cordova.apache.org/docs/en/edge/index.html . Go to the upper-right-hand corner and select the drop down. 
-Scrolling to the bottom you will see the new languages that have been translated.  The translations for the individual plugins
+After the translations have been pulled into the main Apache Cordova branch they can be viewed here: [Cordova docs edge].
+
+* Go to the upper-right-hand corner and select the drop down.
+* Scrolling to the bottom you will see the new languages that have been translated.
+
+The translations for the individual plugins
 are only viewable from GitHub under the docs directory for each plugin.
 
 ## Manual Steps
@@ -437,15 +471,37 @@ are only viewable from GitHub under the docs directory for each plugin.
 Even though the majority of the Crowdin Apache Cordova translations are automated there are still a few things that need to be manually monitored by our administrators.
 
 - Headers - Consistency in translation between headers and other linked content
-- Code snippets - Marking code snippets as "Do Not Translate"
+- Code snippets - Marking code snippets as `Do not translate`
 
 ### Headers
 
-When a header is not consistently translated between pages then a link will appear broken and it will be impossible for users to view the content. If, when verifying translated documentation, a link doesn't appear highlighted and clickable, go through the markdown files and make sure the translations are consistent for the headers. It is recommended that the documentation is built and verified after each crowdin script is ran before contributing the content back into the main stream.
+When a header is not consistently translated between pages then a link will appear broken and it will be impossible for users to view the content.
+
+If, when verifying translated documentation,
+a link doesn't appear highlighted and clickable,
+go through the **markdown** files and make sure the translations are consistent for the headers.
+
+It is recommended that the documentation is built and verified after each crowdin script is run before contributing the content back into the main stream.
 
 ### Code Snippets
 
-Code snippets should be marked as "Do not translate" which will not allow individual translators to come in and translate the code snippets. However, when new code snippets or commands are entered in the code the administrator will need to come in and mark that new section which could lead to it going unmarked and manual or automated translations of the code might occur. To remedy this, an administrator can go into the code snippet and delete the suggested translation and mark the phrase as "Do not translate".
+Code snippets should be marked as `Do not translate` which will not allow individual translators to come in and translate the code snippets.
 
-Another example is the use of method names, constants, etc. scattered throughout the documentation. It is not currently possible for an administrator to mark each of these elements as "Do not translate", so our proofreaders will need to go through and verify they are not translated by translators or by the automated translation services.
+However, when *new code snippets* or *commands* are entered in the code, the administrator will need to come in and *mark that new section* which could lead to it going *unmarked* and *manual* or *automated translations* of the code might occur.
 
+To remedy this, an administrator can go into the code snippet and *delete the suggested translation* and *mark the phrase* as `Do not translate`.
+
+Another example is the use of *method names*, *constants*, etc., scattered throughout the documentation.
+It is not currently possible for an administrator to mark each of these elements as `Do not translate`,
+so our proofreaders will need to go through and verify they are not translated by translators or by the automated translation services.
+
+[Crowdin.net]: http://crowdin.net "Crowdin.net"
+[Crowdin Cordova project]: http://crowdin.net/project/cordova/
+[Spanish Cordova project]: http://crowdin.net/project/cordova/es-ES
+[Crowdin cli]: http://crowdin.net/page/cli-tool
+[Crowdin YouTube demo]: http://www.youtube.com/watch?v=LSnk3lAd7bo
+[Cordova docs edge]: http://cordova.apache.org/docs/en/edge/index.html
+[JIRA]: https://issues.apache.org/jira/browse/CB
+[open a JIRA]: https://issues.apache.org/jira/secure/CreateIssue.jspa
+[crowdin support team]: mailto:support@crowdin.net
+[crowdin project administrator]: mailto:ldeluca@apache.org

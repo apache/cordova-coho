@@ -73,35 +73,32 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
 
 Increate the version within `package.json` using `SemVer`, and remove teh `-dev` suffix.
 
-    ( cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "cordova-app-hello-world: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi)
+    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "cordova-app-hello-world: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi)
      
 If the changes merit it, manually bump the major / minor version instead of the micro. List the changes via:
 
-    ( cd cordova-app-hello-world; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master)
+    (cd cordova-app-hello-world; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master)
 
 Update Release notes (Grab changes from the previous release until now):
 
     # Add new heading to release notes with version and date
     DATE=$(date "+%h %d, %Y") 
     
-    ( cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master >> RELEASENOTES.md);
+    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master >> RELEASENOTES.md);
 
     # Then curate:
     vim cordova-app-hello-world/RELEASENOTES.md 
  
-
-    cd cordova-android && git commit -am "$JIRA updated RELEASENOTES"
-
 Commit these changes
 
-    ( cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v")
 
 ## Tag
 
     # Review commits:
-    ( cd cordova-app-hello-world; git log -p origin/master..master)
+    (cd cordova-app-hello-world; git log -p origin/master..master)
     # Tag
-    ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v )
+    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v )
 
 ## Create Release Branches
 
@@ -111,18 +108,20 @@ Note: if you are only bumping the patch version (3rd number), use existing branc
 
 ## Re-introduce -dev suffix to versions on master
 
-    ( cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "cordova-app-hello-world: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
-    (cd cordova-app-hello-world; git commit -am "$JIRA Incremented package version to -dev"; git show )
+    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "cordova-app-hello-world: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi)
+    (cd cordova-app-hello-world; git commit -am "$JIRA Incremented package version to -dev"; git show)
 
 ## Push
 
-    ( cd cordova-app-hello-world; git push && git push --tags )
+    (cd cordova-app-hello-world; git push && git push --tags)
 
 If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag
 2. Pull in new changes via `git pull`, and do *not* include them in the release.
 
-If you created new release branches, push them as well e.g: `git push origin 3.8.x`
+If you created new release branches, push them as well
+
+    (cd cordova-app-hello-world; git push origin 3.8.x)
 
 ## Publish to dist/dev
 

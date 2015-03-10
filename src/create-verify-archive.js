@@ -82,7 +82,7 @@ exports.createCommand = function*(argv) {
         yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
-        if (!(repo.id==='mobile-spec' || repo.id==='app-hello-world' || repo.id.indexOf('plugin-')==0)) {
+        if (!(repo.id==='mobile-spec' || repo.id.indexOf('plugin-')==0)) {
             if (!argv['allow-pending'] && (yield gitutil.pendingChangesExist())) {
                 apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
             }

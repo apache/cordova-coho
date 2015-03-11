@@ -143,18 +143,17 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    TODO: As soon as plugins have package.json files checked in update coho to use "npm pack", and then delete this TODO.
     coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$JIRA
 
 Sanity Check:
 
     # Manually double check version numbers are correct on the file names
     # Then run:
-    coho verify-archive cordova-dist-dev/$JIRA/*.zip
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
 
 Upload:
 
-    cd cordova-dist-dev && svn up && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for plugins release"
+    (cd cordova-dist-dev && svn up && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for plugins release")
 
 * Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 

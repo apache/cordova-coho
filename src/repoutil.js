@@ -308,6 +308,18 @@ var pluginRepos = [
         jiraComponentName: 'Plugin Statusbar',
         inactive: true
     }, {
+        title: 'Plugin - Whitelist',
+        id: 'plugin-whitelist',
+        repoName: 'cordova-plugin-whitelist',
+        jiraComponentName: 'Plugin Whitelist',
+        inactive: true
+    }, {
+        title: 'Plugin - Legacy Whitelist',
+        id: 'plugin-legacy-whitelist',
+        repoName: 'cordova-plugin-legacy-whitelist',
+        jiraComponentName: 'Plugin Legacy Whitelist',
+        inactive: true
+    }, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',
         repoName: 'cordova-plugins',

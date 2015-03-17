@@ -28,7 +28,7 @@ var platformRepos = [
         id: 'android',
         repoName: 'cordova-android',
         jiraComponentName: 'Android',
-        cordovaJsPaths: ['framework/assets/www/cordova.js'],
+        cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
         ratExcludes: [
             '*.properties',
             'bin',

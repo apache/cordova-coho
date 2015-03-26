@@ -72,7 +72,7 @@ var platformRepos = [
         ]
     }, {
         title: 'Windows Phone 7 & 8',
-        id: 'windowsphone',
+        id: 'wp8',
         repoName: 'cordova-wp8',
         jiraComponentName: 'WP8',
         cordovaJsSrcName: 'cordova.wp8.js',

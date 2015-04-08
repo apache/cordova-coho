@@ -41,7 +41,7 @@ module.exports = function() {
     var repoCommands = [
         {
             name: 'repo-clone',
-            desc: 'Clones git repositories into the current working directory.',
+            desc: 'Clones git repositories as siblings of cordova-coho (unless --no-chdir is used).',
             entryPoint: lazyRequire('./repo-clone')
         }, {
             name: 'repo-update',

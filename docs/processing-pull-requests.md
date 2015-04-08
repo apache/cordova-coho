@@ -54,7 +54,7 @@ To close a pull request that is no longer relevant / active:
  * View the user's branch in github and request changes be made (if applicable) by adding comments in the web interface
 
 ## Step 2: Ensure they have signed the Contributor Agreement
- * For trivial changes, this is not necessary
+ * For trivial changes, this is not necessary (e.g. use your judgement - e.g. less than 100 lines of code)
  * Find their name on: https://people.apache.org/committer-index.html#unlistedclas
  * If it is not there, respond with:
 

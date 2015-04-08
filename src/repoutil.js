@@ -321,7 +321,7 @@ var pluginRepos = [
         inactive: true
     }, {
         title: 'Plugins - Other',
-        id: 'cordova-plugins',
+        id: 'plugins',
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
         inactive: true

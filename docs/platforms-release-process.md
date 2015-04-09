@@ -113,26 +113,13 @@ Tag:
     # Seems okay:
     coho tag-release --version 3.5.0 -r android
 
-## Tagging RC of cordova-cli
-
-cordova-cli doesn't use a release branch. Follow the instructions at [tools-release-process.md](tools-release-process.md), but in addition:
-
-Update the tool to point to the new repo versions (within `cordova-lib/src/cordova/platformsConfig.json`)
-
-Instead of the normal `npm publish` flow:
-
-    npm publish --tag rc
-
-** WATCH OUT! You may have to run `npm tag cordova@x.x.x latest` due to a bug in npm: https://github.com/npm/npm/issues/4837
-
 ## Publish RC to dist/dev
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
-    
+
 Create archives from your tags:
 
-    coho foreach -r android "git checkout 3.5.x"
     coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
 
 Sanity Check:
@@ -227,13 +214,21 @@ __Body:__
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 
-    Repos ready to be released have been published to dist/dev:
+    The archive has been published to dist/dev:
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
     The package was published from its corresponding git tag:
     PASTE OUTPUT OF: coho print-tags -r android --tag 3.5.0
 
-    Upon a successful vote I will upload the archive to dist/, publish it to NPM, and post the corresponding blog post.
+    Note that you can test it out via:
+
+        cordova platform add https://github.com/apache/cordova-android#4.0.0
+
+    Blog post to review is here:
+
+        https://github.com/cordova/apache-blog-posts/blob/master/2015-04-10-cordova-android-4.0.0.md
+
+    Upon a successful vote I will upload the archive to dist/, publish it to NPM, and post the blog post.
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
 

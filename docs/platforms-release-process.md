@@ -56,12 +56,12 @@ E.g.:
 
 ## Branch & Tag for Platform Repository
 
-### Before creating the release branch:
+### Check Release Things
 
  1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
-   * `coho audit-license-headers -r android | less`
+   * `coho audit-license-headers -r . | less`
  2. Run check-license to ensure all dependencies and subdependencies have valid licenses
-   * `coho check-license -r platform`
+   * `coho check-license -r .`
  3. For iOS only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
@@ -76,7 +76,17 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
         #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
     #endif
 
-### Creating the release branch
+### Update Release Notes
+
+Update Release notes (Grab changes from the previous release until now):
+
+    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..master
+
+Manually copy output into RELEASENOTES.md and **CURATE JUDICIOUSLY** (edit descriptions, squash / delete, reorder)
+
+    git commit -am "$JIRA updated RELEASENOTES"
+
+### Create release branch
 
 This step involves:
 
@@ -85,7 +95,6 @@ This step involves:
  * Creating a release branch
  * Creating git tags for platform and js
  * Updating version in package.json file
- * Manually updating release notes
  * Tagging
 
 Coho automates most of these steps
@@ -96,21 +105,10 @@ Prepare + Push:
     coho repo-status -r android -b master -b 3.5.x
     # If changes look right:
     coho repo-push -r android -b master -b 3.5.x
-    
-Update Release notes (Grab changes from the previous release until now):
-    
-    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..origin/3.5.x
-    
-Manually copy output into RELEASENOTES.md.
 
-Edit the commit descriptions - don't add the commits verbatim, usually they are meaningless to the user. Only show the ones relevant for the user (fixes, new features)
-
-    cd cordova-android && git commit -am "$JIRA updated RELEASENOTES"
-
-Cherry-pick the RELEASENOTES commit back into master branch
 
 Tag:
-    
+
     coho tag-release --version 3.5.0 -r android --pretend
     # Seems okay:
     coho tag-release --version 3.5.0 -r android

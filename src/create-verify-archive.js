@@ -79,18 +79,21 @@ exports.createCommand = function*(argv) {
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
         }
+        if (!argv['allow-pending'] && (yield gitutil.pendingChangesExist())) {
+            apputil.fatal('Aborting because pending changes exist in ' + repo.repoName + ' (run "git status")');
+        }
+        var origBranch = yield gitutil.retrieveCurrentBranchName(true);
+
         yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
         if (!(repo.id==='mobile-spec')) {
-            if (!argv['allow-pending'] && (yield gitutil.pendingChangesExist())) {
-                apputil.fatal('Aborting because pending changes exist in ' + repo.repoName);
-            }
             var pkgInfo = require(path.resolve('package'));
             var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';
             yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
             var outPath = path.join(absOutDir, tgzname);
             if (path.resolve(tgzname) != outPath) {
+                shelljs.rm('-f', outPath + "*");
                 shelljs.mv(tgzname, outPath);
             }
             print('Created archive: ' + outPath);
@@ -103,6 +106,9 @@ exports.createCommand = function*(argv) {
             yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
             fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
             fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
+        }
+        if (origBranch) {
+            yield gitutil.gitCheckout(origBranch);
         }
     });
     print();

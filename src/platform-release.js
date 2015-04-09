@@ -294,7 +294,7 @@ exports.tagReleaseBranchCommand = function*(argv) {
                 } else {
                     yield execOrPretend(executil.ARGS('git tag ' + version));
                 }
-                yield execOrPretend(executil.ARGS('git push --tags ' + repo.remoteName + ' ' + branchName));
+                yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName + ' refs/tags/' + version));
             } else {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }

@@ -77,10 +77,6 @@ module.exports = function() {
             desc: 'Uses Apache RAT to look for missing license headers.',
             entryPoint: lazyRequire('./audit-license-headers')
         }, {
-            name: 'create-release-bug',
-            desc: 'Creates a bug in JIRA for tracking the tasks involved in a new release',
-            entryPoint: lazyRequire('./create-release-bug')
-        }, {
             name: 'create-archive',
             desc: 'Zips up a tag, signs it, and adds checksum files.',
             entryPoint: lazyRequire('./create-verify-archive', 'createCommand')

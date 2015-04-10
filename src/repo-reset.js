@@ -38,8 +38,8 @@ module.exports = function*(argv) {
     var argv = opt
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
-               '    git reset --hard origin/$BRANCH_NAME\n' +
-               '    git clean -f -d\n' +
+               '    git commit                             (commit any pending changes)\n' +
+               '    git reset --hard origin/$BRANCH_NAME   (revert un-pushed commits)\n' +
                '    if ($BRANCH_NAME exists only locally) then\n' +
                '        git branch -D $BRANCH_NAME\n' +
                '\n' +
@@ -50,6 +50,9 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
+    if (argv.r == 'auto') {
+        apputil.fatal('"-r auto" is not allowed for repo-reset. Please enumerate repos explicitly');
+    }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
 
@@ -59,6 +62,13 @@ module.exports = function*(argv) {
             if (!(yield gitutil.localBranchExists(branchName))) {
                 continue;
             }
+            // Commit local changes so that they can be restored if this was a mistake.
+            if (yield gitutil.pendingChangesExist()) {
+                print('Committing changes just in case resetting was a mistake.');
+                yield executil.execHelper(executil.ARGS('git add --all .'));
+                yield executil.execHelper(executil.ARGS('git commit -m', 'Automatically committed by coho repo-reset'));
+            }
+
             if (yield gitutil.remoteBranchExists(repo, branchName)) {
                 yield gitutil.gitCheckout(branchName);
                 var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
@@ -87,7 +97,6 @@ module.exports = function*(argv) {
                 yield cleanRepo(repo);
             });
         } else {
-            yield executil.execHelper(executil.ARGS('git clean -f -d'));
             yield cleanRepo(repo);
         }
     });

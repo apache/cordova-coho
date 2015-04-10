@@ -321,7 +321,7 @@ var pluginRepos = [
         inactive: true
     }, {
         title: 'Plugins - Other',
-        id: 'plugins',
+        id: 'cordova-plugins',
         repoName: 'cordova-plugins',
         jiraComponentName: 'Plugins',
         inactive: true
@@ -460,10 +460,9 @@ exports.repoGroups = repoGroups;
 
 function getRepoById(id, opt_repos) {
     // Strip cordova- prefix if it exists.
-    id = id.replace(/^cordova-/, '');
     var repos = opt_repos || allRepos;
     for (var i = 0; i < repos.length; ++i) {
-        if (repos[i].id == id) {
+        if (repos[i].id == id || repos[i].repoName == id) {
             return repos[i];
         }
     }

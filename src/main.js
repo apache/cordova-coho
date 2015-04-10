@@ -77,6 +77,10 @@ module.exports = function() {
             desc: 'Uses Apache RAT to look for missing license headers.',
             entryPoint: lazyRequire('./audit-license-headers')
         }, {
+            name: 'check-license',
+            desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
+            entryPoint: lazyRequire('./check-license')
+        }, {
             name: 'create-archive',
             desc: 'Zips up a tag, signs it, and adds checksum files.',
             entryPoint: lazyRequire('./create-verify-archive', 'createCommand')
@@ -96,6 +100,22 @@ module.exports = function() {
             name: 'list-release-urls',
             desc: 'List the apache git repo urls for release artifacts.',
             entryPoint: lazyRequire('./list-release-urls')
+        }, {
+            name: 'nightly',
+            desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
+            entryPoint: lazyRequire('./nightly')
+        }, {
+            name: 'prepare-tools-release',
+            desc: 'Prepares tools for release',
+            entryPoint: lazyRequire('./tools-release', 'prepareToolsRelease')
+        }, {
+            name: 'npm-publish-tag',
+            desc: 'Publishes current version of repo to specified tag',
+            entryPoint: lazyRequire('./npm-publish', 'publishTag')
+        }, {
+            name: 'npm-unpublish-nightly',
+            desc: 'Unpublishes last nightly versions for cli and lib',
+            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
         }];
     var otherCommands = [{
             name: 'list-pulls',
@@ -117,26 +137,6 @@ module.exports = function() {
             name: 'npm-link',
             desc: 'Does an "npm link" of dependent modules that we own.',
             entryPoint: lazyRequire('./npm-link')
-        }, {
-            name: 'check-license',
-            desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
-            entryPoint: lazyRequire('./check-license')
-        }, {
-            name: 'nightly',
-            desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
-            entryPoint: lazyRequire('./nightly')
-        }, {
-            name: 'prepare-tools-release',
-            desc: 'Prepares tools for release',
-            entryPoint: lazyRequire('./tools-release', 'prepareToolsRelease')
-        }, {
-            name: 'npm-publish-tag',
-            desc: 'Publishes current version of repo to specified tag',
-            entryPoint: lazyRequire('./npm-publish', 'publishTag')
-        }, {
-            name: 'npm-unpublish-nightly',
-            desc: 'Unpublishes last nightly versions for cli and lib',
-            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
         }
     ];
     var commandMap = {};

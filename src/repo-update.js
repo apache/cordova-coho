@@ -63,7 +63,7 @@ module.exports = function*(argv) {
     var depth = argv.depth ? argv.depth : null;
 
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, true);
     apputil.prefixLength = Math.max.apply(null,
         [apputil.prefixLength].concat(
             repos.map(function (r) { return r.repoName.length + 2; }))

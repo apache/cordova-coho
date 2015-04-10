@@ -58,7 +58,7 @@ function resolveCwdRepo() {
     }
 }
 
-exports.computeReposFromFlag = function(flagValue) {
+exports.computeReposFromFlag = function(flagValue, includeSvn) {
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
     var addedIds = {};
@@ -82,6 +82,17 @@ exports.computeReposFromFlag = function(flagValue) {
             apputil.fatal('Invalid repo value: ' + value + '\nUse the list-repos command to see value values.');
         }
     });
+    if (!includeSvn) {
+        var hadSvn = false;
+        ret = ret.filter(function(r) {
+            hadSvn = hadSvn || !!r.svn;
+            return !r.svn;
+        });
+        if (hadSvn && !(values.length == 1 && values[0] == 'auto')) {
+            console.warn('Skipping one or more non-git repos');
+        }
+    }
+
     return ret;
 }
 

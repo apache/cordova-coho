@@ -40,7 +40,7 @@ module.exports = function*(argv) {
 
     var depth = argv.depth ? argv.depth : null;
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, true);
     yield cloneRepos(repos, false, depth);
 }
 

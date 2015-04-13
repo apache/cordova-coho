@@ -21,6 +21,9 @@
 
 # Committer Workflow
 
+## For example workflows of working on iOS or Android platforms & plugins,
+see slides from ApacheCon 2015 talk on [Committer Tools](http://goo.gl/ciGnaR).
+
 ## One-time Steps
 
 Congratulations! You've gained the confidence of your fellow Cordova committers

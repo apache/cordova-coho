@@ -21,6 +21,8 @@
 
 # Processing Pull Requests
 
+For a visual walkthrough, see slides from ApacheCon 2015 talk on [Committer Tools](http://goo.gl/ciGnaR).
+
 ## Prerequisites:
  * Ensure you are familiar with [committer-workflow.md](committer-workflow.md)
 

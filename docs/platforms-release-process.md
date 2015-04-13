@@ -54,6 +54,19 @@ E.g.:
 
     JIRA="CB-????" # Set this to the release bug.
 
+## Update Release Notes
+
+Update Release notes (Grab changes from the previous release until now):
+
+    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..master
+
+Manually copy output into RELEASENOTES.md and **CURATE JUDICIOUSLY** (edit descriptions, squash / delete, reorder)
+
+    git commit -am "$JIRA updated RELEASENOTES"
+    git push origin master
+
+Reply to the DISCUSS thread with a link to the updated release notes.
+
 ## Branch & Tag for Platform Repository
 
 ### Check Release Things
@@ -75,16 +88,6 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
     #ifndef CORDOVA_VERSION_MIN_REQUIRED
         #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
     #endif
-
-### Update Release Notes
-
-Update Release notes (Grab changes from the previous release until now):
-
-    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..master
-
-Manually copy output into RELEASENOTES.md and **CURATE JUDICIOUSLY** (edit descriptions, squash / delete, reorder)
-
-    git commit -am "$JIRA updated RELEASENOTES"
 
 ### Create release branch
 

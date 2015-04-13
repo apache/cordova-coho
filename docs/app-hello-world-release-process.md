@@ -50,25 +50,6 @@ E.g.:
 
     JIRA="CB-????" # Set this to the release bug.
 
-
-## Test
-
-Link repos:
-
-    (cd cordova-app-hello-world && npm link)
-    (cd cordova-lib/cordova-lib/node_modules && npm link cordova-app-hello-world)
-    (cd cordova-lib/cordova-lib && npm link)
-
-Ensure License headers are present everywhere.
-
-    coho audit-license-headers -r app-hello-world | less
-
-Ensure building a cordova app from scratch uses the new template. Manually check files in generated www.
-
-    cordova create helloWorld
-
-Add a comment to the JIRA issue stating what you tested, and what the results were.
-
 ## Update Release Notes & Version
 
 Increate the version within `package.json` using `SemVer`, and remove teh `-dev` suffix.
@@ -92,6 +73,27 @@ Update Release notes (Grab changes from the previous release until now):
 Commit these changes
 
     (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v")
+    git push origin master
+
+Reply to the DISCUSS thread with a link to the updated release notes.
+
+## Test
+
+Link repos:
+
+    (cd cordova-app-hello-world && npm link)
+    (cd cordova-lib/cordova-lib/node_modules && npm link cordova-app-hello-world)
+    (cd cordova-lib/cordova-lib && npm link)
+
+Ensure License headers are present everywhere.
+
+    coho audit-license-headers -r app-hello-world | less
+
+Ensure building a cordova app from scratch uses the new template. Manually check files in generated www.
+
+    cordova create helloWorld
+
+Add a comment to the JIRA issue stating what you tested, and what the results were.
 
 ## Tag
 

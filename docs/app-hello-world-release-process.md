@@ -154,7 +154,8 @@ __Subject:__
 
 __Body:__
 
-    Please review and vote on this 3.8.0 Cordova App Hello World Release.
+    Please review and vote on this 3.8.0 Cordova App Hello World Release
+    by replying to this email (and keep discussion on the DISCUSS thread)
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 

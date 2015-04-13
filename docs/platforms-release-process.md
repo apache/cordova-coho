@@ -213,7 +213,8 @@ __Subject:__
 
 __Body:__
 
-    Please review and vote on this 3.5.0 Android Release.
+    Please review and vote on this 3.5.0 Android Release
+    by replying to this email (and keep discussion on the DISCUSS thread)
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 

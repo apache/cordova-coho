@@ -111,6 +111,8 @@ Commit these changes together (plugin.xml, RELEASENOTES.md, tests/plugin.xml)
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
 
+Reply to the DISCUSS thread with a link to the updated release notes.
+
 ## Tag
 
     for l in $ACTIVE; do ( cd $l; v="r$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
@@ -175,7 +177,8 @@ __Subject:__
 
 __Body:__
 
-    Please review and vote on the release of this plugins release.
+    Please review and vote on the release of this plugins release
+    by replying to this email (and keep discussion on the DISCUSS thread)
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
 

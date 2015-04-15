@@ -307,14 +307,6 @@ TODO: Change this to new docs release process; maybe with tools process?
    * Repository README.md explains [How to update the HTTP redirect](https://github.com/apache/cordova-labs/tree/redirect-docs-cordova-io#usage)
    * Nodejitsu is limited to one deployer, so Michael Brooks is currently the point of contact.
 
-### Push platforms and tools to npm
-Refer to [tools-release-process.md](tools-release-process.md)
-
-### Tell JIRA it's Released
-
- * Visit https://issues.apache.org/jira/plugins/servlet/project-config/CB/versions
- * Fill in the Release Date field and mark it as released.
-
 ### Announce It!
  1. Announce the release to the world!
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))

@@ -293,7 +293,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ### Update cordova.apache.org
 
- * Refer to [this commit](http://svn.apache.org/viewvc?view=revision&revision=r1478146) (also includes updating the DOAP file)
+ * Refer to [this commit](http://svn.apache.org/viewvc?view=revision&revision=1478146) (also includes updating the DOAP file)
  * And the instructions at https://svn.apache.org/repos/asf/cordova/site/README.md
 
 ### Update the Docs

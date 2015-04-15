@@ -21,15 +21,15 @@
 
 # Committer Workflow
 
-## For example workflows of working on iOS or Android platforms & plugins,
-see slides from ApacheCon 2015 talk on [Committer Tools](http://goo.gl/ciGnaR).
-
 ## One-time Steps
 
 Congratulations! You've gained the confidence of your fellow Cordova committers
 and have been granted the ability to commit code directly, and to apply pull
 requests from others. You should receive an email from our Apache mentor with
 the details of how to setup your account.
+
+## For example workflows of working on iOS or Android platforms & plugins,
+see slides from ApacheCon 2015 talk on [Committer Tools](http://goo.gl/ciGnaR).
 
 ### Configure your git repos
 
@@ -58,9 +58,11 @@ Send an email to `private-subscribe@cordova.apache.org`.
 
 Note that this is a moderated list, so your request to join must be manually accepted.
 
-### Do Your Homework
+### Do Your Homework - Understanding how Apache works goes a long way
 
 Read through: http://www.apache.org/dev/committers.html
+
+Read some board reports: https://www.apache.org/foundation/board/calendar.html
 
 # Commit Workflow
 

@@ -58,11 +58,13 @@ Send an email to `private-subscribe@cordova.apache.org`.
 
 Note that this is a moderated list, so your request to join must be manually accepted.
 
-### Do Your Homework - Understanding how Apache works goes a long way
+### Do Your Homework
 
-Read through: http://www.apache.org/dev/committers.html
+Understanding how Apache works goes a long way:
 
-Read some board reports: https://www.apache.org/foundation/board/calendar.html
+* Read through: http://www.apache.org/dev/committers.html
+* Read some board reports: https://www.apache.org/foundation/board/calendar.html
+* Read through some of [Cordova's private mailing-list archives](https://mail-search.apache.org/pmc/private-arch/cordova-private/) (optional)
 
 # Commit Workflow
 

@@ -89,7 +89,7 @@ Remove the ''-dev'' suffix on the version in plugin.xml.
 
 Remove the ''-dev'' suffix on the version in package.json.
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
 If the changes merit it, manually bump the major / minor version instead of the micro. Manual process, but list the changes via:
 
@@ -129,7 +129,7 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
     # update package.json
-    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
     # update the nested test
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
     for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done

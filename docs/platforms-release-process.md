@@ -291,10 +291,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ##  Details
 
-### Update cordova.apache.org
+### Tell Apache about Release
 
- * Refer to [this commit](http://svn.apache.org/viewvc?view=revision&revision=1478146) (also includes updating the DOAP file)
- * And the instructions at https://svn.apache.org/repos/asf/cordova/site/README.md
+1. Go to: https://reporter.apache.org/addrelease.py
+2. Use version "cordova-$PLATFORM@x.x.x"
 
 ### Update the Docs
 TODO: Change this to new docs release process; maybe with tools process?

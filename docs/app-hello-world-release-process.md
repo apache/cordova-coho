@@ -221,6 +221,11 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ## Important follow up steps
 
+### Tell Apache about Release
+
+1. Go to: https://reporter.apache.org/addrelease.py
+2. Use version "cordova-app-hello-world@x.x.x"
+
 ### Update cordova-app-hello-world version that cordova-lib depends on
 
     v="$(grep '"version"' cordova-app-hello-world/package.json | cut -d'"' -f4)"

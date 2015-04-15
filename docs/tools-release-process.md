@@ -319,6 +319,13 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
+### Tell Apache about Release
+
+TODO: Please someone write a coho helper for doing this POST request!
+
+1. Go to: https://reporter.apache.org/addrelease.py
+2. Use version "cordova-$FOO@x.x.x"
+
 ## Promote to `latest` in NPM
 
     cd cordova-dist/tools

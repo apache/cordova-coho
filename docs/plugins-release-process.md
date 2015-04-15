@@ -259,6 +259,13 @@ Publish:
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
 
+### Tell Apache about Release
+
+TODO: Please someone write a coho helper for doing this POST request!
+
+1. Go to: https://reporter.apache.org/addrelease.py
+2. Use version "cordova-plugin-$FOO@x.x.x"
+
 ## Publish to Plugins Registry
 
 Unzip the voted content to a temporary location and publish with that:

@@ -329,10 +329,10 @@ TODO: Please someone write a coho helper for doing this POST request!
 ## Promote to `latest` in NPM
 
     cd cordova-dist/tools
-    npm dist-tag cordova-js@VERSION latest
-    npm dist-tag cordova-lib@VERSION latest
-    npm dist-tag plugman@VERSION latest
-    npm dist-tag cordova@VERSION latest
+    npm dist-tag add cordova-js@VERSION latest
+    npm dist-tag add cordova-lib@VERSION latest
+    npm dist-tag add plugman@VERSION latest
+    npm dist-tag add cordova@VERSION latest
 
 ## Post Blog Post
 

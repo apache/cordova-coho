@@ -28,8 +28,8 @@ module.exports = function*() {
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
+               'Use "$r" as pseudo variable for repo name.\n' +
                '\n' +
-               'Use "$r" as pseudo variable for repo name' +
                'Usage: $0 for-each [-r reponame] "shell command"')
         .argv;
 

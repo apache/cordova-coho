@@ -29,6 +29,7 @@ module.exports = function*() {
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
                '\n' +
+               'Use "$r" as pseudo variable for repo name' +
                'Usage: $0 for-each [-r reponame] "shell command"')
         .argv;
 
@@ -44,7 +45,11 @@ module.exports = function*() {
     }
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-         yield executil.execHelper(cmd, false, true);
+         var replacedCmd = [];
+         for (var i = 0; i < cmd.length; i++) {
+            replacedCmd[i] = cmd[i].replace('$r', repo.repoName);    
+         }
+         yield executil.execHelper(replacedCmd, false, true);
     });
 }
 

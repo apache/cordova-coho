@@ -19,6 +19,8 @@
 #
 -->
 
+[![Build Status](https://travis-ci.org/apache/cordova-coho.svg?branch=master)](https://travis-ci.org/apache/cordova-coho)
+
 # COHO
 
 This repository has the following purposes:

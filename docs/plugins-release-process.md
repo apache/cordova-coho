@@ -71,6 +71,11 @@ TODO: Should not mention testing other than checking medic
     ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
     echo $ACTIVE
 
+If you don't want to release all plugins, but you have specific plugins you want to release, you need to set `ACTIVE` equal to them.
+
+    ACTIVE="cordova-plugin-camera cordova-plugin-contacts cordova-plugin-device-motion"
+    echo $ACTIVE
+
 ## Ensure license headers are present everywhere:
 
     coho audit-license-headers -r plugins | less

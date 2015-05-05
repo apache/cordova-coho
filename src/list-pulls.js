@@ -154,7 +154,7 @@ function *listPullRequestsCommand() {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r)
+    var repos = flagutil.computeReposFromFlag(argv.r);
 
     function next() {
         if (repos.length) {
@@ -162,6 +162,12 @@ function *listPullRequestsCommand() {
             listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], next);
         }
     }
+    
+    var url = 'https://github.com/pulls?utf8=%E2%9C%93&q=is%3Aopen+is%3Apr';
+    repos.forEach(function(repo) {
+        url += '+repo%3Aapache%2F' + repo.repoName;
+    });
+    console.log(url);
     next();
 }
 

@@ -58,7 +58,7 @@ Publish to `dist/KEYS`:
 
 Publish to `keys.gnupg.net`
 
-    gpg --send-keys $KEY_ID
+    gpg --keyserver hkp://keys.gnupg.net --send-keys $KEY_ID
 
 Visit http://pgp.mit.edu/ and paste in result of:
 

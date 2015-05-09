@@ -132,7 +132,10 @@ function *updateRepoVersion(repo, version) {
         } else if (repo.id == 'ubuntu') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'build', 'version'));
         } else if (repo.id == 'windows') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
+            if(fs.existsSync(path.join('template', 'cordova', 'version'))) {
+                console.log('version exists');
+                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
+            }
         }
         shelljs.config.fatal = false;
         if (!(yield gitutil.pendingChangesExist())) {

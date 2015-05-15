@@ -52,7 +52,7 @@ function execHelper(cmdAndArgs, silent, allowError) {
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
     return result.then(null, function(e) {
         if (allowError) {
-            return null;
+            throw e;
         } else if (+silent != 1) {
             print(e.output);
         }

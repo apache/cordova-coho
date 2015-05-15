@@ -129,8 +129,9 @@ function *updateRepos(repos, branches, noFetch) {
                         yield gitutil.gitCheckout(branchName);
                         var ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName), false, true);
                         if (ret === null) {
-                            ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
-                            if (ret === null) {
+                            try {
+                                ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
+                            } catch (ret) {
                                 apputil.fatal('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
                             }
                         }

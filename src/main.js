@@ -122,6 +122,11 @@ module.exports = function() {
             desc: 'Shows a list of GitHub pull requests for all specified repositories.',
             entryPoint: lazyRequire('./list-pulls')
         }, {
+            name: 'merge-pr',
+            desc: 'Merges specified PR',
+            entryPoint: lazyRequire('./merge-pr'),
+            noChdir : true
+        }, {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',
             entryPoint: lazyRequire('./last-week')
@@ -172,11 +177,6 @@ module.exports = function() {
     var command;
     var argv = optimist
         .usage(usage)
-        .options('chdir', {
-            desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',
-            type: 'boolean',
-            default: true
-         })
         .check(function(argv) {
             command = argv._[0];
             if (!command) {
@@ -189,10 +189,16 @@ module.exports = function() {
                 throw 'No repositories specified, see list-repos';
             }
         }).argv;
-
-    // Change directory to be a sibling of coho.
-    apputil.initWorkingDir(argv.chdir);
-
+    if(!commandMap[command].noChdir) {
+        optimist.options('chdir', {
+            desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',
+            type: 'boolean',
+            default: true
+         });
+         
+        // Change directory to be a sibling of coho.
+        apputil.initWorkingDir(argv.chdir);
+    }
     var entry = commandMap[command].entryPoint;
     co(entry)();
 };

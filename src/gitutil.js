@@ -43,12 +43,14 @@ exports.tagExists = function*(tagName) {
 }
 
 exports.retrieveCurrentBranchName = function*(allowDetached) {
-    var ref = yield executil.execHelper(executil.ARGS('git symbolic-ref HEAD'), true, true);
-    if (!ref) {
+    var ref;
+    try {
+        ref = yield executil.execHelper(executil.ARGS('git symbolic-ref HEAD'), true, true);
+    } catch (e) {
         if (allowDetached) {
             return null;
         }
-        throw new Error('Aborted due to repo ' + process.cwd() + ' not being on a named branch');
+        throw new Error('Aborted due to repo ' + process.cwd() + ' not being on a named branch. ' + e.message);
     }
     var match = /refs\/heads\/(.*)/.exec(ref);
     if (!match) {

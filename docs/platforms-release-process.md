@@ -89,13 +89,13 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
         #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
     #endif
 
-### Create release branch
+### Prepare release
 
 This step involves:
 
  * Updating cordova.js snapshot
  * Updating version numbers
- * Creating a release branch
+ * Creating a release branch (if it doesn't already exist)
  * Creating git tags for platform and js
  * Updating version in package.json file
  * Tagging

@@ -19,7 +19,6 @@ under the License.
 
 var apputil = require('./apputil');
 var superspawn = require('./superspawn');
-var Q = require('q');
 var print = apputil.print;
 
 var gitCommitCount = 0;
@@ -37,7 +36,7 @@ exports.ARGS = ARGS;
 // silent == true or 1 ==> don't print command, don't print output
 // silent == 2 ==> don't print command, print output
 // silent == 3 ==> print command, don't print output
-function execHelper(cmdAndArgs, silent, allowError, pretend) {
+function execHelper(cmdAndArgs, silent, allowError) {
     // there are times where we want silent but not allowError.
     if (null == allowError) {
         // default to allow failure if being silent.
@@ -47,11 +46,8 @@ function execHelper(cmdAndArgs, silent, allowError, pretend) {
         gitCommitCount++;
     }
     cmdAndArgs[0] = cmdAndArgs[0].replace(/^git /, 'git -c color.ui=always ');
-    if (!silent || silent === 3 || pretend) {
+    if (!silent || silent === 3) {
         print('Executing:', cmdAndArgs.join(' '));
-    }
-    if(pretend) {
-        return Q();
     }
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
     return result.then(null, function(e) {

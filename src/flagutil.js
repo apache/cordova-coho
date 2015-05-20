@@ -42,22 +42,6 @@ exports.registerDepthFlag = function(opt) {
     });
 }
 
-function resolveCwdRepo() {
-    var curPath = apputil.resolveUserSpecifiedPath('.');
-    var prevPath;
-    for (;;) {
-        var value = path.basename(curPath);
-        if (repoutil.getRepoById(value)) {
-            return value;
-        }
-        curPath = path.resolve(curPath, '..');
-        if (curPath == prevPath) {
-            apputil.fatal('--repo=. could not be resolved because you are not in a cordova repository.');
-        }
-        prevPath = curPath;
-    }
-}
-
 exports.computeReposFromFlag = function(flagValue, includeSvn) {
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
@@ -70,7 +54,7 @@ exports.computeReposFromFlag = function(flagValue, includeSvn) {
     }
     values.forEach(function(value) {
         if (value == '.') {
-            value = resolveCwdRepo();
+            value = repoutil.resolveCwdRepo();
         }
         var repo = repoutil.getRepoById(value);
         var group = repoutil.repoGroups[value];

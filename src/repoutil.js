@@ -501,6 +501,22 @@ exports.forEachRepo = function*(repos, func) {
     }
 }
 
+function resolveCwdRepo() {
+    var curPath = apputil.resolveUserSpecifiedPath('.');
+    var prevPath;
+    for (;;) {
+        var value = path.basename(curPath);
+        if (getRepoById(value)) {
+            return value;
+        }
+        curPath = path.resolve(curPath, '..');
+        if (curPath == prevPath) {
+            apputil.fatal('Repo could not be resolved because you are not in a cordova repository.');
+        }
+        prevPath = curPath;
+    }
+}
+exports.resolveCwdRepo = resolveCwdRepo;
 
 function getRepoDir(repo) {
     var baseWorkingDir = apputil.getBaseDir();

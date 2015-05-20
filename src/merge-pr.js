@@ -24,20 +24,18 @@ var executil = require('./executil');
 var gitutil = require('./gitutil');
 var superspawn = require('./superspawn');
 var chalk = require('chalk');
+var repoutil = require('./repoutil');
 
 module.exports = function *(argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     opt.options('pr', {
             desc: 'PR # that needs to be merged',
             demand: true
-        }).options('remote', {
-           desc: 'Named remote for the github apache mirror',
-           demand: true  
         });
     argv = opt
         .usage('Merges the pull request to master\n' +
         '\n' +
-        'Usage: $0 merge-pr --pr 111 --remote mirror')
+        'Usage: $0 merge-pr --pr 111')
         .argv;
    if (argv.h) {
         optimist.showHelp();
@@ -45,14 +43,17 @@ module.exports = function *(argv) {
    }
    
    var localBranch = 'pr/' + argv.pr;
-   yield gitutil.stashAndPop("", function*() {
+   var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
+   var remote = 'https://github.com/apache/' + currentRepo.repoName;
+   var origin = 'https://git-wip-us.apache.org/repos/asf/' + currentRepo.repoName;
+   yield gitutil.stashAndPop('', function*() {
        yield executil.execHelper(executil.ARGS('git checkout master'));
     
        var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /*silent*/ true);
        //var afterStartingCommit = new Date(startingCommitDate.valueOf() + 1); /* add 1 ms*/
 
-       yield executil.execHelper(executil.ARGS('git pull origin master'));
-       yield executil.execHelper(['git', 'fetch', /*force update*/ '-fu', argv.remote,
+       yield executil.execHelper(['git', 'pull', origin, 'master']);
+       yield executil.execHelper(['git', 'fetch', /*force update*/ '-fu', remote,
             'refs/pull/' + argv.pr + '/head:' + localBranch]);
        try {
             yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch),
@@ -61,7 +62,7 @@ module.exports = function *(argv) {
            if (e.message.indexOf('fatal: Not possible to fast-forward, aborting.') > 0) {
                // Let's try to rebase
                yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
-               yield executil.execHelper(executil.ARGS('git pull --rebase origin master'));
+               yield executil.execHelper('git', 'pull', '--rebase', origin, 'master');
                yield executil.execHelper(executil.ARGS('git checkout master'));
                yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch));
                var commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
@@ -71,18 +72,22 @@ module.exports = function *(argv) {
                throw e;
            }
        }
-       
-       console.log();
-       console.log("--------------");
-       console.log("Commits merged:");
-       console.log("--------------");
-       var commits =  yield executil.execHelper(['git', 'log',
+      console.log(); 
+      var commits =  yield executil.execHelper(['git', 'log',
             '--graph',
             '--pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset',
             '--abbrev-commit',
             '--stat',
             commit + '..HEAD'], /*silent*/ true);
-       console.log(commits);
-       console.log(chalk.red.bold("Please test and rebase to meaningful commits before pushing. "));
+
+       if (commits) {
+           console.log('---------------');
+           console.log('Commits merged:');
+           console.log('---------------');
+           console.log(commits);
+           console.log(chalk.red.bold('Please test, squash, and rebase to meaningful commits before pushing. '));
+       } else {
+           console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
+       }
    });
 };

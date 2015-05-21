@@ -49,10 +49,8 @@ module.exports = function *(argv) {
    yield gitutil.stashAndPop('', function*() {
        yield executil.execHelper(executil.ARGS('git checkout master'));
     
-       var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /*silent*/ true);
-       //var afterStartingCommit = new Date(startingCommitDate.valueOf() + 1); /* add 1 ms*/
-
        yield executil.execHelper(['git', 'pull', origin, 'master']);
+       var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /*silent*/ true);
        yield executil.execHelper(['git', 'fetch', /*force update*/ '-fu', remote,
             'refs/pull/' + argv.pr + '/head:' + localBranch]);
        try {

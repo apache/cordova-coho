@@ -62,7 +62,7 @@ module.exports = function *(argv) {
            if (e.message.indexOf('fatal: Not possible to fast-forward, aborting.') > 0) {
                // Let's try to rebase
                yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
-               yield executil.execHelper('git', 'pull', '--rebase', origin, 'master');
+               yield executil.execHelper(['git', 'pull', '--rebase', origin, 'master']);
                yield executil.execHelper(executil.ARGS('git checkout master'));
                yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch));
                var commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);

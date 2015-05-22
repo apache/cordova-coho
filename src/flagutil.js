@@ -43,6 +43,10 @@ exports.registerDepthFlag = function(opt) {
 }
 
 exports.computeReposFromFlag = function(flagValue, includeSvn) {
+    if (flagValue === 'auto') {
+        console.log('No repos specified - using repo in CWD');
+        flagValue = '.';
+    }
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
     var addedIds = {};

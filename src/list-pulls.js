@@ -51,7 +51,7 @@ function addLastCommentInfo(repo, pullRequests, callback) {
     });
 }
 
-function listGitHubPullRequests(repo, maxAge, hideUser, callback) {
+function listGitHubPullRequests(repo, maxAge, hideUser, short, callback) {
     var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
     request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, pullRequests) {
@@ -110,17 +110,22 @@ function listGitHubPullRequests(repo, maxAge, hideUser, callback) {
                 var updatedDate = new Date(pullRequest.updated_at);
                 var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
                 console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
-                console.log(pullRequest.user.login + ': ' + pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
+                console.log('PR #' + pullRequest.number + ': ' + pullRequest.user.login + ': ' +
+                    pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
                 console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
                 console.log('* ' + pullRequest.html_url);
                 // console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
                 if (!pullRequest.head.repo) {
                     console.log('NO REPO EXISTS!');
                 } else {
-                    console.log('To merge: git pull ' + pullRequest.head.repo.clone_url + ' ' + pullRequest.head.ref);
+                    console.log('To merge: coho merge-pr --pr ' + pullRequest.number);
                 }
                 if (pullRequest.body) {
-                    console.log(pullRequest.body);
+                    if (short && pullRequest.body.length > 100) {
+                        console.log(pullRequest.body.substring(0, 100) + '...');
+                    } else {
+                        console.log(pullRequest.body);
+                    }
                 }
                 console.log('');
             });
@@ -140,6 +145,10 @@ function *listPullRequestsCommand() {
         .options('hide-user', {
             desc: 'Hide PRs where the last comment\'s is by this github user.',
             type: 'string'
+         })
+         .options('short', {
+            desc: 'Truncates PR body description',
+            type: 'bool'
          });
     opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
                '\n' +
@@ -159,7 +168,7 @@ function *listPullRequestsCommand() {
     function next() {
         if (repos.length) {
             var repo = repos.shift();
-            listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], next);
+            listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], argv.short, next);
         }
     }
     

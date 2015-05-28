@@ -118,6 +118,7 @@ Update the version of cordova-js that cordova-lib depends on:
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' cordova-lib/cordova-lib/package.json
 
+Manually update the platform dev dependencies in `package.json` for cordova-js
 
 Commit these changes together into one commit
 
@@ -208,10 +209,7 @@ Create archives from your tags:
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/plugman-*.tgz
-    coho verify-archive cordova-dist-dev/$JIRA/cordova-4*.tgz
-    coho verify-archive cordova-dist-dev/$JIRA/cordova-lib*.tgz
-    coho verify-archive cordova-dist-dev/$JIRA/cordova-js*.tgz
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
 
 Upload:
 
@@ -224,7 +222,7 @@ Next, publish these to npm, and be sure to use the "rc" tag in npm.
 
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
-    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-4.*.tgz
+    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-5.*.tgz
     npm publish --tag rc cordova-dist-dev/$JIRA/plugman-*.tgz
 
 ## Test from NPM

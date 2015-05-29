@@ -23,7 +23,9 @@ var apputil = require('./apputil');
 var flagutil = require('./flagutil');
 var repoutil = require('./apputil');
 
-var GITHUB_API_URL = "https://api.github.com/";
+// Set env variable CORDOVA_GIT_ACCOUNT to <username>:<password> or <api-token> to avoid hitting GitHub rate limits.
+var GITHUB_ACCOUNT = process.env.CORDOVA_GIT_ACCOUNT ? process.env.CORDOVA_GIT_ACCOUNT + "@" : "";
+var GITHUB_API_URL = "https://" + GITHUB_ACCOUNT + "api.github.com/";
 var GITHUB_ORGANIZATION = "apache";
 var commentFailed = false;
 
@@ -33,21 +35,76 @@ function addLastCommentInfo(repo, pullRequests, callback) {
         callback();
     }
     pullRequests.forEach(function(pullRequest) {
-        // review_comments_url is always empty, so resort to scraping.
-        request.get({ url: 'https://github.com/apache/' + repo + '/pull/' + pullRequest.number, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, payload) {
-            if (err) {
-                if (!commentFailed) {
-                    commentFailed = true;
-                    console.warn('Pull request scrape request failed: ' + err);
+        var commentsUrl = pullRequest._links.comments && pullRequest._links.comments.href;
+        var reviewCommentsUrl = pullRequest._links.review_comments && pullRequest._links.review_comments.href;
+
+        if (commentsUrl && reviewCommentsUrl) {
+            // If comments and review_comments URLs are present, use them (more accurate than scraping)
+            getPullRequestComments(commentsUrl, function (comments) {
+                getPullRequestComments(reviewCommentsUrl, comments, function (comments) {
+                    // If we have any comments, grab the user name from the most recent one. If not, we'll display the
+                    // owner of the PR (the initial PR comment is not included in the list of comments we get).
+                    comments = comments.sort(function (a, b) {
+                        // For simplicity, we want to end up with the newest comment first, so reverse sort on create date.
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    });
+                    pullRequest.lastUpdatedBy = comments[0] ? comments[0].user.login : pullRequest.user.login;
+                    if (--remaining === 0) {
+                        callback();
+                    }
+                });
+            });
+        } else {
+            // Otherwise, resort to scraping.
+            request.get({ url: 'https://github.com/apache/' + repo + '/pull/' + pullRequest.number, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, payload) {
+                if (err) {
+                    if (!commentFailed) {
+                        commentFailed = true;
+                        console.warn('Pull request scrape request failed: ' + err);
+                    }
+                } else {
+                    var m = /[\s\S]*timeline-comment-header[\s\S]*?"author".*?>(.*?)</.exec(payload);
+                    pullRequest.lastUpdatedBy = m && m[1] || '';
                 }
-            } else {
-                var m = /[\s\S]*timeline-comment-header[\s\S]*?"author".*?>(.*?)</.exec(payload);
-                pullRequest.lastUpdatedBy = m && m[1] || '';
+                if (--remaining === 0) {
+                    callback();
+                }
+            });
+        }
+    });
+}
+
+function getPullRequestComments(url, existingComments, callback) {
+    if (GITHUB_ACCOUNT) {
+        url = url.replace('https://', 'https://' + GITHUB_ACCOUNT);
+    }
+
+    if (typeof existingComments === 'function') {
+        callback = existingComments;
+        existingComments = [];
+    }
+
+    request.get({
+        url: url,
+        headers: {'User-Agent': 'Cordova Coho'}
+    }, function (err, res, payload) {
+        if (err) {
+            if (!commentFailed) {
+                commentFailed = true;
+                console.warn('Getting pull request comments failed: ' + err);
             }
-            if (--remaining === 0) {
-                callback();
+            callback(existingComments);
+        }
+        var comments = JSON.parse(payload);
+        if (!comments.forEach) {
+            // We don't have an array, so something failed
+            if (!commentFailed) {
+                commentFailed = true;
+                console.warn('Getting pull request comments failed: did not return an array');
             }
-        });
+            callback(existingComments);
+        }
+        callback(existingComments.concat(comments));
     });
 }
 

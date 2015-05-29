@@ -67,6 +67,7 @@ var platformRepos = [
         versionFilePaths: ['VERSION'],
         packageFilePaths: ['package.json'],
         ratExcludes: [
+            'base.js', // WinJS base.js is using MIT license
             '*.appx',
             '*.appxbundle'
         ]

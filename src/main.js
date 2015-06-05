@@ -18,6 +18,8 @@ under the License.
 */
 
 var path = require('path');
+var executil = require('./executil');
+
 try {
     var co = require('co');
     var optimist = require('optimist');
@@ -181,6 +183,11 @@ module.exports = function() {
     var command;
     var argv = optimist
         .usage(usage)
+        .options('verbose', {
+            desc: 'Enable verbose logging',
+            type: 'boolean',
+            default: false
+        })
         .check(function(argv) {
             command = argv._[0];
             if (!command) {
@@ -191,6 +198,9 @@ module.exports = function() {
             }
             if (argv.r === true) {
                 throw 'No repositories specified, see list-repos';
+            }
+            if (argv.verbose) {
+                executil.verbose = true;
             }
         }).argv;
     if(!commandMap[command].noChdir) {

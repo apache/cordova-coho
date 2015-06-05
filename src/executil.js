@@ -32,6 +32,8 @@ function ARGS(s, var_args) {
 }
 exports.ARGS = ARGS;
 
+exports.verbose = false;
+
 // silent = false ==> print command and output
 // silent == true or 1 ==> don't print command, don't print output
 // silent == 2 ==> don't print command, print output
@@ -46,7 +48,7 @@ function execHelper(cmdAndArgs, silent, allowError) {
         gitCommitCount++;
     }
     cmdAndArgs[0] = cmdAndArgs[0].replace(/^git /, 'git -c color.ui=always ');
-    if (!silent || silent === 3) {
+    if (!silent || silent === 3 || exports.verbose) {
         print('Executing:', cmdAndArgs.join(' '));
     }
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});

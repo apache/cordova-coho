@@ -35,6 +35,13 @@ module.exports = function *(argv) {
     argv = opt
         .usage('Merges the pull request to master\n' +
         '\n' +
+        'This command will:\n' +
+        '* Update your local master. \n' +
+        '* Fetch the PR and create a branch named `pr/pr#`\n' +
+        '* Attempt a `--ff-only` merge to master. If this fails then: \n' + 
+        '    * Perform a rebase of the `pr/pr#` branch. \n' +
+        '    * Attempt a `--ff-only` merge to master. \n' +
+        '    * On success, it will modify the last commit\'s message to include. `This closes #pr` to ensure the corresponding PR closes on pushing to remote. \n\n' +
         'Usage: $0 merge-pr --pr 111')
         .argv;
    if (argv.h) {
@@ -83,7 +90,7 @@ module.exports = function *(argv) {
            console.log('Commits merged:');
            console.log('---------------');
            console.log(commits);
-           console.log(chalk.red.bold('Please test, squash, and rebase to meaningful commits before pushing. '));
+           console.log(chalk.red.bold('Success! Please test, squash, and rebase to meaningful commits before pushing to remote master using: git push origin master'));
        } else {
            console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
        }

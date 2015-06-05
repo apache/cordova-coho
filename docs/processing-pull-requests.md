@@ -33,6 +33,8 @@ To look at them in aggregate:
 
     coho list-pulls | tee pulls.list | less -R
 
+Alternatively, you can navigate to http://s.apache.org/cordovaPulls to see all PRs for Cordova repos.
+
 To filter out those that you last commented on:
 
     coho list-pulls --hide-user=agrieve
@@ -65,12 +67,17 @@ _Thanks for the pull request. I've had a look at it and think it looks good. Bef
 ## Step 3: Merge the change
 Run the following as an exemplary way to merge to master:
 
-    # Pro Tip: coho list-pulls will generate the following commands for copy&paste
-    git pull https://github.com/GitHubUser/cordova-FOO BRANCH
-    git rebase origin/master -i
+    coho merge-pr --pr <pr#>
+    
+This command will do the following:
+* Update your local master.
+* Fetch the PR and create a branch named `pr/pr#`
+* Attempt a `--ff-only` merge to master. If this fails then: 
+    * Perform a rebase of the `pr/pr#` branch.
+    * Attempt a `--ff-only` merge to master. 
+    * On success, it will modify the last commit's message to include. 'This closes #pr' to ensure the corresponding PR closes on pushing to remote.
 
-The rebase step will let you interactively review the changes being made to master. You should:
-
+You should:
  * Squash as many commits as is reasonable together.
  * Re-write commit messages to include JIRA issue numbers in the form CB-#### (no "[]"'s, no ":")
  * In the final commit message (if there are multiple), [tell GitHub to close the pull request](https://help.github.com/articles/closing-issues-via-commit-messages)
@@ -104,7 +111,7 @@ If the author is set to YOU, and you'd like to reset it to the original author, 
    * Refer to [committer-workflow.md](committer-workflow.md) for how to test each repo.
  * If it would be appropriate to write a test
    * Either write one yourself, or ask the author to do so.
-     * If you write one yourself, commit it in a follow-up (don't squash it with theirs)
+   * If you write one yourself, commit it in a follow-up (don't squash it with theirs)
 
 ## Step 6: Push the change
 

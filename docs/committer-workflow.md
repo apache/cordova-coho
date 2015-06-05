@@ -101,7 +101,7 @@ When possible, try to phrase things in the form of a proposal. If no one objects
 
 ### Step 6: Ask for a code review (_optional_)
  * Do this if you want a second pair of eyes to look at your code before it goes in.
- * Use either [reviewboard](code-reviews.md) or a GitHub pull request.
+ * Use GitHub pull request.
 
 ### Step 7: Push your change
  * When possible, rebase & squash your commits

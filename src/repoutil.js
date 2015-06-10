@@ -363,6 +363,11 @@ var toolRepos = [
             'platformsConfig.json'
         ]
     }, {
+        title: 'Cordova Serve',
+        id: 'serve',
+        repoName: 'cordova-lib',
+        versionPrefix: 'serve'
+    }, {
         title: 'Cordova JS',
         id: 'js',
         repoName: 'cordova-js',
@@ -484,8 +489,8 @@ exports.forEachRepo = function*(repos, func) {
         // TODO: rely less on process.cwd()
         isInForEachRepoFunction = true;
 
-        //cordova-lib lives inside of a top level cordova-lib directory
-        if(repo.id === 'lib'){
+        //cordova-lib and cordova-serve live inside of a top level cordova-lib directory
+        if(repo.id === 'lib' || repo.id === 'serve'){
             origPath = origPath + '/..';
         }
         var repoDir = getRepoDir(repo);
@@ -524,6 +529,8 @@ function getRepoDir(repo) {
     var repoDir = path.join(baseWorkingDir, repo.repoName);
     if(repo.id === 'lib'){
         repoDir = path.join(repoDir, 'cordova-lib');
+    } else if(repo.id === 'serve') {
+        repoDir = path.join(repoDir, 'cordova-serve');
     }
     return repoDir;
 }

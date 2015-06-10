@@ -75,7 +75,7 @@ exports.createCommand = function*(argv) {
     var absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = argv.tag || (yield gitutil.findMostRecentTag());
+        var tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix));
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
         }

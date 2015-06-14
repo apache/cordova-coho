@@ -42,7 +42,11 @@ exports.registerDepthFlag = function(opt) {
     });
 }
 
-exports.computeReposFromFlag = function(flagValue, includeSvn) {
+exports.computeReposFromFlag = function(flagValue, opts) {
+    opts = opts || {};
+    var includeSvn = opts.includeSvn;
+    var includeModules = opts.includeModules;
+
     if (flagValue === 'auto') {
         console.log('No repos specified - using repo in CWD');
         flagValue = '.';
@@ -50,10 +54,27 @@ exports.computeReposFromFlag = function(flagValue, includeSvn) {
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
     var ret = [];
     var addedIds = {};
+    var addedRepos = {};
     function addRepo(repo) {
         if (!addedIds[repo.id]) {
             addedIds[repo.id] = true;
-            ret.push(repo);
+
+            // If we're not requesting modules be included, then we want to de-dup in the case where two repos have the
+            // same repoName (because one or both is actually a sub-module). This probably means we're doing a repo level
+            // operation, so it doesn't matter which we keep, but we'll prefer the one that represents the base repo.
+            if (includeModules) {
+                ret.push(repo);
+            } else {
+                var existingRepo = addedRepos[repo.repoName];
+                if (!existingRepo || !repo.isModule) {
+                    if (existingRepo) {
+                        ret[ret.indexOf(existingRepo)] = repo;
+                    } else {
+                        ret.push(repo);
+                    }
+                    addedRepos[repo.repoName] = repo;
+                }
+            }
         }
     }
     values.forEach(function(value) {

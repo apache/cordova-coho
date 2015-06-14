@@ -358,10 +358,18 @@ var toolRepos = [
         id: 'lib',
         repoName: 'cordova-lib',
         jiraComponentName: 'CordovaLib',
+        path: 'cordova-lib',
         ratExcludes: [
             'fixtures',
             'platformsConfig.json'
         ]
+    }, {
+        title: 'Cordova Serve',
+        id: 'serve',
+        repoName: 'cordova-lib',
+        path: 'cordova-serve',
+        versionPrefix: 'serve',
+        isModule: true
     }, {
         title: 'Cordova JS',
         id: 'js',
@@ -522,9 +530,35 @@ exports.resolveCwdRepo = resolveCwdRepo;
 function getRepoDir(repo) {
     var baseWorkingDir = apputil.getBaseDir();
     var repoDir = path.join(baseWorkingDir, repo.repoName);
-    if(repo.id === 'lib'){
-        repoDir = path.join(repoDir, 'cordova-lib');
+    if (repo.path) {
+        repoDir = path.join(repoDir, repo.path);
     }
     return repoDir;
 }
 exports.getRepoDir = getRepoDir;
+
+function getRepoIncludePath(repo) {
+    var repoPath = repo.path;
+    if (!repoPath) {
+        return [];
+    }
+
+    if (repo.isModule) {
+        // The easy case... if it's a module, then we only include stuff in that module. Since we should already be in
+        // the module folder, we can just use '.'.
+        return ['--', '.'];
+    }
+
+    // The harder case - this is the main repo. We want to include the repo root folder and the folder pointed to by
+    // repo.path, but exclude all module folders.
+    var matchingRepos = allRepos.filter(function (testRepo) {
+        return testRepo.isModule && testRepo.repoName == repo.repoName;
+    });
+
+    return matchingRepos.reduce(function (previous, moduleRepo) {
+        // Note that wwe have to do the '../' stuff because we're not in the root directory of the repo.
+        previous.push(':!../' + moduleRepo.path);
+        return previous;
+    },  ['--', '../']);
+}
+exports.getRepoIncludePath = getRepoIncludePath;

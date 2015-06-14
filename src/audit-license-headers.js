@@ -58,7 +58,7 @@ module.exports = function*() {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
     // Check that RAT command exists.
     var ratName = 'apache-rat-0.10';
     var ratUrl = "https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz";

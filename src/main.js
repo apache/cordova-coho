@@ -113,6 +113,10 @@ module.exports = function() {
             desc: 'Publishes current version of repo to specified tag',
             entryPoint: lazyRequire('./npm-publish', 'publishTag')
         }, {
+            name: 'update-release-notes',
+            desc: 'Updates release notes with commits since the most recent tag.',
+            entryPoint: lazyRequire('./update-release-notes')
+        },  {
             name: 'npm-unpublish-nightly',
             desc: 'Unpublishes last nightly versions for cli and lib',
             entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')

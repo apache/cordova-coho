@@ -64,7 +64,7 @@ exports.createCommand = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
     if (argv.sign && !shelljs.which('gpg')) {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
@@ -75,7 +75,7 @@ exports.createCommand = function*(argv) {
     var absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = argv.tag || (yield gitutil.findMostRecentTag());
+        var tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix));
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
         }

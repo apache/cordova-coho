@@ -37,14 +37,14 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
     var tag;
     yield repoutil.forEachRepo(repos, function*(repo) {
         if (argv.tag){
             tag = argv.tag;
         } else {
-            tag = yield gitutil.findMostRecentTag();
+            tag = yield gitutil.findMostRecentTag(repo.versionPrefix);
         }
         if (!tag) {
             console.log('    ' + repo.repoName + ': NO TAGS');

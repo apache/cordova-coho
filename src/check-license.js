@@ -43,7 +43,7 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
     checkLicense(repos);
 };
 
@@ -55,33 +55,39 @@ function getRepoLicense(repoName){
        return p;
    });
 }
-function checkLicense(repos) {
 
-    //get the license info for each repo's dependencies and subdependencies
+function checkLicense(repos) {
+    //get the license info for each repo's dependencies and sub-dependencies
     var results = [];
     var previous = Q.resolve();
-    repos.forEach(function(repo) {
-            previous = previous.then(function() {
-                if (fs.existsSync(repo.repoName) && (fs.existsSync(path.join(repo.repoName, 'package.json')) || (fs.existsSync(path.join(repo.repoName, repo.repoName, 'package.json'))))) {
-                    reposWithDependencies.push(repo.repoName);
-                    if (repo.repoName == 'cordova-lib')
-                        return getRepoLicense(path.join(repo.repoName, repo.repoName)); //go into inner cordova-lib to get packages
-                    return getRepoLicense(repo.repoName);
-                }
-                else
-                    Q.resolve('Repo directory does not exist: ' + repos.repoName + '. First run coho repo-clone.'); //don't end execution if repo doesn't have dependencies or doesn't exist
-
+    repos.forEach(function (repo) {
+        previous = previous.then(function () {
+            var packageDir = findPackageDir(repo);
+            if (packageDir) {
+                reposWithDependencies.push(repo.id);
+                return getRepoLicense(packageDir);
+            } else {
+                Q.resolve('Repo directory does not exist: ' + repos.repoName + '. First run coho repo-clone.'); //don't end execution if repo doesn't have dependencies or doesn't exist
+            }
         }).then(function (data) {
             results.push(data); //push the result of this repo to the results array for later processing
         });
     });
 
     //process the results after the licenses for all repos have been retrieved
-    previous.then(function(result) {
+    previous.then(function (result) {
         processResults(results, repos);
-    }, function(err) {
+    }, function (err) {
         console.log(err);
     });
+}
+
+function findPackageDir(repo) {
+    var packageDir = repo.repoName;
+    if (repo.path) {
+        packageDir = path.join(packageDir, repo.path);
+    }
+    return fs.existsSync(path.join(packageDir, 'package.json')) ? packageDir : null;
 }
 
 //process the results of each repo
@@ -97,11 +103,16 @@ function processResults(results, repos) {
 
     //go through each repo, get its dependencies and add to json object
     for (var i = 0; i < results.length; ++i) {
-        if (reposWithDependencies.indexOf(repos[i].repoName) > -1)
+        var repo = repos[i];
+        if (reposWithDependencies.indexOf(repo.id) > -1)
         {
             var repoJsonObj = {};
             repoJsonObj.dependencies = getDependencies(results[i]);
-            jsonObject[repos[i].repoName] = repoJsonObj;
+            var repoIdentifier = repo.repoName;
+            if (repo.path) {
+                repoIdentifier += "/" + repo.path;
+            }
+            jsonObject[repoIdentifier] = repoJsonObj;
         }
     }
 

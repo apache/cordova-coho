@@ -54,7 +54,7 @@ module.exports = function*() {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
     var filterByEmail = !!argv.me || !! argv.user;
     var days = argv.days || 7;
     var userEmail = filterByEmail && (argv.user || meEmail);
@@ -78,7 +78,7 @@ module.exports = function*() {
             format += ' %an - ';
         }
         format += '%cd %s';
-        var output = yield executil.execHelper(cmd.concat([format, '--since=' + days + ' days ago']), true);
+        var output = yield executil.execHelper(cmd.concat([format, '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
         if (output) {
             console.log(output);
             commitCount += output.split('\n').length;
@@ -91,7 +91,7 @@ module.exports = function*() {
         yield repoutil.forEachRepo(repos, function*(repo) {
             var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
             var output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
-                '--since=' + days + ' days ago']), true);
+                '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
             if (output) {
                 output.split('\n').forEach(function(line) {
                     line = line.replace(/(.*?)\|/, '');

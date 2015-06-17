@@ -28,26 +28,14 @@ var platformRepos = [
         id: 'android',
         repoName: 'cordova-android',
         jiraComponentName: 'Android',
-        cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
-        ratExcludes: [
-            '*.properties',
-            'bin',
-            'gen',
-            'proguard-project.txt'
-        ]
+        cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js']
     }, {
         title: 'iOS',
         id: 'ios',
         repoName: 'cordova-ios',
         jiraComponentName: 'iOS',
         cordovaJsPaths: ['CordovaLib/cordova.js'],
-        versionFilePaths: [path.join('CordovaLib', 'VERSION')],
-        ratExcludes: [
-            // yes, not .gitignore
-            'gitignore',
-            // licenses for both below are in the cordova-ios LICENSE file
-            'NSData+Base64.h',
-            'NSData+Base64.m'        ]
+        versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
         title: 'BlackBerry',
         id: 'blackberry',
@@ -65,12 +53,7 @@ var platformRepos = [
         cordovaJsSrcName: 'cordova.windows.js',
         cordovaJsPaths: ['template/www/cordova.js'],
         versionFilePaths: ['VERSION'],
-        packageFilePaths: ['package.json'],
-        ratExcludes: [
-            'base.js', // WinJS base.js is using MIT license
-            '*.appx',
-            '*.appxbundle'
-        ]
+        packageFilePaths: ['package.json']
     }, {
         title: 'Windows Phone 8.0',
         id: 'wp8',
@@ -104,13 +87,7 @@ var platformRepos = [
         id: 'amazon-fireos',
         repoName: 'cordova-amazon-fireos',
         jiraComponentName: 'Amazon FireOS',
-        cordovaJsPaths: ['framework/assets/www/cordova.js'],
-        ratExcludes: [
-            '*.properties',
-            'bin',
-            'gen',
-            'proguard-project.txt'
-        ]
+        cordovaJsPaths: ['framework/assets/www/cordova.js']
     }, {
         title: 'Browser',
         id: 'browser',
@@ -161,12 +138,7 @@ var nonPlatformRepos = [
         title: 'MobileSpec',
         id: 'mobile-spec',
         repoName: 'cordova-mobile-spec',
-        jiraComponentName: 'mobile-spec',
-        ratExcludes: [
-          'jasmine.*',
-          'html',
-          'uubench.js',
-        ]
+        jiraComponentName: 'mobile-spec'
     }, {
         title: 'Hello World App',
         id: 'app-hello-world',
@@ -247,13 +219,7 @@ var pluginRepos = [
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
-        inactive: true,
-        ratExcludes: [
-            // zlib/libpng approved by Apache legal
-            // http://www.apache.org/legal/resolved.html
-            'tokenizer.cpp',
-            'tokenizer.h'
-        ]
+        inactive: true
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
@@ -277,13 +243,7 @@ var pluginRepos = [
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
-        inactive: true,
-        ratExcludes: [
-            // Apple license is BSD compatible:
-            // http://markmail.org/message/3ok5cottuxt5wpub
-            'CDVReachability.m',
-            'CDVReachability.h'
-        ]
+        inactive: true
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
@@ -295,13 +255,7 @@ var pluginRepos = [
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
-        inactive: true,
-        ratExcludes: [
-            // zlib/libpng approved by Apache legal
-            // http://www.apache.org/legal/resolved.html
-            'tokenizer.cpp',
-            'tokenizer.h'
-        ]
+        inactive: true
     }, {
         title: 'Plugin - Statusbar',
         id: 'plugin-statusbar',
@@ -340,29 +294,18 @@ var toolRepos = [
         title: 'Cordova CLI',
         id: 'cli',
         repoName: 'cordova-cli',
-        jiraComponentName: 'CLI',
-        ratExcludes: [
-          '*.txt',
-          'cordova.cmd'
-        ]
+        jiraComponentName: 'CLI'
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
         repoName: 'cordova-plugman',
-        jiraComponentName: 'Plugman',
-        ratExcludes: [
-          'help.txt'
-        ]
+        jiraComponentName: 'Plugman'
     }, {
         title: 'Cordova Lib',
         id: 'lib',
         repoName: 'cordova-lib',
         jiraComponentName: 'CordovaLib',
-        path: 'cordova-lib',
-        ratExcludes: [
-            'fixtures',
-            'platformsConfig.json'
-        ]
+        path: 'cordova-lib'
     }, {
         title: 'Cordova Serve',
         id: 'serve',
@@ -374,10 +317,7 @@ var toolRepos = [
         title: 'Cordova JS',
         id: 'js',
         repoName: 'cordova-js',
-        jiraComponentName: 'CordovaJS',
-        ratExcludes: [
-            'tasks/vendor'
-        ]
+        jiraComponentName: 'CordovaJS'
     }, {
         title: 'Cordova Coho',
         id: 'coho',

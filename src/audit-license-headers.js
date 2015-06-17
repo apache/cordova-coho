@@ -18,6 +18,7 @@ under the License.
 */
 
 var fs = require('fs');
+var os = require('os');
 var path = require('path');
 var chalk = require('chalk');
 var shelljs = require('shelljs');
@@ -27,6 +28,7 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
+// constants
 var COMMON_RAT_EXCLUDES = [
     '*.wav',
     '*.webloc',
@@ -44,11 +46,27 @@ var COMMON_RAT_EXCLUDES = [
     '*.xcworkspacedata',
     '*.xccheckout',
     '*.xcscheme',
-    ];
+];
+
+var RAT_IGNORE_PATH          = '.ratignore';
+var RATIGNORE_COMMENT_PREFIX = '#';
+
+var RAT_NAME = 'apache-rat-0.10';
+var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz';
+
+function startsWith(string, prefix) {
+    return string.indexOf(prefix) === 0;
+}
+
+function isComment(pattern) {
+    return startsWith(pattern.trim(), RATIGNORE_COMMENT_PREFIX);
+}
 
 module.exports = function*() {
+
     var opt = flagutil.registerRepoFlag(optimist);
-    opt = flagutil.registerHelpFlag(opt);
+    opt     = flagutil.registerHelpFlag(opt);
+
     opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
               '\n' +
               'Usage: $0 audit-license-headers --repo=name [-r repos]')
@@ -58,39 +76,58 @@ module.exports = function*() {
         optimist.showHelp();
         process.exit(1);
     }
+
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+
     // Check that RAT command exists.
-    var ratName = 'apache-rat-0.10';
-    var ratUrl = "https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz";
     var ratPath;
     yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
-        ratPath = path.join(process.cwd(), ratName, ratName+'.jar');
+        ratPath = path.join(process.cwd(), RAT_NAME, RAT_NAME+'.jar');
     });
+
     if (!fs.existsSync(ratPath)) {
         console.log('RAT tool not found, downloading to: ' + ratPath);
         yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
             if (shelljs.which('curl')) {
-                yield executil.execHelper(['sh', '-c', 'curl "' + ratUrl + '" | tar xz']);
+                yield executil.execHelper(['sh', '-c', 'curl "' + RAT_URL + '" | tar xz']);
             } else {
-                yield executil.execHelper(['sh', '-c', 'wget -O - "' + ratUrl + '" | tar xz']);
+                yield executil.execHelper(['sh', '-c', 'wget -O - "' + RAT_URL + '" | tar xz']);
             }
         });
         if (!fs.existsSync(ratPath)) {
             apputil.fatal('Download failed.');
         }
     }
-    console.log(chalk.red('Note: ignore filters exist and often need updating within coho.'));
-    console.log(chalk.red('Look at audit-license-headers.js (COMMON_RAT_EXCLUDES) as well as repo.ratExcludes property'));
+
+    console.log(chalk.red('Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));
+
+    // NOTE:
+    //      the CWD in a callback is the directory for its respective repo
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var allExcludes = COMMON_RAT_EXCLUDES;
-        if (repo.ratExcludes) {
-            allExcludes = allExcludes.concat(repo.ratExcludes);
+
+        var excludePatterns = COMMON_RAT_EXCLUDES;
+
+        // read in exclude patterns from repo's .ratignore, one pattern per line
+        if (fs.existsSync(RAT_IGNORE_PATH)) {
+
+            var ratignoreFile  = fs.readFileSync(RAT_IGNORE_PATH);
+            var ratignoreLines = ratignoreFile.toString().trim().split(os.EOL);
+
+            // add only non-empty and non-comment lines
+            ratignoreLines.forEach(function (line) {
+                if (line.length > 0 && !isComment(line)) {
+                    excludePatterns.push(line);
+                }
+            });
         }
+
+        // add flags for excludes
         var excludeFlags = [];
-        allExcludes.forEach(function(e) {
-            excludeFlags.push('-e', e);
+        excludePatterns.forEach(function (pattern) {
+            excludeFlags.push('-e', pattern);
         });
+
+        // run Rat
         yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags));
     });
 }
-

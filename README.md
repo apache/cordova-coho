@@ -20,6 +20,7 @@
 -->
 
 [![Build Status](https://travis-ci.org/apache/cordova-coho.svg?branch=master)](https://travis-ci.org/apache/cordova-coho)
+[![Build Status](https://ci.appveyor.com/api/projects/status/1y9yh5ys72h6l5sy)]()
 
 # COHO
 

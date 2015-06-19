@@ -104,16 +104,29 @@ function *updateRepos(repos, branches, noFetch) {
     }
 
     if (branches && branches.length) {
+        var errors = '';
         yield repoutil.forEachRepo(repos, function*(repo) {
+            if(repo.id === 'firefoxos' && process.platform === 'win32') {
+                 console.log('Skipping firefox OS repo on Windows as it fails due to max path length issues');
+                 return;
+            }
+            
             if (repo.svn) {
-                yield executil.execHelper(executil.ARGS('svn up'));
+                try {
+                    yield executil.execHelper(executil.ARGS('svn up'), /*silent*/ false, /*allowError*/ true);
+                } catch (e) {
+                    errors += '(' + repo.repoName + '): ' + e + '\n';
+                     // Log failure and continue updating other repos
+                    console.log(e);
+                }
                 return;
             }
             var staleBranches = {};
             for (var i = 0; i < branches.length; ++i) {
                 var branchName = branches[i];
                 if (yield gitutil.remoteBranchExists(repo, branches[i])) {
-                    var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), true, true);
+                    var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), 
+                        /*silent*/ true, /*allowError*/ true);
                     staleBranches[branchName] = !!changes;
                 }
             }
@@ -123,22 +136,35 @@ function *updateRepos(repos, branches, noFetch) {
             if (!staleBranches.length) {
                 print('Already up-to-date: ' + repo.repoName);
             } else {
-                yield gitutil.stashAndPop(repo, function*() {
+               yield gitutil.stashAndPop(repo, function*() {
                     for (var i = 0; i < staleBranches.length; ++i) {
                         var branchName = staleBranches[i];
                         yield gitutil.gitCheckout(branchName);
-                        var ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName), false, true);
-                        if (ret === null) {
-                            try {
-                                ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), false, true);
-                            } catch (ret) {
-                                apputil.fatal('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
+                        try {
+                            var ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName), 
+                                /*silent*/ false, /*allowError*/ true);
+                            if (ret === null) {
+                                try {
+                                    ret = yield executil.execHelper(executil.ARGS('git rebase ' + repo.remoteName + '/' + branchName), 
+                                        /*silent*/ false, /*allowError*/ true);
+                                } catch (ret) {
+                                    apputil.fatal('\n\nUpdate failed. Run again with --no-fetch to try again without re-fetching.');
+                                }
                             }
+                        }
+                        catch(e) {
+                            errors += '(' + repo.repoName + '): ' + e + '\n';
+                            // Log failure and continue updating other repos
+                            console.log(e);
                         }
                     }
                 });
             }
         });
+        if (errors) {
+            console.log('ERRORS:');
+            console.log(errors);
+        }
     }
 }
 module.exports.updateRepos = updateRepos;
@@ -146,19 +172,21 @@ module.exports.updateRepos = updateRepos;
 function *determineApacheRemote(repo) {
     var fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
     var ret = null;
-    for (var i = 1; i < fields.length; i += 3) {
-        [
-          'git-wip-us.apache.org/repos/asf/',
-          'git.apache.org/',
-          'github.com/apache/',
-        ].forEach(function(validRepo) {
+    [
+      'git-wip-us.apache.org/repos/asf/',
+      'git.apache.org/',
+      'github.com/apache/',
+    ].forEach(function(validRepo) {
+        for (var i = 1; i < fields.length; i += 3) {
             if (!ret && fields[i].indexOf(validRepo + repo.repoName) != -1) {
                 ret = fields[i - 1];
             }
-        });
-    }
-    if (ret)
+        }
+    });
+    
+    if (ret) {
         return ret;
+    }
     apputil.fatal('Could not find an apache remote for repo ' + repo.repoName);
 }
 

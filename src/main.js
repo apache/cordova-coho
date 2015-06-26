@@ -133,6 +133,12 @@ module.exports = function() {
             entryPoint: lazyRequire('./merge-pr'),
             noChdir : true
         }, {
+            name: 'create-pr',
+            desc: 'Launches github PR UI for the specified topic branch',
+            entryPoint: lazyRequire('./create-pr'),
+            noChdir : true
+        }, 
+        {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',
             entryPoint: lazyRequire('./last-week')

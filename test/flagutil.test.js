@@ -3,11 +3,7 @@ var flagutil = require('../src/flagutil');
 
 test('test computeReposFromFlagAndroid', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('android');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'android');
@@ -15,11 +11,7 @@ test('test computeReposFromFlagAndroid', function(t) {
 });
 test('test computeReposFromFlagiOS', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('ios');
-
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'ios');
@@ -28,11 +20,7 @@ test('test computeReposFromFlagiOS', function(t) {
 
 test('test computeReposFromFlagWindows', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('windows');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'windows');
@@ -51,11 +39,7 @@ test('test computeReposFromFlagWindows', function(t) {
 // });
 test('test computeReposFromFlagWindowsPhone8', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('wp8');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'wp8');
@@ -64,11 +48,7 @@ test('test computeReposFromFlagWindowsPhone8', function(t) {
 
 test('test computeReposFromFlagBlackberry', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('blackberry');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'blackberry');
@@ -76,11 +56,7 @@ test('test computeReposFromFlagBlackberry', function(t) {
 });
 test('test computeReposFromFlagFirefoxos', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('firefoxos');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'firefoxos');
@@ -88,11 +64,7 @@ test('test computeReposFromFlagFirefoxos', function(t) {
 });
 test('test computeReposFromFlagOsx', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('osx');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'osx');
@@ -100,11 +72,7 @@ test('test computeReposFromFlagOsx', function(t) {
 });
 test('test computeReposFromFlagUbuntu', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('ubuntu');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'ubuntu');
@@ -112,11 +80,7 @@ test('test computeReposFromFlagUbuntu', function(t) {
 });
 test('test computeReposFromFlagAmazon-fireos', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('amazon-fireos');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'amazon-fireos');
@@ -124,11 +88,7 @@ test('test computeReposFromFlagAmazon-fireos', function(t) {
 });
 test('test computeReposFromFlagBrowser', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('browser');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'browser');
@@ -136,11 +96,7 @@ test('test computeReposFromFlagBrowser', function(t) {
 });
 test('test computeReposFromFlagBada', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('bada');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'bada');
@@ -148,11 +104,7 @@ test('test computeReposFromFlagBada', function(t) {
 });
 test('test computeReposFromFlagBada-wac', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('bada-wac');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'bada-wac');
@@ -160,11 +112,7 @@ test('test computeReposFromFlagBada-wac', function(t) {
 });
 test('test computeReposFromFlagWebOS', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('webos');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'webos');
@@ -172,10 +120,7 @@ test('test computeReposFromFlagWebOS', function(t) {
 });
 test('test computeReposFromFlagQt', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('qt');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
     console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
@@ -184,11 +129,7 @@ test('test computeReposFromFlagQt', function(t) {
 });
 test('test computeReposFromFlagTizen', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('tizen');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'tizen');
@@ -196,11 +137,7 @@ test('test computeReposFromFlagTizen', function(t) {
 });
 test('test computeReposFromFlagDocs', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('docs');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'docs');
@@ -208,11 +145,7 @@ test('test computeReposFromFlagDocs', function(t) {
 });
 test('test computeReposFromFlagMobilespec', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('mobile-spec');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'mobile-spec');
@@ -220,11 +153,7 @@ test('test computeReposFromFlagMobilespec', function(t) {
 });
 test('test computeReposFromFlagAppHelloWorld', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('app-hello-world');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'app-hello-world');
@@ -232,11 +161,7 @@ test('test computeReposFromFlagAppHelloWorld', function(t) {
 });
 test('test computeReposFromFlagPluginBatteryStatus', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-battery-status');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-battery-status');
@@ -244,11 +169,7 @@ test('test computeReposFromFlagPluginBatteryStatus', function(t) {
 });
 test('test computeReposFromFlagPluginCamera', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-camera');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-camera');
@@ -256,11 +177,7 @@ test('test computeReposFromFlagPluginCamera', function(t) {
 });
 test('test computeReposFromFlagPluginConsole', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-console');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-console');
@@ -268,11 +185,7 @@ test('test computeReposFromFlagPluginConsole', function(t) {
 });
 test('test computeReposFromFlagPluginContacts', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-contacts');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-contacts');
@@ -280,11 +193,7 @@ test('test computeReposFromFlagPluginContacts', function(t) {
 });
 test('test computeReposFromFlagDocs', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('docs');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'docs');
@@ -292,11 +201,7 @@ test('test computeReposFromFlagDocs', function(t) {
 });
 test('test computeReposFromFlagPluginDeviceMotion', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-device-motion');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-device-motion');
@@ -304,11 +209,7 @@ test('test computeReposFromFlagPluginDeviceMotion', function(t) {
 });
 test('test computeReposFromFlagPluginDeviceOrientation', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-device-orientation');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-device-orientation');
@@ -317,11 +218,7 @@ test('test computeReposFromFlagPluginDeviceOrientation', function(t) {
 
 test('test computeReposFromFlagPlugin-device', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-device');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-device');
@@ -330,11 +227,7 @@ test('test computeReposFromFlagPlugin-device', function(t) {
 
 test('test computeReposFromFlagPluginDialogs', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-dialogs');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-dialogs');
@@ -343,11 +236,7 @@ test('test computeReposFromFlagPluginDialogs', function(t) {
 
 test('test computeReposFromFlagPluginFileTransfer', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-file-transfer');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-file-transfer');
@@ -356,11 +245,7 @@ test('test computeReposFromFlagPluginFileTransfer', function(t) {
 
 test('test computeReposFromFlagPluginGeolocation', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
-    var repo = flagutil.computeReposFromFlag('plugin-geolocation');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
+   var repo = flagutil.computeReposFromFlag('plugin-geolocation');
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-geolocation');
@@ -369,11 +254,7 @@ test('test computeReposFromFlagPluginGeolocation', function(t) {
 
 test('test computeReposFromFlagPluginGlobalization', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-globalization');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-globalization');
@@ -381,11 +262,7 @@ test('test computeReposFromFlagPluginGlobalization', function(t) {
 });
 test('test computeReposFromFlagInappbrowser', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-inappbrowser');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-inappbrowser');
@@ -393,11 +270,7 @@ test('test computeReposFromFlagInappbrowser', function(t) {
 });
 test('test computeReposFromFlagMedia', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-media');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-media');
@@ -405,11 +278,7 @@ test('test computeReposFromFlagMedia', function(t) {
 });
 test('test computeReposFromFlagMediaCapture', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-media-capture');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-media-capture');
@@ -417,11 +286,7 @@ test('test computeReposFromFlagMediaCapture', function(t) {
 });
 test('test computeReposFromFlagNetworkInformation', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-network-information');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-network-information');
@@ -429,11 +294,7 @@ test('test computeReposFromFlagNetworkInformation', function(t) {
 });
 test('test computeReposFromFlagSplashscreen', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-splashscreen');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-splashscreen');
@@ -441,11 +302,7 @@ test('test computeReposFromFlagSplashscreen', function(t) {
 });
 test('test computeReposFromFlagVibration', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-vibration');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-vibration');
@@ -453,11 +310,7 @@ test('test computeReposFromFlagVibration', function(t) {
 });
 test('test computeReposFromFlagStatusbar', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-statusbar');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-statusbar');
@@ -465,11 +318,7 @@ test('test computeReposFromFlagStatusbar', function(t) {
 });
 test('test computeReposFromFlagWhitelist', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-whitelist');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-whitelist');
@@ -477,11 +326,7 @@ test('test computeReposFromFlagWhitelist', function(t) {
 });
 test('test computeReposFromFlagLegacyWhitelist', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-legacy-whitelist');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-legacy-whitelist');
@@ -489,11 +334,7 @@ test('test computeReposFromFlagLegacyWhitelist', function(t) {
 });
 test('test computeReposFromFlagPlugins', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('cordova-plugins');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'cordova-plugins');
@@ -501,11 +342,7 @@ test('test computeReposFromFlagPlugins', function(t) {
 });
 test('test computeReposFromFlagTestFramework', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugin-test-framework');
-  //  console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugin-test-framework');
@@ -513,11 +350,7 @@ test('test computeReposFromFlagTestFramework', function(t) {
 });
 test('test computeReposFromFlagCli', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('cli');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'cli');
@@ -525,11 +358,7 @@ test('test computeReposFromFlagCli', function(t) {
 });
 test('test computeReposFromFlagPlugman', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('plugman');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'plugman');
@@ -537,11 +366,7 @@ test('test computeReposFromFlagPlugman', function(t) {
 });
 test('test computeReposFromFlagLib', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('lib');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'lib');
@@ -549,11 +374,7 @@ test('test computeReposFromFlagLib', function(t) {
 });
 test('test computeReposFromFlagServe', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('serve');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'serve');
@@ -561,11 +382,7 @@ test('test computeReposFromFlagServe', function(t) {
 });
 test('test computeReposFromFlagJs', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('js');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'js');
@@ -573,11 +390,7 @@ test('test computeReposFromFlagJs', function(t) {
 });
 test('test computeReposFromFlagCoho', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('coho');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'coho');
@@ -585,11 +398,7 @@ test('test computeReposFromFlagCoho', function(t) {
 });
 test('test computeReposFromFlagMedic', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('medic');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'medic');
@@ -597,11 +406,7 @@ test('test computeReposFromFlagMedic', function(t) {
 });
 test('test computeReposFromFlagAppharness', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('app-harness');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'app-harness');
@@ -609,11 +414,7 @@ test('test computeReposFromFlagAppharness', function(t) {
 });
 test('test computeReposFromFlagLabs', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('labs');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'labs');
@@ -621,11 +422,7 @@ test('test computeReposFromFlagLabs', function(t) {
 });
 test('test computeReposFromFlagRegistryWeb', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('registry-web');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'registry-web');
@@ -633,11 +430,7 @@ test('test computeReposFromFlagRegistryWeb', function(t) {
 });
 test('test computeReposFromFlagRegistry', function(t) {
     t.plan(4);
-
-    //console.log(flagutil.computeReposFromFlag('android'))
     var repo = flagutil.computeReposFromFlag('registry');
-    //console.log(Object.getOwnPropertyNames(repo[0]));
-    console.log(repo);
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'registry');
@@ -645,7 +438,7 @@ test('test computeReposFromFlagRegistry', function(t) {
 });
 // test('test computeReposFromFlagDist', function(t) {
 //     t.plan(4);
-// 
+//
 //     //console.log(flagutil.computeReposFromFlag('android'))
 //     var repo = flagutil.computeReposFromFlag('dist');
 //     //console.log(Object.getOwnPropertyNames(repo[0]));
@@ -657,7 +450,7 @@ test('test computeReposFromFlagRegistry', function(t) {
 // });
 // test('test computeReposFromFlagDistDev', function(t) {
 //     t.plan(4);
-// 
+//
 //     //console.log(flagutil.computeReposFromFlag('android'))
 //     var repo = flagutil.computeReposFromFlag('dist/dev');
 //     //console.log(Object.getOwnPropertyNames(repo[0]));
@@ -669,11 +462,8 @@ test('test computeReposFromFlagRegistry', function(t) {
 // });
 // test('test computeReposFromFlagPrivatepmc', function(t) {
 //     t.plan(4);
-// 
-//     //console.log(flagutil.computeReposFromFlag('android'))
+//
 //     var repo = flagutil.computeReposFromFlag('private-pmc');
-//     //console.log(Object.getOwnPropertyNames(repo[0]));
-//     console.log(repo);
 //     t.equal(repo.length, 1);
 //     t.equal(typeof repo[0], 'object');
 //     t.equal(repo[0].id, 'private-pmc');
@@ -681,11 +471,7 @@ test('test computeReposFromFlagRegistry', function(t) {
 // });
 // test('test computeReposFromFlagWebsite', function(t) {
 //     t.plan(4);
-// 
-//     //console.log(flagutil.computeReposFromFlag('android'))
 //     var repo = flagutil.computeReposFromFlag('website');
-//     //console.log(Object.getOwnPropertyNames(repo[0]));
-//     console.log(repo);
 //     t.equal(repo.length, 1);
 //     t.equal(typeof repo[0], 'object');
 //     t.equal(repo[0].id, 'website');

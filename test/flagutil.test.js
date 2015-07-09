@@ -19,9 +19,10 @@ test('test computeReposFromFlagiOS', function(t) {
 });
 
 test('test computeReposFromFlagWindows', function(t) {
-    t.plan(4);
+    t.plan(5);
     var repo = flagutil.computeReposFromFlag('windows');
     t.equal(repo.length, 1);
+    t.equal(repo[0].cordovaJsSrcName,'cordova.windows.js');
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'windows');
     t.equal(repo[0].repoName, 'cordova-windows');
@@ -38,10 +39,11 @@ test('test computeReposFromFlagWindows', function(t) {
 //
 // });
 test('test computeReposFromFlagWindowsPhone8', function(t) {
-    t.plan(4);
+    t.plan(5);
     var repo = flagutil.computeReposFromFlag('wp8');
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
+    t.equal(repo[0].cordovaJsSrcName,'cordova.wp8.js');
     t.equal(repo[0].id, 'wp8');
     t.equal(repo[0].repoName, 'cordova-wp8');
 });

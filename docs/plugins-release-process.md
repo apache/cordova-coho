@@ -274,7 +274,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugi
 
 TODO: Please someone write a coho helper for doing this POST request!
 
-1. Go to: https://reporter.apache.org/addrelease.py
+1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-plugin-$FOO@x.x.x"
 
 ## Publish to npm

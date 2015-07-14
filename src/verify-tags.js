@@ -25,19 +25,27 @@ var repoutil = require('./repoutil');
 var print = apputil.print;
 var chalk = require('chalk');
 var Q = require('q');
+var readline = require('readline');
 
-function readStream(stream) {
+function readInput() {
     var ret = Q.defer();
-    stream.resume();
-    stream.setEncoding('utf8');
+
+    var rl = readline.createInterface({
+        input: process.stdin
+    });
 
     var data = '';
-    stream.on('data', function(chunk) {
-        data += chunk;
+    rl.on('line', function (line) {
+        if (line) {
+            data += line + '\n';
+        } else {
+            rl.close();
+        }
     });
-    stream.on('end', function() {
+    rl.on('close', function () {
         ret.resolve(data);
     });
+
     return ret.promise;
 }
 
@@ -56,10 +64,10 @@ exports.createCommand = function*(argv) {
         process.exit(1);
     }
     if (process.stdin.isTTY) {
-        console.log('Paste in print-tags output then hit Ctrl-D');
+        console.log('Paste in print-tags output then hit Enter');
     }
 
-    var input = yield readStream(process.stdin);
+    var input = yield readInput();
     var pattern = /\s*(cordova-.+?):\s*(.*?)\s+\((.*?)\)/g;
     var m;
     var results = [];

@@ -32,7 +32,6 @@ exports.registerRepoFlag = function(opt) {
     return opt.options('r', {
         alias: 'repo',
         desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
-        default: 'auto'
     });
 }
 
@@ -47,7 +46,7 @@ exports.computeReposFromFlag = function(flagValue, opts) {
     var includeSvn = opts.includeSvn;
     var includeModules = opts.includeModules;
 
-    if (flagValue === 'auto') {
+    if (!flagValue) {
         console.log('No repos specified - using repo in CWD');
         flagValue = '.';
     }

@@ -186,39 +186,40 @@ module.exports = function() {
     usage += '    ./cordova-coho/coho for-each -r plugins "git clean -fd"\n';
     usage += '    ./cordova-coho/coho last-week --me';
 
-    var command;
-    var argv = optimist
+    var command = commandMap[optimist.argv._[0]];
+    var opts = optimist
         .usage(usage)
         .options('verbose', {
             desc: 'Enable verbose logging',
             type: 'boolean',
             default: false
-        })
-        .check(function(argv) {
-            command = argv._[0];
-            if (!command) {
-                throw 'No command specified.';
-            }
-            if (!commandMap[command]) {
-                throw 'Unknown command: ' + command;
-            }
-            if (argv.r === true) {
-                throw 'No repositories specified, see list-repos';
-            }
-            if (argv.verbose) {
-                executil.verbose = true;
-            }
-        }).argv;
-    if(!commandMap[command].noChdir) {
-        optimist.options('chdir', {
+        });
+    if (command && !command.noChdir) {
+        opts = opts.options('chdir', {
             desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',
             type: 'boolean',
             default: true
-         });
-         
+        });
+    }
+    var argv = opts.check(function(argv) {
+        var commandName = argv._[0];
+        if (!commandName) {
+            throw 'No command specified.';
+        }
+        if (!command) {
+            throw 'Unknown command: ' + commandName;
+        }
+        if (argv.r === true) {
+            throw 'No repositories specified, see list-repos';
+        }
+    }).argv;
+    if (!command.noChdir) {
         // Change directory to be a sibling of coho.
         apputil.initWorkingDir(argv.chdir);
     }
-    var entry = commandMap[command].entryPoint;
+    if (argv.verbose) {
+        executil.verbose = true;
+    }
+    var entry = command.entryPoint;
     co(entry)();
 };

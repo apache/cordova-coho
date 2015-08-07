@@ -76,11 +76,8 @@ See if any dependencies are outdated
     (cd cordova-cli && npm outdated --depth=0)
 
 Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies. As of this writing, the following packages are behind and are not safe to upgrade:
- * semver - in latest versions of semver-node "^0.x.y" is always equivalent to "=0.x.y" (for major=0). This breaks some cordova engine compat checks. [Background](https://github.com/npm/npm/issues/5695#issuecomment-49765893).
- * npm & npmconf - npm 2.x includes the above semver change among other things. More info [here](http://blog.npmjs.org/post/98131109725/npm-2-0-0).
  * nopt for plugman - see [CB-7915](https://issues.apache.org/jira/browse/CB-7915)
  * elementtree - elementtree@0.1.6 breaks tests in cordova-lib, investigation needed.
- * npm for cordova-lib & plugman - Needs to stay at 1.3.4 due to our plugins registry
 
 ## Update Release Notes & Version
 
@@ -88,7 +85,7 @@ Increase the version within package.json using SemVer, and remove the ''-dev'' s
 
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-If the changes merit it, manually bump the major / minor version instead of the micro. List the changes via:
+If the changes merit it, manually bump the major / minor version instead of the micro. View the changes via:
 
     ( cd cordova-lib/cordova-lib; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
 
@@ -100,10 +97,7 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
 Update each repo's RELEASENOTES.md file with changes
 
-    # Add new heading to release notes with version and date
-    DATE=$(date "+%h %d, %Y")
-
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
+    coho update-release-notes -r cordova-lib -r cordova-js -r cordova-plugman -r cordova-cli
     # Then curate:
     vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md
 

@@ -112,7 +112,8 @@ var platformRepos = [
         id: 'webos',
         repoName: 'cordova-webos',
         jiraComponentName: 'webOS',
-        inactive: true
+        cordovaJsSrcName: 'cordova.webos.js',
+        cordovaJsPaths: ['cordova-lib/cordova.js']
     }, {
         title: 'QT',
         id: 'qt',

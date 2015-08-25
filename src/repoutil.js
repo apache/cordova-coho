@@ -321,6 +321,13 @@ var toolRepos = [
         versionPrefix: 'serve',
         isModule: true
     }, {
+        title: 'Cordova Common',
+        id: 'common',
+        repoName: 'cordova-lib',
+        path: 'cordova-common',
+        versionPrefix: 'common',
+        isModule: true
+    }, {
         title: 'Cordova JS',
         id: 'js',
         repoName: 'cordova-js',

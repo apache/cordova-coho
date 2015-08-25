@@ -36,11 +36,11 @@ module.exports = function*(argv) {
     }
 
     function getPathFromModuleName(moduleName) {
-        if (moduleName == "cordova-lib") {
-            return(moduleName + path.sep + moduleName);
-        } else {
-            return(moduleName);
+        if (moduleName == "cordova-lib" || moduleName == "cordova-common") {
+            return("cordova-lib" + path.sep + moduleName);
         }
+
+        return(moduleName);
     }
 
     function cdInto(moduleName) {
@@ -70,6 +70,9 @@ module.exports = function*(argv) {
 
     npmLinkOut("cordova-js");
     npmLinkIn("cordova-js", "cordova-lib");
+
+    npmLinkOut("cordova-common");
+    npmLinkIn("cordova-common", "cordova-lib");
 
     npmLinkOut("cordova-lib");
     npmLinkIn("cordova-lib", "cordova-plugman");

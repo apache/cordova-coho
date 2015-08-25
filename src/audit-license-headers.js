@@ -43,6 +43,7 @@ var COMMON_RAT_EXCLUDES = [
     'thirdparty',
     'package.json',
     'component.json',
+    '.jshintrc',
     '*.xcworkspacedata',
     '*.xccheckout',
     '*.xcscheme',

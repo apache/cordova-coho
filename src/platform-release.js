@@ -80,7 +80,9 @@ var hasBuiltJs = '';
 function *updateJsSnapshot(repo, version) {
     function *ensureJsIsBuilt() {
         var cordovaJsRepo = repoutil.getRepoById('js');
-
+        if (repo.id === 'blackberry') {
+            repo.id = 'blackberry10';
+        }
         if (hasBuiltJs != version) {
             yield repoutil.forEachRepo([cordovaJsRepo], function*() {
                 yield gitutil.stashAndPop(cordovaJsRepo, function*() {

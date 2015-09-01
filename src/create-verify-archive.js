@@ -17,6 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var glob = require('glob');
 var optimist = require('optimist');
 var shelljs = require('shelljs');
 var chalk = require('chalk');
@@ -116,7 +117,7 @@ exports.createCommand = function*(argv) {
     print('Verify them using: coho verify-archive ' + path.join(outDir, '*.tgz'));
 }
 
-exports.verifyCommand = function*(argv) {
+exports.verifyCommand = function*() {
     var opt = flagutil.registerHelpFlag(optimist);
     var argv = opt
         .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
@@ -134,8 +135,16 @@ exports.verifyCommand = function*(argv) {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
-    for (var i = 0; i < zipPaths.length; ++i) {
-        var zipPath = apputil.resolveUserSpecifiedPath(zipPaths[i]);
+    var resolvedZipPaths = zipPaths.reduce(function (current, zipPath) {
+        var matchingPaths = glob.sync(apputil.resolveUserSpecifiedPath(zipPath));
+        if (!matchingPaths || !matchingPaths.length) {
+            apputil.fatal(chalk.red('No files found that match \'' + zipPath + '\''));
+        }
+        return current.concat(matchingPaths);
+    }, []);
+
+    for (var i = 0; i < resolvedZipPaths.length; ++i) {
+        var zipPath = resolvedZipPaths[i];
         var result = yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath), false, true);
         if (result === null) {
             apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
@@ -150,8 +159,8 @@ exports.verifyCommand = function*(argv) {
         }
         print(zipPath + chalk.green(' signature and hashes verified.'));
     }
-    print(chalk.green('Verified ' + zipPaths.length + ' signatures and hashes.'));
-}
+    print(chalk.green('Verified ' + resolvedZipPaths.length + ' signatures and hashes.'));
+};
 
 function *computeHash(path, algo) {
     print('Computing ' + algo + ' for: ' + path);

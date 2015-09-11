@@ -276,6 +276,12 @@ var pluginRepos = [
         jiraComponentName: 'Plugin Legacy Whitelist',
         inactive: true
     }, {
+        title: 'Plugin - WKWebView Engine',
+        id: 'cordova-plugin-wkwebview-engine',
+        repoName: 'cordova-plugin-wkwebview-engine',
+        jiraComponentName: 'Plugin WKWebViewEngine',
+        inactive: true
+    }, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',
         repoName: 'cordova-plugins',

@@ -30,6 +30,7 @@ var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
 var settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
+var isWin = process.platform === 'win32';
 
 exports.createCommand = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
@@ -76,6 +77,10 @@ exports.createCommand = function*(argv) {
     var absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
+        if(isWin) {
+            yield checkLineEndings(repo);
+        }
+
         var tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix));
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
@@ -170,4 +175,47 @@ function *computeHash(path, algo) {
 
 function extractHashFromOutput(output) {
     return output.slice(output.lastIndexOf(':') + 1).replace(/\s*/g, '').toLowerCase();
+}
+
+function *checkLineEndings(repo) {
+    var autoCRLF;
+    var eol;
+    var msg = '';
+
+    try {
+        autoCRLF = yield executil.execHelper(executil.ARGS('git config --get core.autocrlf'), true);
+    } catch(e) {
+        autoCRLF = '';
+    }
+
+    try {
+        eol = yield executil.execHelper(executil.ARGS('git config --get core.eol'), true);
+    } catch(e) {
+        eol = '';
+    }
+
+    if(autoCRLF !== 'false') {
+        msg = 'Warning: core.autocrlf is set to "' + autoCRLF + '".\n' +
+            'Set either "' + repo.repoName + '" or global core.autocrlf setting to "false" to avoid issues with executables on non-Windows OS.\n';
+    }
+
+    if(eol !== 'lf') {
+        msg += 'Warning: core.eol is set to "' + eol + '". Set it to "lf" to normalize line endings.\n';
+    }
+
+    if(!!msg) {
+        console.error(msg +
+            'Run these commands in the repos:\n' +
+            '    git config core.eol lf\n' +
+            '    git config core.autocrlf false\n' +
+            '    git rm --cached -r .\n' +
+            '    git reset --hard\n' +
+            'Alternatively you can setup it globally for your user:\n' +
+            '    git config --global core.eol lf\n' +
+            '    git config --global core.autocrlf false\n' +
+            'Or update the repos automatically using coho (change the repo groups to your ones):\n' +
+            '   coho for-each -r tools -r android -r ios -r windows "git config core.eol lf && git config core.autocrlf false && git rm --cached -r . && git reset --hard"');
+
+        process.exit(1);
+    }
 }

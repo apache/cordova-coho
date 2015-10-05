@@ -19,6 +19,7 @@ under the License.
 
 var path = require('path');
 var chalk = require('chalk');
+var shell = require('shelljs');
 
 var origWorkingDir = path.resolve(process.cwd());
 var baseWorkingDir = origWorkingDir;
@@ -66,3 +67,9 @@ exports.print = function() {
     console.log.apply(console, newArgs);
 }
 
+exports.setShellSilent = function (func) {
+    var origShellSilent = shell.config.silent;
+    shell.config.silent = true;
+    func();
+    shell.config.silent = origShellSilent;
+};

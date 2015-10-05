@@ -28,6 +28,7 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
+var npm_link = require('./npm-link');
 var print = apputil.print;
 var settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
 var isWin = process.platform === 'win32';
@@ -93,26 +94,43 @@ exports.createCommand = function*(argv) {
         yield gitutil.gitCheckout(tag);
         print('Creating archive of ' + repo.repoName + '@' + tag);
 
-        if (!(repo.id==='mobile-spec')) {
+        var outPath;
+        if (repo.id !=='mobile-spec') {
+            // Before doing an `npm pack` let's check if cordova-common is
+            // npm-linked to cordova-lib otherwise built package will be invalid
+            if (repo.id === 'lib') {
+                print('Verifying if "cordova-common" is npm-linked into "cordova-lib"');
+                apputil.setShellSilent(function () {
+                    shelljs.pushd(apputil.getBaseDir());
+                    if (!npm_link.verifyLink('cordova-common', 'cordova-lib')) {
+                        apputil.fatal('Module "cordova-common" is not properly npm-linked into "cordova-lib". Run "coho npm-link" to ensure that the link set up properly.');
+                    }
+                    shelljs.popd();
+                });
+            }
+
             var pkgInfo = require(path.resolve('package'));
             var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';
+
             yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
-            var outPath = path.join(absOutDir, tgzname);
+            outPath = path.join(absOutDir, tgzname);
             if (path.resolve(tgzname) != outPath) {
                 shelljs.rm('-f', outPath + "*");
                 shelljs.mv(tgzname, outPath);
             }
             print('Created archive: ' + outPath);
         } else {
-            var outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
+            outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
             yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
             print('Created archive: ' + outPath);
         }
+
         if (argv.sign) {
             yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
             fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
             fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
         }
+
         if (origBranch) {
             yield gitutil.gitCheckout(origBranch);
         }

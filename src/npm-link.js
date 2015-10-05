@@ -17,12 +17,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var fs = require('fs');
 var path = require('path');
 var optimist = require('optimist');
 var shelljs = require('shelljs');
 var flagutil = require('./flagutil');
 
-module.exports = function*(argv) {
+function *createLink(argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     argv = opt
         .usage('Does an npm-link of the modules that we publish. Ensures we are testing live versions of our own dependencies instead of the last published version.\n' +
@@ -33,23 +34,6 @@ module.exports = function*(argv) {
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
-    }
-
-    function getPathFromModuleName(moduleName) {
-        if (moduleName == "cordova-lib" || moduleName == "cordova-common") {
-            return("cordova-lib" + path.sep + moduleName);
-        }
-
-        return(moduleName);
-    }
-
-    function cdInto(moduleName) {
-        var myPath = getPathFromModuleName(moduleName);
-        shelljs.pushd(myPath);
-    }
-
-    function cdOutOf() {
-        shelljs.popd();
     }
 
     function npmLinkIn(linkedModule, installingModule) {
@@ -77,6 +61,41 @@ module.exports = function*(argv) {
     npmLinkOut("cordova-lib");
     npmLinkIn("cordova-lib", "cordova-plugman");
     npmLinkIn("cordova-lib", "cordova-cli");
+}
 
-};
+module.exports = createLink;
 
+function getPathFromModuleName(moduleName) {
+    if (moduleName == "cordova-lib" || moduleName == "cordova-common") {
+        return("cordova-lib" + path.sep + moduleName);
+    }
+
+    return(moduleName);
+}
+
+function cdInto(moduleName) {
+    var myPath = getPathFromModuleName(moduleName);
+    shelljs.pushd(myPath);
+}
+
+function cdOutOf() {
+    shelljs.popd();
+}
+
+function verifyLink (linkedModule, installedModule) {
+    cdInto(installedModule);
+    var linkedPath = path.join(shelljs.pwd(), "node_modules", linkedModule);
+    if (!fs.existsSync(linkedPath)) {
+        return false;
+    }
+
+    var myStat = fs.lstatSync(linkedPath);
+    if (!myStat.isSymbolicLink()) {
+        return false;
+    }
+
+    cdOutOf();
+    return true;
+}
+
+module.exports.verifyLink = verifyLink;

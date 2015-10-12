@@ -96,18 +96,9 @@ exports.createCommand = function*(argv) {
 
         var outPath;
         if (repo.id !=='mobile-spec') {
-            // Before doing an `npm pack` let's check if cordova-common is
-            // npm-linked to cordova-lib otherwise built package will be invalid
-            if (repo.id === 'lib') {
-                print('Verifying if "cordova-common" is npm-linked into "cordova-lib"');
-                apputil.setShellSilent(function () {
-                    shelljs.pushd(apputil.getBaseDir());
-                    if (!npm_link.verifyLink('cordova-common', 'cordova-lib')) {
-                        apputil.fatal('Module "cordova-common" is not properly npm-linked into "cordova-lib". Run "coho npm-link" to ensure that the link set up properly.');
-                    }
-                    shelljs.popd();
-                });
-            }
+            // Before doing an `npm pack` let's check if link to cordova-common
+            // is set up (if required) otherwise built package will be invalid
+            validateLinksForRepo(repo);
 
             var pkgInfo = require(path.resolve('package'));
             var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';
@@ -236,4 +227,19 @@ function *checkLineEndings(repo) {
 
         process.exit(1);
     }
+}
+
+function validateLinksForRepo (repo) {
+    // Ve only want to check links in some particular repos
+    if (['lib', 'android'].indexOf(repo.id) === -1) return;
+
+    print('Verifying if "cordova-common" is npm-linked into "' + repo.repoName + '"');
+    apputil.setShellSilent(function () {
+        shelljs.pushd(apputil.getBaseDir());
+        if (!npm_link.verifyLink('cordova-common', repo.repoName)) {
+            apputil.fatal('Module "cordova-common" is not properly npm-linked into "' + repo.repoName +
+                '". Run "coho npm-link" to ensure that the link set up properly.');
+        }
+        shelljs.popd();
+    });
 }

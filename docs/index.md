@@ -14,6 +14,7 @@
 * [Committer workflow](committer-workflow.md)
 * [Code Reviews](code-reviews.md)
 * [Processing Pull Requests](processing-pull-requests.md)
+* [Triaging JIRAS](jira-triage.md)
 
 ## Misc
 * [Doc translation Process](doc-translation-process.md)

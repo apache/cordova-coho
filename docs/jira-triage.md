@@ -1,20 +1,20 @@
 #JIRA Issue Triage Process
 
 ##Goal
-Every issue needs to be triaged. A triaged issue is actionable and there is an eventual desire to resolve it and has all the fields set accurately. In particular, low quality issues and eliminated from the system. Also, critical issues need to be fixed asap and this process should highlight those.
+Every issue needs to be triaged. A triaged issue is actionable and there is an eventual desire to resolve it and has all the fields set accurately. In particular, low quality issues are eliminated from the system. Also, critical issues need to be fixed asap and this process should highlight those.
 
 ##Process
 Go through each [unresolved bug that is not labeled 'triaged' ordered by created Date](https://issues.apache.org/jira/issues/?jql=status%20not%20in%20(Resolved%2C%20Closed)%20AND%20(labels%20is%20EMPTY%20OR%20labels%20!%3D%20triaged)%20AND%20%20project%20%3D%20CB%20ORDER%20BY%20createdDate%20DESC).
 
-- Ensure the bug details has sufficient details for a repro. If not, message the reporter with questions. If the reporter does not respond in 2 business days. Resolve the bug as `Invalid`.
+- Ensure the bug details has sufficient details for a repro. If not, message the reporter with questions. If the reporter does not respond in 4 business days. Resolve the bug as `Invalid`. They are welcome to re-activate the bug with details at a later date.
 - If you can reproduce the issue. Add a label `reproduced`. If not, Resolve the bug as `Cannot reproduce`.
-- If you are not an expert in the area or do not have the hardware for triaging, reference the component owner in helping triage the bug.
+- If you are not an expert in the area or do not have the hardware for triaging, reference the platform and/or component owner in helping triage the bug.
 - Edit the following fields:
 	- **Component**: Should be ideally a single component. *For plugin issues do not add platform names here.*
 	- **Work item type**: Ensure it has the correct classification - feature request vs task vs bug.
 	- **Priority**: 
-		- `Blocker`: This will block the current release of the component. 
-		- `Critical`: This will cause the main function of the component to fail and needs to be fixed asap. 
+		- `Blocker`: This will block the current release of the component. The failure is catastrpphic and easy to hit. 'Hello world' and [mobilespec](https://github.com/apache/cordova-mobile-spec) does not build or crashes.
+		- `Critical`: This will cause the main function of the component to fail and needs to be fixed asap but will not block the release. 
 		- `Major`: Important one to fix.
 		- `Minor`, `Trivial`: Nice to haves.
 	- **Label**: Use the following:
@@ -27,6 +27,12 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 	- **Affected version**: Specify the version of the component that the issue appears in.
 
 At the end of triage session, send an e-mail to the dev list discussing bugs that need urgent attention. Good bugs in this area are recent regressions or other issues having a wide impact. These would require a patch release to fix them.
+
+##Asking for help
+Sometimes while there is a bug or a feature request that seems valid, but it might not be high priority for one of the committers to fix. Following up with the issue reporter quickly and coaching him thorugh making a contribution with a pull request is a good idea.
+
+##Dealing with feature requests
+New features to plugins should ideally be cross platform (at least across more than one major platform - Android, iOS, Windows). The design should account for ease of detection or meaningful degradation in the absence of the feature on a partcular platform. For feature requests that are overly specific to a particular usecase - we should resolve them with resolution reason `Later` or `Won't Fix`. There is little value in carrying the debt of these issues.
 
 ##Open issues
 - Assignments: Who does JIRA triage? Do we need a weekly rotation duty? Should we publish a schedule? Should we distribute by component?

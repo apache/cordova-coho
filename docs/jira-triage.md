@@ -13,7 +13,7 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 	- **Component**: Should be ideally a single component. *For plugin issues do not add platform names here.*
 	- **Work item type**: Ensure it has the correct classification - feature request vs task vs bug.
 	- **Priority**: 
-		- `Blocker`: This will block the current release of the component. The failure is catastrpphic and easy to hit. 'Hello world' and [mobilespec](https://github.com/apache/cordova-mobile-spec) does not build or crashes.
+		- `Blocker`: This will block the current release of the component. The failure is catastrophic and easy to hit. 'Hello world' and [mobilespec](https://github.com/apache/cordova-mobile-spec) does not build or crashes.
 		- `Critical`: This will cause the main function of the component to fail and needs to be fixed asap but will not block the release. 
 		- `Major`: Important one to fix.
 		- `Minor`, `Trivial`: Nice to haves.
@@ -25,6 +25,7 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 		- `reproduced` - Bug that has a reproduction.
 	- **Environment**: Represents the machine setup required to reproduce the problem. Great place for mobile OS, host OS versions etc.
 	- **Affected version**: Specify the version of the component that the issue appears in.
+	- **Assigned To**: If you plan to work on a particular issue, assign it to yourself. If the issue has not been worked on by the assignee i.e. status is not `in progress` or it's clear that the assignee is not looking at this actively. The issue can be taken up by anyone.
 
 At the end of triage session, send an e-mail to the dev list discussing bugs that need urgent attention. Good bugs in this area are recent regressions or other issues having a wide impact. These would require a patch release to fix them.
 
@@ -36,5 +37,3 @@ New features to plugins should ideally be cross platform (at least across more t
 
 ##Open issues
 - Assignments: Who does JIRA triage? Do we need a weekly rotation duty? Should we publish a schedule? Should we distribute by component?
-- Auto-assignments: Currently JIRA has auto-assignments based on component owner. Does that still make sense?
- 

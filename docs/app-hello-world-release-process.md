@@ -62,18 +62,15 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
 Update Release notes (Grab changes from the previous release until now):
 
-    # Add new heading to release notes with version and date
-    DATE=$(date "+%h %d, %Y") 
+    coho update-release-notes -r app-hello-world
     
-    (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master >> RELEASENOTES.md);
-
     # Then curate:
     vim cordova-app-hello-world/RELEASENOTES.md 
  
 Commit these changes
 
     (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v")
-    git push origin master
+    (cd cordova-app-hello-world; git push origin master)
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
@@ -234,7 +231,13 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 ### Update hello world template each platform ships with. This is so users can create projects without the CLI.
 
     (cp -fr cordova-app-hello-world/www/* cordova-android/bin/templates/project/assets/www/)
-    cd cordova-android and git add/commit changes
+    (cd cordova-android && git commit -am "$JIRA updated hello-world template")
+    
+    (cp -fr cordova-app-hello-world/www/* cordova-ios/bin/templates/project/www/)
+    (cd cordova-ios && git commit -am "$JIRA updated hello-world template")
+    
+    (cp -fr cordova-app-hello-world/www/* cordova-windows/template/www/)
+    (cd cordova-windows && git commit -am "$JIRA updated hello-world template")
 
 TODO: Need to add other platforms path to templates here
 

@@ -96,18 +96,6 @@ exports.createCommand = function*(argv) {
 
         var outPath;
         if (repo.id !=='mobile-spec') {
-            // Before doing an `npm pack` let's check if cordova-common is
-            // npm-linked to cordova-lib otherwise built package will be invalid
-            if (repo.id === 'lib') {
-                print('Verifying if "cordova-common" is npm-linked into "cordova-lib"');
-                apputil.setShellSilent(function () {
-                    shelljs.pushd(apputil.getBaseDir());
-                    if (!npm_link.verifyLink('cordova-common', 'cordova-lib')) {
-                        apputil.fatal('Module "cordova-common" is not properly npm-linked into "cordova-lib". Run "coho npm-link" to ensure that the link set up properly.');
-                    }
-                    shelljs.popd();
-                });
-            }
 
             var pkgInfo = require(path.resolve('package'));
             var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';

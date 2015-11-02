@@ -54,28 +54,28 @@ E.g.:
 
     JIRA="CB-????" # Set this to the release bug.
 
-## Update Release Notes
+## Update and Pin Dependencies
+Ensure you're up-to-date:
 
-Update Release notes (Grab changes from the previous release until now):
+    coho repo-update -r android
 
-    git log --pretty=format:'* %s' --topo-order --no-merges origin/3.4.x..master
+See if any dependencies are outdated
 
-Manually copy output into RELEASENOTES.md and **CURATE JUDICIOUSLY** (edit descriptions, squash / delete, reorder)
+    (cd cordova-android && npm outdated --depth=0)
 
-    git commit -am "$JIRA updated RELEASENOTES"
-    git push origin master
+Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies.
 
-Reply to the DISCUSS thread with a link to the updated release notes.
+## Release Check
 
-## Branch & Tag for Platform Repository
+Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
+    
+    coho audit-license-headers -r android | less
+    
+Ensure all dependencies and subdependencies have Apache-compatible licenses
 
-### Check Release Things
+    coho check-license -r android
 
- 1. Run [Apache RAT](http://creadur.apache.org/rat/) to ensure copyright headers are present
-   * `coho audit-license-headers -r . | less`
- 2. Run check-license to ensure all dependencies and subdependencies have valid licenses
-   * `coho check-license -r .`
- 3. For iOS only:
+#### For `iOS` only:
    * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.
@@ -89,55 +89,39 @@ and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
         #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
     #endif
 
-### Prepare release
+## Prepare Release
+Increase the version within package.json using SemVer, and remove the `-dev` suffix
 
-This step involves:
+    for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
+    
+If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
 
- * Updating cordova.js snapshot
- * Updating version numbers
+    ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+
+Update the repos `RELEASENOTES.md` file with changes since the last release
+
+    coho update-release-notes -r android
+    # Then curate:
+    vim cordova-android/RELEASENOTES.md
+
+Commit these changes together into one commit
+
+    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
+    
+`coho prepare-release-branch` command handles the following steps:
+ * Updating `cordova.js` snapshot
  * Creating a release branch (if it doesn't already exist)
- * Creating git tags for platform and js
- * Updating version in package.json file
- * Tagging
+ * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
+    
+Run the following command (make sure to replace the version below  with what is listed inside `package.json`)
 
-Coho automates most of these steps
+    coho prepare-release-branch --version 5.0.0 -r android
+    # Ensure commits look okay on both branches
+    coho repo-status -r android -b master -b 5.0.x
 
-Prepare + Push:
+## Testing
 
-    coho prepare-release-branch --version 3.5.0 -r android
-    coho repo-status -r android -b master -b 3.5.x
-    # If changes look right:
-    coho repo-push -r android -b master -b 3.5.x
-
-
-Tag:
-
-    coho tag-release --version 3.5.0 -r android --pretend
-    # Seems okay:
-    coho tag-release --version 3.5.0 -r android
-
-## Publish RC to dist/dev
-Ensure you have the svn repos checked out:
-
-    coho repo-clone -r dist -r dist/dev
-
-Create archives from your tags:
-
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
-
-Sanity Check:
-
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
-
-Upload: (replace `android` with your platform)
-
-    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
-
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
-
-## Testing & Documentation
-
-Once all the repos are branched & tagged, we focus on testing & fixing all of the regressions we find.
+Once all the repos are branched, we focus on testing & fixing all of the regressions we find.
 
 When a regression is found:
 
@@ -149,39 +133,58 @@ To submit a fix:
     git commit -am 'Your commit message'
     git push origin master
     git log     # note the first five or six digits of the commit hash
-    git checkout 3.5.x
+    git checkout 5.0.x
     git cherry-pick -x commit_hash
-    git push origin 3.5.x
+    git push origin 5.0.x
 
 ### What to Test
 
- * Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git)
-   * Don't forget to checkout mobile-spec at the appropriate tag instead of using master.
-   * Don't forget to set up your white-list
-   * Don't forget to run through the manual tests in addition to the automatic tests
-   * Test loading the app over HTTP (via "cordova serve" and setting the config.xml start page)
- * Run your platform's ./bin/create script
-   * Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
- * Test Project Upgrades (old-style):
-   1. Create a project using the previous version of cordova
-     * `coho foreach -r android "git checkout 3.4.0"`
-     * `coho foreach -r android "./bin/create foo org.apache.foo foo"`
-   2. Upgrade the project via the bin/update_project script:
-     * `coho foreach -r android "git checkout 3.5.x"`
-     * `coho foreach -r android "cd foo && ../bin/update_project"`
-   3. Test the result:
-     * Project should run
-     * cordova/version should report the new version
- * Test Project Upgrades (new-style):
-   1. Create a project using the previous version of cordova
-     * `coho foreach "git checkout 3.4.0"`
-     * `./cordova-mobile-spec/createmobilespec.sh`
-   2. Upgrade the project via the update command:
-     * `../cordova-cli/bin/cordova platform update android`
-   3. Test the result:
-     * Project should run
-     * cordova/version should report the new version
-     * Mobile Spec should still run.
+1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
+
+    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android 
+    (cd mobilespec && cordova run android --device)
+    
+2) Create a hello world app using the cordova CLI
+
+    cordova create ./androidTest org.apache.cordova.test androidTest
+    (cd androidTest && cordova platform add ../cordova-android)
+    (cd androidTest && cordova run android --device)
+
+3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
+
+    ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
+    (cd androidTest2 && ./cordova/build)
+    (cd androidTest2 && ./cordova/run --device)
+
+4) Test Project Upgrade via CLI:
+
+    cordova create ./androidTest3 org.apache.cordova.test3 androidTest3
+    (cd androidTest3 && cordova platform add android@4.1.1)
+    (cd androidTest3 && cordova platform update ../cordova-android)
+    (cd androidTest3 && cordova run android --device)
+    (cd androidTest3 && cordova platform ls)
+
+The output from `cordova platform ls` should show the new version of `cordova-android`.
+
+5) Test Project Upgrade for non-cli projects:
+
+    (cd cordova-android && git checkout 4.1.x)
+    ./cordova-android/bin/create ./androidTest4 org.apache.cordova.test4 androidTest4
+    (cd cordova-android && git checkout 5.0.x)
+    (cd androidTest4 && ../cordova-android/bin/update .)
+    (cd androidTest4 && ./cordova/build)
+    (cd androidTest4 && ./cordova/run --device)
+    (cd androidTest4 && ./cordova/version)
+
+The output from `./cordova/version` should show the new version of `cordova-android`.
+
+ 6) Run cordova-lib tests
+
+    (cd cordova-lib/cordova-lib && npm test)
+
+Feel free to cleanup the projects you just created
+
+    rm -rf androidTest*
 
 #### Android Extras
 
@@ -193,7 +196,40 @@ To submit a fix:
  * Test the Makefile via `make`
  * Run `bin/diagnose_project` on a newly created project and ensure it reports no errors.
 
-### Documentation To Update
+## Push Changes:
+
+    coho repo-status -r android -b master -b 5.0.x
+    # If changes look right:
+    coho repo-push -r android -b master -b 5.0.x
+
+Tag & Push:
+
+    coho tag-release --version 3.5.0 -r android --pretend
+    # Seems okay:
+    coho tag-release --version 3.5.0 -r android
+    
+The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
+
+## Publish RC to dist/dev
+Ensure you have the svn repos checked out:
+
+    coho repo-clone -r dist -r dist/dev
+
+Create archives from your tags:
+
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA
+
+Sanity Check:
+
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+
+Upload:
+
+    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
+
+Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+
+## Documentation To Update
 
 For your platform:
  1. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
@@ -209,11 +245,11 @@ Send an email to dev ML with: (replace `android` with your platform)
 
 __Subject:__
 
-    [Vote] 3.5.0 Android Release
+    [Vote] 5.0.0 Android Release
 
 __Body:__
 
-    Please review and vote on this 3.5.0 Android Release
+    Please review and vote on this 5.0.0 Android Release
     by replying to this email (and keep discussion on the DISCUSS thread)
 
     Release issue: https://issues.apache.org/jira/browse/CB-XXXX
@@ -222,17 +258,13 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
     The package was published from its corresponding git tag:
-    PASTE OUTPUT OF: coho print-tags -r android --tag 3.5.0
+    PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0
 
     Note that you can test it out via:
 
-        cordova platform add https://github.com/apache/cordova-android#4.0.0
+        cordova platform add https://github.com/apache/cordova-android#5.0.0
 
-    Blog post to review is here:
-
-        https://github.com/cordova/apache-blog-posts/blob/master/2015-04-10-cordova-android-4.0.0.md
-
-    Upon a successful vote I will upload the archive to dist/, publish it to NPM, and post the blog post.
+    Upon a successful vote I will upload the archive to dist/, publish it to npm, and post the blog post.
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
 

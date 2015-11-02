@@ -81,7 +81,7 @@ Update them in each project's `package.json` file. Make sure to run through the 
 
 ## Update Release Notes & Version
 
-Increase the version within package.json using SemVer, and remove the ''-dev'' suffix
+Increase the version within package.json using SemVer, and remove the `-dev` suffix
 
     for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
@@ -112,13 +112,9 @@ Update the version of cordova-js that cordova-lib depends on:
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' cordova-lib/cordova-lib/package.json
 
-Manually update the platform dev dependencies in `package.json` for cordova-js
-
 Commit these changes together into one commit
 
     for l in cordova-plugman cordova-cli cordova-js cordova-lib/cordova-lib; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
-
-Reply to the DISCUSS thread with a link to the updated release notes.
 
 ## Test
 Link repos:
@@ -146,7 +142,7 @@ Ensure that mobilespec creates okay via CLI:
 
 Ensure uninstall doesn't cause errors:
 
-    (cd mobilespec && ./cordova plugin remove org.cordova.mobile-spec-dependencies)
+    (cd mobilespec && ./cordova plugin remove cordova-plugin-file-transfer)
 
 Ensure that mobilespec creates okay via plugman:
 
@@ -170,12 +166,16 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
     for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
 
 ## Create release branches if they don't yet exist
-Note, if you are only bumping the patch version (3rd number), use existing branch. See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md).
+If branches don't exist, create new ones
 
     (cd cordova-cli; git branch 4.2.x)
     (cd cordova-lib; git branch 4.2.x)
     (cd cordova-js; git branch 3.8.x)
     (cd cordova-plugman; git branch 0.23.x)
+
+If branches already exist, update them
+
+    (cd cordova-js && git checkout 4.2.x && git merge master && git checkout master)
 
 ## Re-introduce -dev suffix to versions on master
 

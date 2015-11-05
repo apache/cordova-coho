@@ -21,14 +21,14 @@
     "treeify": "1.0.1"
   },
   "devDependencies": {
-    "nsp": "*",
+    "nsp": ">=2.0.1",
     "tap-dot": "^1.0.0",
     "tap-spec": "^4.0.0",
     "tape": "^4.0.0",
     "tape-runner": "^0.3.0"
   },
   "scripts": {
-    "test": "nsp audit-package && node test/test.js | tap-spec"
+    "test": "nsp check && node test/test.js | tap-spec"
   },
   "repository": {
     "type": "git",

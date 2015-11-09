@@ -153,7 +153,7 @@ Ensure unit tests pass (plugman tests are included in lib):
 
     (cd cordova-lib/cordova-lib; npm test)
     (cd cordova-cli; npm test)
-    (cd cordova-js; grunt test --platformVersion=3.7.0)
+    (cd cordova-js; grunt test --platformVersion=4.0.0)
 
 Add a comment to the JIRA issue stating what you tested, and what the results were.
 
@@ -168,14 +168,14 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
 ## Create release branches if they don't yet exist
 If branches don't exist, create new ones
 
-    (cd cordova-cli; git branch 4.2.x)
-    (cd cordova-lib; git branch 4.2.x)
-    (cd cordova-js; git branch 3.8.x)
-    (cd cordova-plugman; git branch 0.23.x)
+    (cd cordova-cli; git branch 5.4.x)
+    (cd cordova-lib; git branch 5.4.x)
+    (cd cordova-js; git branch 4.1.x)
+    (cd cordova-plugman; git branch 1.0.x)
 
 If branches already exist, update them
 
-    (cd cordova-js && git checkout 4.2.x && git merge master && git checkout master)
+    (cd cordova-js && git checkout 4.1.x && git merge master && git checkout master)
 
 ## Re-introduce -dev suffix to versions on master
 
@@ -210,24 +210,6 @@ Upload:
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for tools release")
 
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
-
-
-Next, publish these to npm, and be sure to use the "rc" tag in npm.
-
-    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-js-*.tgz
-    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-lib-*.tgz
-    npm publish --tag rc cordova-dist-dev/$JIRA/cordova-5.*.tgz
-    npm publish --tag rc cordova-dist-dev/$JIRA/plugman-*.tgz
-
-## Test from NPM
-
-    npm -g uninstall cordova
-    npm -g install cordova@rc
-    cordova create mytest
-    cd mytest
-    cordova platform add android
-    cordova plugin add org.apache.cordova.device
-    cordova build
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
@@ -311,20 +293,30 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 
+## Publish and test from npm
+Publish these to npm
+
+    npm publish cordova-dist-dev/$JIRA/cordova-js-*.tgz
+    npm publish cordova-dist-dev/$JIRA/cordova-lib-*.tgz
+    npm publish cordova-dist-dev/$JIRA/cordova-5.*.tgz
+    npm publish cordova-dist-dev/$JIRA/plugman-*.tgz
+
+Test from npm:
+
+    npm -g uninstall cordova
+    npm -g install cordova@latest
+    cordova create mytest
+    cd mytest
+    cordova platform add android
+    cordova plugin add org.apache.cordova.device
+    cordova build
+
 ### Tell Apache about Release
 
 TODO: Please someone write a coho helper for doing this POST request!
 
 1. Go to: https://reporter.apache.org/addrelease.py
 2. Use version "cordova-$FOO@x.x.x"
-
-## Promote to `latest` in NPM
-
-    cd cordova-dist/tools
-    npm dist-tag add cordova-js@VERSION latest
-    npm dist-tag add cordova-lib@VERSION latest
-    npm dist-tag add plugman@VERSION latest
-    npm dist-tag add cordova@VERSION latest
 
 ## Post Blog Post
 

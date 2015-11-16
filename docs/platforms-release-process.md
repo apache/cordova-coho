@@ -325,7 +325,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ### Tell Apache about Release
 
-1. Go to: https://reporter.apache.org/addrelease.py
+1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-$PLATFORM@x.x.x"
 
 ### Update the Docs

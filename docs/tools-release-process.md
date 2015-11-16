@@ -315,7 +315,7 @@ Test from npm:
 
 TODO: Please someone write a coho helper for doing this POST request!
 
-1. Go to: https://reporter.apache.org/addrelease.py
+1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-$FOO@x.x.x"
 
 ## Post Blog Post

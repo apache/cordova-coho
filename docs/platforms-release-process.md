@@ -329,15 +329,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 2. Use version "cordova-$PLATFORM@x.x.x"
 
 ### Update the Docs
-TODO: Change this to new docs release process; maybe with tools process?
 
- 1. Upload the new docs to http://cordova.apache.org/docs
-   * Website README.md explains [How to update the docs](https://svn.apache.org/repos/asf/cordova/site/README.md)
-   * Commit should look like [this one](http://svn.apache.org/viewvc?view=revision&revision=r1478171)
- 1. Ask Michael Brooks to update the docs.cordova.io redirect.
-   * Check out the branch `cordova-labs:redirect-docs-cordova-io`
-   * Repository README.md explains [How to update the HTTP redirect](https://github.com/apache/cordova-labs/tree/redirect-docs-cordova-io#usage)
-   * Nodejitsu is limited to one deployer, so Michael Brooks is currently the point of contact.
+Follow the README at https://github.com/apache/cordova-docs
 
 ### Announce It!
  1. Announce the release to the world!
@@ -365,6 +358,8 @@ If you need to move a tag before the release, here is how to do that:
     Total 0 (delta 0), reused 0 (delta 0)
     To https://git-wip-us.apache.org/repos/asf/cordova-docs.git
      * [new tag]         3.1.0 -> 3.1.0
+    git commit --allow-empty -m "empty commit to update tag on github mirror"
+    git push origin
 
 Then send a note to the mailing list:
 

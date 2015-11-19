@@ -27,6 +27,7 @@ var semver = require('semver');
  * 'prefix-' (this allows for multiple modules in the same repo).
  * @param {string} [prefix] - An optional prefix to filter tags.
  * @returns {string} - the most recent tag, or null if no version tags are found.
+ * ignores r tags in plugins
  */
 exports.findMostRecentTag = function*(prefix) {
     prefix = prefix && prefix + "-";
@@ -34,7 +35,7 @@ exports.findMostRecentTag = function*(prefix) {
     return (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
         .reduce(function (curBest, value) {
             var modifiedCurBest, modifiedValue;
-
+            //console.log('curBest: ', curBest, ' value: ', value)
             if (prefix) {
                 // Ignore values that don't start with prefix, and strip prefix from the value we're going to test
                 if (value.indexOf(prefix) !== 0) {
@@ -45,9 +46,9 @@ exports.findMostRecentTag = function*(prefix) {
                     modifiedCurBest = curBest && curBest.substr(prefix.length);
                 }
             } else {
-                // Strip the "r" prefix that plugin repos use (ugh), but also make them look higher than 3.0.0 tag that exists
-                modifiedCurBest = curBest.replace(/^r/, '9');
-                modifiedValue = value.replace(/^r/, '9');
+                //used to strip out r for plugins, but now leave it in so they fail semver check
+                modifiedCurBest = curBest;
+                modifiedValue = value;
             }
 
             if (semver.valid(modifiedValue)) {

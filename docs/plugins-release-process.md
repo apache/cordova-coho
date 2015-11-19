@@ -104,11 +104,9 @@ For each of the plugins that have a test project inside it, update the version n
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
-Update its RELEASENOTES.md file with changes
+Update its RELEASENOTES.md file with changes. Assumes coho exists at `cordova-coho/coho`
 
-    # Add new heading to release notes with version and date
-    DATE=$(date "+%h %d, %Y")
-    for l in $ACTIVE; do ( cd $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo -e "\n### $v ($DATE)" >> RELEASENOTES.md; git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" >> RELEASENOTES.md); done
+    for l in $ACTIVE; do (./cordova-coho/coho update-release-notes -r $l); done
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 

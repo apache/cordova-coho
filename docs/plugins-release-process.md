@@ -122,7 +122,7 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
 ## Tag
 
-    for l in $ACTIVE; do ( cd $l; v="r$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
 
 ## Test
  * Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master)
@@ -281,20 +281,6 @@ TODO: Please someone write a coho helper for doing this POST request!
     for l in $ACTIVE; do (
         npm publish $l-*.tgz
     ) done;
-
-## Publish to Plugins Registry
-
-Unzip the voted content to a temporary location and publish with that:
-
-    cd cordova-dist/plugins
-    for l in $ACTIVE; do (
-        set -e; set -x
-        rm -rf tmp_publish; mkdir tmp_publish; cd tmp_publish
-        # TODO: As soon as plugins use tgz, update unzip -> tar xzf
-        unzip ../$l-r*.zip > /dev/null
-        cd $l; plugman publish .
-    ) done;
-
 
 ## Post blog Post
 

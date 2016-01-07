@@ -237,8 +237,8 @@ For your platform:
 
 ## Prepare Blog Post
  * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
-   * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proofread via [Github](http://github.com/cordova/apache-blog-posts).
+ * Instructions on publishing a blog post are on the [cordova-docs repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
+ * Get blog post proofread by submitting a PR to cordova-docs and asking someone on dev list to +1 it.
 
 ## Start VOTE Thread
 Send an email to dev ML with: (replace `android` with your platform)

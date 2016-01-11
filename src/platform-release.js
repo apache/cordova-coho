@@ -129,7 +129,7 @@ function *updateRepoVersion(repo, version) {
             shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '"', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
         } else if (repo.id == 'blackberry') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'lib', 'version.js'));
-        } else if (repo.id == 'firefoxos' || repo.id == 'browser' || 'ubuntu') {
+        } else if (repo.id == 'firefoxos' || repo.id == 'browser' || repo.id == 'ubuntu') {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
         } else if (repo.id == 'windows') {
             if(fs.existsSync(path.join('template', 'cordova', 'version'))) {

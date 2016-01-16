@@ -110,7 +110,7 @@ Update its RELEASENOTES.md file with changes. Assumes coho exists at `cordova-co
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
-Add a comment to the JIRA issue with the output from (we'll use this later for the blog post):
+Add a comment to the JIRA issue with the output from (we'll use this later for the blog post): *CURRENTLY NOT WORKING*
 
     for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo $id@$v; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
 
@@ -127,6 +127,10 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 ## Test
  * Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master)
  * Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
+
+## Create Release Branch
+
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git branch $b; echo "Creating branch $b for $l"); done
 
 ## Update version to add back -dev suffix
 
@@ -281,6 +285,10 @@ TODO: Please someone write a coho helper for doing this POST request!
     for l in $ACTIVE; do (
         npm publish $l-*.tgz
     ) done;
+
+## Add new apache release tags
+
+Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
 
 ## Post blog Post
 

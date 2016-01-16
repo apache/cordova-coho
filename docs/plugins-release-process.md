@@ -141,12 +141,13 @@ Reply to the DISCUSS thread with a link to the updated release notes.
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
     for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done
 
-## Push tags and changes
+## Push tags, branches and changes
     # Sanity check:
     coho repo-status -r plugins
     coho foreach -r plugins "git status -s"
     # Push: (assumes "origin" is apache remote)
     for l in $ACTIVE; do ( cd $l; tag=$(git describe --tags --abbrev=0); echo $l; set -x; git push origin master && git push origin refs/tags/$tag); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git push origin $b;); done
     # Check that it was all successful:
     coho repo-update -r plugins
     coho repo-status -r plugins

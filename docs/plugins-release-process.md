@@ -291,6 +291,8 @@ TODO: Please someone write a coho helper for doing this POST request!
 
 Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
 
+    for l in $ACTIVE; do ( cd $l; tag=$(git describe --tags --abbrev=0); git checkout $tag; git tag 'rel/'$tag; git push origin refs/tags/'rel/'$tag; git checkout master); done
+
 ## Post blog Post
 
 See [full instructions](http://svn.apache.org/viewvc/cordova/site/README.md?view=markup).

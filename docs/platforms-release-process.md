@@ -321,6 +321,12 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
+## Add permanent apache release tag
+
+Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
+
+    (cd cordova-android; git checkout 5.1.0; git tag rel/5.1.0; git push origin --tags; git checkout master)
+
 ##  Details
 
 ### Tell Apache about Release

@@ -19,6 +19,7 @@
 	    "Adobe Postscript(\\(R\\))? AFM",
 	    "S(ervice )?C(omponent )?A(rchitecture)? Specifications",
 	    "E(clipse )?D(istribution )?L(icense)?",
-	    "P(ython )?S(oftware )?F(oundation )?L(icense)?"
+	    "P(ython )?S(oftware )?F(oundation )?L(icense)?",
+        "ISC"
   	]
 }

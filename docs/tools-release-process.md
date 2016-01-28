@@ -119,7 +119,7 @@ Commit these changes together into one commit
 ## Test
 Link repos:
 
-    (cd cordova-js && npm link)
+    (cd cordova-js && rm -r node_modules && npm install && npm link)
     (cd cordova-lib/cordova-lib && rm -r node_modules && npm link cordova-js && npm install && npm link)
     (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
     (cd cordova-cli && rm -r node_modules && npm link cordova-lib && npm install)
@@ -213,8 +213,7 @@ Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Prepare Blog Post
  * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
-   * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proofread via [GitHub](http://github.com/cordova/apache-blog-posts).
+ * Get blog post proofread via [GitHub](http://github.com/apache/cordova-docs).
 
 ## Start VOTE Thread
 Send an email to dev ML with:
@@ -279,7 +278,10 @@ _Note: list of PMC members: http://people.apache.org/committers-by-project.html#
 
     cd cordova-dist
     svn up
-    svn rm tools/*
+    svn rm tools/cordova-lib-6*
+    svn rm tools/cordova-6*
+    svn rm tools/plugman-1*
+    svn rm tools/cordova-js-4*
     cp ../cordova-dist-dev/$JIRA/* tools/
     svn add tools/*
     svn commit -m "$JIRA Published tools release to dist"
@@ -296,10 +298,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/tools
 ## Publish and test from npm
 Publish these to npm
 
-    npm publish cordova-dist-dev/$JIRA/cordova-js-*.tgz
-    npm publish cordova-dist-dev/$JIRA/cordova-lib-*.tgz
-    npm publish cordova-dist-dev/$JIRA/cordova-5.*.tgz
-    npm publish cordova-dist-dev/$JIRA/plugman-*.tgz
+    npm publish cordova-dist/tools/cordova-js-4*.tgz
+    npm publish cordova-dist/tools/cordova-lib-6*.tgz
+    npm publish cordova-dist/tools/cordova-6.*.tgz
+    npm publish cordova-dist/tools/plugman-1*.tgz
 
 Test from npm:
 
@@ -308,7 +310,7 @@ Test from npm:
     cordova create mytest
     cd mytest
     cordova platform add android
-    cordova plugin add org.apache.cordova.device
+    cordova plugin add cordova-plugin-device
     cordova build
 
 ### Tell Apache about Release
@@ -320,11 +322,7 @@ TODO: Please someone write a coho helper for doing this POST request!
 
 ## Post Blog Post
 
-    cd cordova-website
-    rake build
-    svn st
-    svn add blah.blah.blah
-    svn commit -m "$JIRA Published blog post for tools release."
+Follow https://github.com/apache/cordova-docs#deploying
 
 ## Email a release announcement to the mailing list
 Subject: [ANNOUNCEMENT] Tools Release
@@ -335,7 +333,7 @@ Subject: [ANNOUNCEMENT] Tools Release
 
 ## Do other announcements
 
-    Do the same things regarding announcements as described in cadence-release-process, where they make sense.
+Tweet out blog post and post to #releases in slack
 
 ## Update dependencies going forward
 

@@ -74,7 +74,8 @@ var platformRepos = [
         id: 'osx',
         repoName: 'cordova-osx',
         jiraComponentName: 'OSX',
-        cordovaJsPaths: ['CordovaLib/cordova.js']
+        cordovaJsPaths: ['CordovaLib/cordova.js'],
+        versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
         title: 'Ubuntu',
         id: 'ubuntu',

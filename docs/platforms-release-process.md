@@ -65,6 +65,14 @@ See if any dependencies are outdated
 
 Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies.
 
+Checkin updated modules
+
+    rm -rf node_modules
+    npm install --production (skips devDependencies)
+    git add node_modules/* (checkin all modules needed for platform add git url)
+    git commit -m "$JIRA Updated checked-in node_modules"
+    npm install (Re-add devDependencies for ability to run tests locally)
+
 ## Release Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
@@ -232,7 +240,7 @@ Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 ## Documentation To Update
 
 For your platform:
- 1. Ensure the [Upgrade Guide](http://docs.phonegap.com/en/edge/guide_upgrading_index.md.html) for your platform is up-to-date
+ 1. Ensure the [Upgrade Guide](http://cordova.apache.org/docs/en/latest/guide/platforms/android/upgrade.html) for your platform is up-to-date
  2. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
 ## Prepare Blog Post

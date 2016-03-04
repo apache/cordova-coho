@@ -54,6 +54,7 @@ module.exports = function *(argv) {
    var remote = 'https://github.com/apache/' + currentRepo.repoName;
    var origin = 'https://git-wip-us.apache.org/repos/asf/' + currentRepo.repoName;
    yield gitutil.stashAndPop('', function*() {
+       var commitMessage
        yield executil.execHelper(executil.ARGS('git checkout master'));
     
        yield executil.execHelper(['git', 'pull', origin, 'master']);
@@ -63,6 +64,9 @@ module.exports = function *(argv) {
        try {
             yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch),
                 /*silent*/ true, /*allowError*/ true);
+                commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
+               yield executil.execHelper(['git', 'commit', '--amend', '-m', 
+                    commitMessage + '\n\n This closes #' + argv.pr]);
        } catch (e) {   
            if (e.message.indexOf('fatal: Not possible to fast-forward, aborting.') > 0) {
                // Let's try to rebase
@@ -70,9 +74,9 @@ module.exports = function *(argv) {
                yield executil.execHelper(['git', 'pull', '--rebase', origin, 'master']);
                yield executil.execHelper(executil.ARGS('git checkout master'));
                yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch));
-               var commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
+               commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
                yield executil.execHelper(['git', 'commit', '--amend', '-m', 
-                    commitMessage + '. This closes #' + argv.pr]);
+                    commitMessage + '\n\n This closes #' + argv.pr]);
            } else {
                throw e;
            }

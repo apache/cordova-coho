@@ -81,9 +81,9 @@ Phew! That was easy :P
 
 # Importing PMC Members' PGP keys
 
-    curl "https://people.apache.org/keys/group/cordova-pmc.asc" | gpg --import
+    curl "https://people.apache.org/keys/group/cordova.asc" | gpg --import
 
 Import any extra committer's keys via:
 
-    curl "https://dist.apache.org/repos/dist//release/cordova/KEYS" | gpg --import
+    curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import
 

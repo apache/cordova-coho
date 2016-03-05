@@ -188,7 +188,7 @@ Respond to the vote thread with:
 
     The vote has passed.
 
-_Note: list of PMC members: http://people.apache.org/committers-by-project.html#cordova-pmc_
+_Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ## If the Vote does *not* Pass
 * Revert adding of `-dev`

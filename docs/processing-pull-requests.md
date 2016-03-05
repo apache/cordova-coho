@@ -59,7 +59,7 @@ To close a pull request that is no longer relevant / active:
 
 ## Step 2: Ensure they have signed the Contributor Agreement
  * For trivial changes, this is not necessary (e.g. use your judgement - e.g. less than 100 lines of code)
- * Find their name on: https://people.apache.org/committer-index.html#unlistedclas
+ * Find their name on: http://home.apache.org/unlistedclas.html
  * If it is not there, respond with:
 
 _Thanks for the pull request. I've had a look at it and think it looks good. Before we can merge it though, you need to sign Apache's Contributor License Agreement (can be done online):  http://www.apache.org/licenses/#clas_

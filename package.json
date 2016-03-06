@@ -15,7 +15,7 @@
     "opener": "^1.4.1",
     "optimist": "0.4",
     "q": "~0.9",
-    "request": "2.55.0",
+    "request": "^2.69.0",
     "semver": "^4.2.0",
     "shelljs": "0.1.4",
     "treeify": "1.0.1"

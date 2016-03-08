@@ -47,7 +47,7 @@ module.exports = function*() {
     yield repoutil.forEachRepo(repos, function*(repo) {
          var replacedCmd = [];
          for (var i = 0; i < cmd.length; i++) {
-            replacedCmd[i] = cmd[i].replace('$r', repo.repoName);    
+            replacedCmd[i] = cmd[i].replace(/\$r/g, repo.repoName);    
          }
          yield executil.execHelper(replacedCmd, false, true);
     });

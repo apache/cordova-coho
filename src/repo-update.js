@@ -171,11 +171,14 @@ module.exports.updateRepos = updateRepos;
 
 function *determineApacheRemote(repo) {
     var fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
+    
     var ret = null;
+    
+    // prefer github - in particular, ASF remote does not respond well to repo-update command. 
     [
+      'github.com/apache/',
       'git-wip-us.apache.org/repos/asf/',
       'git.apache.org/',
-      'github.com/apache/',
     ].forEach(function(validRepo) {
         for (var i = 1; i < fields.length; i += 3) {
             if (!ret && fields[i].indexOf(validRepo + repo.repoName) != -1) {

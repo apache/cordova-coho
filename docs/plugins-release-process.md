@@ -337,9 +337,12 @@ like `dates.push('Sat, 12 Mar 2016 00:00:00 +0300');`
 
 Send email to dev list with a subject [ANNOUNCE] Plugin Release and include blog post and tweet links
 
+__Subject:__
     
     [ANNOUNCE] Plugin Release
-    
+
+__Body:__
+ 
     Blog: http://cordova.apache.org/news/YYYY/MM/DD/plugin-release.html
     Tweet: https://twitter.com/apachecordova/status/xxxxxxxxxxxx
 

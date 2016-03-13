@@ -335,6 +335,14 @@ like `dates.push('Sat, 12 Mar 2016 00:00:00 +0300');`
 
     Do the same things regarding announcements as described in cadence-release-process, where they make sense.
 
+Send email to dev list with a subject [ANNOUNCE] Plugin Release and include blog post and tweet links
+
+    
+    [ANNOUNCE] Plugin Release
+    
+    Blog: http://cordova.apache.org/news/YYYY/MM/DD/plugin-release.html
+    Tweet: https://twitter.com/apachecordova/status/xxxxxxxxxxxx
+
 ## Close JIRA Issue
  * Double check that the issue has comments that record the steps you took
  * Mark it as fixed

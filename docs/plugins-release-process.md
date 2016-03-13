@@ -253,8 +253,7 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 If you've lost your list of ACTIVE:
 
-    TODO: As soon as plugins use tgz, update zip->tgz here.
-    ACTIVE=$(cd cordova-dist-dev/$JIRA; ls *.zip | sed -E 's:-[^-]*$::')
+    ACTIVE=$(cd cordova-dist-dev/$JIRA; ls *.tgz | sed -E 's:-[^-]*$::')
 
 Publish:
 

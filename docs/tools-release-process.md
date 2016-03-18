@@ -140,15 +140,19 @@ Ensure that mobilespec creates okay via CLI:
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
     (cd mobilespec && ./cordova build && ./cordova run android)
 
+Ensure that mobilespec creates okay via CLI and browserify:
+
+    (cd mobilespec && ./cordova prepare --browserify && ./cordova build && ./cordova run android)
+
 Ensure uninstall doesn't cause errors:
 
     (cd mobilespec && ./cordova plugin remove cordova-plugin-file-transfer)
 
-Ensure that mobilespec creates okay via plugman:
+Ensure that mobilespec creates okay via plugman (you may need to manually uninstall previous mobile-spec app):
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --plugman --android
-    (cd mobilespec-android && cordova/run)
-
+    (cd mobilespec-android && platforms/android/cordova/run)
+    
 Ensure unit tests pass (plugman tests are included in lib):
 
     (cd cordova-lib/cordova-lib; npm test)

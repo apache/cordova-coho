@@ -31,14 +31,14 @@ var semver = require('semver');
  */
 exports.findMostRecentTag = function*(prefix) {
     prefix = prefix && prefix + "-";
+    var finalBest;
 
     return (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
         .reduce(function (curBest, value) {
             var modifiedCurBest, modifiedValue;
-            //console.log('curBest: ', curBest, ' value: ', value)
             if (prefix) {
                 // Ignore values that don't start with prefix, and strip prefix from the value we're going to test
-                if (value.indexOf(prefix) !== 0) {
+                if (value.indexOf(prefix) !== 0 ) {
                     modifiedValue = null;
                     modifiedCurBest = null;
                 } else {
@@ -52,9 +52,13 @@ exports.findMostRecentTag = function*(prefix) {
             }
 
             if (semver.valid(modifiedValue)) {
+                //use finalBest to hold onto reference outside of reduce function
+                finalBest = !curBest ? value : semver.gt(modifiedCurBest, modifiedValue) ? finalBest : value;
                 return !curBest ? value : semver.gt(modifiedCurBest, modifiedValue) ? curBest : value;
             } else if (curBest && semver.valid(modifiedCurBest)) {
                 return curBest;
+            } else if(finalBest) {
+                return finalBest;
             }
             return null;
         });

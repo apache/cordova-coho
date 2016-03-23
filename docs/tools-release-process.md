@@ -335,6 +335,13 @@ Subject: [ANNOUNCEMENT] Tools Release
 
     You can view the release blog post at LINK_TO_BLOG
 
+## Make permanent release tags
+
+Make a copy of your released tag with a prefix of rel\YOURTAG. These are permanent release tags for Apache.
+Do this for all of the tools you just released.
+
+(cd cordova-lib; git checkout 6.1.0; git tag rel/6.1.0; git push origin --tags; git checkout master)
+
 ## Do other announcements
 
 Tweet out blog post and post to #releases in slack

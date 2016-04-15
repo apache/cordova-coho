@@ -132,6 +132,8 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git branch $b; echo "Creating branch $b for $l"); done
 
+If a branch already exists, you will have to manually checkout the branch, merge master and then checkout master. 
+
 ## Update version to add back -dev suffix
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
@@ -202,7 +204,7 @@ __Body:__
     The packages were published from their corresponding git tags:
     PASTE OUTPUT OF: coho print-tags -r ${ACTIVE// / -r }
 
-    Upon a successful vote I will upload the archives to dist/, upload them to the Plugins Registry, and post the corresponding blog post.
+    Upon a successful vote I will upload the archives to dist/, upload them to npm, and post the corresponding blog post.
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
 

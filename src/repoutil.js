@@ -174,6 +174,12 @@ var pluginRepos = [
         jiraComponentName: 'Plugin Contacts',
         inactive: true
     }, {
+        title: 'Plugin - Compat',
+        id: 'plugin-compat',
+        repoName: 'cordova-plugin-compat',
+        jiraComponentName: 'Plugin Compat',
+        inactive: true
+    }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',

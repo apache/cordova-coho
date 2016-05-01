@@ -59,7 +59,7 @@ function *cloneRepos(repos, quiet, depth) {
             if(!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped +=1 ;
         } else if (repo.svn) {
-            clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName)));
+            clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName + ' ' + '--trust-server-cert --non-interactive')));
         } else {
             var depthArg = depth == null ? '' : '--depth ' + depth + ' ';
             clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + depthArg + createRepoUrl(repo))));

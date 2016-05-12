@@ -57,7 +57,9 @@ function *createLink(argv) {
 
     npmLinkOut("cordova-common");
     npmLinkIn("cordova-common", "cordova-lib");
-    npmLinkIn("cordova-common", "cordova-android");
+
+    npmLinkOut("cordova-fetch");
+    npmLinkIn("cordova-fetch", "cordova-lib");
 
     npmLinkOut("cordova-lib");
     npmLinkIn("cordova-lib", "cordova-plugman");
@@ -67,7 +69,10 @@ function *createLink(argv) {
 module.exports = createLink;
 
 function getPathFromModuleName(moduleName) {
-    if (moduleName == "cordova-lib" || moduleName == "cordova-common") {
+    if (moduleName == "cordova-lib" ||
+        moduleName == "cordova-common" ||
+        moduleName == "cordova-fetch") {
+
         return("cordova-lib" + path.sep + moduleName);
     }
 

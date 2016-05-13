@@ -32,13 +32,6 @@ var path = require('path');
 var npmlink = require('./npm-link');
 var repoclone = require('./repo-clone');
 
-function pad(number) {
-    if (number < 10) {
-        return '0' + number;
-    }
-    return number;
-}
-
 module.exports = function*(argv) {
     var repos = flagutil.computeReposFromFlag('tools');
     var cli = repoutil.getRepoById('cli');
@@ -81,7 +74,7 @@ module.exports = function*(argv) {
 
     var currentDate = new Date();
     var nightlyVersion = '-nightly.' + currentDate.getFullYear() + '.' +
-                        pad(currentDate.getMonth() + 1) + '.' + pad(currentDate.getDate());
+        (currentDate.getMonth() + 1) + '.' + currentDate.getDate();
     var cordovaLibVersion;
     //update package.json version for cli + lib, update lib reference for cli
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {

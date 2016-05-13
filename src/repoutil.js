@@ -306,11 +306,13 @@ var toolRepos = [
     {
         title: 'Cordova CLI',
         id: 'cli',
+        packageName: 'cordova',
         repoName: 'cordova-cli',
         jiraComponentName: 'CLI'
     }, {
         title: 'Cordova Plugman',
         id: 'plugman',
+        packageName: 'plugman',
         repoName: 'cordova-plugman',
         jiraComponentName: 'Plugman'
     }, {
@@ -322,6 +324,7 @@ var toolRepos = [
     }, {
         title: 'Cordova Serve',
         id: 'serve',
+        packageName: 'cordova-serve',
         repoName: 'cordova-lib',
         path: 'cordova-serve',
         versionPrefix: 'serve',
@@ -329,6 +332,7 @@ var toolRepos = [
     }, {
         title: 'Cordova Common',
         id: 'common',
+        packageName: 'cordova-common',
         repoName: 'cordova-lib',
         path: 'cordova-common',
         versionPrefix: 'common',
@@ -336,6 +340,7 @@ var toolRepos = [
     }, {
         title: 'Cordova Fetch',
         id: 'fetch',
+        packageName: 'cordova-fetch',
         repoName: 'cordova-lib',
         path: 'cordova-fetch',
         versionPrefix: 'fetch',

@@ -122,8 +122,9 @@ function *unpublish(options) {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
-        yield executil.execOrPretend(executil.ARGS('npm unpublish '+ repo.id + '@' + argv.version), argv.pretend);
-    })
+        var packageId = repo.packageName || repo.repoName;
+        yield executil.execOrPretend(executil.ARGS('npm unpublish '+ packageId + '@' + argv.version), argv.pretend);
+    });
 }
 
 module.exports.unpublish = unpublish;

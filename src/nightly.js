@@ -118,9 +118,9 @@ module.exports = function*(argv) {
 
     //unpublish old nightly
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
-        var repoName = repo.id === 'cli' ? 'cordova' : repo.repoName;
-        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + repoName + ' dist-tags.nightly'));
-        apputil.print('Latest ' + repoName + '@nightly version is ' + oldNightlyVersion);
+        var packageName = repo.packageName || repo.repoName;
+        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageName + ' dist-tags.nightly'));
+        apputil.print('Latest ' + packageName + '@nightly version is ' + oldNightlyVersion);
 
         options.r = [repo.id];
         options.version = oldNightlyVersion;

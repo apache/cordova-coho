@@ -334,6 +334,13 @@ var toolRepos = [
         versionPrefix: 'common',
         isModule: true
     }, {
+        title: 'Cordova Fetch',
+        id: 'fetch',
+        repoName: 'cordova-lib',
+        path: 'cordova-fetch',
+        versionPrefix: 'fetch',
+        isModule: true
+    }, {
         title: 'Cordova JS',
         id: 'js',
         repoName: 'cordova-js',

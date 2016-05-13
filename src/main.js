@@ -121,7 +121,7 @@ module.exports = function() {
         },  {
             name: 'npm-unpublish-nightly',
             desc: 'Unpublishes last nightly versions for cli and lib',
-            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
+            entryPoint: lazyRequire('./npm-publish', 'unpublish')
         }];
     var otherCommands = [{
             name: 'list-pulls',

@@ -17,6 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var apputil = require('./apputil');
 var executil = require('./executil');
 var optimist = require('optimist');
 var flagutil = require('./flagutil');
@@ -29,9 +30,17 @@ var gitutil = require('./gitutil');
 var fs = require('fs');
 var path = require('path');
 var npmlink = require('./npm-link');
+var repoclone = require('./repo-clone');
+
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
 
 module.exports = function*(argv) {
-    var repos = flagutil.computeReposFromFlag('nightly');
+    var repos = flagutil.computeReposFromFlag('tools');
     var cli = repoutil.getRepoById('cli');
     var cordovaLib = repoutil.getRepoById('lib');
     var opt = flagutil.registerHelpFlag(optimist);
@@ -45,59 +54,41 @@ module.exports = function*(argv) {
             desc: 'Don\'t actually publish to npm, just print what would be run.',
             type:'boolean'
         })
+        .options('ignore-test-failures', {
+            desc: 'Run the tests for cli and lib but don\'t fail the build if the tests are failing',
+            type:'boolean',
+            alias : 'ignoreTestFailures'
+        })
         .argv;
 
     if(argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
-    
-    //Grab currently published nightly version so we can unpublish it later
-    //Assumes lib and cli have same version
-    var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view cordova dist-tags.nightly'));
-    console.log(oldNightlyVersion);
 
-    //Update Repos
+    // Clone and update Repos
+    yield repoclone.cloneRepos(repos, /*silent=*/true);
     yield repoupdate.updateRepos(repos);
 
     //remove local changes and sync up with remote master
     yield repoutil.forEachRepo(repos, function*() {
         yield gitutil.gitClean();
         yield gitutil.resetFromOrigin();
-    })
+    });
 
-    //get SHAS from platforms
+    // Get SHAS from repos
     var SHAJSON = yield retrieveSha(repos);
-
-    //save SHAJSON in cordova-cli repo
-    yield repoutil.forEachRepo([cli], function*() {
-        //need to get the path to cordova-cli using executil
-        var cordovaclidir = process.cwd();
-        fs.writeFileSync((path.join(cordovaclidir, 'shas.json')), JSON.stringify(SHAJSON, null, 4), 'utf8', function(err) {
-            if (err) return console.log (err);
-        });
-
-    });
-
-    //Update platform references at cordova-lib/src/cordova/platformsConfig.json
-    var cordovalibdir;
-    yield repoutil.forEachRepo([cordovaLib], function*() {
-        //need to get the path to cordova-lib using executil
-        cordovalibdir = process.cwd();
-    });
-
-    yield updatePlatformsFile(path.join(cordovalibdir, 'src/cordova/platformsConfig.json'), SHAJSON);
-
 
     var currentDate = new Date();
     var nightlyVersion = '-nightly.' + currentDate.getFullYear() + '.' +
-                        currentDate.getMonth() + '.' + currentDate.getDate();
+                        pad(currentDate.getMonth() + 1) + '.' + pad(currentDate.getDate());
     var cordovaLibVersion;
     //update package.json version for cli + lib, update lib reference for cli
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
         var dir = process.cwd();
         var packageJSON = require(dir+'/package.json');
-        packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion;
+        packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion +
+            '+' + SHAJSON[repo.id];
 
         if(repo.id === 'lib'){
             cordovaLibVersion = packageJSON.version;
@@ -113,49 +104,42 @@ module.exports = function*(argv) {
     //npm link repos that should be linked
     yield npmlink();
 
-    //run CLI + cordova-lib tests
-    //NOTE: Commented out because of issues running on jenkins machine.
-    //Will rely on medic to test nightlys instead
-    //yield runTests(cli, cordovaLib);
+    // npm install cli
+    yield repoutil.forEachRepo([cli], function*(repo) {
+        yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
+    });
 
-    //create options object
+    //run CLI + cordova-lib tests
+    yield runTests(cli, cordovaLib, argv.ignoreTestFailures);
+
     var options = {};
     options.tag = 'nightly';
-    options.r = ['lib', 'cli'];
     options.pretend = argv.pretend;
 
+    //unpublish old nightly
+    yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
+        var repoName = repo.id === 'cli' ? 'cordova' : repo.repoName;
+        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + repoName + ' dist-tags.nightly'));
+        apputil.print('Latest ' + repoName + '@nightly version is ' + oldNightlyVersion);
+
+        options.r = [repo.id];
+        options.version = oldNightlyVersion;
+
+        yield npmpublish.unpublish(options);
+    });
+
+    options.r = ['lib', 'cli'];
     //publish to npm under nightly tag
     yield npmpublish.publishTag(options);
-
-    //unpublish old nightly
-    options.version = oldNightlyVersion;
-    yield npmpublish.unpublish(options);
 }
 
-//updates platforms.js with the SHA
-function *updatePlatformsFile(file, shajson) {
-    var platformsJS = require(file);
-
-    var repos = flagutil.computeReposFromFlag('active-platform');
-
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        if(repo.id === 'windows') {
-            platformsJS[repo.id].version = shajson[repo.id];
-            platformsJS['windows8'].version = shajson[repo.id];
-        } else if(repo.id === 'blackberry') {
-            platformsJS['blackberry10'].version = shajson[repo.id];
-        } else {
-            platformsJS[repo.id].version = shajson[repo.id];
-        }
-    });
-
-    fs.writeFileSync(file, JSON.stringify(platformsJS, null, 4), 'utf8', function(err) {
-        if (err) return console.log (err);
-    });
-}
-
-function *runTests(cli, lib) {
+function *runTests(cli, lib, ignoreTestFailures) {
     yield repoutil.forEachRepo([cli, lib], function *(repo) {
-           yield executil.execHelper(executil.ARGS('npm test'), false, false);
+        try {
+            yield executil.execHelper(executil.ARGS('npm test'), false, ignoreTestFailures);
+        } catch (e) {
+            if (!ignoreTestFailures) throw e;
+            apputil.print('Skipping failing tests due to "ignore-test-failures flag"');
+        }
     });
 }

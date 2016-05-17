@@ -74,14 +74,8 @@ function *publishTag(options) {
 
 module.exports.publishTag = publishTag;
 
-//TODO: Does npm tag cordova-js*.tgz latest
-exports.setLatest = function*(argv) {
-
-
-}
-
 //Gets last nightly tag and unpublishes it
-function *unpublish(options) {
+function *unpublishNightly(options) {
     var opt = flagutil.registerHelpFlag(optimist);
 
     if(options) {
@@ -92,12 +86,9 @@ function *unpublish(options) {
             .options('r', {
                 default:options.r
             })
-            .options('version', {
-                default:options.version
-            })
     }
 
-    argv = opt
+    var argv = opt
         .usage("Unpublishes the nightly version for the cli & lib from npm \n" +
                 "Usage: $0 npm-unpublish-nightly")
         .options("pretend", {
@@ -105,11 +96,7 @@ function *unpublish(options) {
             type: "boolean"
         })
         .options('r', {
-            desc: "Which repo(s) to publish",
-            demand: true
-        })
-        .options('version', {
-            desc: "Which version to unpublish",
+            desc: "Which repo(s) to unpublish",
             demand: true
         })
         .argv;
@@ -123,8 +110,12 @@ function *unpublish(options) {
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         var packageId = repo.packageName || repo.repoName;
-        yield executil.execOrPretend(executil.ARGS('npm unpublish '+ packageId + '@' + argv.version), argv.pretend);
+        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageId + ' dist-tags.nightly'));
+
+        if (oldNightlyVersion && oldNightlyVersion !== 'undefined') {
+            yield executil.execOrPretend(executil.ARGS('npm unpublish '+ packageId + '@' + oldNightlyVersion), argv.pretend);
+        }
     });
 }
 
-module.exports.unpublish = unpublish;
+module.exports.unpublishNightly = unpublishNightly;

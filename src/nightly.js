@@ -33,10 +33,11 @@ var npmlink = require('./npm-link');
 var repoclone = require('./repo-clone');
 
 module.exports = function*(argv) {
-    var repos = flagutil.computeReposFromFlag('tools');
-    var cli = repoutil.getRepoById('cli');
-    var cordovaLib = repoutil.getRepoById('lib');
+    /** Specifies the default repos to build nightlies for */
+    var DEFAULT_NIGHTLY_REPOS = ['cli', 'lib'];
+
     var opt = flagutil.registerHelpFlag(optimist);
+    opt = flagutil.registerRepoFlag(opt);
 
     argv = opt
         .usage('Publish CLI & LIB to NPM under nightly tag. \n' +
@@ -52,6 +53,7 @@ module.exports = function*(argv) {
             type:'boolean',
             alias : 'ignoreTestFailures'
         })
+        .default({ r: DEFAULT_NIGHTLY_REPOS})
         .argv;
 
     if(argv.h) {
@@ -60,36 +62,26 @@ module.exports = function*(argv) {
     }
 
     // Clone and update Repos
-    yield repoclone.cloneRepos(repos, /*silent=*/true);
-    yield repoupdate.updateRepos(repos);
+    yield prepareRepos(argv.r);
 
-    //remove local changes and sync up with remote master
-    yield repoutil.forEachRepo(repos, function*() {
-        yield gitutil.gitClean();
-        yield gitutil.resetFromOrigin();
-    });
+    var reposToBuild = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    // Get updated nightly versions for all repos
+    /** @type {Object} A map of repo.id and a short SHA for every repo to build */
+    var VERSIONS = yield retrieveVersions(reposToBuild);
 
-    // Get SHAS from repos
-    var SHAJSON = yield retrieveSha(repos);
+    // Update version in package.json and other respective files for every repo
+    // and update dependencies to use nightly versions of packages to be released
+    yield repoutil.forEachRepo(reposToBuild, function*(repo) {
+        apputil.print('Updating ' + repo.id + ' version to ' + VERSIONS[repo.id]);
+        yield versionutil.updateRepoVersion(repo, VERSIONS[repo.id], { commitChanges: false });
 
-    var currentDate = new Date();
-    var nightlyVersion = '-nightly.' + currentDate.getFullYear() + '.' +
-        (currentDate.getMonth() + 1) + '.' + currentDate.getDate();
-    var cordovaLibVersion;
-    //update package.json version for cli + lib, update lib reference for cli
-    yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
-        var dir = process.cwd();
-        var packageJSON = require(dir+'/package.json');
-        packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion +
-            '+' + SHAJSON[repo.id];
+        var packageJSONPath = path.join(process.cwd(), 'package.json');
+        var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
-        if(repo.id === 'lib'){
-            cordovaLibVersion = packageJSON.version;
-        } else {
-            packageJSON.dependencies['cordova-lib'] = cordovaLibVersion;
-        }
+        // If there is a dependencies listed, iterate through and update cordova-* dependencies
+        packageJSON.dependencies = mapDependenciesVersions(packageJSON.dependencies, VERSIONS);
 
-        fs.writeFileSync(dir+'/package.json', JSON.stringify(packageJSON, null, 4), 'utf8', function(err) {
+        fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2) + '\n', 'utf8', function(err) {
             if (err) return console.log (err);
         });
     });
@@ -98,36 +90,64 @@ module.exports = function*(argv) {
     yield npmlink();
 
     // npm install cli
+    var cli = repoutil.getRepoById('cli');
     yield repoutil.forEachRepo([cli], function*(repo) {
         yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
     });
 
     //run CLI + cordova-lib tests
-    yield runTests(cli, cordovaLib, argv.ignoreTestFailures);
+    yield runTests(reposToBuild, argv.ignoreTestFailures);
 
     var options = {};
     options.tag = 'nightly';
     options.pretend = argv.pretend;
+    options.r = reposToBuild.map(function (repo) { return repo.id; });
 
     //unpublish old nightly
-    yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
-        var packageName = repo.packageName || repo.repoName;
-        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageName + ' dist-tags.nightly'));
-        apputil.print('Latest ' + packageName + '@nightly version is ' + oldNightlyVersion);
-
-        options.r = [repo.id];
-        options.version = oldNightlyVersion;
-
-        yield npmpublish.unpublish(options);
-    });
-
-    options.r = ['lib', 'cli'];
+    yield npmpublish.unpublishNightly(options);
     //publish to npm under nightly tag
     yield npmpublish.publishTag(options);
+};
+
+function* prepareRepos(repoNames) {
+    // Clone and update required repos
+    apputil.print('Cloning and updating required repositories...');
+    var reposToClone = flagutil.computeReposFromFlag(['tools'].concat(repoNames));
+    yield repoclone.cloneRepos(reposToClone, /*silent=*/true);
+    yield repoupdate.updateRepos(reposToClone, /*silent=*/true);
+
+    // Remove local changes and sync up with remote master
+    apputil.print('Resetting repositories to "master" branches...');
+    var reposToUpdate = flagutil.computeReposFromFlag(repoNames);
+    yield repoutil.forEachRepo(reposToUpdate, function*() {
+        yield gitutil.gitClean();
+        yield gitutil.resetFromOrigin();
+    });
 }
 
-function *runTests(cli, lib, ignoreTestFailures) {
-    yield repoutil.forEachRepo([cli, lib], function *(repo) {
+/**
+ * Updates provided dependencies object with versions, supplied in packageVersions object
+ * @param {Object<String, String>} packageDependencies A map of current package's dependencies to versions
+ * @param {Object<String, String>} packageVersions Map of package's id's to nightly versions
+ * @returns {Object<String, String>} A mapped object
+ */
+function mapDependenciesVersions(packageDependencies, packageVersions) {
+    return Object.keys(packageDependencies)
+    .reduce(function (result, dependency) {
+        var dep = repoutil.getRepoById(dependency);
+        // If this is a cordova-* dependency, and we're going to build nightly for it
+        if (dependency.match(/cordova\-.*/) && dep && packageVersions[dep.id]) {
+            // Update its version in package's dependencies to nightly version
+            apputil.print('Updating ' + dependency + ' dependency version to ' + packageVersions[dep.id]);
+            result[dependency] = packageVersions[dep.id];
+        }
+
+        return result;
+    }, packageDependencies);
+}
+
+function *runTests(repos, ignoreTestFailures) {
+    yield repoutil.forEachRepo(repos, function *(repo) {
         try {
             yield executil.execHelper(executil.ARGS('npm test'), false, ignoreTestFailures);
         } catch (e) {
@@ -135,4 +155,36 @@ function *runTests(cli, lib, ignoreTestFailures) {
             apputil.print('Skipping failing tests due to "ignore-test-failures flag"');
         }
     });
+}
+
+/**
+ * Generates suffix for appending to nightly package version
+ *   based on current date and SHA string.
+ * @param SHA {String} String to use to generate nightly version
+ * @returns {String} A newly generated nightly suffix
+ */
+function getNightlySuffix (SHA) {
+    var currentDate = new Date();
+    var nightlySuffix = '-nightly.' + currentDate.getFullYear() + '.' +
+        (currentDate.getMonth() + 1) + '.' + currentDate.getDate() +
+        '+' + SHA;
+
+    return nightlySuffix;
+}
+
+/**
+ * Generates map of repo.id -> nightly version based on current
+ *   date and SHA of current revision of repository
+ * @param {Object[]} repos An array of cordova repos
+ * @returns {Object} Mapped object
+ */
+function* retrieveVersions(repos) {
+    var SHAJSON = yield retrieveSha(repos);
+
+    return Object.keys(SHAJSON).reduce(function (result, repoId) {
+        var repoPath = repoutil.getRepoDir(repoutil.getRepoById(repoId));
+        var oldVersion = require(path.join(repoPath, 'package.json')).version;
+        result[repoId] = versionutil.removeDev(oldVersion) + getNightlySuffix(SHAJSON[repoId]);
+        return result;
+    }, {});
 }

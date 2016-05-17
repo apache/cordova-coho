@@ -443,7 +443,7 @@ function getRepoById(id, opt_repos) {
     // Strip cordova- prefix if it exists.
     var repos = opt_repos || allRepos;
     for (var i = 0; i < repos.length; ++i) {
-        if (repos[i].id == id || repos[i].repoName == id) {
+        if (repos[i].id == id || repos[i].packageName == id || repos[i].repoName == id) {
             return repos[i];
         }
     }

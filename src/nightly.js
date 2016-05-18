@@ -163,11 +163,11 @@ function *runTests(repos, ignoreTestFailures) {
  * @param SHA {String} String to use to generate nightly version
  * @returns {String} A newly generated nightly suffix
  */
-function getNightlySuffix (SHA) {
+function getNightlySuffix(SHA) {
     var currentDate = new Date();
-    var nightlySuffix = '-nightly.' + currentDate.getFullYear() + '.' +
-        (currentDate.getMonth() + 1) + '.' + currentDate.getDate() +
-        '+' + SHA;
+    var nightlySuffix = '-nightly.' + currentDate.getUTCFullYear() + '.' +
+        (currentDate.getUTCMonth() + 1) + '.' + currentDate.getUTCDate() +
+        '.' + SHA;
 
     return nightlySuffix;
 }

@@ -73,15 +73,15 @@ module.exports = function*(argv) {
     var SHAJSON = yield retrieveSha(repos);
 
     var currentDate = new Date();
-    var nightlyVersion = '-nightly.' + currentDate.getFullYear() + '.' +
-        (currentDate.getMonth() + 1) + '.' + currentDate.getDate();
+    var nightlyVersion = '-nightly.' + currentDate.getUTCFullYear() + '.' +
+        (currentDate.getUTCMonth() + 1) + '.' + currentDate.getUTCDate();
     var cordovaLibVersion;
     //update package.json version for cli + lib, update lib reference for cli
     yield repoutil.forEachRepo([cordovaLib, cli], function*(repo) {
         var dir = process.cwd();
         var packageJSON = require(dir+'/package.json');
         packageJSON.version = versionutil.removeDev(packageJSON.version) + nightlyVersion +
-            '+' + SHAJSON[repo.id];
+            '.' + SHAJSON[repo.id];
 
         if(repo.id === 'lib'){
             cordovaLibVersion = packageJSON.version;

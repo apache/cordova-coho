@@ -74,16 +74,7 @@ module.exports = function*(argv) {
     yield repoutil.forEachRepo(reposToBuild, function*(repo) {
         apputil.print('Updating ' + repo.id + ' version to ' + VERSIONS[repo.id]);
         yield versionutil.updateRepoVersion(repo, VERSIONS[repo.id], { commitChanges: false });
-
-        var packageJSONPath = path.join(process.cwd(), 'package.json');
-        var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
-
-        // If there is a dependencies listed, iterate through and update cordova-* dependencies
-        packageJSON.dependencies = mapDependenciesVersions(packageJSON.dependencies, VERSIONS);
-
-        fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2) + '\n', 'utf8', function(err) {
-            if (err) return console.log (err);
-        });
+        updateRepoDependencies(repo, VERSIONS);
     });
 
     // Pin nightly versions of platforms
@@ -101,8 +92,14 @@ module.exports = function*(argv) {
         yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
     });
 
-    //run CLI + cordova-lib tests
-    yield runTests(reposToBuild, argv.ignoreTestFailures);
+    // Tests for platforms have some environment requirements (presence of build systems,
+    // SDKs, etc.) which are impossible to satisfy in Jenkins environment, so we're
+    // excluding platforms repos from testing
+    var reposToTest = reposToBuild.filter(function (repo) {
+        return !repoutil.isInRepoGroup(repo, 'platform');
+    });
+    // Run CLI + cordova-lib tests
+    yield runTests(reposToTest, argv.ignoreTestFailures);
 
     var options = {};
     options.tag = 'nightly';
@@ -132,24 +129,28 @@ function* prepareRepos(repoNames) {
 }
 
 /**
- * Updates provided dependencies object with versions, supplied in packageVersions object
- * @param {Object<String, String>} packageDependencies A map of current package's dependencies to versions
- * @param {Object<String, String>} packageVersions Map of package's id's to nightly versions
- * @returns {Object<String, String>} A mapped object
+ * Updates current repo dependencies with versions, supplied in dependencies object
+ * @param {Object} repo Current repo which dependencies need to be updated
+ * @param {Object<String, String>} dependencies Map of package's id's and nightly versions
  */
-function mapDependenciesVersions(packageDependencies, packageVersions) {
-    return Object.keys(packageDependencies)
-    .reduce(function (result, dependency) {
-        var dep = repoutil.getRepoById(dependency);
-        // If this is a cordova-* dependency, and we're going to build nightly for it
-        if (dependency.match(/cordova\-.*/) && dep && packageVersions[dep.id]) {
-            // Update its version in package's dependencies to nightly version
-            apputil.print('Updating ' + dependency + ' dependency version to ' + packageVersions[dep.id]);
-            result[dependency] = packageVersions[dep.id];
-        }
+function updateRepoDependencies(repo, dependencies) {
+    var packageJSONPath = path.join(process.cwd(), 'package.json');
+    var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
-        return result;
-    }, packageDependencies);
+    // Let's iterate through repos we're going to release
+    Object.keys(dependencies).map(function (dependencyId) {
+        var repo = repoutil.getRepoById(dependencyId);
+        var packageId = repo.packageName || repo.repoName;
+
+        if (packageJSON.dependencies[packageId]) {
+            // If current repo has dependency that points to one of packages, we're going
+            // to release, update that dependency's version to nightly
+            apputil.print('Updating ' + packageId + ' dependency version to ' + dependencies[dependencyId]);
+            packageJSON.dependencies[packageId] = dependencies[dependencyId];
+        }
+    });
+
+    fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2) + '\n', 'utf8');
 }
 
 function *runTests(repos, ignoreTestFailures) {

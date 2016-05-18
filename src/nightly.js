@@ -76,7 +76,7 @@ module.exports = function*(argv) {
         yield versionutil.updateRepoVersion(repo, VERSIONS[repo.id], { commitChanges: false });
 
         var packageJSONPath = path.join(process.cwd(), 'package.json');
-        var packageJSON = require(packageJSONPath);
+        var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
         // If there is a dependencies listed, iterate through and update cordova-* dependencies
         packageJSON.dependencies = mapDependenciesVersions(packageJSON.dependencies, VERSIONS);

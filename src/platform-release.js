@@ -17,7 +17,6 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
 var path = require('path');
 var optimist = require('optimist');
 var shelljs = require('shelljs');
@@ -27,6 +26,7 @@ var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
+var versionutil = require('./versionutil');
 var print = apputil.print;
 
 function createPlatformDevVersion(version) {
@@ -114,58 +114,6 @@ function *updateJsSnapshot(repo, version) {
     }
 }
 
-function *updateRepoVersion(repo, version) {
-    // Update the VERSION files.
-    var versionFilePaths = repo.versionFilePaths || ['VERSION'];
-    if (fs.existsSync(versionFilePaths[0])) {
-        versionFilePaths.forEach(function(versionFilePath) {
-            fs.writeFileSync(versionFilePath, version + '\n');
-        });
-        shelljs.config.fatal = true;
-        if (repo.id == 'android' || repo.id == 'amazon-fireos') {
-            shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
-        } else if (repo.id == 'ios' || repo.id == 'osx') {
-            shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '";', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
-        } else if (repo.id == 'blackberry') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'lib', 'version.js'));
-        } else if (repo.id == 'firefoxos' || repo.id == 'browser' || repo.id == 'ubuntu') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
-        } else if (repo.id == 'windows') {
-            if(fs.existsSync(path.join('template', 'cordova', 'version'))) {
-                console.log('version exists');
-                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
-            }
-        }
-        shelljs.config.fatal = false;
-        if (!(yield gitutil.pendingChangesExist())) {
-            print('VERSION file was already up-to-date.');
-        }
-    } else {
-        console.warn('No VERSION file exists in repo ' + repo.repoName);
-    }
-
-    // Update the package.json VERSION.
-    var packageFilePaths = repo.packageFilePaths || ['package.json'];
-    if (fs.existsSync(packageFilePaths[0])) {
-        fs.readFile(packageFilePaths[0], {encoding: 'utf-8'},function (err, data) {
-            if (err) throw err;
-            var packageJSON = JSON.parse(data);
-            packageJSON.version = version;
-            fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, "    "));
-        });
-        if (!(yield gitutil.pendingChangesExist())) {
-            print('package.json file was already up-to-date.');
-        }
-    } else {
-        console.warn('No package.json file exists in repo ' + repo.repoName);
-    }
-
-    if (yield gitutil.pendingChangesExist()) {
-        yield executil.execHelper(executil.ARGS('git commit -am', 'Set VERSION to ' + version + ' (via coho)'));
-    }
-}
-
 exports.prepareReleaseBranchCommand = function*() {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Prepares release branches but does not create tags. This includes:\n' +
@@ -206,12 +154,12 @@ exports.prepareReleaseBranchCommand = function*() {
             }
             yield updateJsSnapshot(repo, version);
             print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
-            yield updateRepoVersion(repo, version);
+            yield versionutil.updateRepoVersion(repo, version);
 
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': ' + 'Setting VERSION to "' + devVersion + '" on branch + "master".');
-            yield updateRepoVersion(repo, devVersion);
+            yield versionutil.updateRepoVersion(repo, devVersion);
             yield updateJsSnapshot(repo, devVersion);
             yield gitutil.gitCheckout(branchName);
         });

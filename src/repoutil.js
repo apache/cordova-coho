@@ -439,6 +439,15 @@ repoGroups.__defineGetter__('auto', function() {
 
 exports.repoGroups = repoGroups;
 
+function isInRepoGroup(repoToCheck, groupName) {
+    var repos = repoGroups[groupName];
+    if (!repos) return false;
+    return repos.some(function (repo) {
+        return repo.id === repoToCheck.id;
+    });
+}
+exports.isInRepoGroup = isInRepoGroup;
+
 function getRepoById(id, opt_repos) {
     // Strip cordova- prefix if it exists.
     var repos = opt_repos || allRepos;

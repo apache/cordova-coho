@@ -69,14 +69,14 @@ module.exports = function*(argv) {
     /** @type {Object} A map of repo.id and a short SHA for every repo to build */
     var VERSIONS = yield retrieveVersions(reposToBuild);
 
-    //update package.json version for cli + lib, update lib reference for cli
+    // Update version in package.json and other respective files for every repo
+    // and update dependencies to use nightly versions of packages to be released
     yield repoutil.forEachRepo(reposToBuild, function*(repo) {
+        apputil.print('Updating ' + repo.id + ' version to ' + VERSIONS[repo.id]);
+        yield versionutil.updateRepoVersion(repo, VERSIONS[repo.id], { commitChanges: false });
+
         var packageJSONPath = path.join(process.cwd(), 'package.json');
         var packageJSON = require(packageJSONPath);
-
-        // Update package version
-        apputil.print('Updating ' + repo.id + ' version to ' + VERSIONS[repo.id]);
-        packageJSON.version = VERSIONS[repo.id];
 
         // If there is a dependencies listed, iterate through and update cordova-* dependencies
         packageJSON.dependencies = mapDependenciesVersions(packageJSON.dependencies, VERSIONS);

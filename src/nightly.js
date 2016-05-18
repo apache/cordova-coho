@@ -101,27 +101,11 @@ module.exports = function*(argv) {
     var options = {};
     options.tag = 'nightly';
     options.pretend = argv.pretend;
+    options.r = reposToBuild.map(function (repo) { return repo.id; });
 
     //unpublish old nightly
-    yield repoutil.forEachRepo(reposToBuild, function*(repo) {
-        var packageName = repo.packageName || repo.repoName;
-        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageName + ' dist-tags.nightly'), /*silent=*/true);
-
-        if (!oldNightlyVersion || oldNightlyVersion === 'undefined') {
-            apputil.print(packageName + ' is not yet published under @nightly tag. Skipping unpublish...');
-            return;
-        }
-
-        apputil.print('Latest ' + packageName + '@nightly version is ' + oldNightlyVersion);
-
-        options.r = [repo.id];
-        options.version = oldNightlyVersion;
-
-        yield npmpublish.unpublish(options);
-    });
-
+    yield npmpublish.unpublishNightly(options);
     //publish to npm under nightly tag
-    options.r = reposToBuild.map(function (repo) { return repo.id; });
     yield npmpublish.publishTag(options);
 };
 

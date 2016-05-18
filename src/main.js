@@ -120,8 +120,8 @@ module.exports = function() {
             entryPoint: lazyRequire('./update-release-notes')
         },  {
             name: 'npm-unpublish-nightly',
-            desc: 'Unpublishes last nightly versions for cli and lib',
-            entryPoint: lazyRequire('./npm-publish', 'unpublish')
+            desc: 'Unpublishes last nightly versions for all specified repositories',
+            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
         }];
     var otherCommands = [{
             name: 'list-pulls',
@@ -137,7 +137,7 @@ module.exports = function() {
             desc: 'Launches github PR UI for the specified topic branch',
             entryPoint: lazyRequire('./create-pr'),
             noChdir : true
-        }, 
+        },
         {
             name: 'last-week',
             desc: 'Prints out git logs of things that happened last week.',

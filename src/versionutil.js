@@ -56,7 +56,7 @@ function *updatePlatformsConfig(newValues) {
         }
     });
 
-    fs.writeFileSync(platformsConfig, JSON.stringify(platformsJS, null, 4), 'utf8', function(err) {
+    fs.writeFileSync(platformsConfig, JSON.stringify(platformsJS, null, 4) + '\n', 'utf8', function(err) {
         if (err) return console.log (err);
     });
 }
@@ -111,7 +111,8 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
             if (err) throw err;
             var packageJSON = JSON.parse(data);
             packageJSON.version = version;
-            fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, "    "));
+            // use 2 spaces indent similar to npm
+            fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, 2) + '\n');
         });
         if (!(yield gitutil.pendingChangesExist())) {
             apputil.print('package.json file was already up-to-date.');

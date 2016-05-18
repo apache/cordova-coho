@@ -81,7 +81,7 @@ module.exports = function*(argv) {
         // If there is a dependencies listed, iterate through and update cordova-* dependencies
         packageJSON.dependencies = mapDependenciesVersions(packageJSON.dependencies, VERSIONS);
 
-        fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 4), 'utf8', function(err) {
+        fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2) + '\n', 'utf8', function(err) {
             if (err) return console.log (err);
         });
     });

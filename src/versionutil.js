@@ -36,23 +36,16 @@ exports.removeDev = removeDev;
 //Needs to be passed a object which includes repo.id as key
 //and the new version as value
 //ex {android:4.0.0}
-function *updatePlatformsConfig(newValues) {
-
-    var platformsConfig = path.join(repoutil.getRepoDir('cordova-lib'),
-        'src/cordova/platformsConfig.json');
-    console.log(platformsConfig);
+function updatePlatformsConfig(newValues) {
+    var platformsConfig = path.join(repoutil.getRepoDir(repoutil.getRepoById('lib')), 'src/platforms/platformsConfig.json');
     var platformsJS = require(platformsConfig);
 
-    var repos = flagutil.computeReposFromFlag('active-platform');
-
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        if(repo.id === 'windows') {
-            platformsJS[repo.id].version = newValues[repo.id];
-            platformsJS['windows8'].version = newValues[repo.id];
-        } else if(repo.id === 'blackberry') {
-            platformsJS['blackberry10'].version = newValues[repo.id];
-        } else {
-            platformsJS[repo.id].version = newValues[repo.id];
+    flagutil.computeReposFromFlag('active-platform')
+    .forEach(function(repo) {
+        if (newValues[repo.id]) {
+            // For blackberry platformsConfig.json uses 'blackberry10' key
+            var correctRepoId = (repo.id === 'blackberry') ? "blackberry10" : repo.id;
+            platformsJS[correctRepoId].version = newValues[repo.id];
         }
     });
 
@@ -92,7 +85,6 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
         } else if (repo.id == 'windows') {
             if(fs.existsSync(path.join('template', 'cordova', 'version'))) {
-                console.log('version exists');
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
             }
         }

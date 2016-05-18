@@ -86,6 +86,12 @@ module.exports = function*(argv) {
         });
     });
 
+    // Pin nightly versions of platforms
+    if (reposToBuild.some(function (repo) { return repo.id === 'lib'; })) {
+        apputil.print('Updating platforms pinned versions...');
+        versionutil.updatePlatformsConfig(VERSIONS);
+    }
+
     //npm link repos that should be linked
     yield npmlink();
 

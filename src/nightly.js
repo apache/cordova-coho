@@ -106,8 +106,6 @@ module.exports = function*(argv) {
     options.pretend = argv.pretend;
     options.r = reposToBuild.map(function (repo) { return repo.id; });
 
-    //unpublish old nightly
-    yield npmpublish.unpublishNightly(options);
     //publish to npm under nightly tag
     yield npmpublish.publishTag(options);
 };

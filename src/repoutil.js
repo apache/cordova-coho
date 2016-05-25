@@ -154,127 +154,106 @@ var pluginRepos = [
         id: 'plugin-battery-status',
         repoName: 'cordova-plugin-battery-status',
         jiraComponentName: 'Plugin Battery Status',
-        inactive: true
     }, {
         title: 'Plugin - Camera',
         id: 'plugin-camera',
         repoName: 'cordova-plugin-camera',
         jiraComponentName: 'Plugin Camera',
-        inactive: true
     }, {
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
         jiraComponentName: 'Plugin Console',
-        inactive: true
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
         jiraComponentName: 'Plugin Contacts',
-        inactive: true
     }, {
         title: 'Plugin - Compat',
         id: 'plugin-compat',
         repoName: 'cordova-plugin-compat',
         jiraComponentName: 'Plugin Compat',
-        inactive: true
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
         jiraComponentName: 'Plugin Device Motion',
-        inactive: true
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
         jiraComponentName: 'Plugin Device Orientation',
-        inactive: true
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
         jiraComponentName: 'Plugin Device',
-        inactive: true
     }, {
         title: 'Plugin - Dialogs',
         id: 'plugin-dialogs',
         repoName: 'cordova-plugin-dialogs',
         jiraComponentName: 'Plugin Dialogs',
-        inactive: true
     }, {
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
         jiraComponentName: 'Plugin File Transfer',
-        inactive: true
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
         jiraComponentName: 'Plugin File',
-        inactive: true
     }, {
         title: 'Plugin - Geolocation',
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
         jiraComponentName: 'Plugin Geolocation',
-        inactive: true
     }, {
         title: 'Plugin - Globalization',
         id: 'plugin-globalization',
         repoName: 'cordova-plugin-globalization',
         jiraComponentName: 'Plugin Globalization',
-        inactive: true
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
         repoName: 'cordova-plugin-inappbrowser',
         jiraComponentName: 'Plugin InAppBrowser',
-        inactive: true
     }, {
         title: 'Plugin - Media',
         id: 'plugin-media',
         repoName: 'cordova-plugin-media',
         jiraComponentName: 'Plugin Media',
-        inactive: true
     }, {
         title: 'Plugin - Media Capture',
         id: 'plugin-media-capture',
         repoName: 'cordova-plugin-media-capture',
         jiraComponentName: 'Plugin Media Capture',
-        inactive: true
     }, {
         title: 'Plugin - Network Information',
         id: 'plugin-network-information',
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'Plugin Network Information',
-        inactive: true
     }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
         jiraComponentName: 'Plugin SplashScreen',
-        inactive: true
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
         repoName: 'cordova-plugin-vibration',
         jiraComponentName: 'Plugin Vibration',
-        inactive: true
     }, {
         title: 'Plugin - Statusbar',
         id: 'plugin-statusbar',
         repoName: 'cordova-plugin-statusbar',
         jiraComponentName: 'Plugin Statusbar',
-        inactive: true
     }, {
         title: 'Plugin - Whitelist',
         id: 'plugin-whitelist',
         repoName: 'cordova-plugin-whitelist',
         jiraComponentName: 'Plugin Whitelist',
-        inactive: true
     }, {
         title: 'Plugin - Legacy Whitelist',
         id: 'plugin-legacy-whitelist',
@@ -286,7 +265,6 @@ var pluginRepos = [
         id: 'cordova-plugin-wkwebview-engine',
         repoName: 'cordova-plugin-wkwebview-engine',
         jiraComponentName: 'Plugin WKWebViewEngine',
-        inactive: true
     }, {
         title: 'Plugins - Other',
         id: 'cordova-plugins',
@@ -298,7 +276,6 @@ var pluginRepos = [
         id: 'plugin-test-framework',
         repoName: 'cordova-plugin-test-framework',
         jiraComponentName: 'Plugin TestFramework',
-        inactive: true
     }
 ];
 
@@ -425,6 +402,7 @@ var repoGroups = {
     'plugins': pluginRepos,
     'tools': toolRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
+    'active-plugins': pluginRepos.filter(function(r) { return !r.inactive }),
     'release-repos': allRepos.filter(function(r) { return !r.inactive })
 };
 repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);

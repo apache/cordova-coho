@@ -422,6 +422,7 @@ var allRepos = platformRepos.concat(nonPlatformRepos).concat(pluginRepos).concat
 var repoGroups = {
     'all': allRepos,
     'platform': platformRepos,
+    'platforms': platformRepos,
     'plugins': pluginRepos,
     'tools': toolRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),

@@ -52,8 +52,8 @@ var COMMON_RAT_EXCLUDES = [
 var RAT_IGNORE_PATH          = '.ratignore';
 var RATIGNORE_COMMENT_PREFIX = '#';
 
-var RAT_NAME = 'apache-rat-0.10';
-var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.10/apache-rat-0.10-bin.tar.gz';
+var RAT_NAME = 'apache-rat-0.11';
+var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.11/apache-rat-0.11-bin.tar.gz';
 
 function startsWith(string, prefix) {
     return string.indexOf(prefix) === 0;
@@ -112,7 +112,7 @@ module.exports = function*() {
         if (fs.existsSync(RAT_IGNORE_PATH)) {
 
             var ratignoreFile  = fs.readFileSync(RAT_IGNORE_PATH);
-            var ratignoreLines = ratignoreFile.toString().trim().split(os.EOL);
+            var ratignoreLines = ratignoreFile.toString().trim().split('\n');
 
             // add only non-empty and non-comment lines
             ratignoreLines.forEach(function (line) {

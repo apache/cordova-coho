@@ -342,6 +342,11 @@ var otherRepos = [
         repoName: 'cordova-medic',
         inactive: true
     }, {
+        title: 'Cordova Paramedic',
+        id: 'paramedic',
+        repoName: 'cordova-paramedic',
+        inactive: true
+    }, {
         title: 'Cordova App Harness',
         id: 'app-harness',
         repoName: 'cordova-app-harness',

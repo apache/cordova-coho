@@ -240,15 +240,20 @@ var pluginRepos = [
         repoName: 'cordova-plugin-splashscreen',
         jiraComponentName: 'Plugin SplashScreen',
     }, {
-        title: 'Plugin - Vibration',
-        id: 'plugin-vibration',
-        repoName: 'cordova-plugin-vibration',
-        jiraComponentName: 'Plugin Vibration',
-    }, {
         title: 'Plugin - Statusbar',
         id: 'plugin-statusbar',
         repoName: 'cordova-plugin-statusbar',
         jiraComponentName: 'Plugin Statusbar',
+    }, {
+        title: 'Plugin - Screen Orientation',
+        id: 'plugin-screen-orientation',
+        repoName: 'cordova-plugin-screen-orientation',
+        jiraComponentName: 'Plugin Screen Orientation',
+    }, {
+        title: 'Plugin - Vibration',
+        id: 'plugin-vibration',
+        repoName: 'cordova-plugin-vibration',
+        jiraComponentName: 'Plugin Vibration',
     }, {
         title: 'Plugin - Whitelist',
         id: 'plugin-whitelist',

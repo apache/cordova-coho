@@ -24,6 +24,7 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
+var linkify = require('jira-linkify');
 
 module.exports = function*() {
     var meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
@@ -60,6 +61,7 @@ module.exports = function*() {
             var date = new Date().toDateString().split(' ');
             data = data.substr(0, pos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + output + '\n\n' + data.substr(pos);
             fs.writeFileSync(relNotesFile, data, {encoding: 'utf8'});
+            linkify.file(relNotesFile);
         }
     });
 };

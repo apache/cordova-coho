@@ -65,7 +65,7 @@ See if any dependencies are outdated
 
 Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies.
 
-Checkin updated modules
+Checkin updated modules (use npm 3.10.1+)
 
     rm -rf node_modules
     npm install --production (skips devDependencies)
@@ -84,7 +84,7 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses
     coho check-license -r android
 
 #### For `iOS` only:
-   * Update [CordovaLib/Classes/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVAvailability.h)
+   * Update [CordovaLib/Classes/Public/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/Public/CDVAvailability.h)
 
 by adding a new macro for the new version, e.g.
 
@@ -104,7 +104,7 @@ Increase the version within package.json using SemVer, and remove the `-dev` suf
     
 If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
 
-    ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+    ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
 
 Update the repos `RELEASENOTES.md` file with changes since the last release
 

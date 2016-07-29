@@ -27,7 +27,7 @@
     "tape-runner": "^0.3.0"
   },
   "scripts": {
-    "test": "nsp check && node test/test.js | tap-spec"
+    "test": "node test/test.js | tap-spec"
   },
   "repository": {
     "type": "git",

@@ -134,7 +134,7 @@ exports.prepareReleaseBranchCommand = function*() {
     var version = flagutil.validateVersionString(argv.version);
     var branchName = getVersionBranchName(version);
     var platform = repos.id;
-
+    
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
 
@@ -185,11 +185,9 @@ exports.prepareReleaseBranchCommand = function*() {
                 iosFileContents[lineNumberToReplaceLine] = lineToReplace;
 
                 fs.writeFileSync(iosFile, iosFileContents.join('\n'));
-                var update = fs.readFileSync(iosFile, 'utf8');
             }
         });
     });
-
     executil.reportGitPushResult(repos, ['master', branchName]);
 }
 

@@ -200,7 +200,6 @@ exports.prepareReleaseBranchCommand = function*() {
 
                 fs.writeFileSync(iosFile, iosFileContents.join('\n'));
                 var update = fs.readFileSync(iosFile, 'utf8');
-                console.log(update);
             }
         });
     });

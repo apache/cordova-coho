@@ -199,11 +199,9 @@ exports.prepareReleaseBranchCommand = function*() {
                 iosFileContents[lineNumberToReplaceLine] = lineToReplace;
 
                 fs.writeFileSync(iosFile, iosFileContents.join('\n'));
-                var update = fs.readFileSync(iosFile, 'utf8');
             }
         });
     });
-
     executil.reportGitPushResult(repos, ['master', branchName]);
 }
 

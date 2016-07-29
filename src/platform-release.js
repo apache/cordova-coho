@@ -18,6 +18,8 @@ under the License.
 */
 
 var path = require('path');
+var fs = require('fs');
+var util = require('util');
 var optimist = require('optimist');
 var shelljs = require('shelljs');
 var apputil = require('./apputil');
@@ -131,6 +133,7 @@ exports.prepareReleaseBranchCommand = function*() {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var version = flagutil.validateVersionString(argv.version);
     var branchName = getVersionBranchName(version);
+    var platform = repos.id;
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
@@ -139,7 +142,6 @@ exports.prepareReleaseBranchCommand = function*() {
         yield gitutil.stashAndPop(repo, function*() {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
-
             // Either create or pull down the branch.
             if (yield gitutil.remoteBranchExists(repo, branchName)) {
                 print('Remote branch already exists for repo: ' + repo.repoName);
@@ -162,6 +164,30 @@ exports.prepareReleaseBranchCommand = function*() {
             yield versionutil.updateRepoVersion(repo, devVersion);
             yield updateJsSnapshot(repo, devVersion);
             yield gitutil.gitCheckout(branchName);
+
+            print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "4.2.x".');
+            if (platform == 'ios') {
+                var iosFile = path.join(__dirname, '..', '..', 'cordova-ios', 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
+                var iosFileContents = fs.readFileSync(iosFile, 'utf8');
+                iosFileContents = iosFileContents.split('\n');
+
+                var lineNumberToInsertLine = iosFileContents.indexOf('/* coho:next-version,insert-before */') - 1;
+                var lineNumberToReplaceLine = iosFileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
+
+                
+                var versionNumberUnderscores = version.split('.').join('_');
+                var versionNumberZeroes = version.split('.').join('0');
+
+                var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
+                var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
+
+                iosFileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
+                iosFileContents[lineNumberToReplaceLine] = lineToReplace;
+
+                fs.writeFileSync(iosFile, iosFileContents.join('\n'));
+                var update = fs.readFileSync(iosFile, 'utf8');
+                console.log(update);
+            }
         });
     });
 

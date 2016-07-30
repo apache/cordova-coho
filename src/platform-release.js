@@ -62,7 +62,7 @@ function configureReleaseCommandFlags(opt) {
     opt = opt
         .options('version', {
             desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]',
-            demand: true
+            demand: false
          });
     opt = flagutil.registerHelpFlag(opt);
     argv = opt.argv;
@@ -71,6 +71,15 @@ function configureReleaseCommandFlags(opt) {
         optimist.showHelp();
         process.exit(1);
     }
+
+    if (!argv.version) {
+        //get version from package.json of repo
+        var packageJSON = util.format('../../cordova-%s/package.json', argv.r);
+        var packageJSONContents = require(packageJSON);
+        argv.version = packageJSONContents['version'];
+        console.log(argv.version);
+    }
+
     var version = flagutil.validateVersionString(argv.version);
     return argv;
 }
@@ -131,6 +140,7 @@ exports.prepareReleaseBranchCommand = function*() {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var version = flagutil.validateVersionString(argv.version);
     var branchName = getVersionBranchName(version);
+    var platform = repos[0].id;
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);

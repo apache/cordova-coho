@@ -1,0 +1,56 @@
+{
+	"shelljs" : {
+		"manually-verified-versions": [
+			"shelljs@0.2.6"
+		],
+		"license-key": "missing in earlier versions, added in 0.6.0. LICENSE file was present in earlier versions.",
+		"pull-request-to-fix" : "n/a",
+		"verified-license": "BSD-3-clause",
+		"verified-license-notes": "BSD-3-clause is also known as the New BSD license, as specified in its LICENSE file. https://github.com/shelljs/shelljs/blob/master/LICENSE"
+	},
+	"stream-buffers" : {
+		"manually-verified-versions": [
+			"stream-buffers@0.2.6"
+		],
+		"license-key": "missing in earlier versions, added in 2.2.0. UNLICENSE file was present in earlier versions.",
+		"pull-request-to-fix" : "n/a",
+		"verified-license": "Unlicense",
+		"verified-license-notes": "compatible with Apache, due to 'a suitable dedication (to the public domain) by the author(s)' see: http://www.apache.org/legal/resolved.html. https://github.com/samcday/node-stream-buffer/blob/master/UNLICENSE"
+	},
+	"tail" : {
+		"manually-verified-versions": [
+			"tail@0.4.0"
+		],
+		"license-key": "missing in earlier versions, added in 1.0.0. LICENSE file was present in earlier versions.",
+		"pull-request-to-fix" : "n/a",
+		"verified-license": "MIT",
+		"verified-license-notes": "https://github.com/lucagrulla/node-tail/blob/master/LICENSE"
+	},
+	"xcode" : {
+		"manually-verified-versions": [
+			"xcode@0.8.9"
+		],
+		"license-key": "missing. LICENSE file is present.",
+		"pull-request-to-fix" : "https://github.com/alunny/node-xcode/pull/103",
+		"verified-license": "Apache-2.0",
+		"verified-license-notes": "https://github.com/alunny/node-xcode/blob/master/LICENSE"
+	},
+	"xmldom" : {
+		"manually-verified-versions": [
+			"xmldom@0.1.22"
+		],
+		"license-key": "not a compatible SPDX expression, and also used the plural 'licenses' as a key.",
+		"pull-request-to-fix" : "https://github.com/jindw/xmldom/pull/178",
+		"verified-license": "(LGPL or MIT)",
+		"verified-license-notes": "https://github.com/jindw/xmldom/blob/master/LICENSE . Note that the authors have omitted tags in their repo for their npm releases, but the hashes can be grabbed from 'npm info xmldom'"
+	},
+	"properties-parser" : {
+		"manually-verified-versions": [
+			"properties-parser@0.2.3"
+		],
+		"license-key": "not present in 0.2.3 package but is in master. Definitely in 0.3.0 package. No LICENSE file in the repo.",
+		"pull-request-to-fix" : "n/a",
+		"verified-license": "MIT",
+		"verified-license-notes": "https://github.com/xavi-/node-properties-parser/blob/f160e88af8fce4006cde7a537186a4d3ccdccb38/package.json . Note that the authors have omitted tags in their repo for their npm releases, but the hashes can be grabbed from 'npm info properties-parser'"
+	}
+}

@@ -27,7 +27,9 @@ var nlf = require('nlf'),
 
 var jsonObject = {},
     validLicenses = [],
+    knownIssues = {},
     licensesFile = path.join('cordova-coho', 'src', 'validLicenses.json'),
+    knownIssuesFile = path.join('cordova-coho', 'src', 'knownIssues.json'),
     reposWithDependencies = [],
     flagged = [];
 
@@ -101,6 +103,15 @@ function processResults(results, repos) {
     }
     validLicenses = (JSON.parse(validLicenses)).validLicenses;
 
+    //get known issues file to report known package issues
+    knownIssues = fs.readFileSync(knownIssuesFile, 'utf8');
+    if (!knownIssues)
+    {
+        console.log('No known issues file. Please make sure it exists.');
+        return;
+    }
+    knownIssues = JSON.parse(knownIssues);
+
     //go through each repo, get its dependencies and add to json object
     for (var i = 0; i < results.length; ++i) {
         var repo = repos[i];
@@ -125,9 +136,13 @@ function processResults(results, repos) {
     console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages below.');
     for (var j = 0; j < flagged.length; ++j)
     {
+        if (knownIssues[ flagged[j].name ]) {
+            flagged[j]['known-issues'] = knownIssues[ flagged[j].name ];
+        }
+
         console.log(treeify.asTree(flagged[j], true));
     }
-    console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages above.');
+    console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages above, and update knownIssues.json with your findings, if applicable.');
 }
 
 //get dependencies for a repo

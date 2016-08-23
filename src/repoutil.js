@@ -326,7 +326,14 @@ var toolRepos = [
         repoName: 'cordova-lib',
         path: 'cordova-fetch',
         versionPrefix: 'fetch',
-        isModule: true
+        isModule: true,
+        jiraComponentNane: 'cordova-fetch'
+    }, {
+        title: 'Cordova Create',
+        id: 'create',
+        packageName: 'cordova-create',
+        repoName: 'cordova-create',
+        jiraComponentNane: 'cordova-create'
     }, {
         title: 'Cordova JS',
         id: 'js',

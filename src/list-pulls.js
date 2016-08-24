@@ -48,7 +48,9 @@ function addLastCommentInfo(repo, pullRequests, callback) {
                         // For simplicity, we want to end up with the newest comment first, so reverse sort on create date.
                         return new Date(b.created_at) - new Date(a.created_at);
                     });
-                    pullRequest.lastUpdatedBy = comments[0] ? comments[0].user.login : pullRequest.user.login;
+                    if (comments.length > 0) {
+                        pullRequest.lastUpdatedBy = comments[0] ? comments[0].user.login : pullRequest.user.login;
+                    }
                     if (--remaining === 0) {
                         callback();
                     }
@@ -108,7 +110,7 @@ function getPullRequestComments(url, existingComments, callback) {
     });
 }
 
-function listGitHubPullRequests(repo, maxAge, hideUser, short, callback) {
+function listGitHubPullRequests(repo, maxAge, hideUser, short, statsOnly, callback) {
     var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
     request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' }}, function(err, res, pullRequests) {
@@ -133,17 +135,33 @@ function listGitHubPullRequests(repo, maxAge, hideUser, short, callback) {
         });
         var countAfterDateFilter = pullRequests.length;
 
-        addLastCommentInfo(repo, pullRequests, next);
+        if (hideUser) {
+            addLastCommentInfo(repo, pullRequests, next);
+        } else {
+            next();
+        }
 
         function next() {
+            var cbObj = {
+                    "repo": repo,
+                    "fresh-count": 0,
+                    "old-count": 0,
+                    "stale-count": 0,
+                    "total-count": origCount,
+                    "message": null
+                };
+
             if (hideUser) {
                 pullRequests = pullRequests.filter(function(p) {
                     return p.lastUpdatedBy != hideUser;
                 });
             }
             var count = pullRequests.length;
+            cbObj['fresh-count'] = count;
 
-            pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
+            if (!statsOnly) {
+                pullRequests.sort(function(a,b) {return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0);} );
+            }
 
             var countMsg = count + ' Pull Requests';
             if (countAfterDateFilter !== origCount || count !== countAfterDateFilter) {
@@ -151,42 +169,50 @@ function listGitHubPullRequests(repo, maxAge, hideUser, short, callback) {
             }
             if (countAfterDateFilter !== origCount) {
                 countMsg += (origCount - countAfterDateFilter) + ' old';
+                cbObj['old-count'] = (origCount - countAfterDateFilter);
                 if (count !== countAfterDateFilter) {
                     countMsg += ', ';
                 }
             }
             if (count !== countAfterDateFilter) {
                 countMsg += (countAfterDateFilter - count) + ' stale';
+                cbObj['stale-count'] = (countAfterDateFilter - count);
             }
             if (countAfterDateFilter !== origCount || count !== countAfterDateFilter) {
                 countMsg += ')';
             }
-            console.log('\x1B[31m========= ' + repo + ': ' + countMsg + '. =========\x1B[39m');
 
-            pullRequests.forEach(function(pullRequest) {
-                var updatedDate = new Date(pullRequest.updated_at);
-                var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
-                console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
-                console.log('PR #' + pullRequest.number + ': ' + pullRequest.user.login + ': ' +
-                    pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
-                console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
-                console.log('* ' + pullRequest.html_url);
-                // console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
-                if (!pullRequest.head.repo) {
-                    console.log('NO REPO EXISTS!');
-                } else {
-                    console.log('To merge: coho merge-pr --pr ' + pullRequest.number);
-                }
-                if (pullRequest.body) {
-                    if (short && pullRequest.body.length > 100) {
-                        console.log(pullRequest.body.substring(0, 100) + '...');
+            if (!statsOnly) {
+                console.log('\x1B[31m========= ' + repo + ': ' + countMsg + '. =========\x1B[39m');
+            }
+
+            if (!statsOnly) {
+                pullRequests.forEach(function(pullRequest) {
+                    var updatedDate = new Date(pullRequest.updated_at);
+                    var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
+                    console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+                    console.log('PR #' + pullRequest.number + ': ' + pullRequest.user.login + ': ' +
+                        pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
+                    console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
+                    console.log('* ' + pullRequest.html_url);
+                    // console.log('To merge: curl "' + pullRequest.patch_url + '" | git am');
+                    if (!pullRequest.head.repo) {
+                        console.log('NO REPO EXISTS!');
                     } else {
-                        console.log(pullRequest.body);
+                        console.log('To merge: coho merge-pr --pr ' + pullRequest.number);
                     }
-                }
-                console.log('');
-            });
-            callback();
+                    if (pullRequest.body) {
+                        if (short && pullRequest.body.length > 100) {
+                            console.log(pullRequest.body.substring(0, 100) + '...');
+                        } else {
+                            console.log(pullRequest.body);
+                        }
+                    }
+                    console.log('');
+                });
+            }
+            cbObj.message = countMsg;
+            callback(cbObj);
         }
     });
 }
@@ -203,6 +229,18 @@ function *listPullRequestsCommand() {
             desc: 'Hide PRs where the last comment\'s is by this github user.',
             type: 'string'
          })
+        .options('stats-only', {
+            desc: 'List stats for PRs in the repos specified.',
+            type: 'bool'
+         })
+        .options('sort-ascending', {
+            desc: 'Used in conjunction with --stats-only. Sort the PRs ascending.',
+            type: 'bool'
+         })
+        .options('json', {
+            desc: 'Used in conjunction with --stats-only. Output the report in JSON format.',
+            type: 'bool'
+         })
          .options('short', {
             desc: 'Truncates PR body description',
             type: 'bool'
@@ -211,8 +249,11 @@ function *listPullRequestsCommand() {
                '\n' +
                'Example usage: $0 list-pulls --hide-user="agrieve" | tee pulls.list | less -R\n' +
                'Example usage: $0 list-pulls --max-age=365 --repo=.\n' +
+               'Example usage: $0 list-pulls --max-age=365 --repo=. --stats-only --json --sort-ascending --hide-user=cordova-qa | tail -n +2\n' +
                '\n' +
-               'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n');
+               'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n' +
+               'You can also set the CORDOVA_GIT_ACCOUNT environment variable with your Github API key: https://github.com/settings/tokens\n'
+               );
     var argv = opt.argv;
 
     if (argv.h) {
@@ -221,11 +262,47 @@ function *listPullRequestsCommand() {
     }
 
     var repos = flagutil.computeReposFromFlag(argv.r);
+    var report = {
+        "title" : "coho list-pulls report",
+        // "command" : process.argv,
+        "timestamp" : new Date().toJSON(),
+        "max-age":  argv['max-age'],
+        "repos" : []
+    };
+    var simple_report = [];
 
-    function next() {
+    function next(reportObject) {
+        if (reportObject && argv['stats-only']) {
+            if (argv.json) {
+                report.repos.push(reportObject);
+            } else {
+                simple_report.push(reportObject);
+            }
+        }
+
         if (repos.length) {
             var repo = repos.shift();
-            listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], argv.short, next);
+            listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], argv.short, argv['stats-only'], next);
+        } else if (argv['stats-only']){ // done
+            function compareFunc(a, b) {
+                if (a['fresh-count'] < b['fresh-count']) {
+                    return argv['sort-ascending']? -1 : 1;
+                }
+                if (a['fresh-count'] > b['fresh-count']) {
+                    return argv['sort-ascending']? 1 : -1;
+                }
+                return 0;
+            };
+
+            if (argv.json) {
+                report.repos.sort(compareFunc);
+                console.log(JSON.stringify(report,  null, 4));
+            } else {
+                simple_report.sort(compareFunc);
+                simple_report.forEach(function(report) {
+                    console.log(report.repo + ' --> ' + report.message);
+                });
+            }
         }
     }
     
@@ -233,7 +310,9 @@ function *listPullRequestsCommand() {
     repos.forEach(function(repo) {
         url += '+repo%3Aapache%2F' + repo.repoName;
     });
-    console.log(url);
+    if (!(argv['stats-only'] && argv['json'])) {
+        console.log(url);
+    }
     next();
 }
 

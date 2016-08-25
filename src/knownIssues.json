@@ -52,5 +52,14 @@
 		"pull-request-to-fix" : "n/a",
 		"verified-license": "MIT",
 		"verified-license-notes": "https://github.com/xavi-/node-properties-parser/blob/f160e88af8fce4006cde7a537186a4d3ccdccb38/package.json . Note that the authors have omitted tags in their repo for their npm releases, but the hashes can be grabbed from 'npm info properties-parser'"
+	},
+	"valid-identifier" : {
+		"manually-verified-versions": [
+			"valid-identifier@0.0.1"
+		],
+		"license-key": "Present but not SPDX compatible",
+		"pull-request-to-fix" : "https://github.com/purplecabbage/valid-identifier/pull/5",
+		"verified-license": "Apache-2.0",
+		"verified-license-notes": "https://github.com/purplecabbage/valid-identifier/blob/a6562f196f82077c04c9b03545e17fec817a5d92/LICENSE"
 	}
 }

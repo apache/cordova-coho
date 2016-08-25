@@ -86,5 +86,14 @@
     "promise.prototype.finally": {
         "verified-license": "MIT",
         "verified-license-notes": "https://github.com/es-shims/Promise.prototype.finally/blob/master/package.json#L17"
-    }
+    },
+	"valid-identifier" : {
+		"manually-verified-versions": [
+			"valid-identifier@0.0.1"
+		],
+		"license-key": "Present but not SPDX compatible",
+		"pull-request-to-fix" : "https://github.com/purplecabbage/valid-identifier/pull/5",
+		"verified-license": "Apache-2.0",
+		"verified-license-notes": "https://github.com/purplecabbage/valid-identifier/blob/a6562f196f82077c04c9b03545e17fec817a5d92/LICENSE"
+	}
 }

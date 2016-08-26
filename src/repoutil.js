@@ -145,6 +145,11 @@ var nonPlatformRepos = [
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
         jiraComponentName: 'App Hello World'
+    }, {
+        title: 'Template Reference',
+        id: 'cordova-template-reference',
+        repoName: 'cordova-template-reference',
+        jiraComponentName: 'Template Reference'
     }
 ];
 

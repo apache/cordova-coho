@@ -133,16 +133,19 @@ function processResults(results, repos) {
     console.log('\n***********************************************************************************************************************');
     console.log('***********************************************************************************************************************');
     console.log('***********************************************************************************************************************\n');
-    console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages below.');
-    for (var j = 0; j < flagged.length; ++j)
-    {
-        if (knownIssues[ flagged[j].name ]) {
-            flagged[j]['known-issues'] = knownIssues[ flagged[j].name ];
-        }
+    if (flagged.length) {
+        for (var j = 0; j < flagged.length; ++j)
+        {
+            if (knownIssues[ flagged[j].name ]) {
+                flagged[j]['known-issues'] = knownIssues[ flagged[j].name ];
+            }
 
-        console.log(treeify.asTree(flagged[j], true));
+            console.log(treeify.asTree(flagged[j], true));
+        }
+        console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages above, and update knownIssues.json with your findings, if applicable.');
+    } else {
+        console.log('No packages were flagged.');
     }
-    console.log(flagged.length + ' packages were flagged. Please verify manually that the licenses are valid. See those packages above, and update knownIssues.json with your findings, if applicable.');
 }
 
 //get dependencies for a repo

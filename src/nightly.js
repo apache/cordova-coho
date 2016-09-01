@@ -64,6 +64,15 @@ module.exports = function*(argv) {
     // Clone and update Repos
     yield prepareRepos(argv.r);
 
+    //npm link repos that should be linked
+    yield npmlink();
+
+    // npm install cli
+    var cli = repoutil.getRepoById('cli');
+    yield repoutil.forEachRepo([cli], function*(repo) {
+        yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
+    });
+
     var reposToBuild = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     // Get updated nightly versions for all repos
     /** @type {Object} A map of repo.id and a short SHA for every repo to build */
@@ -82,15 +91,6 @@ module.exports = function*(argv) {
         apputil.print('Updating platforms pinned versions...');
         versionutil.updatePlatformsConfig(VERSIONS);
     }
-
-    //npm link repos that should be linked
-    yield npmlink();
-
-    // npm install cli
-    var cli = repoutil.getRepoById('cli');
-    yield repoutil.forEachRepo([cli], function*(repo) {
-        yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
-    });
 
     // Tests for platforms have some environment requirements (presence of build systems,
     // SDKs, etc.) which are impossible to satisfy in Jenkins environment, so we're

@@ -67,9 +67,11 @@ module.exports = function*(argv) {
     //npm link repos that should be linked
     yield npmlink();
 
-    // npm install cli
+    // npm install cli (and probablu other repos as a workaround for
+    // NPM bug #10343 - https://github.com/npm/npm/issues/10343)
+    var common = repoutil.getRepoById('common');
     var cli = repoutil.getRepoById('cli');
-    yield repoutil.forEachRepo([cli], function*(repo) {
+    yield repoutil.forEachRepo([common, cli], function*(repo) {
         yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
     });
 

@@ -52,5 +52,39 @@
 		"pull-request-to-fix" : "n/a",
 		"verified-license": "MIT",
 		"verified-license-notes": "https://github.com/xavi-/node-properties-parser/blob/f160e88af8fce4006cde7a537186a4d3ccdccb38/package.json . Note that the authors have omitted tags in their repo for their npm releases, but the hashes can be grabbed from 'npm info properties-parser'"
-	}
+	},
+    "uglify-js" : {
+        "manually-verified-versions": [
+            "uglify-js@2.6.2"
+        ],
+        "license-key": "not present in 2.6.2 but added in 2.7.3",
+        "pull-request-to-fix" : "n/a",
+        "verified-license": "BSD-2-clause",
+        "verified-license-notes": "https://github.com/mishoo/UglifyJS2/blob/master/package.json#L6"
+    },
+    "dmd-plugin-cordova-plugin": {
+        "verified-license": "Apache 2",
+        "verified-license-notes": "https://github.com/daserge/dmd-plugin-cordova-plugin/blob/master/LICENSE",
+        "license-key": "missing from package.json"
+    },
+    "domelementtype":{
+        "verified-license": "BSD-2-Clause",
+        "verified-license-notes": "https://github.com/fb55/domelementtype/blob/master/package.json"
+    },
+    "domhandler": {
+        "verified-license": "BSD-2-Clause",
+        "verified-license-notes": "https://github.com/fb55/domhandler/blob/master/package.json#L29"
+    },
+    "domutils": {
+        "verified-license": "BSD-2-Clause",
+        "verified-license-notes": "https://github.com/fb55/domutils/blob/master/package.json#L31"
+    },
+    "handlebars-array": {
+        "verified-license": "BSD-2-Clause",
+        "verified-license-notes": "https://github.com/fb55/domutils/blob/master/package.json#L31"
+    },
+    "promise.prototype.finally": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/es-shims/Promise.prototype.finally/blob/master/package.json#L17"
+    }
 }

@@ -78,14 +78,14 @@ If you don't want to release all plugins, but you have specific plugins you want
 
 ## Ensure license headers are present everywhere:
 
-    coho audit-license-headers -r plugins | less
+    coho audit-license-headers -r active-plugins | less
     # Tip: Skim by searching for "Unknown Licenses"
 
 For reference, see this [background](http://www.apache.org/legal/src-headers.html)
 
 ## Ensure all dependencies and subdependencies have Apache-compatible licenses
 
-    coho check-license -r plugins
+    coho check-license -r active-plugins
 
 ## Update RELEASENOTES.md & Version
 Remove the ''-dev'' suffix on the version in plugin.xml.
@@ -104,9 +104,9 @@ For each of the plugins that have a test project inside it, update the version n
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
-Update its RELEASENOTES.md file with changes. Assumes coho exists at `cordova-coho/coho`
+Update its RELEASENOTES.md file with changes.
 
-    for l in $ACTIVE; do (./cordova-coho/coho update-release-notes -r $l); done
+    for l in $ACTIVE; do (coho update-release-notes -r $l); done
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
@@ -125,8 +125,11 @@ Reply to the DISCUSS thread with a link to the updated release notes.
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo "Tagging $l to $v"; git tag "$v" ); done
 
 ## Test
- * Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master)
- * Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
+ Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
+
+
+    cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
+    (cd mobilespec && ./cordova build && ./cordova run android)
 
 ## Create Release Branch
 

@@ -129,7 +129,8 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
-    (cd mobilespec && ./cordova build && ./cordova run android)
+    (cd mobilespec && ./cordova build && ./cordova run android --device)
+    (cd mobilespec && ./cordova build && ./cordova run ios --device)
 
 ## Create Release Branch
 
@@ -217,6 +218,35 @@ __Body:__
     * Ran coho audit-license-headers over the relevant repos
     * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repos were tagged
+
+
+
+## Voting
+Steps to verify a plugins release
+
+1) Setup
+Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires svn setup.
+
+    coho repo-clone -r cordova-dist-dev
+    (cd cordova-dist-dev && svn up)
+
+2) Verify
+
+    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho repo-update -r plugins
+    coho check-license -r active-plugins
+    coho audit-license-headers -r active-plugins | less
+    # Tip: Skim by searching for "Unknown Licenses"
+
+3) Test
+
+Review [ci.cordova.io](http://ci.cordova.io/).
+
+(Optional locally run `mobile-spec`)
+
+    cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
+    (cd mobilespec && ./cordova build && ./cordova run android --device)
+    (cd mobilespec && ./cordova build && ./cordova run ios --device)
 
 
 ## Email the result of the vote

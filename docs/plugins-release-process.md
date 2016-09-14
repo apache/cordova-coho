@@ -110,10 +110,6 @@ Update its RELEASENOTES.md file with changes.
     # Then curate:
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
 
-Add a comment to the JIRA issue with the output from (we'll use this later for the blog post): *CURRENTLY NOT WORKING*
-
-    for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; echo $id@$v; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
-
 Commit these changes together (plugin.xml, RELEASENOTES.md, tests/plugin.xml)
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
@@ -180,13 +176,13 @@ Upload:
 * Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Prepare Blog Post
- * Combine highlights from RELEASENOTES.md into a Release Announcement blog post
+Run the following script to get release notes from RELEASENOTS.md.
+
+    for l in $ACTIVE; do (cd $l; current_release=$(git describe --tags --abbrev=0); previous_release=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`); echo "$l@$current_release"; awk '/### '$current_release'.*/,/### '$previous_release'.*/ {temp=match($0,/### '$previous_release'/); title=match($0, /### '$current_release'/); if(temp == 0 && title == 0) print $0}' < RELEASENOTES.md); done
+
+ * Combine the output from above into a Release Announcement blog post
    * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
  * Get blog post proof-read.
-
-To extract changes from RELEASENOTES.md:
-
-    for l in $ACTIVE; do ( cd $l; id="$(grep id= plugin.xml | grep -v xml | grep -v engine | grep -v param | head -1 | cut -d'"' -f2)"; v="$(git describe --tags --abbrev=0)"; echo $id@${v:1}; awk "{ if (p) print } /$DATE/ { p = 1 } " < RELEASENOTES.md; echo); done
 
 ## Start VOTE Thread
 Send an email to dev ML with:
@@ -211,6 +207,7 @@ __Body:__
     Upon a successful vote I will upload the archives to dist/, upload them to npm, and post the corresponding blog post.
 
     Voting guidelines: https://github.com/apache/cordova-coho/blob/master/docs/release-voting.md
+    How to vote on a plugins release at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#voting
 
     Voting will go on for a minimum of 48 hours.
 

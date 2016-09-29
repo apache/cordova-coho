@@ -78,6 +78,33 @@ function configureReleaseCommandFlags(opt) {
 
 var hasBuiltJs = '';
 
+//Adds the version to CDVAvailability.h for iOS
+function *updateCDVAvailabilityFile(version) {
+    var iosFile = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public','CDVAvailability.h');
+    var iosFileContents = fs.readFileSync(iosFile, 'utf8');
+    iosFileContents = iosFileContents.split('\n');
+
+    var lineNumberToInsertLine = iosFileContents.indexOf('/* coho:next-version,insert-before */');
+    var lineNumberToReplaceLine = iosFileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
+        
+    var versionNumberUnderscores = version.split('.').join('_');
+    var versionNumberZeroes = version.split('.').join('0');
+
+    var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
+    var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
+
+    if(iosFileContents[lineNumberToInsertLine - 1] === lineToAdd) {
+        print('Version already exists in CDVAvailability.h');
+        lineNumberToReplaceLine = lineNumberToReplaceLine - 1;
+    } else {
+        iosFileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
+    }
+
+    iosFileContents[lineNumberToReplaceLine] = lineToReplace;
+
+    fs.writeFileSync(iosFile, iosFileContents.join('\n'));
+}
+
 function *updateJsSnapshot(repo, version) {
     function *ensureJsIsBuilt() {
         var cordovaJsRepo = repoutil.getRepoById('js');
@@ -133,11 +160,12 @@ exports.prepareReleaseBranchCommand = function*() {
     var repos = flagutil.computeReposFromFlag(argv.r);
 
     var branchName = null;
-
+    
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
+        var platform = repo.id;
        
         var version = null;
 
@@ -155,6 +183,14 @@ exports.prepareReleaseBranchCommand = function*() {
         yield gitutil.stashAndPop(repo, function*() {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
+            if (platform === 'ios') {
+                //Updates version in CDVAvailability.h file
+                yield updateCDVAvailabilityFile(version);
+                //Git commit changes
+                if(yield gitutil.pendingChangesExist()) {
+                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
+                }
+            }
             // Either create or pull down the branch.
             if (yield gitutil.remoteBranchExists(repo, branchName)) {
                 print('Remote branch already exists for repo: ' + repo.repoName);
@@ -178,28 +214,6 @@ exports.prepareReleaseBranchCommand = function*() {
             yield versionutil.updateRepoVersion(repo, devVersion);
             yield updateJsSnapshot(repo, devVersion);
             yield gitutil.gitCheckout(branchName);
-
-            print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "4.2.x".');
-            if (platform == 'ios') {
-                var iosFile = path.join(__dirname, '..', '..', 'cordova-ios', 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
-                var iosFileContents = fs.readFileSync(iosFile, 'utf8');
-                iosFileContents = iosFileContents.split('\n');
-
-                var lineNumberToInsertLine = iosFileContents.indexOf('/* coho:next-version,insert-before */') - 1;
-                var lineNumberToReplaceLine = iosFileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
-
-                
-                var versionNumberUnderscores = version.split('.').join('_');
-                var versionNumberZeroes = version.split('.').join('0');
-
-                var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
-                var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
-
-                iosFileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
-                iosFileContents[lineNumberToReplaceLine] = lineToReplace;
-
-                fs.writeFileSync(iosFile, iosFileContents.join('\n'));
-            }
         });
     });
     executil.reportGitPushResult(repos, ['master', branchName]);

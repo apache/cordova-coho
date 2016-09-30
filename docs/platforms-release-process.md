@@ -83,20 +83,6 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses
 
     coho check-license -r android
 
-#### For `iOS` only:
-   * Update [CordovaLib/Classes/Public/CDVAvailability.h](https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/Public/CDVAvailability.h)
-
-by adding a new macro for the new version, e.g.
-
-    #define __CORDOVA_2_1_0  20100
-
-
-and update `CORDOVA_VERSION_MIN_REQUIRED` with the latest version macro, e.g.
-
-    #ifndef CORDOVA_VERSION_MIN_REQUIRED
-        #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_2_1_0
-    #endif
-
 ## Prepare Release
 Increase the version within package.json using SemVer, and remove the `-dev` suffix
 

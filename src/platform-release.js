@@ -59,6 +59,36 @@ function cpAndLog(src, dest) {
     }
 }
 
+/* 
+ * A function that handles version if it is defined or undefined
+ *
+ * @param {String} repo                    current repo
+ * @param {String|undefined} ver           current version that can be defined or undefined
+ * @param {String|undefined} validate      current version that can be defined or undefined
+ *
+ * @return {String} version                Returns the calculated version
+ *
+ */
+
+function *handleVersion(repo,ver,validate) {
+    var platform = repo.id;
+    var version = ver || undefined;
+
+    if (version === undefined) {
+        yield repoutil.forEachRepo([repo], function*() {
+            // Grabbing version from platformPackageJson
+            var platformPackage = path.join(process.cwd(), 'package.json');
+            var platformPackageJson = require(platformPackage);
+            if(validate === true) {
+                version = flagutil.validateVersionString(platformPackageJson.version); 
+            } else {
+                version = platformPackageJson.version;
+            }
+        });
+    }
+    return version;
+}
+
 function configureReleaseCommandFlags(opt) {
     var opt = flagutil.registerRepoFlag(opt)
     opt = opt
@@ -105,7 +135,7 @@ function *updateCDVAvailabilityFile(version) {
     fs.writeFileSync(iosFile, iosFileContents.join('\n'));
 }
 
-function *updateJsSnapshot(repo, version) {
+function *updateJsSnapshot(repo, version, commit) {
     function *ensureJsIsBuilt() {
         var cordovaJsRepo = repoutil.getRepoById('js');
         if (repo.id === 'blackberry') {
@@ -134,14 +164,32 @@ function *updateJsSnapshot(repo, version) {
             var src = path.join('..', 'cordova-js', 'pkg', repo.cordovaJsSrcName || ('cordova.' + repo.id + '.js'));
             cpAndLog(src, jsPath);
         });
-        if (yield gitutil.pendingChangesExist()) {
-            yield executil.execHelper(executil.ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
-        }
+        if(commit === true) {
+            if (yield gitutil.pendingChangesExist()) {
+                yield executil.execHelper(executil.ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
+            } 
+        }     
     } else if (repoutil.repoGroups.all.indexOf(repo) != -1) {
         print('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
     }
 }
 
+exports.createAndCopyCordovaJSCommand = function*() {
+    var argv = configureReleaseCommandFlags(optimist
+        .usage('Generates and copies an updated cordova.js to the specified platform. It does the following:\n' +
+               '    1. Generates a new cordova.js.\n' +
+               '    2. Replaces platform\'s cordova.js file.\n' +
+               '\n' +
+               'Usage: $0 copy-js -r platform')
+    );
+
+    var repos = flagutil.computeReposFromFlag(argv.r);
+    yield repoutil.forEachRepo(repos, function*(repo) { 
+        var version = yield handleVersion(repo, argv.version, false);
+        yield updateJsSnapshot(repo,version, false);
+    });
+}
+  
 exports.prepareReleaseBranchCommand = function*() {
     var argv = configureReleaseCommandFlags(optimist
         .usage('Prepares release branches but does not create tags. This includes:\n' +
@@ -154,39 +202,27 @@ exports.prepareReleaseBranchCommand = function*() {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-release-branch --version=3.6.0 -r platform')
+               'Usage: $0 prepare-release-branch -r platform [--version=3.6.0]')
     );
-   
-    var repos = flagutil.computeReposFromFlag(argv.r);
 
+    var repos = flagutil.computeReposFromFlag(argv.r);
     var branchName = null;
-    
+
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
 
     yield repoutil.forEachRepo(repos, function*(repo) {
         var platform = repo.id;
-       
-        var version = null;
-
-        if (argv.version === undefined) {
-            // Grabbing version from platformPackageJson
-            var platformPackage = path.join(process.cwd(), 'package.json');
-            var platformPackageJson = require(platformPackage);
-            var version = flagutil.validateVersionString(platformPackageJson.version); 
-        } else {
-            var version = flagutil.validateVersionString(argv.version);
-        }
-
-        branchName = getVersionBranchName(version);
+        var version = yield handleVersion(repo, argv.version,true);
+        var branchName = getVersionBranchName(version);
 
         yield gitutil.stashAndPop(repo, function*() {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
             if (platform === 'ios') {
-                //Updates version in CDVAvailability.h file
+                // Updates version in CDVAvailability.h file
                 yield updateCDVAvailabilityFile(version);
-                //Git commit changes
+                // Git commit changes
                 if(yield gitutil.pendingChangesExist()) {
                     yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
                 }
@@ -204,15 +240,15 @@ exports.prepareReleaseBranchCommand = function*() {
                 yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName));
             }
     
-            yield updateJsSnapshot(repo, version); 
-            print(repo.repoName + ': ' + 'Setting VERSION to "' + version + '" on branch + "' + branchName + '".');
+            yield updateJsSnapshot(repo, version, true);
+            print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + branchName + '".');
             yield versionutil.updateRepoVersion(repo, version);
 
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
-            print(repo.repoName + ': ' + 'Setting VERSION to "' + devVersion + '" on branch + "master".');
+            print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
             yield versionutil.updateRepoVersion(repo, devVersion);
-            yield updateJsSnapshot(repo, devVersion);
+            yield updateJsSnapshot(repo, devVersion, true);
             yield gitutil.gitCheckout(branchName);
         });
     });
@@ -228,7 +264,6 @@ function *tagJs(repo, version, pretend) {
             yield executil.execHelper(cmd);
         }
     }
-
     //tag cordova.js platform-version
     var cordovaJsRepo = repoutil.getRepoById('js');
     yield repoutil.forEachRepo([cordovaJsRepo], function*() {
@@ -246,7 +281,6 @@ function *tagJs(repo, version, pretend) {
         });
     });
 }
-
 
 exports.tagReleaseBranchCommand = function*(argv) {
     var argv = configureReleaseCommandFlags(optimist

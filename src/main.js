@@ -154,6 +154,10 @@ module.exports = function() {
             name: 'npm-link',
             desc: 'Does an "npm link" of dependent modules that we own.',
             entryPoint: lazyRequire('./npm-link')
+        }, {
+            name: 'copy-js',
+            desc: 'Generates and copies cordova.js to platform.',
+            entryPoint: lazyRequire('./platform-release.js', 'createAndCopyCordovaJSCommand')
         }
     ];
     var commandMap = {};

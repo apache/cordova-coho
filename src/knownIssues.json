@@ -95,5 +95,15 @@
 		"pull-request-to-fix" : "https://github.com/purplecabbage/valid-identifier/pull/5",
 		"verified-license": "Apache-2.0",
 		"verified-license-notes": "https://github.com/purplecabbage/valid-identifier/blob/a6562f196f82077c04c9b03545e17fec817a5d92/LICENSE"
+	},
+	"growl" : {
+		"manually-verified-versions": [
+			"growl@1.7.0"
+		],
+		"license-key": "missing from package.json",
+		"pull-request-to-fix" : "n/a",
+		"verified-license": "MIT",
+		"verified-license-notes": "license in README.md, license present in package.json in 1.9.0"
 	}
+    
 }

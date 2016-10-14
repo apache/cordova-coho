@@ -30,8 +30,13 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 At the end of triage session, send an e-mail to the dev list discussing bugs that need urgent attention. Good bugs in this area are recent regressions or other issues having a wide impact. These would require a patch release to fix them.
 
 ##Asking for help
-Sometimes while there is a bug or a feature request that seems valid, but it might not be high priority for one of the committers to fix. Following up with the issue reporter quickly and coaching him thorugh making a contribution with a pull request is a good idea.
+Sometimes while there is a bug or a feature request that seems valid, but it might not be high priority for one of the committers to fix. Following up with the issue reporter quickly and coaching him through making a contribution with a pull request is a good idea.
 
+##Tips when asking for more info from reporter
+- If the cordova version is not provided, ask reporter to use “cordova -v” to verify which version of cordova he/she is using.
+- If the platform version is not provided, ask the reporter to use “cordova platform ls” to verify which platform version he/she is using.
+- If the issue is unclear, ask the reporter to provide more details via screen shot, sample code, or a command line log.
+ 
 ##Dealing with feature requests
 New features to plugins should ideally be cross platform (at least across more than one major platform - Android, iOS, Windows). The design should account for ease of detection or meaningful degradation in the absence of the feature on a partcular platform. For feature requests that are overly specific to a particular usecase - we should resolve them with resolution reason `Later` or `Won't Fix`. There is little value in carrying the debt of these issues.
 

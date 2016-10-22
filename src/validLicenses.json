@@ -21,6 +21,7 @@
 	    "E(clipse )?D(istribution )?L(icense)?",
 	    "P(ython )?S(oftware )?F(oundation )?L(icense)?",
         "ISC",
-        "Unlicense"
+        "Unlicense",
+        "WTFPL"
   	]
 }

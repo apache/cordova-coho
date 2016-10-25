@@ -18,7 +18,6 @@ under the License.
 */
 
 var apputil = require('./apputil');
-var executil = require('./executil');
 var optimist = require('optimist');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
@@ -29,7 +28,6 @@ var versionutil = require('./versionutil');
 var gitutil = require('./gitutil');
 var fs = require('fs');
 var path = require('path');
-var npmlink = require('./npm-link');
 var repoclone = require('./repo-clone');
 
 module.exports = function*(argv) {
@@ -48,11 +46,6 @@ module.exports = function*(argv) {
             desc: 'Don\'t actually publish to npm, just print what would be run.',
             type:'boolean'
         })
-        .options('ignore-test-failures', {
-            desc: 'Run the tests for cli and lib but don\'t fail the build if the tests are failing',
-            type:'boolean',
-            alias : 'ignoreTestFailures'
-        })
         .default({ r: DEFAULT_NIGHTLY_REPOS})
         .argv;
 
@@ -63,17 +56,6 @@ module.exports = function*(argv) {
 
     // Clone and update Repos
     yield prepareRepos(argv.r);
-
-    //npm link repos that should be linked
-    yield npmlink();
-
-    // npm install cli (and probablu other repos as a workaround for
-    // NPM bug #10343 - https://github.com/npm/npm/issues/10343)
-    var common = repoutil.getRepoById('common');
-    var cli = repoutil.getRepoById('cli');
-    yield repoutil.forEachRepo([common, cli], function*(repo) {
-        yield executil.execHelper(executil.ARGS('npm install'), /*silent=*/true, false);
-    });
 
     var reposToBuild = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     // Get updated nightly versions for all repos
@@ -93,15 +75,6 @@ module.exports = function*(argv) {
         apputil.print('Updating platforms pinned versions...');
         versionutil.updatePlatformsConfig(VERSIONS);
     }
-
-    // Tests for platforms have some environment requirements (presence of build systems,
-    // SDKs, etc.) which are impossible to satisfy in Jenkins environment, so we're
-    // excluding platforms repos from testing
-    var reposToTest = reposToBuild.filter(function (repo) {
-        return !repoutil.isInRepoGroup(repo, 'platform');
-    });
-    // Run CLI + cordova-lib tests
-    yield runTests(reposToTest, argv.ignoreTestFailures);
 
     var options = {};
     options.tag = 'nightly';
@@ -151,17 +124,6 @@ function updateRepoDependencies(repo, dependencies) {
     });
 
     fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2) + '\n', 'utf8');
-}
-
-function *runTests(repos, ignoreTestFailures) {
-    yield repoutil.forEachRepo(repos, function *(repo) {
-        try {
-            yield executil.execHelper(executil.ARGS('npm test'), false, ignoreTestFailures);
-        } catch (e) {
-            if (!ignoreTestFailures) throw e;
-            apputil.print('Skipping failing tests due to "ignore-test-failures flag"');
-        }
-    });
 }
 
 /**

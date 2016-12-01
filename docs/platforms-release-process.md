@@ -101,8 +101,22 @@ Update the repos `RELEASENOTES.md` file with changes since the last release
 Commit these changes together into one commit
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
+
+---
+
+**PATCH RELEASE NOTES**
+
+
+If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate hunk).
+
+    git checkout master
+    git checkout -p RELEASENOTES_COMMIT_SHA_HASH
     
-`coho prepare-release-branch` command handles the following steps:
+For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailability.h (via coho)` into the master branch as well.
+
+---
+
+Prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
  * Updating `cordova.js` snapshot
  * Creating a release branch (if it doesn't already exist)
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`

@@ -211,7 +211,7 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
 
 Sanity Check:
 

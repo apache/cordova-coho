@@ -202,7 +202,6 @@ Feel free to cleanup the projects you just created
 
  * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
  * Test the Makefile via `make`
- * Run `bin/diagnose_project` on a newly created project and ensure it reports no errors.
 
 ## Push Changes:
 

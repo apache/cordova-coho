@@ -32,7 +32,10 @@ module.exports = function*() {
     opt = flagutil.registerHelpFlag(opt)
         .usage('Updates release notes with commits since the most recent tag.\n' +
         '\n' +
-        'Usage: $0 update-release-notes [--repo=ios]');
+        'Usage: $0 update-release-notes [--repo=ios]'
+        )
+        .options('from-tag', {desc: 'Update since a specific tag instead of the "most recent" tag'})
+        .options('to-tag', {desc: 'Update to a specific tag instead of "master"'});        
     argv = opt.argv;
 
     if (argv.h) {
@@ -45,16 +48,33 @@ module.exports = function*() {
     var cmd = executil.ARGS('git log --topo-order --no-merges');
     cmd.push(['--pretty=format:* %s']);
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = yield gitutil.findMostRecentTag(repo.versionPrefix);
-        cmd.push(tag + '..master');
+        var fromTag, toTag;
+        if (argv['from-tag']){
+            fromTag = argv['from-tag'];
+        } else {
+            fromTag = yield gitutil.findMostRecentTag(repo.versionPrefix);
+        }
+        if (argv['to-tag']){
+            toTag = argv['to-tag'];
+        } else {
+            toTag = 'master';
+        }
+
+        cmd.push(fromTag + '..' + toTag);
         var repoDesc = repo.repoName;
         if (repo.path) {
             repoDesc += '/' + repo.path;
         }
-        console.log('Finding commits in ' + repoDesc + ' since tag ' + tag);
+        console.log('Finding commits in ' + repoDesc + ' from tag ' + fromTag + ' to tag ' + toTag);
         var output = yield executil.execHelper(cmd.concat(repoutil.getRepoIncludePath(repo)), true);
         if (output) {
-            var newVersion = require(path.join(process.cwd(), 'package.json')).version;
+            var newVersion;
+            if (toTag === 'master') {
+                newVersion = require(path.join(process.cwd(), 'package.json')).version;
+            } else {
+                newVersion = toTag;
+            }
+            
             var relNotesFile = 'RELEASENOTES.md';
             var data = fs.readFileSync(relNotesFile, {encoding: 'utf8'});
             var pos = data.indexOf('### ');

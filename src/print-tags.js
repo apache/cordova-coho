@@ -44,7 +44,7 @@ module.exports = function*(argv) {
         if (argv.tag){
             tag = argv.tag;
         } else {
-            tag = yield gitutil.findMostRecentTag(repo.versionPrefix);
+            tag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
         }
         if (!tag) {
             console.log('    ' + repo.repoName + ': NO TAGS');

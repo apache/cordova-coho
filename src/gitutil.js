@@ -26,14 +26,15 @@ var semver = require('semver');
  * Returns the greatest semver-looking tag in the repo. If prefix is specified, only looks at tags that start with
  * 'prefix-' (this allows for multiple modules in the same repo).
  * @param {string} [prefix] - An optional prefix to filter tags.
- * @returns {string} - the most recent tag, or null if no version tags are found.
+ * @returns {Array} - the most recent tag as as the 0th index in an array (with the second recent as the next index), or null if no version tags are found.
  * ignores r tags in plugins
  */
 exports.findMostRecentTag = function*(prefix) {
     prefix = prefix && prefix + "-";
     var finalBest;
+    var lastBest;
 
-    return (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
+    var ret = (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
         .reduce(function (curBest, value) {
             var modifiedCurBest, modifiedValue;
             if (prefix) {
@@ -54,14 +55,29 @@ exports.findMostRecentTag = function*(prefix) {
             if (semver.valid(modifiedValue)) {
                 //use finalBest to hold onto reference outside of reduce function
                 finalBest = !curBest ? value : semver.gt(modifiedCurBest, modifiedValue) ? finalBest : value;
+                if (curBest < finalBest) {
+                    lastBest = curBest;
+                }
                 return !curBest ? value : semver.gt(modifiedCurBest, modifiedValue) ? curBest : value;
             } else if (curBest && semver.valid(modifiedCurBest)) {
+                if (curBest < finalBest) {
+                    lastBest = curBest;
+                }
                 return curBest;
             } else if(finalBest) {
+                if (curBest < finalBest) {
+                    lastBest = curBest;
+                }
                 return finalBest;
             }
             return null;
         });
+
+        if (ret !== null) {
+            return [ finalBest, lastBest ];
+        } else {
+            return null;
+        }
 };
 
 exports.tagExists = function*(tagName) {

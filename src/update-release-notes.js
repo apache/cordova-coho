@@ -50,11 +50,19 @@ module.exports = function*() {
     var cmd = executil.ARGS('git log --topo-order --no-merges');
     cmd.push(['--pretty=format:* %s']);
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var fromTag, toTag;
+        var fromTag, toTag, hasOneTag;
+        hasOneTag = false;
         if (argv['last-two-tags']) {
             var last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
-            fromTag = last_two[1];
-            toTag = last_two[0];
+            if (last_two) {
+                toTag = last_two[0];
+                if (last_two.length > 1) {
+                    fromTag = last_two[1];
+                } else {
+                    hasOneTag = true;
+                    fromTag = toTag;
+                }
+            }
         } else {
             if (argv['from-tag']){
                 fromTag = argv['from-tag'];
@@ -68,7 +76,9 @@ module.exports = function*() {
             }
         }
 
-        cmd.push(fromTag + '..' + toTag);
+        if (!hasOneTag) {
+            cmd.push(fromTag + '..' + toTag);
+        }
         var repoDesc = repo.repoName;
         if (repo.path) {
             repoDesc += '/' + repo.path;

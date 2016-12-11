@@ -73,8 +73,12 @@ exports.findMostRecentTag = function*(prefix) {
             return null;
         });
 
-        if (ret !== null) {
-            return [ finalBest, lastBest ];
+        if (ret) {
+            if (lastBest) {
+                return [ ret, lastBest ];
+            } else {
+                return [ ret ];
+            }
         } else {
             return null;
         }

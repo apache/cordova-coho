@@ -333,9 +333,9 @@ Send PR to https://github.com/apache/cordova-docs
 
 See full instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
 
-Run a production build with no docs
+Run a production build:
 
-    node_modules/.bin/gulp build --prod --nodocs
+    node_modules/.bin/gulp build --prod
 
 Output is located in `build-prod`
 

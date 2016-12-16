@@ -347,15 +347,8 @@ Files and directories to update in `cordova-website` svn
     cp ../cordova-docs/build-prod/blog/index.html public/blog/index.html
     cp ../cordova-docs/build-prod/feed.xml public/feed.xml
     cp -r ../cordova-docs/build-prod/news/2016/* public/news/2016/
-
-
-Add link for new post to  `public/sitemap.xml`
-<url>
-    <loc>/news/2016/03/12/plugin-release.html</loc>
-</url>
-
-Add a new date to   `public/static/js/index.js`
-like `dates.push('Sat, 12 Mar 2016 00:00:00 +0300');`
+    cp ../cordova-docs/build-prod/sitemap.xml public/sitemap.xml
+    cp ../cordova-docs/build-prod/static/js/index.js public/static/js/index.js
 
     svn status
     svn add $NEW_FILES_HERE

@@ -47,9 +47,10 @@ module.exports = function*() {
 
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
-    var cmd = executil.ARGS('git log --topo-order --no-merges');
-    cmd.push(['--pretty=format:* %s']);
+    
     yield repoutil.forEachRepo(repos, function*(repo) {
+        var cmd = executil.ARGS('git log --topo-order --no-merges');
+        cmd.push(['--pretty=format:* %s']);
         var fromTag, toTag, hasOneTag;
         hasOneTag = false;
         if (argv['last-two-tags']) {
@@ -88,6 +89,7 @@ module.exports = function*() {
         if (output) {
             var newVersion;
             if (toTag === 'master') {
+                delete require.cache[path.join(process.cwd(), 'package.json')];
                 newVersion = require(path.join(process.cwd(), 'package.json')).version;
             } else {
                 newVersion = toTag;
@@ -104,7 +106,7 @@ module.exports = function*() {
             }
             data = data.substr(0, pos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + output + '\n\n' + data.substr(pos);
             fs.writeFileSync(relNotesFile, data, {encoding: 'utf8'});
-            linkify.file(relNotesFile);
+            return linkify.file(relNotesFile);
         }
     });
 };

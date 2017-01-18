@@ -67,11 +67,11 @@ module.exports = function() {
             entryPoint: lazyRequire('./list-repos')
         }];
     var releaseCommands = [{
-            name: 'prepare-release-branch',
+            name: 'prepare-platform-release-branch',
             desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
             entryPoint: lazyRequire('./platform-release', 'prepareReleaseBranchCommand')
         }, {
-            name: 'tag-release',
+            name: 'tag-platform-release',
             desc: 'Tags repos for a release.',
             entryPoint: lazyRequire('./platform-release', 'tagReleaseBranchCommand')
         }, {

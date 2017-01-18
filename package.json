@@ -20,7 +20,9 @@
     "request": "^2.69.0",
     "semver": "^4.2.0",
     "shelljs": "0.1.4",
-    "treeify": "^1.0.1"
+    "treeify": "^1.0.1",
+    "jira-client": "4.2.0",
+    "inquirer": "2.0.0"
   },
   "devDependencies": {
     "nsp": ">=2.0.1",

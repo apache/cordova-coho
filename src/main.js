@@ -111,6 +111,10 @@ module.exports = function() {
             desc: 'Prepares tools for release',
             entryPoint: lazyRequire('./tools-release', 'prepareToolsRelease')
         }, {
+            name: 'prepare-plugins-release',
+            desc: 'Prepares plugins for release',
+            entryPoint: lazyRequire('./plugin-release', 'interactive')
+        }, {
             name: 'npm-publish-tag',
             desc: 'Publishes current version of repo to specified tag',
             entryPoint: lazyRequire('./npm-publish', 'publishTag')

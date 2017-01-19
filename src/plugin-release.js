@@ -17,6 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
+var co = require('co');
 var path = require('path');
 var fs = require('fs');
 var util = require('util');
@@ -29,6 +30,7 @@ var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var repoclone = require('./repo-clone');
+var reporeset = require('./repo-reset');
 var versionutil = require('./versionutil');
 var jira_client = require('jira-client');
 var inquirer = require('inquirer');
@@ -47,7 +49,7 @@ var jira_issue_types; // store ref to all issue types supported by our JIRA inst
 var jira_task_issue; // store ref to the "task" issue type
 var plugin_base; // parent directory holding all cordova plugins
 
-module.exports.interactive = function *interactive_plugins_release() {
+function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
     console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
     inquirer.prompt([{
@@ -199,12 +201,20 @@ module.exports.interactive = function *interactive_plugins_release() {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
                 // TODO: is `plugins_base` pass-able to cloneRepos here?
                 var plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn:true});
-                yield require('./repo-clone').cloneRepos(plugin_repos, false, null);
+                // TODO: wrapping yields in co is fugly
+                return co.wrap(function *() {
+                    yield repoclone.cloneRepos(plugin_repos, false, null);
+                    yield reporeset.resetRepos(plugin_repos, ['master']);
+                    yield repoupdate.updateRepos(plugin_repos, ['master'], /*noFetch*/false);
+                    return true;
+                })();
             } else {
                 console.error('Well you should type in the correct location the first time. Or this section of coho code should be coded more robustly! Contributions welcome :P');
                 console.error('Please try again.');
                 process.exit(4);
             }
+        }).then(function() {
+            console.log('ok plugins are updated at this point, onwards!');
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
@@ -250,6 +260,7 @@ module.exports.interactive = function *interactive_plugins_release() {
      * TODO: Need ability to serialize process of plugins release - save state of the process at any point.
      */
 }
+module.exports.interactive = interactive_plugins_release;
 // TODO: what is shared between plugin-release and platform-release helpers? factor out into util/lib/whatever helper modules
 
 /*

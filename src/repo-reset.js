@@ -55,50 +55,53 @@ module.exports = function*(argv) {
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
+    yield module.exports.resetRepos(repos, branches);
+}
 
-    function *cleanRepo(repo) {
-        for (var i = 0; i < branches.length; ++i) {
-            var branchName = branches[i];
-            if (!(yield gitutil.localBranchExists(branchName))) {
-                continue;
-            }
-            // Commit local changes so that they can be restored if this was a mistake.
-            if (yield gitutil.pendingChangesExist()) {
-                print('Committing changes just in case resetting was a mistake.');
-                yield executil.execHelper(executil.ARGS('git add --all .'));
-                yield executil.execHelper(executil.ARGS('git commit -m', 'Automatically committed by coho repo-reset'));
-            }
-
-            if (yield gitutil.remoteBranchExists(repo, branchName)) {
-                yield gitutil.gitCheckout(branchName);
-                var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
-                if (changes) {
-                    print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
-                    yield executil.execHelper(executil.ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));
-                } else {
-                    print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
-                }
-            } else {
-                if ((yield gitutil.retrieveCurrentBranchName()) == branchName) {
-                    yield gitutil.gitCheckout('master');
-                }
-                print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
-                yield executil.execHelper(executil.ARGS('git log --oneline -3 ' + branchName));
-                yield executil.execHelper(executil.ARGS('git branch -D ' + branchName));
-            }
-        }
-    }
+module.exports.resetRepos = function*(repos, branches) {
     yield repoutil.forEachRepo(repos, function*(repo) {
         // Determine remote name.
         yield repoupdate.updateRepos([repo], [], true);
         var branchName = yield gitutil.retrieveCurrentBranchName();
         if (branches.indexOf(branchName) == -1) {
             yield gitutil.stashAndPop(repo, function*() {
-                yield cleanRepo(repo);
+                yield cleanRepo(repo, branches);
             });
         } else {
-            yield cleanRepo(repo);
+            yield cleanRepo(repo, branches);
         }
     });
-}
+};
 
+function *cleanRepo(repo, branches) {
+    for (var i = 0; i < branches.length; ++i) {
+        var branchName = branches[i];
+        if (!(yield gitutil.localBranchExists(branchName))) {
+            continue;
+        }
+        // Commit local changes so that they can be restored if this was a mistake.
+        if (yield gitutil.pendingChangesExist()) {
+            print('Committing changes just in case resetting was a mistake.');
+            yield executil.execHelper(executil.ARGS('git add --all .'));
+            yield executil.execHelper(executil.ARGS('git commit -m', 'Automatically committed by coho repo-reset'));
+        }
+
+        if (yield gitutil.remoteBranchExists(repo, branchName)) {
+            yield gitutil.gitCheckout(branchName);
+            var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
+            if (changes) {
+                print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
+                yield executil.execHelper(executil.ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));
+            } else {
+                print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
+            }
+        } else {
+            if ((yield gitutil.retrieveCurrentBranchName()) == branchName) {
+                yield gitutil.gitCheckout('master');
+            }
+            print(repo.repoName + ' deleting local-only branch ' + branchName + '.');
+            yield executil.execHelper(executil.ARGS('git log --oneline -3 ' + branchName));
+            yield executil.execHelper(executil.ARGS('git branch -D ' + branchName));
+        }
+    }
+}

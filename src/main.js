@@ -229,5 +229,5 @@ module.exports = function() {
         executil.verbose = true;
     }
     var entry = command.entryPoint;
-    co(entry)();
+    co(entry).then();
 };

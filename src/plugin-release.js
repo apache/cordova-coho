@@ -24,6 +24,7 @@ var util = require('util');
 var optimist = require('optimist');
 var shelljs = require('shelljs');
 var apputil = require('./apputil');
+var audit_license = require('./audit-license-headers');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
@@ -48,13 +49,10 @@ var plugins_release_issue; // store ref to jira issue tracking release.
 var jira_issue_types; // store ref to all issue types supported by our JIRA instance
 var jira_task_issue; // store ref to the "task" issue type
 var plugin_base; // parent directory holding all cordova plugins
-var plugin_repos; // which plugins are we messing with?
+var plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
 var plugin_data = {}; // massive object containing plugin release-relevant information
 var plugins_to_release = []; // array of plugin names that need releasing
 var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
-
-function ask_for_plugin_parent_dir() {
-}
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
@@ -159,7 +157,7 @@ function *interactive_plugins_release() {
                         return issue;
                     }, function(err) {
                         console.error('Error finding issue ' + cb_issue + '!');
-                        process.exit(3);
+                        process.exit(4);
                     });
                 });
             } else {
@@ -184,7 +182,7 @@ function *interactive_plugins_release() {
                     return issue;
                 }, function(err) {
                     console.error('There was a problem creating the JIRA issue!', err);
-                    process.exit(4);
+                    process.exit(5);
                 });
             }
         }).then(function(jira_issue) {
@@ -217,7 +215,7 @@ function *interactive_plugins_release() {
                 })();
             } else {
                 console.error('We cannot continue without the correct location to the plugin repositories. Try again.');
-                process.exit(4);
+                process.exit(6);
             }
         }).then(function() {
             /* 6. auto-identify plugins that need changes, ask user to confirm at end. if wrong, ask user to manually input.*/
@@ -264,25 +262,62 @@ function *interactive_plugins_release() {
         }).then(function(plugins_list) {
             // at this point we either have a verified, or manually-specified, list of plugins to release.
             plugins_to_release = plugins_list;
+            // modify the coho-formatted list of plugin repos to filter out to only the plugins we want to release.
+            plugin_repos = plugin_repos.filter(function(plugin) {
+                return plugins_to_release.indexOf(plugin.repoName) > -1;
+            });
+            /* 7. ensure license headers are present everywhere.*/
+            console.log('Checking license headers for specified plugin repos...');
+            return co.wrap(function *() {
+                var unknown_licenses = [];
+                yield audit_license.scrubRepos(plugin_repos, /*silent*/true, /*allowError*/false, function(repo, stdout) {
+                    var unknown = stdout.split('\n').filter(function(line) {
+                        return line.indexOf('Unknown Licenses') > -1;
+                    })[0];
+                    if (unknown[0] != '0') {
+                        // There are some unknown licenses!
+                        unknown_licenses.push({repo:repo.repoName,unknown:unknown});
+                    }
+                });
+                return yield Promise.resolve(unknown_licenses);
+            })();
+        }).then(function(unknowns) {
+            if (unknowns.length) {
+                console.warn('We identified some unknown licenses in plugin repos!');
+                console.warn(unknowns);
+                return inquirer.prompt({
+                    type: 'confirm',
+                    name: 'proceed',
+                    message: 'Do you want to proceed even though there are license problems?'
+                }).then(function(answer) {
+                    if (!answer.proceed) {
+                        console.error('License audit failed - good idea to abort. Fix it up and come back!');
+                        process.exit(7);
+                    }
+                });
+            } else {
+                console.log('No license issues found - continuing.');
+            }
+        }).then(function() {
+            //TODO:
+            /* 8. ensure all dependencies and subdependencies have apache-compatible licenses.
+             * 9. update plugin versions + release notes.
+             *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)
+             *   - each plugin needs a version bump.
+             *     - the plugin may already have an acceptably-bumped verison. perhaps grab latest-published version of plugin from npm and compare to version in source as a hint to RM
+             *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
+             *     - reuse coho 'update release notes' command
+             *     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
+             *     - while reviewing changes for version bump, this is probably the right time to aggregate release notes. once aggregated, write them out to RELEASENOTES.md
+             *     - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
+             *     - tag each plugin repo with $v*/
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 7. ensure license headers are present everywhere.
-     * 8. ensure all dependencies and subdependencies have apache-compatible licenses.
-     * 9. update plugin versions + release notes.
-     *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)
-     *   - each plugin needs a version bump.
-     *     - the plugin may already have an acceptably-bumped verison. perhaps grab latest-published version of plugin from npm and compare to version in source as a hint to RM
-     *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
-     *     - reuse coho 'update release notes' command
-     *     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
-     *     - while reviewing changes for version bump, this is probably the right time to aggregate release notes. once aggregated, write them out to RELEASENOTES.md
-     *     - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
-     *     - tag each plugin repo with $v
-     * 10. Create release branch. wtf is going on here?
+    /* 10. Create release branch. wtf is going on here?
      * 11. Increment plugin versions back on the master branch to include -dev.. i think?
      * 12. Push tags, release branch, and master branch changes.
      * 13. Publish to apache svn:

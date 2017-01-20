@@ -80,7 +80,10 @@ module.exports = function*() {
     }
 
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    yield module.exports.scrubRepos(repos);
+}
 
+module.exports.scrubRepos = function*(repos, silent, ignoreError, win, fail) {
     // Check that RAT command exists.
     var ratPath;
     yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
@@ -90,6 +93,7 @@ module.exports = function*() {
     if (!fs.existsSync(ratPath)) {
         console.log('RAT tool not found, downloading to: ' + ratPath);
         yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
+            // TODO: this will not work on windows right?
             if (shelljs.which('curl')) {
                 yield executil.execHelper(['sh', '-c', 'curl "' + RAT_URL + '" | tar xz']);
             } else {
@@ -106,7 +110,6 @@ module.exports = function*() {
     // NOTE:
     //      the CWD in a callback is the directory for its respective repo
     yield repoutil.forEachRepo(repos, function*(repo) {
-
         var excludePatterns = COMMON_RAT_EXCLUDES;
 
         // read in exclude patterns from repo's .ratignore, one pattern per line
@@ -130,6 +133,6 @@ module.exports = function*() {
         });
 
         // run Rat
-        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags));
+        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function(stdout) { win(repo, stdout); });
     });
 }

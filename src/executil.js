@@ -38,7 +38,7 @@ exports.verbose = false;
 // silent == true or 1 ==> don't print command, don't print output
 // silent == 2 ==> don't print command, print output
 // silent == 3 ==> print command, don't print output
-function execHelper(cmdAndArgs, silent, allowError) {
+function execHelper(cmdAndArgs, silent, allowError, win, fail) {
     // there are times where we want silent but not allowError.
     if (null == allowError) {
         // default to allow failure if being silent.
@@ -52,7 +52,7 @@ function execHelper(cmdAndArgs, silent, allowError) {
         print('Executing:', cmdAndArgs.join(' '));
     }
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
-    return result.then(null, function(e) {
+    return result.then(win || null, fail || function(e) {
         if (allowError) {
             throw e;
         } else if (+silent != 1) {

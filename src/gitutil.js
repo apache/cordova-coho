@@ -158,3 +158,7 @@ exports.resetFromOrigin = function() {
 exports.gitClean = function() {
     return executil.execHelper(executil.ARGS('git clean -d -f'), false, true);
 }
+
+exports.summaryOfChanges = function(base_sha) {
+    return executil.execHelper(executil.ARGS('git log --oneline --topo-order --no-merges ' + base_sha + '..master'), true, false);
+}

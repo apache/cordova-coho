@@ -48,6 +48,13 @@ var plugins_release_issue; // store ref to jira issue tracking release.
 var jira_issue_types; // store ref to all issue types supported by our JIRA instance
 var jira_task_issue; // store ref to the "task" issue type
 var plugin_base; // parent directory holding all cordova plugins
+var plugin_repos; // which plugins are we messing with?
+var plugin_data = {}; // massive object containing plugin release-relevant information
+var plugins_to_release = []; // array of plugin names that need releasing
+var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
+
+function ask_for_plugin_parent_dir() {
+}
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
@@ -183,12 +190,12 @@ function *interactive_plugins_release() {
         }).then(function(jira_issue) {
             console.log('Sweet, our Plugins Release JIRA issue is ' + jira_issue.key + ' (https://issues.apache.org/jira/browse/' + jira_issue.key + ')!');
             plugins_release_issue = jira_issue;
-            /* Time for step 5: update the repos. */
+            /* 5: update the repos. */
             return inquirer.prompt([{
                 type: 'input',
                 name: 'cwd',
                 default: apputil.getBaseDir(),
-                message: 'We need to update the plugin repositories. Enter the directory containing all your plugin repository source code (absolute or relative paths work here)'
+                message: 'We need to update the plugin repositories. Enter the directory containing all of your plugin source code repositories (absolute or relative paths work here)'
             }, {
                 type: 'confirm',
                 name: 'ok',
@@ -200,29 +207,70 @@ function *interactive_plugins_release() {
             if (answers.ok) {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
                 // TODO: is `plugins_base` pass-able to cloneRepos here?
-                var plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn:true});
+                plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn:true});
                 // TODO: wrapping yields in co is fugly
                 return co.wrap(function *() {
-                    yield repoclone.cloneRepos(plugin_repos, false, null);
+                    yield repoclone.cloneRepos(plugin_repos, /*silent*/true, null);
                     yield reporeset.resetRepos(plugin_repos, ['master']);
                     yield repoupdate.updateRepos(plugin_repos, ['master'], /*noFetch*/false);
                     return true;
                 })();
             } else {
-                console.error('Well you should type in the correct location the first time. Or this section of coho code should be coded more robustly! Contributions welcome :P');
-                console.error('Please try again.');
+                console.error('We cannot continue without the correct location to the plugin repositories. Try again.');
                 process.exit(4);
             }
         }).then(function() {
-            console.log('ok plugins are updated at this point, onwards!');
+            /* 6. auto-identify plugins that need changes, ask user to confirm at end. if wrong, ask user to manually input.*/
+            console.log('Will attempt to auto-identify which plugins need changes... hold on to yer butt!');
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    if (repo.repoName == 'cordova-plugins') return;
+                    var last_release = (yield gitutil.findMostRecentTag())[0];
+                    plugin_data[repo.repoName] = {
+                        last_release: last_release
+                    };
+                    var changes = (yield gitutil.summaryOfChanges(last_release)).split('\n').filter(function(line) {
+                        return (line.toLowerCase().indexOf('incremented plugin version') == -1);
+                    });
+                    if (changes.length > 0) {
+                        plugin_data[repo.repoName].needs_release = true;
+                        plugin_data[repo.repoName].changes = changes;
+                        plugins_to_release.push(repo.repoName);
+                    } else {
+                        plugin_data[repo.repoName].needs_release = false;
+                        plugins_ommitted.push(repo.repoName);
+                    }
+                });
+            })();
+        }).then(function() {
+            // TODO: handle the 'no plugins to release case'? is it even worth it?
+            return inquirer.prompt({
+                type: 'confirm',
+                name: 'plugins_ok',
+                message: 'I\'ve detected ' + plugins_to_release.length + ' plugin' + (plugins_to_release.length==1?'':'s') + ' to release: ' + plugins_to_release.join(', ') + '\nThat means we\'re skipping ' + plugins_ommitted.length + ' plugin' + (plugins_ommitted.length==1?'':'s') + ': ' + plugins_ommitted.join(', ') + '\nDo you want to proceed with the release process around the specified plugins above (and ommitting the ones specified as well)?'
+            });
+        }).then(function(answers) {
+            if (answers.plugins_ok) {
+                return plugins_to_release;
+            } else {
+                return inquirer.prompt({
+                    type: 'input',
+                    name: 'plugins_list',
+                    message: 'Please enter the exact names of the plugin repositories you want to release, manually, with a space separating each plugin name'
+                }).then(function(answer) {
+                    return answer.plugins_list;
+                });
+            }
+        }).then(function(plugins_list) {
+            // at this point we either have a verified, or manually-specified, list of plugins to release.
+            plugins_to_release = plugins_list;
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 6. ask user if they have a specific list of plugins to release, OR, auto-identify which plugins have changes. if auto-identifying, ask user to confirm at end. if wrong, ask user to manually input.
-     * 7. ensure license headers are present everywhere.
+    /* 7. ensure license headers are present everywhere.
      * 8. ensure all dependencies and subdependencies have apache-compatible licenses.
      * 9. update plugin versions + release notes.
      *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)

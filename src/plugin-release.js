@@ -163,13 +163,14 @@ function *interactive_plugins_release() {
             } else {
                 console.warn('OK, no problem. I will create one for you now! Hang tight...');
                 var date = (new Date()).toDateString();
+                // TODO: remove the "testing" bits in the JIRA issue description below
                 var new_issue = {
                     "fields": {
                         "project": {
                             "id": cordova_project.id
                         },
-                        "summary": "Plugins Release, " + date,
-                        "description": "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md",
+                        "summary": "[TESTING] Plugins Release, " + date,
+                        "description": "PLEASE IGNORE - THIS IS TESTING JIRA AUTOMATION, WORK IN PROGRESS!\nFollowing steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md",
                         "assignee": {
                             "name": jira_user.name
                         },

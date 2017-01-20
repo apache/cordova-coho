@@ -20,11 +20,24 @@ under the License.
 var fs = require('fs');
 var path = require('path');
 var shelljs = require('shelljs');
+var xml2js = require('xml2js');
 var apputil = require('./apputil');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
+
+function *getRepoVersion(repo) {
+    var version;
+    yield repoutil.forEachRepo([repo], function*() {
+        var platformPackage = path.join(process.cwd(), 'package.json');
+        var platformPackageJson = require(platformPackage);
+        version = platformPackageJson.version;
+    });
+    return version;
+}
+
+exports.getRepoVersion = getRepoVersion;
 
 function removeDev(version) {
     var newVersion = version.replace('-dev', '');
@@ -58,8 +71,9 @@ function updatePlatformsConfig(newValues) {
 exports.updatePlatformsConfig = updatePlatformsConfig;
 
 /**
- * Updates VERSION file, version executable script and package.json using specified
- *   version. Also commits change made to the repo if opposite is not specified.
+ * Updates VERSION file, version executable script, package.json and
+ * plugin.xml(s) using specified version. Also commits change made to the repo
+ * if opposite is not specified.
  *
  * @param {Object}  repo    Repo to update version for
  * @param {String}  version A semver-compatible version to write to repo's files
@@ -69,6 +83,8 @@ exports.updatePlatformsConfig = updatePlatformsConfig;
  */
 exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
     // Update the VERSION files.
+    // TODO: why do we read files asynchronously in this function, but write
+    // and check for existence synchronously?
     var versionFilePaths = repo.versionFilePaths || ['VERSION'];
     var isPlatformRepo = !!repoutil.isInRepoGroup(repo, 'platform');
     if (isPlatformRepo && fs.existsSync(versionFilePaths[0])) {
@@ -117,6 +133,31 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
         }
     } else {
         console.warn('No package.json file exists in repo ' + repo.repoName);
+    }
+
+    // Update the plugin.xml(s)
+    var isPluginRepo = !!repoutil.isInRepoGroup(repo, 'plugins');
+    if (isPluginRepo) {
+        var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
+        xmlFilePaths.forEach(function(xmlFile) {
+            if (fs.existsSync(xmlFile)) {
+                fs.readFile(xmlFile, {encoding: 'utf-8'}, function (err, data) {
+                    if (err) throw err;
+                    xml2js.parseString(data, function(err, xml) {
+                        if (err) throw err;
+                        xml.plugin['$'].version = version;
+                        var xmlWriter = new xml2js.Builder();
+                        var xmlOutput = xmlWriter.buildObject(xml);
+                        fs.writeFileSync(xmlFile, xmlOutput + '\n');
+                    });
+                });
+            } else {
+                console.warn('No ' + xmlFile + ' file exists in repo ' + repo.repoName);
+            }
+        });
+        if (!(yield gitutil.pendingChangesExist())) {
+            apputil.print(xmlFilePaths + ' were already up-to-date.');
+        }
     }
 
     var commitChanges = !!(opts ? opts.commitChanges : true);

@@ -69,7 +69,8 @@ function cpAndLog(src, dest) {
  * @return {String} version                Returns the calculated version
  *
  */
-
+// TODO: if using this method to only retrieve repo version, use the new
+// versionutil.getRepoVersion method.
 function *handleVersion(repo,ver,validate) {
     var platform = repo.id;
     var version = ver || undefined;

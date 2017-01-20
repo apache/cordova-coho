@@ -22,7 +22,8 @@
     "shelljs": "0.1.4",
     "treeify": "^1.0.1",
     "jira-client": "4.2.0",
-    "inquirer": "2.0.0"
+    "inquirer": "2.0.0",
+    "xml2js": "0.4.17"
   },
   "devDependencies": {
     "nsp": ">=2.0.1",

@@ -29,10 +29,10 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
+var versionutil = require('./versionutil');
 var repoupdate = require('./repo-update');
 var repoclone = require('./repo-clone');
 var reporeset = require('./repo-reset');
-var versionutil = require('./versionutil');
 var jira_client = require('jira-client');
 var inquirer = require('inquirer');
 var print = apputil.print;
@@ -303,9 +303,16 @@ function *interactive_plugins_release() {
             //TODO:
             /* 8. ensure all dependencies and subdependencies have apache-compatible licenses.
              * 9. update plugin versions + release notes.
-             *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)
-             *   - each plugin needs a version bump.
-             *     - the plugin may already have an acceptably-bumped verison. perhaps grab latest-published version of plugin from npm and compare to version in source as a hint to RM
+             *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)*/
+            console.log('Removing the "-dev" suffix from versions...');
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var current_version = yield versionutil.getRepoVersion(repo);
+                    var devless_version = versionutil.removeDev(current_version);
+                    yield versionutil.updateRepoVersion(repo, devless_version, {commitChanges:false});
+                });
+            })();
+            /*   - each plugin may need a version bump.
              *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
              *     - reuse coho 'update release notes' command
              *     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
@@ -388,6 +395,8 @@ function cpAndLog(src, dest) {
  *
  */
 
+// TODO: if using this function only to retrieve repo version, use the new
+// versionutil.getRepoVersion method instead.
 function *handleVersion(repo,ver,validate) {
     var platform = repo.id;
     var version = ver || undefined;

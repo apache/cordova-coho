@@ -422,6 +422,7 @@ var repoGroups = {
     'all': allRepos,
     'platform': platformRepos,
     'platforms': platformRepos,
+    'plugin': pluginRepos,
     'plugins': pluginRepos,
     'tools': toolRepos,
     'active-platform': platformRepos.filter(function(r) { return !r.inactive }),

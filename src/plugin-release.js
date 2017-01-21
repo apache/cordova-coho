@@ -25,6 +25,7 @@ var optimist = require('optimist');
 var shelljs = require('shelljs');
 var apputil = require('./apputil');
 var audit_license = require('./audit-license-headers');
+var tweak_release_notes = require('./update-release-notes');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
@@ -233,7 +234,7 @@ function *interactive_plugins_release() {
                     });
                     if (changes.length > 0) {
                         plugin_data[repo.repoName].needs_release = true;
-                        plugin_data[repo.repoName].changes = changes;
+                        plugin_data[repo.repoName].changes = changes.join('\n');
                         plugins_to_release.push(repo.repoName);
                     } else {
                         plugin_data[repo.repoName].needs_release = false;
@@ -309,17 +310,41 @@ function *interactive_plugins_release() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var current_version = yield versionutil.getRepoVersion(repo);
                     var devless_version = versionutil.removeDev(current_version);
+                    plugin_data[repo.repoName].current_release = devless_version;
                     yield versionutil.updateRepoVersion(repo, devless_version, {commitChanges:false});
                 });
             })();
+        }).then(function() {
             /*   - each plugin may need a version bump.
              *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
-             *     - reuse coho 'update release notes' command
-             *     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
+             *     - reuse coho 'update release notes' command */
+            var plugs = Object.keys(plugin_data);
+            var release_note_prompts = [];
+            plugs.forEach(function(plugin) {
+                var data = plugin_data[plugin];
+                var changes = data.changes;
+                release_note_prompts.push({
+                    type: 'editor',
+                    name: plugin,
+                    message: 'Please tweak and compile ' + plugin + ' release notes',
+                    default: tweak_release_notes.createNotes(plugin, data.current_release, changes)
+                });
+                // TODO: need a validate function to ensure semver adherence
+                release_note_prompts.push({
+                    type: 'input',
+                    name: plugin + '-version',
+                    message: 'Please enter a semver-compatible version number for this release of ' + plugin + ', based on the changes below:\n' + changes,
+                    default: data.current_release
+                });
+            });
+            return inquirer.prompt(release_note_prompts);
+        }).then(function(release_notes) {
+            console.log('release notes!', release_notes);
+        });
+            /*     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
              *     - while reviewing changes for version bump, this is probably the right time to aggregate release notes. once aggregated, write them out to RELEASENOTES.md
              *     - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
              *     - tag each plugin repo with $v*/
-        });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');

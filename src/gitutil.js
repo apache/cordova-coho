@@ -160,5 +160,8 @@ exports.gitClean = function() {
 }
 
 exports.summaryOfChanges = function(base_sha) {
-    return executil.execHelper(executil.ARGS('git log --oneline --topo-order --no-merges ' + base_sha + '..master'), true, false);
+    var cmd = executil.ARGS('git log --topo-order --no-merges');
+    cmd.push(['--pretty=format:* %s']);
+    cmd.push(base_sha + '..master');
+    return executil.execHelper(cmd, true, false);
 }

@@ -26,6 +26,8 @@ var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var linkify = require('jira-linkify');
 
+var relNotesFile = 'RELEASENOTES.md';
+
 module.exports = function*() {
     var meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
     var opt = flagutil.registerRepoFlag(optimist);
@@ -47,8 +49,8 @@ module.exports = function*() {
 
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
-    
     yield repoutil.forEachRepo(repos, function*(repo) {
+        // TODO: we should use gitutil.summaryOfChanges here.
         var cmd = executil.ARGS('git log --topo-order --no-merges');
         cmd.push(['--pretty=format:* %s']);
         var fromTag, toTag, hasOneTag;
@@ -94,19 +96,24 @@ module.exports = function*() {
             } else {
                 newVersion = toTag;
             }
-            
-            var relNotesFile = 'RELEASENOTES.md';
-            var data = fs.readFileSync(relNotesFile, {encoding: 'utf8'});
-            var pos = data.indexOf('### ');
-            var date;
-            if (argv['override-date']) {
-                date = new Date(argv['override-date']).toDateString().split(' ');
-            } else {
-                date = new Date().toDateString().split(' ');
-            }
-            data = data.substr(0, pos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + output + '\n\n' + data.substr(pos);
+            var data = createNotes(newVersion, output, argv['override-date']);
             fs.writeFileSync(relNotesFile, data, {encoding: 'utf8'});
+            // TODO: does it need to write to a file or can we do it via strings in memory?
             return linkify.file(relNotesFile);
         }
     });
 };
+
+function createNotes(repo, newVersion, changes, overrideDate) {
+    var relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
+    var headerPos = relNotesData.indexOf('### ');
+    var date;
+    if (overrideDate) {
+        date = new Date(overrideDate).toDateString().split(' ');
+    } else {
+        date = new Date().toDateString().split(' ');
+    }
+    return relNotesData.substr(0, headerPos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + changes + '\n\n' + relNotesData.substr(headerPos);
+}
+
+module.exports.createNotes = createNotes;

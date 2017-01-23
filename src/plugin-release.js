@@ -36,6 +36,7 @@ var repoclone = require('./repo-clone');
 var reporeset = require('./repo-reset');
 var jira_client = require('jira-client');
 var inquirer = require('inquirer');
+var semver = require('semver');
 var print = apputil.print;
 
 /*
@@ -329,20 +330,26 @@ function *interactive_plugins_release() {
                     message: 'Please tweak and compile ' + plugin + ' release notes',
                     default: tweak_release_notes.createNotes(plugin, data.current_release, changes)
                 });
-                // TODO: need a validate function to ensure semver adherence
+                /*     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary? */
                 release_note_prompts.push({
                     type: 'input',
                     name: plugin + '-version',
                     message: 'Please enter a semver-compatible version number for this release of ' + plugin + ', based on the changes below:\n' + changes,
-                    default: data.current_release
+                    default: data.current_release,
+                    validate: function(input) {
+                        if (semver.valid(input)) {
+                            return true;
+                        } else {
+                            return 'That\'s not a valid semver version!';
+                        }
+                    }
                 });
             });
             return inquirer.prompt(release_note_prompts);
         }).then(function(release_notes) {
             console.log('release notes!', release_notes);
         });
-            /*     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary?
-             *     - while reviewing changes for version bump, this is probably the right time to aggregate release notes. once aggregated, write them out to RELEASENOTES.md
+            /* 
              *     - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
              *     - tag each plugin repo with $v*/
     }, function(auth_err) {

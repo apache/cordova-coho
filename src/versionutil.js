@@ -162,6 +162,6 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
 
     var commitChanges = !!(opts ? opts.commitChanges : true);
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
-        yield executil.execHelper(executil.ARGS('git commit -am', 'Set VERSION to ' + version + ' (via coho)'));
+        yield gitutil.commitChanges('Set VERSION to ' + version + ' (via coho)');
     }
 }

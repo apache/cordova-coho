@@ -117,3 +117,4 @@ function createNotes(repo, newVersion, changes, overrideDate) {
 }
 
 module.exports.createNotes = createNotes;
+module.exports.FILE = relNotesFile;

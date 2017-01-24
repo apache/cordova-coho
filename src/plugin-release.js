@@ -37,6 +37,7 @@ var reporeset = require('./repo-reset');
 var jira_client = require('jira-client');
 var inquirer = require('inquirer');
 var semver = require('semver');
+var linkify = require('jira-linkify');
 var print = apputil.print;
 
 /*
@@ -259,7 +260,7 @@ function *interactive_plugins_release() {
                     name: 'plugins_list',
                     message: 'Please enter the exact names of the plugin repositories you want to release, manually, with a space separating each plugin name'
                 }).then(function(answer) {
-                    return answer.plugins_list;
+                    return answer.plugins_list.split(' ');
                 });
             }
         }).then(function(plugins_list) {
@@ -268,6 +269,13 @@ function *interactive_plugins_release() {
             // modify the coho-formatted list of plugin repos to filter out to only the plugins we want to release.
             plugin_repos = plugin_repos.filter(function(plugin) {
                 return plugins_to_release.indexOf(plugin.repoName) > -1;
+            });
+            // and remove all the data we collected for plugins we no longer care about.
+            var data_keys = Object.keys(plugin_data);
+            data_keys.forEach(function(key) {
+                if (plugins_to_release.indexOf(key) == -1) {
+                    delete plugin_data[key];
+                }
             });
             /* 7. ensure license headers are present everywhere.*/
             console.log('Checking license headers for specified plugin repos...');
@@ -347,11 +355,28 @@ function *interactive_plugins_release() {
             });
             return inquirer.prompt(release_note_prompts);
         }).then(function(release_notes) {
-            console.log('release notes!', release_notes);
+            return co.wrap(function *() {
+                console.log('Writing out new release notes and plugin versions (if applicable)...');
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    if (plugin_data[repo.repoName].current_release != release_notes[plugin_name + '-version']) {
+                        // Overwrite plugin version if, after release notes review, RM decided on a different version.
+                        plugin_data[repo.repoName].current_release = release_notes[plugin_name + '-version'];
+                        yield versionutil.updateRepoVersion(repo, plugin_data[repo.repoName].current_release, {commitChanges:false});
+                    }
+                    fs.writeFileSync(tweak_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
+                    linkify.file(tweak_release_notes.FILE);
+                    /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
+                     * - tag each plugin repo with $v*/
+                    if (yield gitutil.pendingChangesExist()) {
+                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[repo.repoName].current_release);
+                        yield gitutil.tagRepo(plugin_data[repo.repoName].current_release);
+                    } else {
+                        console.warn('No pending changes detected for ' + repo.repoName + '; that\'s probably not good eh?');
+                    }
+                });
+            })();
         });
-            /* 
-             *     - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
-             *     - tag each plugin repo with $v*/
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');

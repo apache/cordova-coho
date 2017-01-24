@@ -165,3 +165,11 @@ exports.summaryOfChanges = function(base_sha) {
     cmd.push(base_sha + '..master');
     return executil.execHelper(cmd, true, false);
 }
+
+exports.commitChanges = function*(commit_msg) {
+    return yield executil.execHelper(executil.ARGS('git commit -am', commit_msg));
+}
+
+exports.tagRepo = function*(version) {
+    return yield executil.execHelper(executil.ARGS('git tag', version));
+}

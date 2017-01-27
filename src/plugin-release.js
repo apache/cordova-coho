@@ -382,7 +382,7 @@ function *interactive_plugins_release() {
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 10. Create release branch. wtf is going on here?
+    /* 10. Create release branch. if this is a patch release, it may already exist! in that case, merge master back into this existing release branch.
      * 11. Increment plugin versions back on the master branch to include -dev.. i think?
      * 12. Push tags, release branch, and master branch changes.
      * 13. Publish to apache svn:

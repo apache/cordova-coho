@@ -43,13 +43,6 @@ function createPlatformDevVersion(version) {
     return parts.join('.') + '-dev';
 }
 
-function getVersionBranchName(version) {
-    if (/-dev$/.test(version)) {
-        return 'master';
-    }
-    return version.replace(/\d+(-?rc\d)?$/, 'x');
-}
-
 function cpAndLog(src, dest) {
     print('Coping File:', src, '->', dest);
     // Throws upon failure.
@@ -215,7 +208,7 @@ exports.prepareReleaseBranchCommand = function*() {
     yield repoutil.forEachRepo(repos, function*(repo) {
         var platform = repo.id;
         var version = yield handleVersion(repo, argv.version,true);
-        var branchName = getVersionBranchName(version);
+        var branchName = versionutil.getReleaseBranchNameFromVersion(version);
 
         yield gitutil.stashAndPop(repo, function*() {
             // git fetch + update master
@@ -296,7 +289,7 @@ exports.tagReleaseBranchCommand = function*(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var version = flagutil.validateVersionString(argv.version);
     var pretend = argv.pretend;
-    var branchName = getVersionBranchName(version);
+    var branchName = versionutil.getReleaseBranchNameFromVersion(version);
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);

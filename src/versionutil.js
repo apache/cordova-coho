@@ -70,6 +70,13 @@ function updatePlatformsConfig(newValues) {
 }
 exports.updatePlatformsConfig = updatePlatformsConfig;
 
+exports.getReleaseBranchNameFromVersion = function(version) {
+    if (/-dev$/.test(version)) {
+        return 'master';
+    }
+    return version.replace(/\d+(-?rc\d)?$/, 'x');
+}
+
 /**
  * Updates VERSION file, version executable script, package.json and
  * plugin.xml(s) using specified version. Also commits change made to the repo

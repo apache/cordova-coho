@@ -359,31 +359,63 @@ function *interactive_plugins_release() {
                 console.log('Writing out new release notes and plugin versions (if applicable)...');
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
-                    if (plugin_data[repo.repoName].current_release != release_notes[plugin_name + '-version']) {
+                    if (plugin_data[plugin_name].current_release != release_notes[plugin_name + '-version']) {
                         // Overwrite plugin version if, after release notes review, RM decided on a different version.
-                        plugin_data[repo.repoName].current_release = release_notes[plugin_name + '-version'];
-                        yield versionutil.updateRepoVersion(repo, plugin_data[repo.repoName].current_release, {commitChanges:false});
+                        plugin_data[plugin_name].current_release = release_notes[plugin_name + '-version'];
+                        yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, {commitChanges:false});
                     }
                     fs.writeFileSync(tweak_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
                     linkify.file(tweak_release_notes.FILE);
                     /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {
-                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[repo.repoName].current_release);
-                        yield gitutil.tagRepo(plugin_data[repo.repoName].current_release);
+                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release);
+                        yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
                     } else {
-                        console.warn('No pending changes detected for ' + repo.repoName + '; that\'s probably not good eh?');
+                        console.warn('No pending changes detected for ' + plugin_name + '; that\'s probably not good eh?');
                     }
                 });
             })();
+        }).then(function() {
+            /* 10. Create release branch.Check if release branch, which would be named in the form "major.minor.x" (i.e. 2.3.x) already exists */
+            return co.wrap(function *() {
+                var repos_with_existing_release_branch = [];
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var plugin_version = plugin_data[plugin_name].current_release;
+                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    if (yield gitutil.remoteBranchExists(repo, release_branch_name)) {
+                        repos_with_existing_release_branch.push(repo);
+                    } else {
+                        yield gitutil.createNewBranch(release_branch_name);
+                        console.log('Created branch', release_branch_name, 'in repo', plugin_name);
+                    }
+                });
+            })();
+        }).then(function(repos_with_existing_release_branch) {
+            // Here we are passed an array of repos that already had release branches created prior to starting the release process here.
+            // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous! 
+            // Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
+            console.warn('Some release branches already exist!');
+            console.warn('You will need to handle these repos manually!');
+            var prompts = [];
+            repos_with_existing_branch_name.forEach(function(repo) {
+                var plugin_name = repo.repoName;
+                var rb = versionutil.getReleaseBranchFromVersion(plugin_data[plugin_name].current_version)
+                prompts.push({
+                    type: 'confirm',
+                    name: 'rb_proceed_' + plugin_name,
+                    message: plugin_name + ' already has an existing release branch ' + rb + '. You will need to manually merge or cherry-pick the master branch into the ' + rb + ' branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
+                });
+            });
+            return inquirer.prompt(prompts);
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 10. Create release branch. if this is a patch release, it may already exist! in that case, merge master back into this existing release branch.
-     * 11. Increment plugin versions back on the master branch to include -dev.. i think?
+    /* 11. Increment plugin versions back on the master branch to include -dev
      * 12. Push tags, release branch, and master branch changes.
      * 13. Publish to apache svn:
      *   - repo-clone the dist and dist/dev svn repos
@@ -422,13 +454,6 @@ function createPlatformDevVersion(version) {
     cliSafeParts[0] = '0';
     parts[2] = cliSafeParts.join('-');
     return parts.join('.') + '-dev';
-}
-
-function getVersionBranchName(version) {
-    if (/-dev$/.test(version)) {
-        return 'master';
-    }
-    return version.replace(/\d+(-?rc\d)?$/, 'x');
 }
 
 function cpAndLog(src, dest) {

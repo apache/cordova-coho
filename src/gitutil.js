@@ -136,6 +136,10 @@ exports.gitCheckout = function*(branchName) {
     }
 }
 
+exports.createNewBranch = function*(branchName) {
+    return yield executil.execHelper(executil.ARGS('git branch ', branchName));
+}
+
 exports.localBranchExists = function*(name) {
     return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
 }

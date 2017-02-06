@@ -410,7 +410,9 @@ function *interactive_plugins_release() {
         }).then(function(repos_with_existing_release_branch) {
             // Here we are passed an array of repos that already had release branches created prior to starting the release process.
             // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous! 
-            // Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
+            // TODO: Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
+            // This section, right now, simply tells the user to handle the merge manually in a seperate shell.
+            // IF THEY FAIL TO DO THIS, then we will seriously fuck shit up by pushing release branches up (done in next promise section). :/
             console.warn('Some release branches already exist!');
             console.warn('You will need to handle these repos manually!');
             var prompts = [];
@@ -424,14 +426,25 @@ function *interactive_plugins_release() {
                 });
             });
             return inquirer.prompt(prompts);
+        }).then(function() {
+            /* 11. Increment plugin versions back on the master branch to include -dev*/
+            // So, check out master branch and do the thing.
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var newest_version = plugin_data[plugin_name].current_release + '-dev';
+                    console.log('Checking out master branch of', plugin_name, 'and setting version to', newest_version, ', then committing that change to master branch...');
+                    yield gitutil.gitCheckout('master');
+                    yield versionutil.updateRepoVersion(repo, newest_version, {commitChanges:true});
+                });
+            })();
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 11. Increment plugin versions back on the master branch to include -dev
-     * 12. Push tags, release branch, and master branch changes.
+    /* 12. Push tags, release branch, and master branch changes.
      * 13. Publish to apache svn:
      *   - repo-clone the dist and dist/dev svn repos
      *   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA

@@ -19,12 +19,14 @@
 
 var fs = require('fs');
 var path = require('path');
+var stream = require('stream');
 var optimist = require('optimist');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var linkify = require('jira-linkify');
+var co_stream = require('co-stream');
 
 var relNotesFile = 'RELEASENOTES.md';
 
@@ -96,15 +98,29 @@ module.exports = function*() {
             } else {
                 newVersion = toTag;
             }
-            var data = createNotes(newVersion, output, argv['override-date']);
-            fs.writeFileSync(relNotesFile, data, {encoding: 'utf8'});
-            // TODO: does it need to write to a file or can we do it via strings in memory?
+            var final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
+            fs.writeFileSync(relNotesFile, final_notes, {encoding: 'utf8'});
             return linkify.file(relNotesFile);
         }
     });
 };
 
-function createNotes(repo, newVersion, changes, overrideDate) {
+function *createNotes(repo, newVersion, changes, overrideDate) {
+    // pump changes through JIRA linkifier first through a stream pipe
+	var transformer = linkify.stream("CB");
+	var read = new stream.Readable();
+	read._read = function(){};// noop 
+	read.push(changes);
+	read.push(null);
+	var write = new stream.Writable();
+	var data = '';
+	write._write = function(chunk, encoding, done) {
+		data += chunk.toString();
+		done();
+	}
+	read.pipe(transformer).pipe(write);
+    yield co_stream.wait(write); // wait for the writable stream to finish/end
+    // then interpolate linkified changes into existing release notes and compose the final release notes string
     var relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
     var headerPos = relNotesData.indexOf('### ');
     var date;
@@ -113,7 +129,7 @@ function createNotes(repo, newVersion, changes, overrideDate) {
     } else {
         date = new Date().toDateString().split(' ');
     }
-    return relNotesData.substr(0, headerPos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + changes + '\n\n' + relNotesData.substr(headerPos);
+    return relNotesData.substr(0, headerPos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + data + '\n\n' + relNotesData.substr(headerPos);
 }
 
 module.exports.createNotes = createNotes;

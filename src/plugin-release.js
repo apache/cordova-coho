@@ -327,33 +327,44 @@ function *interactive_plugins_release() {
             /*   - each plugin may need a version bump.
              *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
              *     - reuse coho 'update release notes' command */
-            var plugs = Object.keys(plugin_data);
-            var release_note_prompts = [];
-            plugs.forEach(function(plugin) {
-                var data = plugin_data[plugin];
-                var changes = data.changes;
-                release_note_prompts.push({
-                    type: 'editor',
-                    name: plugin,
-                    message: 'Please tweak and compile ' + plugin + ' release notes',
-                    default: tweak_release_notes.createNotes(plugin, data.current_release, changes)
-                });
-                /*     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary? */
-                release_note_prompts.push({
-                    type: 'input',
-                    name: plugin + '-version',
-                    message: 'Please enter a semver-compatible version number for this release of ' + plugin + ', based on the changes below:\n' + changes,
-                    default: data.current_release,
-                    validate: function(input) {
-                        if (semver.valid(input)) {
-                            return true;
-                        } else {
-                            return 'That\'s not a valid semver version!';
+            return co.wrap(function *() {
+                var plugs = Object.keys(plugin_data);
+                var release_note_prompts = [];
+                yield plugs.map(function*(plugin) {
+                    var data = plugin_data[plugin];
+                    var changes = data.changes;
+                    var final_notes = yield tweak_release_notes.createNotes(plugin, data.current_release, changes);
+                    release_note_prompts.push({
+                        type: 'editor',
+                        name: plugin,
+                        message: 'Please tweak and compile ' + plugin + ' release notes',
+                        default: final_notes
+                    });
+                    /*     - what's the average case? just a patch bump? perhaps, for each plugin, show release notes and let RM override version beyond patch bump if RM believes it is necessary? */
+                    release_note_prompts.push({
+                        type: 'input',
+                        name: plugin + '-version',
+                        message: function(answers) {
+                            var new_changes = answers[plugin];
+                            var first_heading = new_changes.indexOf('###');
+                            var second_heading = new_changes.indexOf('###', first_heading + 3);
+                            var first_change = new_changes.indexOf('\n', first_heading + 3);
+                            var len = second_heading - first_change;
+                            var change_summary = new_changes.substr(first_change, len);
+                            return 'Please enter a semver-compatible version number for this release of ' + plugin + ', based on the changes below:\n' + change_summary;
+                        },
+                        default: data.current_release,
+                        validate: function(input) {
+                            if (semver.valid(input)) {
+                                return true;
+                            } else {
+                                return 'That\'s not a valid semver version!';
+                            }
                         }
-                    }
+                    });
                 });
-            });
-            return inquirer.prompt(release_note_prompts);
+                return inquirer.prompt(release_note_prompts);
+            })();
         }).then(function(release_notes) {
             return co.wrap(function *() {
                 console.log('Writing out new release notes and plugin versions (if applicable)...');
@@ -361,11 +372,15 @@ function *interactive_plugins_release() {
                     var plugin_name = repo.repoName;
                     if (plugin_data[plugin_name].current_release != release_notes[plugin_name + '-version']) {
                         // Overwrite plugin version if, after release notes review, RM decided on a different version.
+                        var previous_assumed_version = plugin_data[plugin_name].current_release;
                         plugin_data[plugin_name].current_release = release_notes[plugin_name + '-version'];
                         yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, {commitChanges:false});
+                        // also overwrite the version originally specified in the release notes file, since we changed it now!
+                        var rn = release_notes[plugin_name];
+                        var new_rn = rn.replace(new RegExp('^### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
+                        release_notes[plugin_name] = new_rn;
                     }
                     fs.writeFileSync(tweak_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
-                    linkify.file(tweak_release_notes.FILE);
                     /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {
@@ -377,7 +392,7 @@ function *interactive_plugins_release() {
                 });
             })();
         }).then(function() {
-            /* 10. Create release branch.Check if release branch, which would be named in the form "major.minor.x" (i.e. 2.3.x) already exists */
+            /* 10. Create release branch. Check if release branch, which would be named in the form "major.minor.x" (i.e. 2.3.x) already exists */
             return co.wrap(function *() {
                 var repos_with_existing_release_branch = [];
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
@@ -393,7 +408,7 @@ function *interactive_plugins_release() {
                 });
             })();
         }).then(function(repos_with_existing_release_branch) {
-            // Here we are passed an array of repos that already had release branches created prior to starting the release process here.
+            // Here we are passed an array of repos that already had release branches created prior to starting the release process.
             // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous! 
             // Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
             console.warn('Some release branches already exist!');
@@ -479,7 +494,7 @@ function cpAndLog(src, dest) {
 
 // TODO: if using this function only to retrieve repo version, use the new
 // versionutil.getRepoVersion method instead.
-function *handleVersion(repo,ver,validate) {
+function *handleVersion(repo, ver, validate) {
     var platform = repo.id;
     var version = ver || undefined;
 

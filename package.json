@@ -12,7 +12,7 @@
     "glob": "^5.0.14",
     "gnode": "^0.1.0",
     "jasmine": "^2.5.3",
-    "jira-linkify": "^2.2.3",
+    "jira-linkify": "^2.3.0",
     "nlf": "^1.4.3",
     "opener": "^1.4.1",
     "optimist": "0.4",
@@ -23,7 +23,8 @@
     "treeify": "^1.0.1",
     "jira-client": "4.2.0",
     "inquirer": "2.0.0",
-    "xml2js": "0.4.17"
+    "xml2js": "0.4.17",
+    "co-stream": "0.1.1"
   },
   "devDependencies": {
     "nsp": ">=2.0.1",

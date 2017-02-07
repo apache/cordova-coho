@@ -163,11 +163,11 @@ exports.gitClean = function() {
     return executil.execHelper(executil.ARGS('git clean -d -f'), false, true);
 }
 
-exports.summaryOfChanges = function(base_sha) {
+exports.summaryOfChanges = function*(base_sha) {
     var cmd = executil.ARGS('git log --topo-order --no-merges');
     cmd.push(['--pretty=format:* %s']);
     cmd.push(base_sha + '..master');
-    return executil.execHelper(cmd, true, false);
+    return yield executil.execHelper(cmd, true, false);
 }
 
 exports.commitChanges = function*(commit_msg) {
@@ -176,4 +176,13 @@ exports.commitChanges = function*(commit_msg) {
 
 exports.tagRepo = function*(version) {
     return yield executil.execHelper(executil.ARGS('git tag', version));
+}
+
+exports.pushToOrigin = function*(ref) {
+    // TODO TEST: uncomment once ready to test
+    //return yield executil.execHelper(executil.ARGS('git push origin', ref));
+}
+
+exports.diff = function(first, second) {
+    return executil.execHelper(executil.ARGS('git diff', first + '..' + second));
 }

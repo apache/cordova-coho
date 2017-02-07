@@ -231,7 +231,8 @@ function *interactive_plugins_release() {
                     plugin_data[repo.repoName] = {
                         last_release: last_release
                     };
-                    var changes = (yield gitutil.summaryOfChanges(last_release)).split('\n').filter(function(line) {
+                    var changes = yield gitutil.summaryOfChanges(last_release);
+                    changes = changes.split('\n').filter(function(line) {
                         return (line.toLowerCase().indexOf('incremented plugin version') == -1);
                     });
                     if (changes.length > 0) {
@@ -310,7 +311,8 @@ function *interactive_plugins_release() {
                 console.log('No license issues found - continuing.');
             }
         }).then(function() {
-            //TODO:
+            // TODO: step 8 apparently is "rarely" done based on fil's experience running through the plugin release steps manually.
+            // soooo.... what do?
             /* 8. ensure all dependencies and subdependencies have apache-compatible licenses.
              * 9. update plugin versions + release notes.
              *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)*/
@@ -371,7 +373,8 @@ function *interactive_plugins_release() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
                     if (plugin_data[plugin_name].current_release != release_notes[plugin_name + '-version']) {
-                        // Overwrite plugin version if, after release notes review, RM decided on a different version.
+                        // If, after release notes review, RM decided on a different version...
+                        // Overwrite plugin version
                         var previous_assumed_version = plugin_data[plugin_name].current_release;
                         plugin_data[plugin_name].current_release = release_notes[plugin_name + '-version'];
                         yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, {commitChanges:false});
@@ -385,7 +388,8 @@ function *interactive_plugins_release() {
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {
                         yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release);
-                        yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
+                        // TODO TEST: uncomment once ready to rock
+                        //yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
                     } else {
                         console.warn('No pending changes detected for ' + plugin_name + '; that\'s probably not good eh?');
                     }
@@ -401,28 +405,31 @@ function *interactive_plugins_release() {
                     var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
                     if (yield gitutil.remoteBranchExists(repo, release_branch_name)) {
                         repos_with_existing_release_branch.push(repo);
+                        // also store HEAD of release branch, so later on we can show a diff of the branch before pushing
+                        plugin_data[plugin_name].release_branch_head = gitutil.hashForRef(release_branch_name);
                     } else {
                         yield gitutil.createNewBranch(release_branch_name);
                         console.log('Created branch', release_branch_name, 'in repo', plugin_name);
                     }
                 });
+                return repos_with_existing_release_branch;
             })();
         }).then(function(repos_with_existing_release_branch) {
             // Here we are passed an array of repos that already had release branches created prior to starting the release process.
-            // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous! 
+            // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous!
             // TODO: Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
             // This section, right now, simply tells the user to handle the merge manually in a seperate shell.
             // IF THEY FAIL TO DO THIS, then we will seriously fuck shit up by pushing release branches up (done in next promise section). :/
             console.warn('Some release branches already exist!');
-            console.warn('You will need to handle these repos manually!');
+            console.warn('You will need to manually cherry-pick or merge from master into the release branch for these repos manually!');
             var prompts = [];
-            repos_with_existing_branch_name.forEach(function(repo) {
+            repos_with_existing_release_branch.forEach(function(repo) {
                 var plugin_name = repo.repoName;
                 var rb = versionutil.getReleaseBranchFromVersion(plugin_data[plugin_name].current_version)
                 prompts.push({
                     type: 'confirm',
                     name: 'rb_proceed_' + plugin_name,
-                    message: plugin_name + ' already has an existing release branch ' + rb + '. You will need to manually merge or cherry-pick the master branch into the ' + rb + ' branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
+                    message: plugin_name + ' already has an existing release branch "' + rb + '". You will need to manually merge or cherry-pick the master branch into the "' + rb + '" branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
                 });
             });
             return inquirer.prompt(prompts);
@@ -435,17 +442,50 @@ function *interactive_plugins_release() {
                     var newest_version = plugin_data[plugin_name].current_release + '-dev';
                     console.log('Checking out master branch of', plugin_name, 'and setting version to', newest_version, ', then committing that change to master branch...');
                     yield gitutil.gitCheckout('master');
+                    // store previous master HEAD, for later comparison/showing of diff
+                    plugin_data[plugin_name].previous_master_head = gitutil.hashForRef('master');
                     yield versionutil.updateRepoVersion(repo, newest_version, {commitChanges:true});
                 });
             })();
+        }).then(function() {
+            /* 12. Push tags, release branch, and master branch changes.
+             * start with tag */
+            return co.wrap(function *() {
+                var master_prompts = [];
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var tag = plugin_data[plugin_name].current_release;
+                    console.log(plugin_name, ': pushing tag "', tag, '"');
+                    yield gitutil.pushToOrigin(tag);
+                    // compile master diff for confirmation in next promise section
+                    var diff = gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');
+                    master_prompts.push({
+                        type: 'confirm',
+                        name: 'master_' + plugin_name,
+                        message: 'About to push the following changes to the master branch of ' + plugin_name + ': ' + diff + '\nDo you wish to continue?'
+                    });
+                });
+                return master_prompts;
+            })();
+        }).then(function(master_prompts) {
+            /*   - show diff of last master commit, confirm, push, git push origin master*/
+        }).then(function() {
+            /*   - show diff of release branch:
+            *     - if release branch did not exist before, show diff (simple, just branch..master), confirm, then push
+            *     - if release branch did exist before, show diff (branch HEAD..last branch commit), confirm, then push*/
+            var previous_release_branch_head = plugin_data[plugin_name].release_branch_head;
+            if (previous_release_branch_head) {
+                // release branch previously existed.
+            } else {
+                // release branch did NOT exist previously, this is a new release branch.
+            }
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 12. Push tags, release branch, and master branch changes.
-     * 13. Publish to apache svn:
+    /* 13. Publish to apache svn:
      *   - repo-clone the dist and dist/dev svn repos
      *   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
      *   - "manually double check version numbers are correct on the file names"

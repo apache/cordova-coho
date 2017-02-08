@@ -183,6 +183,6 @@ exports.pushToOrigin = function*(ref) {
     //return yield executil.execHelper(executil.ARGS('git push origin', ref));
 }
 
-exports.diff = function(first, second) {
-    return executil.execHelper(executil.ARGS('git diff', first + '..' + second));
+exports.diff = function*(first, second) {
+    return yield executil.execHelper(executil.ARGS('git diff', first + '..' + second), true, false);
 }

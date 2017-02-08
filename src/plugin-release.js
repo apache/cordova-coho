@@ -425,7 +425,7 @@ function *interactive_plugins_release() {
             var prompts = [];
             repos_with_existing_release_branch.forEach(function(repo) {
                 var plugin_name = repo.repoName;
-                var rb = versionutil.getReleaseBranchFromVersion(plugin_data[plugin_name].current_version)
+                var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release)
                 prompts.push({
                     type: 'confirm',
                     name: 'rb_proceed_' + plugin_name,
@@ -449,7 +449,7 @@ function *interactive_plugins_release() {
             })();
         }).then(function() {
             /* 12. Push tags, release branch, and master branch changes.
-             * start with tag */
+             * start with pushing tag, then compile diffs for master branch push and ask user if they approve before pushing master */
             return co.wrap(function *() {
                 var master_prompts = [];
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
@@ -457,18 +457,29 @@ function *interactive_plugins_release() {
                     var tag = plugin_data[plugin_name].current_release;
                     console.log(plugin_name, ': pushing tag "', tag, '"');
                     yield gitutil.pushToOrigin(tag);
-                    // compile master diff for confirmation in next promise section
-                    var diff = gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');
+                    /*   - show diff of last master commit for user confirmation*/
+                    var diff = yield gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');
                     master_prompts.push({
                         type: 'confirm',
                         name: 'master_' + plugin_name,
                         message: 'About to push the following changes to the master branch of ' + plugin_name + ': ' + diff + '\nDo you wish to continue?'
                     });
                 });
-                return master_prompts;
+                return inquirer.prompt(master_prompts);
             })();
-        }).then(function(master_prompts) {
-            /*   - show diff of last master commit, confirm, push, git push origin master*/
+        }).then(function(answers) {
+            /*check confirmations and exit if RM bailed
+            * - push, git push origin master*/
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    if (!answers['master_' + plugin_name]) {
+                        console.error('Aborting as master branch changes for ' + plugin_name + ' were not approved!');
+                        process.exit(8);
+                    } else {
+                    }
+                });
+            })();
         }).then(function() {
             /*   - show diff of release branch:
             *     - if release branch did not exist before, show diff (simple, just branch..master), confirm, then push

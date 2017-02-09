@@ -406,7 +406,7 @@ function *interactive_plugins_release() {
                     if (yield gitutil.remoteBranchExists(repo, release_branch_name)) {
                         repos_with_existing_release_branch.push(repo);
                         // also store HEAD of release branch, so later on we can show a diff of the branch before pushing
-                        plugin_data[plugin_name].release_branch_head = gitutil.hashForRef(release_branch_name);
+                        plugin_data[plugin_name].previous_release_branch_head = gitutil.hashForRef(release_branch_name);
                     } else {
                         yield gitutil.createNewBranch(release_branch_name);
                         console.log('Created branch', release_branch_name, 'in repo', plugin_name);
@@ -468,8 +468,7 @@ function *interactive_plugins_release() {
                 return inquirer.prompt(master_prompts);
             })();
         }).then(function(answers) {
-            /*check confirmations and exit if RM bailed
-            * - push, git push origin master*/
+            /*check confirmations and exit if RM bailed*/
             return co.wrap(function *() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
@@ -482,15 +481,49 @@ function *interactive_plugins_release() {
             })();
         }).then(function() {
             /*   - show diff of release branch:
-            *     - if release branch did not exist before, show diff (simple, just branch..master), confirm, then push
-            *     - if release branch did exist before, show diff (branch HEAD..last branch commit), confirm, then push*/
-            var previous_release_branch_head = plugin_data[plugin_name].release_branch_head;
-            if (previous_release_branch_head) {
-                // release branch previously existed.
-            } else {
-                // release branch did NOT exist previously, this is a new release branch.
-            }
-        });
+            *     - if release branch did not exist before, show diff (simple, just master..branch), confirm, then push
+            *     - if release branch did exist before, show diff (last branch commit..HEAD), confirm, then push*/
+            return co.wrap(function *() {
+                var rb_prompts = [];
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var plugin_version = plugin_data[plugin_name].current_release;
+                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    var previous_release_branch_head = plugin_data[plugin_name].previous_release_branch_head;
+                    yield gitutil.gitCheckout(release_branch_name);
+                    if (previous_release_branch_head) {
+                        // release branch previously existed.
+                        var diff = yield gitutil.diff(previous_release_branch_head, 'HEAD');
+                        rb_prompts.push({
+                            type: 'confirm',
+                            name: 'rb_' + plugin_name,
+                            message: 'About to push the following changes to the EXISTING release branch (' + release_branch_name + ') of ' + plugin_name + ': ' + diff + '\nDo you wish to continue?'
+                        });
+                    } else {
+                        // release branch did NOT exist previously, this is a new release branch.
+                        var diff = yield gitutil.diff('master', release_branch_name);
+                        rb_prompts.push({
+                            type: 'confirm',
+                            name: 'rb_' + plugin_name,
+                            message: 'About to push the following changes (compared to master) to the NEW release branch (' + release_branch_name + ') of ' + plugin_name + ': ' + diff + '\nDo you wish to continue?'
+                        });
+                    }
+                });
+                return inquirer.prompt(rb_prompts);
+            })();
+        }).then(function(answers) {
+            /*check confirmations and exit if RM bailed*/
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    if (!answers['rb_' + plugin_name]) {
+                        console.error('Aborting as release branch changes for ' + plugin_name + ' were not approved!');
+                        process.exit(8);
+                    } else {
+                    }
+                });
+            })();
+        }).then(function() {
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');

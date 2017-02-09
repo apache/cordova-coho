@@ -455,7 +455,7 @@ function *interactive_plugins_release() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
                     var tag = plugin_data[plugin_name].current_release;
-                    console.log(plugin_name, ': pushing tag "', tag, '"');
+                    console.log(plugin_name, ': pushing tag ', tag);
                     yield gitutil.pushToOrigin(tag);
                     /*   - show diff of last master commit for user confirmation*/
                     var diff = yield gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');

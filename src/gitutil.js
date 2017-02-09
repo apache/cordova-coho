@@ -184,5 +184,6 @@ exports.pushToOrigin = function*(ref) {
 }
 
 exports.diff = function*(first, second) {
-    return yield executil.execHelper(executil.ARGS('git diff', first + '..' + second), true, false);
+    var args = executil.ARGS('git diff', first + '..' + second);
+    return yield executil.execHelper(args, true, false);
 }

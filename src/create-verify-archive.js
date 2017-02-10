@@ -92,32 +92,8 @@ exports.createCommand = function*(argv) {
         var origBranch = yield gitutil.retrieveCurrentBranchName(true);
 
         yield gitutil.gitCheckout(tag);
-        print('Creating archive of ' + repo.repoName + '@' + tag);
 
-        var outPath;
-        if (repo.id !=='mobile-spec') {
-
-            var pkgInfo = require(path.resolve('package'));
-            var tgzname = pkgInfo.name + '-' + pkgInfo.version + '.tgz';
-
-            yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
-            outPath = path.join(absOutDir, tgzname);
-            if (path.resolve(tgzname) != outPath) {
-                shelljs.rm('-f', outPath + "*");
-                shelljs.mv(tgzname, outPath);
-            }
-            print('Created archive: ' + outPath);
-        } else {
-            outPath = path.join(absOutDir, repo.repoName + '-' + tag + '.zip');
-            yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
-            print('Created archive: ' + outPath);
-        }
-
-        if (argv.sign) {
-            yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath));
-            fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
-            fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
-        }
+        yield createArchive(repo, tag, absOutDir, argv.sign);
 
         if (origBranch) {
             yield gitutil.gitCheckout(origBranch);
@@ -127,6 +103,33 @@ exports.createCommand = function*(argv) {
     print('Archives created.');
     print('Verify them using: coho verify-archive ' + path.join(outDir, '*.tgz'));
 }
+
+// WARNING: NEEDS to be executed in the current working directory of a cordova repo!!!
+function *createArchive(repo, tag, outDir, sign) {
+    print('Creating archive of ' + repo.repoName + '@' + tag);
+    var outPath;
+    if (repo.id !=='mobile-spec') {
+        var pkgInfo = require(path.resolve('package'));
+        var tgzname = pkgInfo.name + '-' + tag + '.tgz';
+        yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
+        outPath = path.join(outDir, tgzname);
+        if (path.resolve(tgzname) != outPath) {
+            shelljs.rm('-f', outPath + "*");
+            shelljs.mv(tgzname, outPath);
+        }
+    } else {
+        outPath = path.join(outDir, repo.repoName + '-' + tag + '.zip');
+        yield executil.execHelper(executil.ARGS('git archive --format zip --prefix ' + repo.repoName + '/ -o ', outPath, tag));
+    }
+    print('Created archive: ' + outPath);
+    if (sign) {
+        yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath), false, false);
+        fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
+        fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
+    }
+}
+
+exports.createArchive = createArchive;
 
 exports.verifyCommand = function*() {
     var opt = flagutil.registerHelpFlag(optimist);

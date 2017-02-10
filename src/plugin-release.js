@@ -26,6 +26,7 @@ var shelljs = require('shelljs');
 var apputil = require('./apputil');
 var audit_license = require('./audit-license-headers');
 var tweak_release_notes = require('./update-release-notes');
+var create_archive = require('./create-verify-archive');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
@@ -53,6 +54,9 @@ var jira_issue_types; // store ref to all issue types supported by our JIRA inst
 var jira_task_issue; // store ref to the "task" issue type
 var plugin_base; // parent directory holding all cordova plugins
 var plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
+var dist_dev_svn; // cordova dist/dev repo
+var dist_svn; // cordova dist repo
+var svn_repos; // cordova dist and dist/dev svn repos
 var plugin_data = {}; // massive object containing plugin release-relevant information
 var plugins_to_release = []; // array of plugin names that need releasing
 var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
@@ -146,7 +150,7 @@ function *interactive_plugins_release() {
         }).then(function(answer) {
             /* 4. Ask for JIRA issue, or, Create JIRA issue; check docs/plugins-release-process.md for details
              *   - lets refer to this JIRA issue as $JIRA from here on out.
-             *   - BONUS: COMMENT to this JIRA issue for each "top-level" step below that is completed.
+             *   - TODO: BONUS: COMMENT to this JIRA issue for each "top-level" step below that is completed.
              */
             if (answer.jira) {
                 return inquirer.prompt({
@@ -193,11 +197,12 @@ function *interactive_plugins_release() {
             console.log('Sweet, our Plugins Release JIRA issue is ' + jira_issue.key + ' (https://issues.apache.org/jira/browse/' + jira_issue.key + ')!');
             plugins_release_issue = jira_issue;
             /* 5: update the repos. */
+            // TODO: this assumes all apache cordova repos are in one directory, specifically the plugin repos as well as the apache SVN dist/dev ones
             return inquirer.prompt([{
                 type: 'input',
                 name: 'cwd',
                 default: apputil.getBaseDir(),
-                message: 'We need to update the plugin repositories. Enter the directory containing all of your plugin source code repositories (absolute or relative paths work here)'
+                message: 'We need to update the plugin and apache SVN repositories. Enter the directory containing all of your Apache Cordova source code repositories (absolute or relative paths work here)'
             }, {
                 type: 'confirm',
                 name: 'ok',
@@ -210,11 +215,17 @@ function *interactive_plugins_release() {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
                 // TODO: is `plugins_base` pass-able to cloneRepos here?
                 plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn:true});
+                dist_svn = flagutil.computeReposFromFlag('dist', {includeSvn:true});
+                dist_dev_svn = flagutil.computeReposFromFlag('dist/dev', {includeSvn:true});
+                svn_repos = dist_svn.concat(dist_dev_svn);
+                dist_svn = dist_svn[0];
+                dist_dev_svn = dist_dev_svn[0];
                 // TODO: wrapping yields in co is fugly
                 return co.wrap(function *() {
                     yield repoclone.cloneRepos(plugin_repos, /*silent*/true, null);
                     yield reporeset.resetRepos(plugin_repos, ['master']);
                     yield repoupdate.updateRepos(plugin_repos, ['master'], /*noFetch*/false);
+                    yield repoclone.cloneRepos(svn_repos, /*silent*/true, null);
                     return true;
                 })();
             } else {
@@ -388,8 +399,7 @@ function *interactive_plugins_release() {
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {
                         yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release);
-                        // TODO TEST: uncomment once ready to rock
-                        //yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
+                        yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
                     } else {
                         console.warn('No pending changes detected for ' + plugin_name + '; that\'s probably not good eh?');
                     }
@@ -475,8 +485,15 @@ function *interactive_plugins_release() {
                     if (!answers['master_' + plugin_name]) {
                         console.error('Aborting as master branch changes for ' + plugin_name + ' were not approved!');
                         process.exit(8);
-                    } else {
                     }
+                });
+            })();
+        }).then(function() {
+            // at this point RM is cool pushing master branch changes up.
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    // at this point still have master branch checked out
+                    yield gitutil.pushToOrigin('master');
                 });
             })();
         }).then(function() {
@@ -519,23 +536,44 @@ function *interactive_plugins_release() {
                     if (!answers['rb_' + plugin_name]) {
                         console.error('Aborting as release branch changes for ' + plugin_name + ' were not approved!');
                         process.exit(8);
-                    } else {
                     }
                 });
             })();
         }).then(function() {
+            // at this point RM is cool pushing master branch changes up.
+            return co.wrap(function *() {
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var plugin_version = plugin_data[plugin_name].current_release;
+                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    // at this point have release branch checked out
+                    yield gitutil.pushToOrigin(release_branch_name);
+                });
+            })();
+        }).then(function() {
+            // 13. Publish to apache svn:
+            //   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
+            return co.wrap(function *() {
+                // location to store the archives in.
+                var dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
+                shelljs.mkdir('-p', dist_dev_dir);
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    var tag = plugin_data[plugin_name].current_release;
+                    yield gitutil.gitCheckout(tag);
+                    yield create_archive.createArchive(repo, tag, dist_dev_dir, true/*sign*/);
+                });
+            })();
+            //   - "manually double check version numbers are correct on the file names"
+            //   - verify-archive cordova-dist-dev/$JIRA/*.tgz
+            //   - upload by running `svn` commands.
+        });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 13. Publish to apache svn:
-     *   - repo-clone the dist and dist/dev svn repos
-     *   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
-     *   - "manually double check version numbers are correct on the file names"
-     *   - verify-archive cordova-dist-dev/$JIRA/*.tgz
-     *   - upload by running `svn` commands.
-     * 14. Dump instructions only? Prepare blog post - perhaps can dump out release notes-based blog content.
+    /* 14. Dump instructions only? Prepare blog post - perhaps can dump out release notes-based blog content.
      *   - this apparently ends up as a .md file in cordova-docs. perhaps can dump this as a shell of a file into the cordova-docs repo? maybe even auto-branch the docs repo in prep for a PR?
      * 15. Dump instructions only? Start a vote thread.
      * 16. Bonus: separate script to 'approve' a plugins release, which would:
@@ -610,256 +648,3 @@ function *handleVersion(repo, ver, validate) {
     return version;
 }
 
-function configureReleaseCommandFlags(opt) {
-    var opt = flagutil.registerRepoFlag(opt)
-    opt = opt
-        .options('version', {
-            desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]'
-         });
-    opt = flagutil.registerHelpFlag(opt);
-    argv = opt.argv;
-
-    if (argv.h) {
-        optimist.showHelp();
-        process.exit(1);
-    }
-
-    return argv;
-}
-
-var hasBuiltJs = '';
-
-//Adds the version to CDVAvailability.h for iOS
-function *updateCDVAvailabilityFile(version) {
-    var iosFile = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public','CDVAvailability.h');
-    var iosFileContents = fs.readFileSync(iosFile, 'utf8');
-    iosFileContents = iosFileContents.split('\n');
-
-    var lineNumberToInsertLine = iosFileContents.indexOf('/* coho:next-version,insert-before */');
-    var lineNumberToReplaceLine = iosFileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
-
-    var versionNumberUnderscores = version.split('.').join('_');
-    var versionNumberZeroes = version.split('.').join('0');
-
-    var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
-    var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
-
-    if(iosFileContents[lineNumberToInsertLine - 1] === lineToAdd) {
-        print('Version already exists in CDVAvailability.h');
-        lineNumberToReplaceLine = lineNumberToReplaceLine - 1;
-    } else {
-        iosFileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
-    }
-
-    iosFileContents[lineNumberToReplaceLine] = lineToReplace;
-
-    fs.writeFileSync(iosFile, iosFileContents.join('\n'));
-}
-
-function *updateJsSnapshot(repo, version, commit) {
-    function *ensureJsIsBuilt() {
-        var cordovaJsRepo = repoutil.getRepoById('js');
-        if (repo.id === 'blackberry') {
-            repo.id = 'blackberry10';
-        }
-        if (hasBuiltJs != version) {
-            yield repoutil.forEachRepo([cordovaJsRepo], function*() {
-                yield gitutil.stashAndPop(cordovaJsRepo, function*() {
-                    //git fetch and update master for cordovajs
-                    yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
-                    yield gitutil.gitCheckout('master');
-                    yield executil.execHelper(executil.ARGS('grunt compile:' +repo.id + ' --platformVersion='+version));
-                    hasBuiltJs = version;
-                });
-            });
-        }
-    }
-
-    if (repoutil.repoGroups.platform.indexOf(repo) == -1) {
-        return;
-    }
-
-    if (repo.cordovaJsPaths) {
-        yield ensureJsIsBuilt();
-        repo.cordovaJsPaths.forEach(function(jsPath) {
-            var src = path.join('..', 'cordova-js', 'pkg', repo.cordovaJsSrcName || ('cordova.' + repo.id + '.js'));
-            cpAndLog(src, jsPath);
-        });
-        if(commit === true) {
-            if (yield gitutil.pendingChangesExist()) {
-                yield executil.execHelper(executil.ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
-            }
-        }
-    } else if (repoutil.repoGroups.all.indexOf(repo) != -1) {
-        print('*** DO NOT KNOW HOW TO UPDATE cordova.js FOR THIS REPO ***');
-    }
-}
-
-exports.createAndCopyCordovaJSCommand = function*() {
-    var argv = configureReleaseCommandFlags(optimist
-        .usage('Generates and copies an updated cordova.js to the specified platform. It does the following:\n' +
-               '    1. Generates a new cordova.js.\n' +
-               '    2. Replaces platform\'s cordova.js file.\n' +
-               '\n' +
-               'Usage: $0 copy-js -r platform')
-    );
-
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        var version = yield handleVersion(repo, argv.version, false);
-        yield updateJsSnapshot(repo,version, false);
-    });
-}
-
-exports.prepareReleaseBranchCommand = function*() {
-    var argv = configureReleaseCommandFlags(optimist
-        .usage('Prepares release branches but does not create tags. This includes:\n' +
-               '    1. Creating the branch if it doesn\'t already exist\n' +
-               '    2. Generates and updates the cordova.js snapshot and VERSION file from master.\n' +
-               '\n' +
-               'Command is safe to run multiple times, and can be run for the purpose\n' +
-               'of checking out existing release branches.\n' +
-               '\n' +
-               'Command can also be used to update the JS snapshot after release \n' +
-               'branches have been created.\n' +
-               '\n' +
-               'Usage: $0 prepare-release-branch -r platform [--version=3.6.0]')
-    );
-
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var branchName = null;
-
-    // First - perform precondition checks.
-    yield repoupdate.updateRepos(repos, [], true);
-
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        var platform = repo.id;
-        var version = yield handleVersion(repo, argv.version,true);
-        var branchName = getVersionBranchName(version);
-
-        yield gitutil.stashAndPop(repo, function*() {
-            // git fetch + update master
-            yield repoupdate.updateRepos([repo], ['master'], false);
-            if (platform === 'ios') {
-                // Updates version in CDVAvailability.h file
-                yield updateCDVAvailabilityFile(version);
-                // Git commit changes
-                if(yield gitutil.pendingChangesExist()) {
-                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
-                }
-            }
-            // Either create or pull down the branch.
-            if (yield gitutil.remoteBranchExists(repo, branchName)) {
-                print('Remote branch already exists for repo: ' + repo.repoName);
-                // Check out and rebase.
-                yield repoupdate.updateRepos([repo], [branchName], true);
-                yield gitutil.gitCheckout(branchName);
-            } else if (yield gitutil.localBranchExists(branchName)) {
-                yield executil.execHelper(executil.ARGS('git checkout ' + branchName));
-            } else {
-                yield gitutil.gitCheckout('master');
-                yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName));
-            }
-
-            yield updateJsSnapshot(repo, version, true);
-            print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + branchName + '".');
-            yield versionutil.updateRepoVersion(repo, version);
-
-            yield gitutil.gitCheckout('master');
-            var devVersion = createPlatformDevVersion(version);
-            print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
-            yield versionutil.updateRepoVersion(repo, devVersion);
-            yield updateJsSnapshot(repo, devVersion, true);
-            yield gitutil.gitCheckout(branchName);
-        });
-    });
-    executil.reportGitPushResult(repos, ['master', branchName]);
-}
-
-function *tagJs(repo, version, pretend) {
-
-    function *execOrPretend(cmd) {
-        if (pretend) {
-            print('PRETENDING TO RUN: ' + cmd.join(' '));
-        } else {
-            yield executil.execHelper(cmd);
-        }
-    }
-    //tag cordova.js platform-version
-    var cordovaJsRepo = repoutil.getRepoById('js');
-    yield repoutil.forEachRepo([cordovaJsRepo], function*() {
-        yield gitutil.stashAndPop(cordovaJsRepo, function*() {
-            // git fetch
-            yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
-
-            var tagName = repo.id + '-' + version;
-            if (yield gitutil.tagExists(tagName)) {
-                yield execOrPretend(executil.ARGS('git tag ' + tagName + ' --force'));
-            } else {
-                yield execOrPretend(executil.ARGS('git tag ' + tagName));
-            }
-            yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' refs/tags/' + tagName));
-        });
-    });
-}
-
-exports.tagReleaseBranchCommand = function*(argv) {
-    var argv = configureReleaseCommandFlags(optimist
-        .usage('Tags a release branches.\n' +
-               '\n' +
-               'Usage: $0 tag-release --version=2.8.0-rc1 -r platform')
-        .options('pretend', {
-            desc: 'Don\'t actually run git commands, just print out what would be run.',
-            type: 'boolean'
-         })
-    );
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var version = flagutil.validateVersionString(argv.version);
-    var pretend = argv.pretend;
-    var branchName = getVersionBranchName(version);
-
-    // First - perform precondition checks.
-    yield repoupdate.updateRepos(repos, [], true);
-
-    function *execOrPretend(cmd) {
-        if (pretend) {
-            print('PRETENDING TO RUN: ' + cmd.join(' '));
-        } else {
-            yield executil.execHelper(cmd);
-        }
-    }
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        yield gitutil.stashAndPop(repo, function*() {
-            // git fetch.
-            yield repoupdate.updateRepos([repo], [], false);
-
-            if (yield gitutil.remoteBranchExists(repo, branchName)) {
-                print('Remote branch already exists for repo: ' + repo.repoName);
-                yield gitutil.gitCheckout(branchName);
-            } else {
-                apputil.fatal('Release branch does not exist for repo ' + repo.repoName);
-            }
-
-            // git merge
-            yield repoupdate.updateRepos([repo], [branchName], true);
-
-            // Create/update the tag.
-            var tagName = yield gitutil.retrieveCurrentTagName();
-            if (tagName != version) {
-                if (yield gitutil.tagExists(version)) {
-                    yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));
-                } else {
-                    yield execOrPretend(executil.ARGS('git tag ' + version));
-                }
-                yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName + ' refs/tags/' + version));
-            } else {
-                print('Repo ' + repo.repoName + ' is already tagged.');
-            }
-            yield tagJs(repo, version, pretend);
-
-        });
-    });
-
-    print('');
-    print('All work complete.');
-}

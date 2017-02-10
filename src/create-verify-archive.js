@@ -162,22 +162,28 @@ exports.verifyCommand = function*() {
 
     for (var i = 0; i < resolvedZipPaths.length; ++i) {
         var zipPath = resolvedZipPaths[i];
-        var result = yield executil.execHelper(executil.ARGS('gpg --verify', zipPath + '.asc', zipPath), false, true);
-        if (result === null) {
-            apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
-        }
-        var md5 = yield computeHash(zipPath, 'MD5');
-        if (extractHashFromOutput(fs.readFileSync(zipPath + '.md5', 'utf8')) !== md5) {
-            apputil.fatal('MD5 does not match.');
-        }
-        var sha = yield computeHash(zipPath, 'SHA512');
-        if (extractHashFromOutput(fs.readFileSync(zipPath + '.sha', 'utf8')) !== sha) {
-            apputil.fatal('SHA512 does not match.');
-        }
-        print(zipPath + chalk.green(' signature and hashes verified.'));
+        yield verifyArchive(zipPath);
     }
     print(chalk.green('Verified ' + resolvedZipPaths.length + ' signatures and hashes.'));
 };
+
+function *verifyArchive(archive) {
+    var result = yield executil.execHelper(executil.ARGS('gpg --verify', archive + '.asc', archive), false, true);
+    if (result === null) {
+        apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
+    }
+    var md5 = yield computeHash(archive, 'MD5');
+    if (extractHashFromOutput(fs.readFileSync(archive + '.md5', 'utf8')) !== md5) {
+        apputil.fatal('MD5 does not match.');
+    }
+    var sha = yield computeHash(archive, 'SHA512');
+    if (extractHashFromOutput(fs.readFileSync(archive + '.sha', 'utf8')) !== sha) {
+        apputil.fatal('SHA512 does not match.');
+    }
+    print(archive + chalk.green(' signature and hashes verified.'));
+}
+
+exports.verifyArchive = verifyArchive;
 
 function *computeHash(path, algo) {
     print('Computing ' + algo + ' for: ' + path);

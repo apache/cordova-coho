@@ -64,9 +64,9 @@ var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
     // run a shelljs.which(gpg) to make sure RM has gpg on their path
-    console.log("You'll need gpg installed and have your Apache GPG keys all set up. Let me check if you have that locally...");
     if (!shelljs.which('gpg')) {
-        console.error('Did not find gpg on your PATH!');
+        console.warn("You'll need gpg installed and have your Apache GPG keys all set up to do a plugins release!");
+        console.error('I did not find gpg on your PATH!');
         console.error('Refer to ' + create_archive.GPG_DOCS + ' for instructions on how to get that set up as a first step.');
         process.exit(1);
     }
@@ -226,7 +226,7 @@ function *interactive_plugins_release() {
                 svn_repos = dist_svn.concat(dist_dev_svn);
                 dist_svn = dist_svn[0];
                 dist_dev_svn = dist_dev_svn[0];
-                // TODO: wrapping yields in co is fugly
+                // TODO: wrapping yields in co is fugly, but probably has to wait on a coho rewrite tho eh
                 return co.wrap(function *() {
                     yield repoclone.cloneRepos(plugin_repos, /*silent*/true, null);
                     yield reporeset.resetRepos(plugin_repos, ['master']);
@@ -568,10 +568,10 @@ function *interactive_plugins_release() {
                     var tag = plugin_data[plugin_name].current_release;
                     yield gitutil.gitCheckout(tag);
                     var archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/*sign*/);
+                    // - verify-archive cordova-dist-dev/$JIRA/*.tgz
+                    yield create_archive.verifyArchive(archive);
                 });
             })();
-            //   - verify-archive cordova-dist-dev/$JIRA/*.tgz
-            //     - needs refactor of verify method
             //   - upload by running `svn` commands.
         });
     }, function(auth_err) {

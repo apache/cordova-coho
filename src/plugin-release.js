@@ -63,6 +63,7 @@ var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
+    // TODO: run a shelljs.which(gpg) to make sure RM has gpg on their path
     console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
     inquirer.prompt([{
         type: 'input',
@@ -561,11 +562,11 @@ function *interactive_plugins_release() {
                     var plugin_name = repo.repoName;
                     var tag = plugin_data[plugin_name].current_release;
                     yield gitutil.gitCheckout(tag);
-                    yield create_archive.createArchive(repo, tag, dist_dev_dir, true/*sign*/);
+                    var archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/*sign*/);
                 });
             })();
-            //   - "manually double check version numbers are correct on the file names"
             //   - verify-archive cordova-dist-dev/$JIRA/*.tgz
+            //     - needs refactor of verify method
             //   - upload by running `svn` commands.
         });
     }, function(auth_err) {

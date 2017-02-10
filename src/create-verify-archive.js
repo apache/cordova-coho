@@ -127,6 +127,7 @@ function *createArchive(repo, tag, outDir, sign) {
         fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
         fs.writeFileSync(outPath + '.sha', (yield computeHash(outPath, 'SHA512')) + '\n');
     }
+    return outPath;
 }
 
 exports.createArchive = createArchive;

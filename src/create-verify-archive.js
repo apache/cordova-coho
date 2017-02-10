@@ -33,6 +33,8 @@ var print = apputil.print;
 var settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
 var isWin = process.platform === 'win32';
 
+exports.GPG_DOCS = settingUpGpg;
+
 exports.createCommand = function*(argv) {
     var opt = flagutil.registerRepoFlag(optimist)
     opt = opt

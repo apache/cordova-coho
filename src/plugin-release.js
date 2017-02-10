@@ -63,7 +63,13 @@ var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
-    // TODO: run a shelljs.which(gpg) to make sure RM has gpg on their path
+    // run a shelljs.which(gpg) to make sure RM has gpg on their path
+    console.log("You'll need gpg installed and have your Apache GPG keys all set up. Let me check if you have that locally...");
+    if (!shelljs.which('gpg')) {
+        console.error('Did not find gpg on your PATH!');
+        console.error('Refer to ' + create_archive.GPG_DOCS + ' for instructions on how to get that set up as a first step.');
+        process.exit(1);
+    }
     console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
     inquirer.prompt([{
         type: 'input',
@@ -128,8 +134,7 @@ function *interactive_plugins_release() {
                 });
             } else {
                 console.error('You should get your GPG keys sorted out first!');
-                console.warn('Follow the instructions here, then come back and try again :)');
-                console.warn('https://github.com/apache/cordova-coho/blob/master/docs/setting-up-gpg.md');
+                console.warn('Follow the instructions here, then come back and try again: ' + create_archive.GPG_DOCS);
                 process.exit(2);
             }
         }).then(function(answer) {

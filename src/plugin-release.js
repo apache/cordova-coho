@@ -30,6 +30,7 @@ var create_archive = require('./create-verify-archive');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
+var svnutil = require('./svnutil');
 var repoutil = require('./repoutil');
 var versionutil = require('./versionutil');
 var repoupdate = require('./repo-update');
@@ -60,14 +61,21 @@ var svn_repos; // cordova dist and dist/dev svn repos
 var plugin_data = {}; // massive object containing plugin release-relevant information
 var plugins_to_release = []; // array of plugin names that need releasing
 var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
+var svn_user; // username for apache svn
+var svn_password; // password for apache svn
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
-    // run a shelljs.which(gpg) to make sure RM has gpg on their path
+    // sanity check for tooling that will be needed during releaser.
     if (!shelljs.which('gpg')) {
         console.warn("You'll need gpg installed and have your Apache GPG keys all set up to do a plugins release!");
         console.error('I did not find gpg on your PATH!');
         console.error('Refer to ' + create_archive.GPG_DOCS + ' for instructions on how to get that set up as a first step.');
+        process.exit(1);
+    }
+    if (!shelljs.which('svn')) {
+        console.warn("You'll need svn installed to do a plugins release!");
+        console.error('I did not find `svn` on your PATH!');
         process.exit(1);
     }
     console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
@@ -558,6 +566,16 @@ function *interactive_plugins_release() {
             })();
         }).then(function() {
             // 13. Publish to apache svn:
+            // - first update dist-dev repo
+            return co.wrap(function *() {
+                var orig_dir = process.cwd();
+                var dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
+                process.chdir(dist_dev_repo);
+                console.log('Updating dist-dev svn repo...');
+                yield svnutil.update();
+                process.chdir(orig_dir);
+            })();
+        }).then(function() {
             //   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
             return co.wrap(function *() {
                 // location to store the archives in.
@@ -572,17 +590,44 @@ function *interactive_plugins_release() {
                     yield create_archive.verifyArchive(archive);
                 });
             })();
-            //   - upload by running `svn` commands.
+        }).then(function() {
+            console.log('We are about to push changes up to Apache SVN! Let me get your SVN credentials.');
+            return inquirer.prompt([{
+                type: 'input',
+                name: 'username',
+                message: 'Please enter your svn username'
+            },{
+                type: 'password',
+                name: 'password',
+                message: 'Please enter your svn password'
+            }]);
+        }).then(function(answers) {
+            svn_user = answers.username;
+            svn_password = answers.password;
+            //   - upload by running `svn` add and commit commands.
+            return co.wrap(function *() {
+                var orig_dir = process.cwd();
+                var dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
+                process.chdir(dist_dev_repo);
+                // svn add the CB-xxxxx issue key for the plugins release, which is a directory, to the svn repo
+                yield svnutil.add(plugins_release_issue.key);
+                yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ' Uploading release candidates for plugins release');
+                process.chdir(orig_dir);
+            })();
+        }).then(function() {
+            console.log('Nicely done! Last two things you should do:');
+            /* 14. Dump instructions only? Prepare blog post - perhaps can dump out release notes-based blog content.
+             *   - TODO: this apparently ends up as a .md file in cordova-docs. perhaps can dump this as a shell of a file into the cordova-docs repo? maybe even auto-branch the docs repo in prep for a PR?*/
+            console.log('1. Prepare a blog post: https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#prepare-blog-post');
+            console.log('2. Start a vote thread! https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#start-vote-thread');
+            process.exit(0);
         });
     }, function(auth_err) {
         var keys = Object.keys(auth_err);
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-    /* 14. Dump instructions only? Prepare blog post - perhaps can dump out release notes-based blog content.
-     *   - this apparently ends up as a .md file in cordova-docs. perhaps can dump this as a shell of a file into the cordova-docs repo? maybe even auto-branch the docs repo in prep for a PR?
-     * 15. Dump instructions only? Start a vote thread.
-     * 16. Bonus: separate script to 'approve' a plugins release, which would:
+     /* 16. Bonus: separate script to 'approve' a plugins release, which would:
      *   - publish the artifacts to dist/ in apache
      *   - "tell apache about the release" which has a TODO to write a helper to POST the request appropriately.
      *   - publish to npm
@@ -597,30 +642,6 @@ function *interactive_plugins_release() {
      */
 }
 module.exports.interactive = interactive_plugins_release;
-// TODO: what is shared between plugin-release and platform-release helpers? factor out into util/lib/whatever helper modules
-
-/*
-function createPlatformDevVersion(version) {
-    // e.g. "3.1.0" -> "3.2.0-dev".
-    // e.g. "3.1.2-0.8.0-rc2" -> "3.2.0-0.8.0-dev".
-    version = version.replace(/-rc.*$/, '');
-    var parts = version.split('.');
-    parts[1] = String(+parts[1] + 1);
-    var cliSafeParts = parts[2].split('-');
-    cliSafeParts[0] = '0';
-    parts[2] = cliSafeParts.join('-');
-    return parts.join('.') + '-dev';
-}
-
-function cpAndLog(src, dest) {
-    print('Coping File:', src, '->', dest);
-    // Throws upon failure.
-    shelljs.cp('-f', src, dest);
-    if (shelljs.error()) {
-        apputil.fatal('Copy failed.');
-    }
-}
-*/
 
 /*
  * A function that handles version if it is defined or undefined

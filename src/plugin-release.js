@@ -52,6 +52,7 @@ var jira_user; // store ref to jira project user
 var cordova_project; // store ref to jira project for Cordova
 var plugins_release_issue; // store ref to jira issue tracking release.
 var jira_issue_types; // store ref to all issue types supported by our JIRA instance
+var all_plugins_component; // store the specific component associated to the plugin issue.
 var jira_task_issue; // store ref to the "task" issue type
 var plugin_base; // parent directory holding all cordova plugins
 var plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
@@ -116,6 +117,16 @@ function *interactive_plugins_release() {
                 break;
             }
         }
+        return jira.listComponents('CB');
+    }).then(function(components) {
+        // Find the ALlPlugins component in Cordova'a JIRA components
+        for (var i = 0; i < components.length; i++) {
+            var component = components[i];
+            if (component.name == 'AllPlugins') {
+                all_plugins_component = component;
+                break;
+            }
+        }
         return jira.listIssueTypes();
     }).then(function(issue_types) {
         jira_issue_types = issue_types;
@@ -159,7 +170,6 @@ function *interactive_plugins_release() {
             } else {
                 console.error('You definitely need to have a discussion about the plugins release on the mailing list first. Go do that!');
                 process.exit(3);
-
             }
         }).then(function(answer) {
             /* 4. Ask for JIRA issue, or, Create JIRA issue; check docs/plugins-release-process.md for details
@@ -198,6 +208,11 @@ function *interactive_plugins_release() {
                         "issuetype": {
                             "id": jira_task_issue.id
                         },
+                        "components": [
+                            {
+                                "id": all_plugins_component.id
+                            }
+                        ]
                     }
                 }
                 return jira.addNewIssue(new_issue).then(function(issue) {

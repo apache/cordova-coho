@@ -194,14 +194,13 @@ function *interactive_plugins_release() {
             } else {
                 console.warn('OK, no problem. I will create one for you now! Hang tight...');
                 var date = (new Date()).toDateString();
-                // TODO: remove the "testing" bits in the JIRA issue description below
                 var new_issue = {
                     "fields": {
                         "project": {
                             "id": cordova_project.id
                         },
-                        "summary": "[TESTING] Plugins Release, " + date,
-                        "description": "PLEASE IGNORE - THIS IS TESTING JIRA AUTOMATION, WORK IN PROGRESS!\nFollowing steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md",
+                        "summary": "Plugins Release, " + date,
+                        "description": "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md\nGenerated automatically using cordova-coho.",
                         "assignee": {
                             "name": jira_user.name
                         },
@@ -636,6 +635,7 @@ function *interactive_plugins_release() {
              *   - TODO: this apparently ends up as a .md file in cordova-docs. perhaps can dump this as a shell of a file into the cordova-docs repo? maybe even auto-branch the docs repo in prep for a PR?*/
             console.log('1. Prepare a blog post: https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#prepare-blog-post');
             console.log('2. Start a vote thread! https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#start-vote-thread');
+            console.log('3. You should test these plugins out! Check out cordova-mobile-spec, and in particular, the `createmobilespec` script that comes with it - it\'s a quick way to create a test project with all plugins included.');
             process.exit(0);
         });
     }, function(auth_err) {

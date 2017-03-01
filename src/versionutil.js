@@ -152,11 +152,8 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
                     if (err) throw err;
                     xml2js.parseString(data, function(err, xml) {
                         if (err) throw err;
-                        xml.plugin['$'].version = version;
-                        // TODO: writing out the xml in this way causes us to lose the comments, which means we lose the apache license header :(
-                        var xmlWriter = new xml2js.Builder();
-                        var xmlOutput = xmlWriter.buildObject(xml);
-                        fs.writeFileSync(xmlFile, xmlOutput + '\n');
+                        var prev_version = xml.plugin['$'].version;
+                        shelljs.sed('-i', new RegExp('version="' + prev_version + '"','i'), 'version="' + version + '"', xmlFile);
                     });
                 });
             } else {

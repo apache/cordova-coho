@@ -180,7 +180,7 @@ exports.tagRepo = function*(version) {
 
 exports.pushToOrigin = function*(ref) {
     // TODO TEST: uncomment once ready to test
-    //return yield executil.execHelper(executil.ARGS('git push origin', ref));
+    return yield executil.execHelper(executil.ARGS('git push origin', ref));
 }
 
 exports.diff = function*(first, second) {

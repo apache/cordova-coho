@@ -474,11 +474,12 @@ function *interactive_plugins_release() {
             return inquirer.prompt(prompts);
         }).then(function() {
             /* 11. Increment plugin versions back on the master branch to include -dev*/
+            // Also increment the patch version
             // So, check out master branch and do the thing.
             return co.wrap(function *() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
-                    var newest_version = plugin_data[plugin_name].current_release + '-dev';
+                    var newest_version = semver.inc(plugin_data[plugin_name].current_release, 'patch') + '-dev';
                     console.log('Checking out master branch of', plugin_name, 'and setting version to', newest_version, ', then committing that change to master branch...');
                     yield gitutil.gitCheckout('master');
                     // store previous master HEAD, for later comparison/showing of diff

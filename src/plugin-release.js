@@ -296,11 +296,12 @@ function *interactive_plugins_release() {
                 return plugins_to_release;
             } else {
                 return inquirer.prompt({
-                    type: 'input',
+                    type: 'checkbox',
                     name: 'plugins_list',
-                    message: 'Please enter the exact names of the plugin repositories you want to release, manually, with a space separating each plugin name'
+                    message: 'Select the plugins you want to release:',
+                    choices: plugin_repos.map(function(p) { return p.repoName; }).filter(function(p) { return p != 'cordova-plugins'; })
                 }).then(function(answer) {
-                    return answer.plugins_list.split(' ');
+                    return answer.plugins_list;
                 });
             }
         }).then(function(plugins_list) {

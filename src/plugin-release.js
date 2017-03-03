@@ -62,6 +62,7 @@ var svn_repos; // cordova dist and dist/dev svn repos
 var plugin_data = {}; // massive object containing plugin release-relevant information
 var plugins_to_release = []; // array of plugin names that need releasing
 var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
+var plugins_to_merge_manually = []; // array of plugin names that RM will need to merge master into release branch manually.
 var svn_user; // username for apache svn
 var svn_password; // password for apache svn
 
@@ -359,7 +360,9 @@ function *interactive_plugins_release() {
             console.log('Removing the "-dev" suffix from versions...');
             return co.wrap(function *() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    yield gitutil.gitCheckout('master');
                     var current_version = yield versionutil.getRepoVersion(repo);
+                    console.log(repo.repoName, '\'s current version is', current_version);
                     var devless_version = versionutil.removeDev(current_version);
                     plugin_data[repo.repoName].current_release = devless_version;
                     yield versionutil.updateRepoVersion(repo, devless_version, {commitChanges:false});
@@ -456,19 +459,48 @@ function *interactive_plugins_release() {
         }).then(function(repos_with_existing_release_branch) {
             // Here we are passed an array of repos that already had release branches created prior to starting the release process.
             // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous!
-            // TODO: Should we ask the user to handle the merge / cherry pick, then? Or should we merge automatically?
-            // This section, right now, simply tells the user to handle the merge manually in a seperate shell.
-            // IF THEY FAIL TO DO THIS, then we will seriously fuck shit up by pushing release branches up (done in next promise section). :/
+            // Ask the RM if they want us to handle the merge automatically.
+            // If the RM says no, we will prompt them to handle it manually later.
             console.warn('Some release branches already exist!');
-            console.warn('You will need to manually cherry-pick or merge from master into the release branch for these repos manually!');
             var prompts = [];
             repos_with_existing_release_branch.forEach(function(repo) {
                 var plugin_name = repo.repoName;
                 var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release)
                 prompts.push({
                     type: 'confirm',
-                    name: 'rb_proceed_' + plugin_name,
-                    message: plugin_name + ' already has an existing release branch "' + rb + '". You will need to manually merge or cherry-pick the master branch into the "' + rb + '" branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
+                    name: 'rb_automerge_proceed_' + plugin_name,
+                    message: plugin_name + ' already has an existing release branch "' + rb + '". Do you want me to automatically merge master into this branch for you? If no, I will prompt you to modify the release branch yourself at a later time in this session.'
+                });
+            });
+            return inquirer.prompt(prompts);
+        }).then(function(answers) {
+            return co.wrap(function *() {
+                var prompts = [];
+                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                    var plugin_name = repo.repoName;
+                    if (answers['rb_automerge_proceed_' + plugin_name]) {
+                        // Auto-merge master into the release branch.
+                        var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
+                        console.log('Checking out "' + rb + '" branch of', plugin_name, 'merging master in...');
+                        yield gitutil.gitCheckout(rb);
+                        yield gitutil.merge('master', function() { console.log('merge was fine, continuing.'); }, function(e) {
+                            plugins_to_merge_manually.push(plugin_name);
+                        });
+                    } else {
+                        plugins_to_merge_manually.push(plugin_name);
+                    }
+                });
+                return inquirer.prompt(prompts);
+            })();
+        }).then(function() {
+            // prompt the RM about the plugins with manual merging work needed here.
+            var prompts = [];
+            plugins_to_merge_manually.forEach(function(plugin_name) {
+                var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release)
+                prompts.push({
+                    type: 'confirm',
+                    name: 'rb_manualmerge_proceed_' + plugin_name,
+                    message: plugin_name + ' already has an existing release branch "' + rb + '", and it needs a manual merge of master into it (either because you specified that, or because there was a merge conflict during auto-merge. Now is your chance to manually merge / cherry-pick / resolve conflicts on the "' + rb + '" branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
                 });
             });
             return inquirer.prompt(prompts);

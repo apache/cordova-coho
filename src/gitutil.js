@@ -105,8 +105,14 @@ exports.retrieveCurrentBranchName = function*(allowDetached) {
     return match[1];
 }
 
-exports.remoteBranchExists = function*(repo, name) {
-    return !!(yield executil.execHelper(executil.ARGS('git branch -r --list ' + repo.remoteName + '/' + name), true));
+exports.remoteBranchExists = function*(repo, branch) {
+    var branch_token = (repo.remoteName || 'origin') + '/' + branch;
+    var stdout = yield executil.execHelper(executil.ARGS('git branch -r --list ' + branch_token), false, false);
+    if (stdout.indexOf(branch_token) > -1) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 exports.stashAndPop = function*(repo, func) {
@@ -180,10 +186,14 @@ exports.tagRepo = function*(version) {
 
 exports.pushToOrigin = function*(ref) {
     // TODO TEST: uncomment once ready to test
-    return yield executil.execHelper(executil.ARGS('git push origin', ref));
+    //return yield executil.execHelper(executil.ARGS('git push origin', ref));
 }
 
 exports.diff = function*(first, second) {
     var args = executil.ARGS('git diff', first + '..' + second);
     return yield executil.execHelper(args, true, false);
+}
+
+exports.merge = function*(ref, win, fail) {
+    return yield executil.execHelper(executil.ARGS('git merge', ref), false, false, win, fail);
 }

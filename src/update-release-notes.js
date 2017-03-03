@@ -41,7 +41,7 @@ module.exports = function*() {
         .options('from-tag', {desc: 'Update since a specific tag instead of the "most recent" tag'})
         .options('to-tag', {desc: 'Update to a specific tag instead of "master"'})
         .options('override-date', {desc: 'Update to a specific date instead of today.'})
-        .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});        
+        .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});
     argv = opt.argv;
 
     if (argv.h) {
@@ -109,7 +109,7 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
     // pump changes through JIRA linkifier first through a stream pipe
 	var transformer = linkify.stream("CB");
 	var read = new stream.Readable();
-	read._read = function(){};// noop 
+	read._read = function(){};// noop
 	read.push(changes);
 	read.push(null);
 	var write = new stream.Writable();

@@ -379,12 +379,23 @@ function *interactive_plugins_release() {
                 console.log('No license issues found - continuing.');
             }
         }).then(function() {
+            return inquirer.prompt({
+                type: 'confirm',
+                name: 'proceed',
+                message: 'We are now ready to start making changes to the selected plugin repo, which will make changes to the master and release branches. Shall we proceed?'
+            }).then(function(answers) {
+                if (!answers.proceed) {
+                    console.error('Bailing!');
+                    process.exit(99);
+                }
+            });
+        }).then(function() {
             // TODO: step 8 apparently is "rarely" done based on fil's experience running through the plugin release steps manually.
             // soooo.... what do?
             /* 8. ensure all dependencies and subdependencies have apache-compatible licenses.
              * 9. update plugin versions + release notes.
              *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists)*/
-            console.log('Removing the "-dev" suffix from versions...');
+            console.log('Removing the "-dev" suffix from versions in the master branch...');
             return co.wrap(function *() {
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     yield gitutil.gitCheckout('master');
@@ -476,6 +487,7 @@ function *interactive_plugins_release() {
                         repos_with_existing_release_branch.push(repo);
                         // also store HEAD of release branch, so later on we can show a diff of the branch before pushing
                         plugin_data[plugin_name].previous_release_branch_head = gitutil.hashForRef(release_branch_name);
+                        console.log('Release branch', release_branch_name, 'already exists - we will be making changes to this existing branch.');
                     } else {
                         yield gitutil.createNewBranch(release_branch_name);
                         console.log('Created branch', release_branch_name, 'in repo', plugin_name);
@@ -488,7 +500,6 @@ function *interactive_plugins_release() {
             // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous!
             // Ask the RM if they want us to handle the merge automatically.
             // If the RM says no, we will prompt them to handle it manually later.
-            console.warn('Some release branches already exist!');
             var prompts = [];
             repos_with_existing_release_branch.forEach(function(repo) {
                 var plugin_name = repo.repoName;

@@ -65,6 +65,50 @@ var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
 var plugins_to_merge_manually = []; // array of plugin names that RM will need to merge master into release branch manually.
 var svn_user; // username for apache svn
 var svn_password; // password for apache svn
+var updated_repos; // sentinel variable for if we did repo updates
+
+function *updateDesiredRepos(repos) {
+    if (!updated_repos) {
+        updated_repos = true;
+        yield repoclone.cloneRepos(repos, /*silent*/true, null);
+        yield reporeset.resetRepos(repos, ['master']);
+        yield repoupdate.updateRepos(repos, ['master'], /*noFetch*/false);
+        yield repoclone.cloneRepos(svn_repos, /*silent*/true, null);
+        yield findChangesInPluginRepos(repos);
+    }
+}
+function *findChangesInPluginRepos(repos) {
+    yield repoutil.forEachRepo(repos, function*(repo) {
+        if (repo.repoName == 'cordova-plugins') return;
+        var last_release = (yield gitutil.findMostRecentTag())[0];
+        plugin_data[repo.repoName] = {
+            last_release: last_release
+        };
+        var changes = yield gitutil.summaryOfChanges(last_release);
+        changes = changes.split('\n').filter(function(line) {
+            return (line.toLowerCase().indexOf('incremented plugin version') == -1);
+        });
+        if (changes.length > 0) {
+            plugin_data[repo.repoName].needs_release = true;
+            plugin_data[repo.repoName].changes = changes.join('\n');
+            plugins_to_release.push(repo.repoName);
+        } else {
+            plugin_data[repo.repoName].needs_release = false;
+            plugins_ommitted.push(repo.repoName);
+        }
+    });
+}
+
+function manualPluginSelection() {
+    return inquirer.prompt({
+        type: 'checkbox',
+        name: 'plugins_list',
+        message: 'Select the plugins you want to release:',
+        choices: plugin_repos.map(function(p) { return p.repoName; }).filter(function(p) { return p != 'cordova-plugins'; })
+    }).then(function(answer) {
+        return answer.plugins_list;
+    });
+}
 
 function *interactive_plugins_release() {
     console.log('Hi! So you want to do a plugins release, do you?');
@@ -225,85 +269,67 @@ function *interactive_plugins_release() {
         }).then(function(jira_issue) {
             console.log('Sweet, our Plugins Release JIRA issue is ' + jira_issue.key + ' (https://issues.apache.org/jira/browse/' + jira_issue.key + ')!');
             plugins_release_issue = jira_issue;
-            /* 5: update the repos. */
-            // TODO: this assumes all apache cordova repos are in one directory, specifically the plugin repos as well as the apache SVN dist/dev ones
+        }).then(function() {
+            /* 5: update the repos. ask the RM if they want to create a new set of repos, or use an existing directory */
             return inquirer.prompt([{
+                type: 'confirm',
+                name: 'use_existing_plugins',
+                message: 'Do you want to use an existing set of plugin repositories? WARNING: If no, I will ask for a directory where I will clone all the needed repositories.'
+            }, {
                 type: 'input',
                 name: 'cwd',
                 default: apputil.getBaseDir(),
-                message: 'We need to update the plugin and apache SVN repositories. Enter the directory containing all of your Apache Cordova source code repositories (absolute or relative paths work here)'
+                message: function(answers) { 
+                    if (answers.use_existing_plugins) {
+                        return 'We need to update the plugin and apache SVN repositories. Enter the directory containing all of your Apache Cordova source code repositories (absolute or relative paths work here)';
+                    } else {
+                        return 'Please enter the directory you want to house the plugin repos we will work with. This directory will be created if it does not exist.';
+                    }
+                }
+            }, {
+                type: 'confirm',
+                name: 'auto_detect',
+                message: 'Do you want me to try to auto-detect which plugins could use releases? If not, you will need to manually select which plugins you want to release. WARNING: if you use auto-detection along with the "clone-all-repos" option, you will be cloning a loooooong time.'
             }, {
                 type: 'confirm',
                 name: 'ok',
                 message: function(answers) {
-                    return 'WARNING! Are you sure the following directory is where you store your plugins? We will be cloning/updating repos here: ' + path.resolve(path.normalize(answers.cwd));
+                    return 'WARNING! Are you sure the following directory is where you want the plugin repositories we will be working with to be located? We will be cloning/updating repos here: ' + path.resolve(path.normalize(answers.cwd));
                 }
             }]);
         }).then(function(answers) {
             if (answers.ok) {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
-                // TODO: is `plugins_base` pass-able to cloneRepos here?
+                shelljs.mkdir('-p', plugin_base);
+                process.chdir(plugin_base);
                 plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn:true});
                 dist_svn = flagutil.computeReposFromFlag('dist', {includeSvn:true});
                 dist_dev_svn = flagutil.computeReposFromFlag('dist/dev', {includeSvn:true});
                 svn_repos = dist_svn.concat(dist_dev_svn);
                 dist_svn = dist_svn[0];
                 dist_dev_svn = dist_dev_svn[0];
-                // TODO: wrapping yields in co is fugly, but probably has to wait on a coho rewrite tho eh
-                return co.wrap(function *() {
-                    yield repoclone.cloneRepos(plugin_repos, /*silent*/true, null);
-                    yield reporeset.resetRepos(plugin_repos, ['master']);
-                    yield repoupdate.updateRepos(plugin_repos, ['master'], /*noFetch*/false);
-                    yield repoclone.cloneRepos(svn_repos, /*silent*/true, null);
-                    return true;
-                })();
+                if (answers.auto_detect) {
+                    return co.wrap(function *() {
+                        yield updateDesiredRepos(plugin_repos);
+                        return inquirer.prompt({
+                            type: 'confirm',
+                            name: 'plugins_ok',
+                            message: 'I\'ve detected ' + plugins_to_release.length + ' plugin' + (plugins_to_release.length==1?'':'s') + ' to release: ' + plugins_to_release.join(', ') + '\nThat means we\'re skipping ' + plugins_ommitted.length + ' plugin' + (plugins_ommitted.length==1?'':'s') + ': ' + plugins_ommitted.join(', ') + '\nDo you want to proceed with the release process around the specified plugins above (and ommitting the ones specified as well)?'
+                        }).then(function(answers) {
+                            if (answers.plugins_ok) {
+                                return plugins_to_release;
+                            } else {
+                                return manualPluginSelection();
+                            }
+                        });
+                    })();
+                } else {
+                    // No auto-detection, manually specified list of plugins.
+                    return manualPluginSelection();
+                }
             } else {
-                console.error('We cannot continue without the correct location to the plugin repositories. Try again.');
+                console.warn('Womp womp, try again? Probably this flow should be better eh?');
                 process.exit(6);
-            }
-        }).then(function() {
-            /* 6. auto-identify plugins that need changes, ask user to confirm at end. if wrong, ask user to manually input.*/
-            console.log('Will attempt to auto-identify which plugins need changes... hold on to yer butt!');
-            return co.wrap(function *() {
-                yield repoutil.forEachRepo(plugin_repos, function*(repo) {
-                    if (repo.repoName == 'cordova-plugins') return;
-                    var last_release = (yield gitutil.findMostRecentTag())[0];
-                    plugin_data[repo.repoName] = {
-                        last_release: last_release
-                    };
-                    var changes = yield gitutil.summaryOfChanges(last_release);
-                    changes = changes.split('\n').filter(function(line) {
-                        return (line.toLowerCase().indexOf('incremented plugin version') == -1);
-                    });
-                    if (changes.length > 0) {
-                        plugin_data[repo.repoName].needs_release = true;
-                        plugin_data[repo.repoName].changes = changes.join('\n');
-                        plugins_to_release.push(repo.repoName);
-                    } else {
-                        plugin_data[repo.repoName].needs_release = false;
-                        plugins_ommitted.push(repo.repoName);
-                    }
-                });
-            })();
-        }).then(function() {
-            // TODO: handle the 'no plugins to release case'? is it even worth it?
-            return inquirer.prompt({
-                type: 'confirm',
-                name: 'plugins_ok',
-                message: 'I\'ve detected ' + plugins_to_release.length + ' plugin' + (plugins_to_release.length==1?'':'s') + ' to release: ' + plugins_to_release.join(', ') + '\nThat means we\'re skipping ' + plugins_ommitted.length + ' plugin' + (plugins_ommitted.length==1?'':'s') + ': ' + plugins_ommitted.join(', ') + '\nDo you want to proceed with the release process around the specified plugins above (and ommitting the ones specified as well)?'
-            });
-        }).then(function(answers) {
-            if (answers.plugins_ok) {
-                return plugins_to_release;
-            } else {
-                return inquirer.prompt({
-                    type: 'checkbox',
-                    name: 'plugins_list',
-                    message: 'Select the plugins you want to release:',
-                    choices: plugin_repos.map(function(p) { return p.repoName; }).filter(function(p) { return p != 'cordova-plugins'; })
-                }).then(function(answer) {
-                    return answer.plugins_list;
-                });
             }
         }).then(function(plugins_list) {
             // at this point we either have a verified, or manually-specified, list of plugins to release.
@@ -312,16 +338,17 @@ function *interactive_plugins_release() {
             plugin_repos = plugin_repos.filter(function(plugin) {
                 return plugins_to_release.indexOf(plugin.repoName) > -1;
             });
-            // and remove all the data we collected for plugins we no longer care about.
-            var data_keys = Object.keys(plugin_data);
-            data_keys.forEach(function(key) {
-                if (plugins_to_release.indexOf(key) == -1) {
-                    delete plugin_data[key];
-                }
-            });
-            /* 7. ensure license headers are present everywhere.*/
-            console.log('Checking license headers for specified plugin repos...');
             return co.wrap(function *() {
+                yield updateDesiredRepos(plugin_repos);
+                // and remove all the data we collected for plugins we no longer care about.
+                var data_keys = Object.keys(plugin_data);
+                data_keys.forEach(function(key) {
+                    if (plugins_to_release.indexOf(key) == -1) {
+                        delete plugin_data[key];
+                    }
+                });
+                /* 7. ensure license headers are present everywhere.*/
+                console.log('Checking license headers for specified plugin repos...');
                 var unknown_licenses = [];
                 yield audit_license.scrubRepos(plugin_repos, /*silent*/true, /*allowError*/false, function(repo, stdout) {
                     var unknown = stdout.split('\n').filter(function(line) {

@@ -487,7 +487,8 @@ function *interactive_plugins_release() {
                         repos_with_existing_release_branch.push(repo);
                         // also store HEAD of release branch, so later on we can show a diff of the branch before pushing
                         plugin_data[plugin_name].previous_release_branch_head = gitutil.hashForRef(release_branch_name);
-                        console.log('Release branch', release_branch_name, 'already exists - we will be making changes to this existing branch.');
+                        console.log('Release branch', release_branch_name, 'already exists, time to update it. We will be making changes to this existing branch.');
+                        yield repoupdate.updateRepos([repo], [release_branch_name], /*noFetch*/false);
                     } else {
                         yield gitutil.createNewBranch(release_branch_name);
                         console.log('Created branch', release_branch_name, 'in repo', plugin_name);

@@ -461,7 +461,7 @@ function *interactive_plugins_release() {
                         yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, {commitChanges:false});
                         // also overwrite the version originally specified in the release notes file, since we changed it now!
                         var rn = release_notes[plugin_name];
-                        var new_rn = rn.replace(new RegExp('^### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
+                        var new_rn = rn.replace(new RegExp('### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
                         release_notes[plugin_name] = new_rn;
                     }
                     fs.writeFileSync(tweak_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});

@@ -25,7 +25,7 @@ var optimist = require('optimist');
 var shelljs = require('shelljs');
 var apputil = require('./apputil');
 var audit_license = require('./audit-license-headers');
-var tweak_release_notes = require('./update-release-notes');
+var update_release_notes = require('./update-release-notes');
 var create_archive = require('./create-verify-archive');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
@@ -279,7 +279,7 @@ function *interactive_plugins_release() {
                 type: 'input',
                 name: 'cwd',
                 default: apputil.getBaseDir(),
-                message: function(answers) { 
+                message: function(answers) {
                     if (answers.use_existing_plugins) {
                         return 'We need to update the plugin and apache SVN repositories. Enter the directory containing all of your Apache Cordova source code repositories (absolute or relative paths work here)';
                     } else {
@@ -416,7 +416,7 @@ function *interactive_plugins_release() {
                 yield plugs.map(function*(plugin) {
                     var data = plugin_data[plugin];
                     var changes = data.changes;
-                    var final_notes = yield tweak_release_notes.createNotes(plugin, data.current_release, changes);
+                    var final_notes = yield update_release_notes.createNotes(plugin, data.current_release, changes);
                     release_note_prompts.push({
                         type: 'editor',
                         name: plugin,
@@ -464,7 +464,7 @@ function *interactive_plugins_release() {
                         var new_rn = rn.replace(new RegExp('### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
                         release_notes[plugin_name] = new_rn;
                     }
-                    fs.writeFileSync(tweak_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
+                    fs.writeFileSync(update_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
                     /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {

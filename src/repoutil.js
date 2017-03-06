@@ -25,12 +25,14 @@ var apputil = require('./apputil');
 var platformRepos = [
     {
         title: 'Android',
+        versions: ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1'],
         id: 'android',
         repoName: 'cordova-android',
         jiraComponentName: 'Android',
         cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js']
     }, {
         title: 'iOS',
+        versions: ['9.0', '9.1', '9.2', '9.3', '10.0', '10.1', '10.2', '10.3'],
         id: 'ios',
         repoName: 'cordova-ios',
         jiraComponentName: 'iOS',

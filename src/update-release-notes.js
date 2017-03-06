@@ -105,6 +105,14 @@ module.exports = function*() {
     });
 };
 
+function backtick(text, token) {
+    return text.replace(new RegExp(" " + token, "gi"), " `" + token + "`");
+}
+
+function bold(text, token) {
+    return text.replace(new RegExp(" " + token, "gi"), " **" + token + "**");
+}
+
 function *createNotes(repo, newVersion, changes, overrideDate) {
     // pump changes through JIRA linkifier first through a stream pipe
 	var transformer = linkify.stream("CB");
@@ -120,6 +128,32 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
 	}
 	read.pipe(transformer).pipe(write);
     yield co_stream.wait(write); // wait for the writable stream to finish/end
+    // some more release note linting: enclose in backticks certain tokens
+    data = backtick(data, 'plugin.xml');
+    flagutil.computeReposFromFlag('platforms').map(function(r) { return r.repoName; }).forEach(function(platform_name) {
+        data = backtick(data, platform_name);
+    });
+    var special_plugin_names = ['InAppBrowser'];
+    special_plugin_names.forEach(function(name) {
+        data = backtick(data, name);
+    });
+    // bold platform labels (with optional version numbers, too)
+    var version_labels = [];
+    repoutil.repoGroups.platforms.filter(function(p) {
+        // first only pull out the platform repos that we have explicitly labeled with nice version strings
+        return p.versions && p.versions.length;
+    }).forEach(function(p) {
+        // next, generate the labels for later tokenization
+        p.versions.forEach(function(v) {
+            version_labels.push(p.title + ' ' + v);
+        });
+    });
+    version_labels.forEach(function(label) {
+        data = bold(data, label);
+    });
+    repoutil.repoGroups.platforms.map(function(r) { return r.title; }).forEach(function(platform) {
+        data = bold(data, platform);
+    });
     // then interpolate linkified changes into existing release notes and compose the final release notes string
     var relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
     var headerPos = relNotesData.indexOf('### ');

@@ -149,33 +149,43 @@ To submit a fix:
 
 1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
 
+    ```
     ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android 
     (cd mobilespec && cordova run android --device)
-    
+    ```
+
 2) Create a hello world app using the cordova CLI
 
+    ```
     cordova create ./androidTest org.apache.cordova.test androidTest
     (cd androidTest && cordova platform add ../cordova-android)
     (cd androidTest && cordova run android --device)
+    ```
 
 3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
 
+    
+    ```
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
     (cd androidTest2 && ./cordova/build)
     (cd androidTest2 && ./cordova/run --device)
+    ```
 
 4) Test Project Upgrade via CLI:
 
+    ```
     cordova create ./androidTest3 org.apache.cordova.test3 androidTest3
     (cd androidTest3 && cordova platform add android@4.1.1)
     (cd androidTest3 && cordova platform update ../cordova-android)
     (cd androidTest3 && cordova run android --device)
     (cd androidTest3 && cordova platform ls)
+    ```
 
 The output from `cordova platform ls` should show the new version of `cordova-android`.
 
 5) Test Project Upgrade for non-cli projects:
 
+    ```
     (cd cordova-android && git checkout 4.1.x)
     ./cordova-android/bin/create ./androidTest4 org.apache.cordova.test4 androidTest4
     (cd cordova-android && git checkout 5.0.x)
@@ -183,16 +193,21 @@ The output from `cordova platform ls` should show the new version of `cordova-an
     (cd androidTest4 && ./cordova/build)
     (cd androidTest4 && ./cordova/run --device)
     (cd androidTest4 && ./cordova/version)
+    ```
 
 The output from `./cordova/version` should show the new version of `cordova-android`.
 
  6) Run cordova-lib tests
 
+    ```
     (cd cordova-lib/cordova-lib && npm test)
+    ```
 
 Feel free to cleanup the projects you just created
 
+    ```
     rm -rf androidTest*
+    ```
 
 #### Android Extras
 

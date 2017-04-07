@@ -343,6 +343,22 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
+## Uploading to Bintray (Android only)
+
+1. Run the following commands:
+    cd cordova-android/framework && gradle bintrayUpload
+
+2. Add your bintray username and password as system variables.
+    Your BINTRAY_USER and BINTRAY_KEY should be your Bintray username and key respectively.
+    echo $BINTRAY_USER 
+    echo $BINTRAY_KEY 
+
+    bintray {
+        user = 'BINTRAY_USER'
+        key  = 'BINTRAY_KEY'
+        ...
+    }
+
 ## Add permanent apache release tag
 
 Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 

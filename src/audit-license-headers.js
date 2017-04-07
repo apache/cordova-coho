@@ -52,8 +52,8 @@ var COMMON_RAT_EXCLUDES = [
 var RAT_IGNORE_PATH          = '.ratignore';
 var RATIGNORE_COMMENT_PREFIX = '#';
 
-var RAT_NAME = 'apache-rat-0.11';
-var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.11/apache-rat-0.11-bin.tar.gz';
+var RAT_NAME = 'apache-rat-0.12';
+var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.12/apache-rat-0.12-bin.tar.gz';
 
 function startsWith(string, prefix) {
     return string.indexOf(prefix) === 0;

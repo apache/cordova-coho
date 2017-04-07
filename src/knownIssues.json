@@ -104,6 +104,97 @@
 		"pull-request-to-fix" : "n/a",
 		"verified-license": "MIT",
 		"verified-license-notes": "license in README.md, license present in package.json in 1.9.0"
-	}
-    
+	},
+    "verror": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/joyent/node-verror/blob/v1.4.0/LICENSE"
+    },
+    "tweetnacl": {
+        "verified-license": "Public Domain",
+        "verified-license-notes": "https://github.com/dchest/tweetnacl-js/blob/master/COPYING.txt"
+    },
+    "ms": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/zeit/ms/blob/master/LICENSE.md"
+    },
+    "jsonify": {
+        "verified-license": "Public Domain",
+        "verified-license-notes": "https://github.com/substack/jsonify/blob/master/package.json#L29"
+    },
+    "indexof": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://www.npmjs.com/package/indexof"
+    },
+    "extsprintf": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/davepacheco/node-extsprintf/blob/master/LICENSE"
+    },
+    "browser-request": {
+        "verified-license": "Apache-2.0",
+        "verified-license-notes": "https://github.com/iriscouch/browser-request/blob/master/LICENSE"
+    },
+    "mime": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/broofa/node-mime/blob/master/LICENSE"
+    },
+    "underscore": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/jashkenas/underscore/blob/master/LICENSE"
+    },
+    "temp": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/bruce/node-temp/blob/master/LICENSE"
+    },
+    "rewire": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/jhnns/rewire/blob/master/LICENSE"
+    },
+    "oauth-sign": {
+        "verified-license": "Apache-2.0",
+        "verified-license-notes": "https://github.com/request/oauth-sign/blob/master/LICENSE"
+    },
+    "forever-agent": {
+        "verified-license": "Apache-2.0",
+        "verified-license-notes": "https://github.com/request/forever-agent/blob/master/LICENSE"
+    },
+    "delayed-stream": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/felixge/node-delayed-stream/blob/master/License"
+    },
+    "ctype": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/rmustacc/node-ctype/blob/master/LICENSE"
+    },
+    "combined-stream": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/felixge/node-combined-stream/blob/master/License"
+    },
+    "aws-sign2": {
+        "verified-license": "Apache-2.0",
+        "verified-license-notes": "https://github.com/request/aws-sign/blob/master/LICENSE"
+    },
+    "assert-plus": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/mcavage/node-assert-plus#license"
+    },
+    "asn1": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/mcavage/node-asn1/blob/master/LICENSE"
+    },
+    "argv": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://www.npmjs.com/package/argv#license"
+    },
+    "unorm": {
+        "verified-license": "MIT || GPL",
+        "verified-license-notes": "https://github.com/walling/unorm/blob/master/LICENSE.md"
+    },
+    "npm": {
+        "verified-license": "Artistic-2.0",
+        "verified-license-notes": "https://issues.apache.org/jira/browse/LEGAL-217"
+    },
+    "dep-graph": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/TrevorBurnham/dep-graph#license"
+    }
 }

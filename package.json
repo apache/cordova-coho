@@ -12,12 +12,14 @@
     "glob": "^5.0.14",
     "gnode": "^0.1.0",
     "jira-linkify": "^2.2.3",
+    "nlf": "^1.4.3",
     "opener": "^1.4.1",
     "optimist": "0.4",
     "q": "~0.9",
     "request": "^2.69.0",
     "semver": "^4.2.0",
-    "shelljs": "0.1.4"
+    "shelljs": "0.1.4",
+    "treeify": "^1.0.1"
   },
   "devDependencies": {
     "nsp": ">=2.0.1",

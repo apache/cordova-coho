@@ -101,8 +101,22 @@ Update the repos `RELEASENOTES.md` file with changes since the last release
 Commit these changes together into one commit
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
+
+---
+
+**PATCH RELEASE NOTES**
+
+
+If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate hunk).
+
+    git checkout master
+    git checkout -p RELEASENOTES_COMMIT_SHA_HASH
     
-`coho prepare-release-branch` command handles the following steps:
+For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailability.h (via coho)` into the master branch as well.
+
+---
+
+Prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
  * Updating `cordova.js` snapshot
  * Creating a release branch (if it doesn't already exist)
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
@@ -135,33 +149,43 @@ To submit a fix:
 
 1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
 
+    ```
     ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android 
     (cd mobilespec && cordova run android --device)
-    
+    ```
+
 2) Create a hello world app using the cordova CLI
 
+    ```
     cordova create ./androidTest org.apache.cordova.test androidTest
     (cd androidTest && cordova platform add ../cordova-android)
     (cd androidTest && cordova run android --device)
+    ```
 
 3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
 
+    
+    ```
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
     (cd androidTest2 && ./cordova/build)
     (cd androidTest2 && ./cordova/run --device)
+    ```
 
 4) Test Project Upgrade via CLI:
 
+    ```
     cordova create ./androidTest3 org.apache.cordova.test3 androidTest3
     (cd androidTest3 && cordova platform add android@4.1.1)
     (cd androidTest3 && cordova platform update ../cordova-android)
     (cd androidTest3 && cordova run android --device)
     (cd androidTest3 && cordova platform ls)
+    ```
 
 The output from `cordova platform ls` should show the new version of `cordova-android`.
 
 5) Test Project Upgrade for non-cli projects:
 
+    ```
     (cd cordova-android && git checkout 4.1.x)
     ./cordova-android/bin/create ./androidTest4 org.apache.cordova.test4 androidTest4
     (cd cordova-android && git checkout 5.0.x)
@@ -169,16 +193,21 @@ The output from `cordova platform ls` should show the new version of `cordova-an
     (cd androidTest4 && ./cordova/build)
     (cd androidTest4 && ./cordova/run --device)
     (cd androidTest4 && ./cordova/version)
+    ```
 
 The output from `./cordova/version` should show the new version of `cordova-android`.
 
  6) Run cordova-lib tests
 
+    ```
     (cd cordova-lib/cordova-lib && npm test)
+    ```
 
 Feel free to cleanup the projects you just created
 
+    ```
     rm -rf androidTest*
+    ```
 
 #### Android Extras
 
@@ -188,7 +217,6 @@ Feel free to cleanup the projects you just created
 
  * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
  * Test the Makefile via `make`
- * Run `bin/diagnose_project` on a newly created project and ensure it reports no errors.
 
 ## Push Changes:
 
@@ -211,7 +239,7 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
 
 Sanity Check:
 

@@ -32,7 +32,12 @@ module.exports = function*() {
     opt = flagutil.registerHelpFlag(opt)
         .usage('Updates release notes with commits since the most recent tag.\n' +
         '\n' +
-        'Usage: $0 update-release-notes [--repo=ios]');
+        'Usage: $0 update-release-notes [--repo=ios]'
+        )
+        .options('from-tag', {desc: 'Update since a specific tag instead of the "most recent" tag'})
+        .options('to-tag', {desc: 'Update to a specific tag instead of "master"'})
+        .options('override-date', {desc: 'Update to a specific date instead of today.'})
+        .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});        
     argv = opt.argv;
 
     if (argv.h) {
@@ -42,26 +47,66 @@ module.exports = function*() {
 
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
-    var cmd = executil.ARGS('git log --topo-order --no-merges');
-    cmd.push(['--pretty=format:* %s']);
+    
     yield repoutil.forEachRepo(repos, function*(repo) {
-        var tag = yield gitutil.findMostRecentTag(repo.versionPrefix);
-        cmd.push(tag + '..master');
+        var cmd = executil.ARGS('git log --topo-order --no-merges');
+        cmd.push(['--pretty=format:* %s']);
+        var fromTag, toTag, hasOneTag;
+        hasOneTag = false;
+        if (argv['last-two-tags']) {
+            var last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
+            if (last_two) {
+                toTag = last_two[0];
+                if (last_two.length > 1) {
+                    fromTag = last_two[1];
+                } else {
+                    hasOneTag = true;
+                    fromTag = toTag;
+                }
+            }
+        } else {
+            if (argv['from-tag']){
+                fromTag = argv['from-tag'];
+            } else {
+                fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
+            }
+            if (argv['to-tag']){
+                toTag = argv['to-tag'];
+            } else {
+                toTag = 'master';
+            }
+        }
+
+        if (!hasOneTag) {
+            cmd.push(fromTag + '..' + toTag);
+        }
         var repoDesc = repo.repoName;
         if (repo.path) {
             repoDesc += '/' + repo.path;
         }
-        console.log('Finding commits in ' + repoDesc + ' since tag ' + tag);
+        console.log('Finding commits in ' + repoDesc + ' from tag ' + fromTag + ' to tag ' + toTag);
         var output = yield executil.execHelper(cmd.concat(repoutil.getRepoIncludePath(repo)), true);
         if (output) {
-            var newVersion = require(path.join(process.cwd(), 'package.json')).version;
+            var newVersion;
+            if (toTag === 'master') {
+                delete require.cache[path.join(process.cwd(), 'package.json')];
+                newVersion = require(path.join(process.cwd(), 'package.json')).version;
+            } else {
+                newVersion = toTag;
+            }
+            
             var relNotesFile = 'RELEASENOTES.md';
             var data = fs.readFileSync(relNotesFile, {encoding: 'utf8'});
             var pos = data.indexOf('### ');
-            var date = new Date().toDateString().split(' ');
+            var date;
+            if (argv['override-date']) {
+                date = new Date(argv['override-date']).toDateString().split(' ');
+            } else {
+                date = new Date().toDateString().split(' ');
+            }
             data = data.substr(0, pos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + output + '\n\n' + data.substr(pos);
             fs.writeFileSync(relNotesFile, data, {encoding: 'utf8'});
-            linkify.file(relNotesFile);
+            return linkify.file(relNotesFile);
         }
     });
 };

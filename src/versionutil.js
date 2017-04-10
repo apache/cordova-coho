@@ -79,6 +79,10 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
         if (repo.id == 'android' || repo.id == 'amazon-fireos') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
+            // Set build.gradle version, vcsTag, and name
+            shelljs.sed('-i', /version.*=.*/, "version = '" + version + "'", path.join('framework', 'build.gradle'));
+            shelljs.sed('-i', /vcsTag.*=.*/, "vcsTag = '" + version + "'", path.join('framework', 'build.gradle'));
+            shelljs.sed('-i', /version.{\n.*(name.*=.*)/, "version {\n            name = '" + version + "'", path.join('framework', 'build.gradle'));
         } else if (repo.id == 'ios' || repo.id == 'osx') {
             shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '";', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
         } else if (repo.id == 'blackberry') {

@@ -11,6 +11,7 @@
     "co": "~3.0",
     "glob": "^5.0.14",
     "gnode": "^0.1.0",
+    "jasmine": "^2.5.3",
     "jira-linkify": "^2.2.3",
     "nlf": "^1.4.3",
     "opener": "^1.4.1",
@@ -29,7 +30,10 @@
     "tape-runner": "^0.3.0"
   },
   "scripts": {
-    "test": "node test/test.js | tap-spec"
+    "oldtest": "node test/test.js | tap-spec",
+    "test": "npm run jasmine",
+    "cover": "istanbul cover --root src --print detail jasmine",
+    "jasmine": "jasmine --captureExceptions --color"
   },
   "repository": {
     "type": "git",

@@ -19,7 +19,6 @@ under the License.
 
 var apputil = require('./apputil');
 var superspawn = require('./superspawn');
-var print = apputil.print;
 
 var gitCommitCount = 0;
 
@@ -51,14 +50,14 @@ function execHelper (cmdAndArgs, silent, allowError, win, fail) {
     }
     cmdAndArgs[0] = cmdAndArgs[0].replace(/^git /, 'git -c color.ui=always ');
     if (!silent || silent === 3 || exports.verbose) {
-        print('Executing:', cmdAndArgs.join(' '));
+        apputil.print('Executing:', cmdAndArgs.join(' '));
     }
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
     return result.then(win || null, fail || function (e) {
         if (allowError) {
             throw e;
         } else if (+silent !== 1) {
-            print(e.output);
+            apputil.print(e.output);
         }
         process.exit(2);
     });
@@ -66,18 +65,18 @@ function execHelper (cmdAndArgs, silent, allowError, win, fail) {
 exports.execHelper = execHelper;
 
 function reportGitPushResult (repos, branches) {
-    print('');
+    apputil.print('');
     if (gitCommitCount) {
         var flagsStr = repos.map(function (r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function (b) { return '-b ' + b; }).join(' ');
-        print('All work complete. ' + gitCommitCount + ' commits were made locally.');
-        print('To review changes:');
-        print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' --diff | less');
-        print('To push changes:');
-        print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
-        print('To revert all local commits:');
-        print('  ' + process.argv[1] + ' repo-reset ' + flagsStr);
+        apputil.print('All work complete. ' + gitCommitCount + ' commits were made locally.');
+        apputil.print('To review changes:');
+        apputil.print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' --diff | less');
+        apputil.print('To push changes:');
+        apputil.print('  ' + process.argv[1] + ' repo-push ' + flagsStr);
+        apputil.print('To revert all local commits:');
+        apputil.print('  ' + process.argv[1] + ' repo-reset ' + flagsStr);
     } else {
-        print('All work complete. No commits were made.');
+        apputil.print('All work complete. No commits were made.');
     }
 }
 
@@ -85,7 +84,7 @@ exports.reportGitPushResult = reportGitPushResult;
 
 function * execOrPretend (cmd, pretend) {
     if (pretend) {
-        print('PRETENDING TO RUN: ' + cmd.join(' '));
+        apputil.print('PRETENDING TO RUN: ' + cmd.join(' '));
     } else {
         return yield execHelper(cmd);
     }

@@ -38,6 +38,7 @@ var COMMON_RAT_EXCLUDES = [
     '*.xcodeproj',
     '.*',
     '*-Info.plist',
+    'Info.plist',
     'VERSION',
     'node_modules',
     'thirdparty',

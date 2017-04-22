@@ -23,12 +23,21 @@ var optimist = require('optimist');
 var shelljs = require('shelljs');
 var flagutil = require('./flagutil');
 
+var packman = 'npm';
+
 function *createLink(argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     argv = opt
         .usage('Does an npm-link of the modules that we publish. Ensures we are testing live versions of our own dependencies instead of the last published version.\n' +
                '\n' +
-               'Usage: $0 npm-link')
+               'Usage: $0 npm-link' +
+               'Example usage: $0 npm-link --use-yarn\n' 
+               )
+        .options('use-yarn', {
+            desc: 'Use the yarn package manager instead of npm',
+            type: 'bool',
+            default: false
+         })
         .argv;
 
     if (argv.h) {
@@ -36,17 +45,24 @@ function *createLink(argv) {
         process.exit(1);
     }
 
+    if (argv['use-yarn']) {
+        packman = 'yarn';
+        console.log('Using the yarn package manager.');
+    } else {
+        console.log('Using npm');
+    }
+
     function npmLinkIn(linkedModule, installingModule) {
        cdInto(installingModule);
        // 'npm link' will automatically unbuild a non-linked module if it is present,
        // so don't need to explicitly 'rm -r' it first.
-       shelljs.exec("npm link " + linkedModule);
+       shelljs.exec(packman + " link " + linkedModule);
        cdOutOf();
     }
 
     function npmLinkOut(moduleName) {
         cdInto(moduleName);
-        shelljs.exec("npm link");
+        shelljs.exec(packman + " link");
         cdOutOf();
     }
 

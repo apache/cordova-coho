@@ -113,6 +113,8 @@ function bold(text, token) {
     return text.replace(new RegExp(" " + token, "gi"), " **" + token + "**");
 }
 
+var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Close\s+\#\d+$/gi;
+
 function *createNotes(repo, newVersion, changes, overrideDate) {
     // pump changes through JIRA linkifier first through a stream pipe
 	var transformer = linkify.stream("CB");
@@ -128,6 +130,12 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
 	}
 	read.pipe(transformer).pipe(write);
     yield co_stream.wait(write); // wait for the writable stream to finish/end
+    // remove any commit logs in the form "Close #xxx", used for closing github pull requests.
+    var lines = data.split('\n');
+    data = lines.filter(function(line) {
+        return !(line.match(GITHUB_CLOSE_COMMIT_MSG));
+    }).join('\n');
+
     // some more release note linting: enclose in backticks certain tokens
     data = backtick(data, 'plugin.xml');
     flagutil.computeReposFromFlag('platforms').map(function(r) { return r.repoName; }).forEach(function(platform_name) {

@@ -113,7 +113,7 @@ function bold(text, token) {
     return text.replace(new RegExp(" " + token, "gi"), " **" + token + "**");
 }
 
-var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Close\s+\#\d+$/gi;
+var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi;
 var VIA_COHO_COMMIT_MSG = /\(via coho\)/gi
 
 function *createNotes(repo, newVersion, changes, overrideDate) {

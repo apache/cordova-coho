@@ -533,8 +533,7 @@ function *interactive_plugins_release() {
                     if (answers['rb_automerge_proceed_' + plugin_name]) {
                         // Auto-merge master into the release branch.
                         var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
-                        console.log('Checking out "' + rb + '" branch of', plugin_name, 'merging master in...');
-                        yield gitutil.gitCheckout(rb);
+                        console.log('Checking out "' + rb + '" branch of', plugin_name, 'and merging master in...');
                         yield executil.execHelper(executil.ARGS('git merge -s recursive -X theirs', 'master'), false, false, function() {
                             console.log('Merge was fine, continuing.');
                         }, function(e) {
@@ -698,16 +697,24 @@ function *interactive_plugins_release() {
                 });
             })();
         }).then(function() {
-            console.log('We are about to push changes up to Apache SVN! Let me get your SVN credentials.');
-            return inquirer.prompt([{
-                type: 'input',
-                name: 'username',
-                message: 'Please enter your svn username'
-            },{
-                type: 'password',
-                name: 'password',
-                message: 'Please enter your svn password'
-            }]);
+            if (process.env.SVN_USER && process.env.SVN_PASSWORD) {
+                return {
+                    username: process.env.SVN_USER,
+                    password: process.env.SVN_PASSWORD
+                };
+            } else {
+                console.log('We are about to push changes up to Apache SVN! Let me get your SVN credentials.');
+                console.log('(For next time, you can export the `SVN_USER` and `SVN_PASSWORD` environment variables to skip me asking you.)');
+                return inquirer.prompt([{
+                    type: 'input',
+                    name: 'username',
+                    message: 'Please enter your svn username'
+                },{
+                    type: 'password',
+                    name: 'password',
+                    message: 'Please enter your svn password'
+                }]);
+            }
         }).then(function(answers) {
             svn_user = answers.username;
             svn_password = answers.password;

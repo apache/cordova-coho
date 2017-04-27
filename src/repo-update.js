@@ -131,7 +131,8 @@ function *updateRepos(repos, branches, noFetch) {
                         staleBranches[branchName] = !!changes;
                     }
                 } else {
-                    yield gitutil.gitCheckout(branchName);
+                    yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName + ' remotes/' + repo.remoteName + '/' + branchName), 
+                            /*silent*/ true, /*allowError*/ false);
                 }
             }
             var staleBranches = branches.filter(function(branchName) {

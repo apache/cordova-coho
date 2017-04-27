@@ -709,7 +709,7 @@ function *interactive_plugins_release() {
                 process.chdir(dist_dev_repo);
                 // svn add the CB-xxxxx issue key for the plugins release, which is a directory, to the svn repo
                 yield svnutil.add(plugins_release_issue.key);
-                yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ' Uploading release candidates for plugins release');
+                yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins release');
                 process.chdir(orig_dir);
             })();
         }).then(function() {

@@ -141,15 +141,11 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
     }).join('\n');
 
     // some more release note linting: enclose in backticks certain tokens
-    data = backtick(data, 'plugin.xml');
-    data = backtick(data, 'package.json');
-    data = backtick(data, 'config.xml');
+    ['plugin.xml', 'package.json', 'config.xml', 'README', 'InAppBrowser'].forEach(function(token) {
+        data = backtick(data, token);
+    });
     flagutil.computeReposFromFlag('platforms').map(function(r) { return r.repoName; }).forEach(function(platform_name) {
         data = backtick(data, platform_name);
-    });
-    var special_plugin_names = ['InAppBrowser'];
-    special_plugin_names.forEach(function(name) {
-        data = backtick(data, name);
     });
     // bold platform labels (with optional version numbers, too)
     var version_labels = [];

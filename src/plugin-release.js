@@ -521,7 +521,7 @@ function *interactive_plugins_release() {
                 prompts.push({
                     type: 'confirm',
                     name: 'rb_automerge_proceed_' + plugin_name,
-                    message: plugin_name + ' already has an existing release branch "' + rb + '". Do you want me to automatically merge master into this branch for you? If no, I will prompt you to modify the release branch yourself at a later time in this session.'
+                    message: plugin_name + ' already has an existing release branch "' + rb + '". Do you want me to automatically merge master into this branch for you? If no, I will prompt you to modify the release branch yourself at a later time in this session.\nWARNING: this will run `git merge master -s recursive -X theirs` from the release branch, essentially favouring master branch changes. Only proceed with the auto-merge if you understand the repercussions of doing so.'
                 });
             });
             return inquirer.prompt(prompts);
@@ -535,10 +535,10 @@ function *interactive_plugins_release() {
                         var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
                         console.log('Checking out "' + rb + '" branch of', plugin_name, 'merging master in...');
                         yield gitutil.gitCheckout(rb);
-                        //yield executil.execHelper(executil.ARGS('git merge -s recursive -X theirs', 'master'), false, false, function() {
-                        //    console.log('Merge was fine, continuing.');
-                        //}, function(e) {
-                        yield gitutil.merge('master', function() { console.log('merge was fine, continuing.'); }, function(e) {
+                        yield executil.execHelper(executil.ARGS('git merge -s recursive -X theirs', 'master'), false, false, function() {
+                            console.log('Merge was fine, continuing.');
+                        }, function(e) {
+                        //yield gitutil.merge('master', function() { console.log('merge was fine, continuing.'); }, function(e) {
                             plugins_to_merge_manually.push(plugin_name);
                         });
                     } else {

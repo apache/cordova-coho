@@ -124,10 +124,14 @@ function *updateRepos(repos, branches, noFetch) {
             var staleBranches = {};
             for (var i = 0; i < branches.length; ++i) {
                 var branchName = branches[i];
-                if (yield gitutil.remoteBranchExists(repo, branches[i])) {
-                    var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), 
-                        /*silent*/ true, /*allowError*/ true);
-                    staleBranches[branchName] = !!changes;
+                if (yield gitutil.localBranchExists(branchName)) {
+                    if (yield gitutil.remoteBranchExists(repo, branchName)) {
+                        var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName), 
+                            /*silent*/ true, /*allowError*/ true);
+                        staleBranches[branchName] = !!changes;
+                    }
+                } else {
+                    yield gitutil.gitCheckout(branchName);
                 }
             }
             var staleBranches = branches.filter(function(branchName) {

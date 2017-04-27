@@ -18,6 +18,7 @@ under the License.
 */
 
 var co = require('co');
+var Q = require('q');
 var path = require('path');
 var fs = require('fs');
 var util = require('util');
@@ -124,16 +125,26 @@ function *interactive_plugins_release() {
         console.error('I did not find `svn` on your PATH!');
         process.exit(1);
     }
-    console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
-    inquirer.prompt([{
-        type: 'input',
-        name: 'username',
-        message: 'Please enter your JIRA username'
-    },{
-        type: 'password',
-        name: 'password',
-        message: 'Please enter your JIRA password'
-    }]).then(function(answers) {
+    return Q.fcall(function() {
+        if (process.env.JIRA_USER && process.env.JIRA_PASSWORD) {
+            return {
+                username: process.env.JIRA_USER,
+                password: process.env.JIRA_PASSWORD
+            }
+        } else {
+            console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
+            console.log('(Note that you can export environment variables `JIRA_USER` and `JIRA_PASSWORD` so I won\'t ask you next time.)');
+            return inquirer.prompt([{
+                type: 'input',
+                name: 'username',
+                message: 'Please enter your JIRA username'
+            },{
+                type: 'password',
+                name: 'password',
+                message: 'Please enter your JIRA password'
+            }])
+        }
+    }).then(function(answers) {
         var username = answers.username;
         you = username;
         var password = answers.password;

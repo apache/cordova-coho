@@ -479,7 +479,7 @@ function *interactive_plugins_release() {
                     /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
                      * - tag each plugin repo with $v*/
                     if (yield gitutil.pendingChangesExist()) {
-                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release);
+                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release + ' (via coho)');
                         yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
                     } else {
                         console.warn('No pending changes detected for ' + plugin_name + '; that\'s probably not good eh?');

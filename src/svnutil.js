@@ -29,5 +29,5 @@ exports.add = function*(location) {
 }
 
 exports.commit = function*(username, password, msg) {
-    yield executil.execHelper(executil.ARGS('svn commit --username ' + username + ' --password ' + password + ' -m ' + msg), true, false);
+    yield executil.execHelper(['svn', 'commit', '--username', username, '--password', password, '-m', '"' + msg + '"'], false, false);
 }

@@ -19,6 +19,7 @@ under the License.
 
 var co = require('co');
 var Q = require('q');
+var glob = require('glob');
 var path = require('path');
 var fs = require('fs');
 var util = require('util');
@@ -67,6 +68,7 @@ var plugins_to_merge_manually = []; // array of plugin names that RM will need t
 var svn_user; // username for apache svn
 var svn_password; // password for apache svn
 var updated_repos; // sentinel variable for if we did repo updates
+var created_distdev_dir; // sentinel var for if a new dir was created in cordova-dist-dev
 
 function *updateDesiredRepos(repos) {
     if (!updated_repos) {
@@ -533,6 +535,9 @@ function *interactive_plugins_release() {
                         var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
                         console.log('Checking out "' + rb + '" branch of', plugin_name, 'merging master in...');
                         yield gitutil.gitCheckout(rb);
+                        //yield executil.execHelper(executil.ARGS('git merge -s recursive -X theirs', 'master'), false, false, function() {
+                        //    console.log('Merge was fine, continuing.');
+                        //}, function(e) {
                         yield gitutil.merge('master', function() { console.log('merge was fine, continuing.'); }, function(e) {
                             plugins_to_merge_manually.push(plugin_name);
                         });
@@ -678,7 +683,10 @@ function *interactive_plugins_release() {
             return co.wrap(function *() {
                 // location to store the archives in.
                 var dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
-                shelljs.mkdir('-p', dist_dev_dir);
+                if (!(fs.existsSync(dist_dev_dir))) {
+                    shelljs.mkdir('-p', dist_dev_dir);
+                    created_distdev_dir = true;
+                }
                 yield repoutil.forEachRepo(plugin_repos, function*(repo) {
                     var plugin_name = repo.repoName;
                     var tag = plugin_data[plugin_name].current_release;
@@ -686,6 +694,7 @@ function *interactive_plugins_release() {
                     var archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/*sign*/);
                     // - verify-archive cordova-dist-dev/$JIRA/*.tgz
                     yield create_archive.verifyArchive(archive);
+                    yield gitutil.gitCheckout('master');
                 });
             })();
         }).then(function() {
@@ -706,14 +715,35 @@ function *interactive_plugins_release() {
             return co.wrap(function *() {
                 var orig_dir = process.cwd();
                 var dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
-                process.chdir(dist_dev_repo);
-                // svn add the CB-xxxxx issue key for the plugins release, which is a directory, to the svn repo
-                yield svnutil.add(plugins_release_issue.key);
-                yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins release');
+                if (created_distdev_dir) {
+                    // if we created the dir containing the archives, then we can
+                    // just svn add the entire dir.
+                    process.chdir(dist_dev_repo);
+                    yield svnutil.add(plugins_release_issue.key);
+                    yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins release');
+                } else {
+                    // if it already existed, then we need to painstakingly add
+                    // each individual archive file cause svn is cool
+                    var archives_for_plugins = [];
+                    yield repoutil.forEachRepo(plugin_repos, function*(repo) {
+                        process.chdir(dist_dev_repo);
+                        var plugin_name = repo.repoName;
+                        var tag = plugin_data[plugin_name].current_release;
+                        var fileref = plugin_name + '-' + tag;
+                        archives_for_plugins.push(fileref);
+                        var files_to_add = glob.sync(path.join(plugins_release_issue.key, fileref + '*'));
+                        for (var i = 0; i < files_to_add.length; i++) {
+                            yield svnutil.add(files_to_add[i]);
+                        }
+                    });
+                    process.chdir(dist_dev_repo);
+                    yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins ' + archives_for_plugins.join(', '));
+                }
+
                 process.chdir(orig_dir);
             })();
         }).then(function() {
-            console.log('Nicely done! Last two things you should do:');
+            console.log('Nicely done! Last few things you should do:');
             /* 14. Dump instructions only? Prepare blog post - perhaps can dump out release notes-based blog content.
              *   - TODO: this apparently ends up as a .md file in cordova-docs. perhaps can dump this as a shell of a file into the cordova-docs repo? maybe even auto-branch the docs repo in prep for a PR?*/
             console.log('1. Prepare a blog post: https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md#prepare-blog-post');

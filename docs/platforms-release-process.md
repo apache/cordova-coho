@@ -347,12 +347,16 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 1. Add your bintray username and password as system variables. Your BINTRAY_USER and BINTRAY_KEY should be cordova username and key respectively. Ask the Project Management Committee (pmc) for the cordova credentials. Confirm that your key and user name are set:
 
+```
     echo $BINTRAY_USER 
-    echo $BINTRAY_KEY 
+    echo $BINTRAY_KEY
+``` 
 
 2. Run the following command (replace 6.2.2 with released version):
 
+```
     (cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
+```
 
 ## Add permanent apache release tag
 

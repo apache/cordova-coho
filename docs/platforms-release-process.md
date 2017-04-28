@@ -350,8 +350,9 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
     echo $BINTRAY_USER 
     echo $BINTRAY_KEY 
 
-2. Run the following command:
-    (cd cordova-android/framework && gradle bintrayUpload)
+2. Run the following command (replace 6.2.2 with released version):
+
+    (cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
 
 ## Add permanent apache release tag
 

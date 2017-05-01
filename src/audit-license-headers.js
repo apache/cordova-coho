@@ -133,6 +133,8 @@ module.exports.scrubRepos = function*(repos, silent, ignoreError, win, fail) {
         });
 
         // run Rat
-        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function(stdout) { win(repo, stdout); });
+        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function(stdout) {
+            if (win) win(repo, stdout);
+        });
     });
 }

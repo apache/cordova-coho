@@ -43,7 +43,7 @@ module.exports = function() {
     var repoCommands = [
         {
             name: 'repo-clone',
-            desc: 'Clones git repositories as siblings of cordova-coho (unless --no-chdir is used).',
+            desc: 'Clones git repositories as siblings of cordova-coho (unless --no-chdir or --global is used).',
             entryPoint: lazyRequire('./repo-clone')
         }, {
             name: 'repo-update',
@@ -218,7 +218,7 @@ module.exports = function() {
         
     if (command && !command.noChdir) {
         opts = opts.options('chdir', {
-            desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',
+            desc: 'Use --no-chdir or --global to run in your CWD instead of the parent of cordova-coho/',
             type: 'boolean',
             default: true
         });

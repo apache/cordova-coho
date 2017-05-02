@@ -201,7 +201,21 @@ module.exports = function() {
             desc: 'Enable verbose logging',
             type: 'boolean',
             default: false
-        });
+        })
+        .options('global', {
+            desc: 'Global use of coho, equivalent to --no-chdir',
+            type: 'boolean',
+            default: false
+        })
+        .alias('global', 'g');
+
+    if (optimist.argv.global) {
+        if (command) {
+            // if global is set, it is essentially --no-chdir
+            command.noChdir = true;
+        }
+    }
+        
     if (command && !command.noChdir) {
         opts = opts.options('chdir', {
             desc: 'Use --no-chdir to run in your CWD instead of the parent of cordova-coho/',

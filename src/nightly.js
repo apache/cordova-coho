@@ -32,7 +32,7 @@ var repoclone = require('./repo-clone');
 
 module.exports = function*(argv) {
     /** Specifies the default repos to build nightlies for */
-    var DEFAULT_NIGHTLY_REPOS = ['cli', 'lib'];
+    var DEFAULT_NIGHTLY_REPOS = ['cli', 'lib', 'fetch', 'common'];
 
     var opt = flagutil.registerHelpFlag(optimist);
     opt = flagutil.registerRepoFlag(opt);

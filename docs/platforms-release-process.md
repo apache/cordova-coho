@@ -87,6 +87,8 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses
 Increase the version within package.json using SemVer, and remove the `-dev` suffix
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
+
+In `cordova-android`, also remember to bump the version in `framework/build.gradle`.
     
 If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
 
@@ -116,14 +118,17 @@ For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailabil
 
 ---
 
-Prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+If you are releasing new commits from an already-existing release branch, remember to merge in or cherry-pick relevant commits from master into the release branch!
+
+After, prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
  * Updating `cordova.js` snapshot
  * Creating a release branch (if it doesn't already exist)
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
-    
-Run the following command (make sure to replace the version below  with what is listed inside `package.json`)
 
-    coho prepare-release-branch --version 5.0.0 -r android
+    
+Run the following command (make sure to replace the version below with what is listed inside `package.json`)
+
+    coho prepare-platform-release-branch --version 5.0.0 -r android
     # Ensure commits look okay on both branches
     coho repo-status -r android -b master -b 5.0.x
 
@@ -150,8 +155,9 @@ To submit a fix:
 1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
 
     ```
-    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android 
+    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins 
     (cd mobilespec && cordova run android --device)
+    (cd mobilespec && cordova run android --emulator)
     ```
 
 2) Create a hello world app using the cordova CLI
@@ -160,6 +166,7 @@ To submit a fix:
     cordova create ./androidTest org.apache.cordova.test androidTest
     (cd androidTest && cordova platform add ../cordova-android)
     (cd androidTest && cordova run android --device)
+    (cd androidTest && cordova run android --emulator)
     ```
 
 3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
@@ -169,6 +176,7 @@ To submit a fix:
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
     (cd androidTest2 && ./cordova/build)
     (cd androidTest2 && ./cordova/run --device)
+    (cd androidTest2 && ./cordova/run --emulator)
     ```
 
 4) Test Project Upgrade via CLI:
@@ -226,9 +234,9 @@ Feel free to cleanup the projects you just created
 
 Tag & Push:
 
-    coho tag-release --version 3.5.0 -r android --pretend
+    coho tag-platform-release --version 3.5.0 -r android --pretend
     # Seems okay:
-    coho tag-release --version 3.5.0 -r android
+    coho tag-platform-release --version 3.5.0 -r android
     
 The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
 

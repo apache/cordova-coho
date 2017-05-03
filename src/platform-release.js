@@ -141,7 +141,7 @@ function *updateJsSnapshot(repo, version, commit) {
                     //git fetch and update master for cordovajs
                     yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
                     yield gitutil.gitCheckout('master');
-                    yield executil.execHelper(executil.ARGS('grunt compile:' +repo.id + ' --platformVersion='+version));
+                    yield executil.execHelper(executil.ARGS('grunt compile:' +repo.id + ' --platformVersion='+version), false, true);
                     hasBuiltJs = version;
                 });
             });

@@ -64,7 +64,7 @@ function *publishTag(options) {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     //npm publish --tag argv.tag
     yield repoutil.forEachRepo(repos, function*(repo) {

@@ -353,7 +353,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ## Uploading to Bintray (Android only)
 
-1. Add your bintray username and password as system variables. Your BINTRAY_USER and BINTRAY_KEY should be cordova username and key respectively. Ask the Project Management Committee (pmc) for the cordova credentials. Confirm that your key and user name are set:
+1. Add the cordova bintray username and API key as system variables. Your `BINTRAY_USER` should be the username "cordova". The API key is available on the [bintray cordova "edit profile" page](https://bintray.com/profile/edit) - the last option in the menu on the left is "API Key". Find it there. [Credentials to log into the bintray site are on the PMC private SVN](https://svn.apache.org/repos/private/pmc/cordova/logins/bintray.txt). If you have trouble, ask the Project Management Committee (pmc) for the credentials. Confirm that your key and user name are set:
 
 ```
     echo $BINTRAY_USER

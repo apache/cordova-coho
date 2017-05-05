@@ -27,7 +27,7 @@ This page describes the technical steps for releasing a `Platforms Release` (see
 
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 
-Replace `Android` with the platform you are releasing. 
+Replace `Android` with the platform you are releasing.
 
 ## Get Buy-in
 
@@ -76,9 +76,9 @@ Checkin updated modules (use npm 3.10.1+)
 ## Release Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
-    
+
     coho audit-license-headers -r android | less
-    
+
 Ensure all dependencies and subdependencies have Apache-compatible licenses
 
     coho check-license -r android
@@ -89,7 +89,7 @@ Increase the version within package.json using SemVer, and remove the `-dev` suf
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
 In `cordova-android`, also remember to bump the version in `framework/build.gradle`.
-    
+
 If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
@@ -113,7 +113,7 @@ If you have prepared the release notes in your release branch for a patch releas
 
     git checkout master
     git checkout -p RELEASENOTES_COMMIT_SHA_HASH
-    
+
 For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailability.h (via coho)` into the master branch as well.
 
 ---
@@ -125,7 +125,7 @@ After, prepare your release branch by using `coho prepare-release-branch` comman
  * Creating a release branch (if it doesn't already exist)
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
 
-    
+
 Run the following command (make sure to replace the version below with what is listed inside `package.json`)
 
     coho prepare-platform-release-branch --version 5.0.0 -r android
@@ -155,7 +155,7 @@ To submit a fix:
 1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
 
     ```
-    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins 
+    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
     (cd mobilespec && cordova run android --device)
     (cd mobilespec && cordova run android --emulator)
     ```
@@ -171,7 +171,7 @@ To submit a fix:
 
 3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
 
-    
+
     ```
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
     (cd androidTest2 && ./cordova/build)
@@ -237,7 +237,7 @@ Tag & Push:
     coho tag-platform-release --version 3.5.0 -r android --pretend
     # Seems okay:
     coho tag-platform-release --version 3.5.0 -r android
-    
+
 The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
 ## Publish RC to dist/dev
@@ -356,9 +356,9 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 1. Add your bintray username and password as system variables. Your BINTRAY_USER and BINTRAY_KEY should be cordova username and key respectively. Ask the Project Management Committee (pmc) for the cordova credentials. Confirm that your key and user name are set:
 
 ```
-    echo $BINTRAY_USER 
+    echo $BINTRAY_USER
     echo $BINTRAY_KEY
-``` 
+```
 
 2. Run the following command (replace 6.2.2 with released version):
 
@@ -368,7 +368,7 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ## Add permanent apache release tag
 
-Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
+Make a copy of your released tag with a prefix of `rel/YOURTAG`. These are permanent release tags for Apache.
 
     (cd cordova-android; git checkout 5.1.0; git tag rel/5.1.0; git push origin --tags; git checkout master)
 
@@ -381,7 +381,7 @@ Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are perma
 
 ### Update the Docs
 
-Follow the README at https://github.com/apache/cordova-docs
+Follow the README at https://github.com/apache/cordova-docs, and specifically the deploy section: https://github.com/apache/cordova-docs#deploying
 
 ### Announce It!
  1. Announce the release to the world!

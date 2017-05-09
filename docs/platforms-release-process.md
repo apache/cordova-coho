@@ -364,7 +364,10 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 ```
     (cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
+
 ```
+
+3. Load up the bintray webpage for cordova-android: https://bintray.com/cordova/maven/cordova-android. You should see a notification/warning about publishing the latest release. Hit the Publish link!
 
 ## Add permanent apache release tag
 

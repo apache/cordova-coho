@@ -63,15 +63,18 @@ On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`,
     npm install
     npm link # Might need sudo for some configurations
 
-# Cloning Cordova repositories
+# Cloning/Updating Cordova repositories
 
 ```bash
 mkdir cordova-repos
 cd cordova-repos
-coho repo-clone -g -r all
+coho repo-update -g -r all
 ```
 
-This will clone **all** Apache Cordova repositories into the current working directory. 
+`repo-update` will clone a repo if it is missing -- if it exists, it updates it.
+
+
+The `all` repo id will clone **all** Apache Cordova repositories into the current working directory. 
 
 # Docs
 

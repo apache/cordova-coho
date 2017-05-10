@@ -1,0 +1,8 @@
+# yes, not .gitignore
+gitignore
+
+knownIssues.json
+validLicenses.json
+jasmine.json
+appveyor.yml
+apache-rat-0.12

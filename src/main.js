@@ -209,7 +209,7 @@ module.exports = function() {
         })
         .alias('global', 'g');
 
-    if (optimist.argv.global) {
+    if (opts.argv.global) {
         if (command) {
             // if global is set, it is essentially --no-chdir
             command.noChdir = true;

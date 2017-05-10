@@ -22,7 +22,9 @@
 [![Build Status](https://travis-ci.org/apache/cordova-coho.svg?branch=master)](https://travis-ci.org/apache/cordova-coho)
 [![Build Status](https://ci.appveyor.com/api/projects/status/1y9yh5ys72h6l5sy)](https://ci.appveyor.com/project/stumped2/cordova-coho)
 
-# COHO
+# Cordova Coho
+
+> The command line tool to for Apache Cordova contributors to manage [ Apache Cordova](http://cordova.apache.org) repositories, and to help with releases and pull requests.
 
 This repository has the following purposes:
 
@@ -36,13 +38,23 @@ This repository has the following purposes:
   - e.g. coho repo-clone
   - e.g. coho --help
 
-## How to Install Node:
+## Node.js is a pre-requisite:
 
-Easiest way on OS X & Linux: https://github.com/creationix/nvm
+Easiest way on OS X & Linux: 
+    [https://github.com/creationix/nvm](https://github.com/creationix/nvm)
 
-Easiest way on Win: http://nodejs.org/
+Easiest way on Windows:
+    [http://nodejs.org/](http://nodejs.org/)
 
-## How to Clone & Use `coho`
+# Installation
+
+```bash    
+npm install -g cordova-coho
+```    
+
+On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`, you might have to run the command using `sudo`.    
+
+## Alternately, you could also clone & Use `coho`
 
     mkdir -p cordova
     cd cordova
@@ -50,9 +62,46 @@ Easiest way on Win: http://nodejs.org/
     cd cordova-coho
     npm install
     npm link # Might need sudo for some configurations
+
+# Cloning Cordova repositories
+
+```bash
+mkdir cordova-repos
+cd cordova-repos
+coho repo-clone -g -r all
+```
+
+This will clone **all** Apache Cordova repositories into the current working directory. 
+
+# Docs
+
     coho --help
 
-## How to Clone Other Repos
+or if you know the command:
 
-    coho repo-clone -r plugins -r tools -r android -r ios -r ...
-    coho npm-link
+
+    coho [command] --help   
+
+For example:
+
+    coho repo-clone --help
+
+To see valid repo ids and repo group ids for use with Coho, use the `list-repos` command:
+
+    coho list-repos    
+
+
+# Contributing
+Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
+[how to contribute on our website][contribute]. 
+
+# TO-DO + Issues
+
+If you find issues with this tool, please follow our guidelines for [reporting issues]. 
+We do not use github issue system as an Apache project, we have a JIRA issue management system which covers over 50+ cli, platform, 
+plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.
+
+Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
+
+[Contribute]: http://cordova.apache.org/contribute/
+[Reporting issues]: http://cordova.apache.org/contribute/issues.html

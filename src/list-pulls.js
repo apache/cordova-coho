@@ -128,6 +128,11 @@ function listGitHubPullRequests(repo, maxAge, hideUser, short, statsOnly, callba
         pullRequests = JSON.parse(pullRequests);
         var origCount = pullRequests.length;
 
+        if (pullRequests.message === 'Bad credentials') {
+            apputil.fatal('Error: GitHub Bad credentials. Check your CORDOVA_GIT_ACCOUNT environment variable which should be set with your Github API token: https://github.com/settings/tokens.', 
+            'CORDOVA_GIT_ACCOUNT used: ' + process.env['CORDOVA_GIT_ACCOUNT']);
+        } 
+
         pullRequests = pullRequests.filter(function(p) {
             var updatedDate = new Date(p.updated_at);
             var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));

@@ -18,3 +18,11 @@
 # under the License.
 #
 -->
+
+## Release Notes for Cordova Coho ##
+
+The command line tool to for Apache Cordova contributors to manage Apache Cordova repositories, and to help with releases and pull requests.
+
+### 1.0.0 (May11, 2017)
+
+- Initial release, see `coho --help` for usage.

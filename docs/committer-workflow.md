@@ -97,7 +97,7 @@ When possible, try to phrase things in the form of a proposal. If no one objects
    * Platforms: Native unit tests (i.e., `cordova-android/test`, `cordova-ios/CordovaLibTests`)
    * Cordova JS: Run `grunt test`
  * If there is no existing test that exercises your code, consider adding one
- * If you are writing documentation (i.e., cordova-docs), be aware of the [style guidelines](https://github.com/apache/cordova-docs/blob/master/STYLESHEET.md|style guidelines).
+ * If you are writing documentation (i.e., cordova-docs), be aware of the [style guidelines](https://github.com/apache/cordova-docs/blob/master/STYLESHEET.md).
 
 ### Step 6: Ask for a code review (_optional_)
  * Do this if you want a second pair of eyes to look at your code before it goes in.

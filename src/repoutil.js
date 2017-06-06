@@ -314,28 +314,19 @@ var toolRepos = [
         title: 'Cordova Serve',
         id: 'serve',
         packageName: 'cordova-serve',
-        repoName: 'cordova-lib',
-        jiraComponentName: 'cordova-serve',
-        path: 'cordova-serve',
-        versionPrefix: 'serve',
-        isModule: true
+        repoName: 'cordova-serve',
+        jiraComponentName: 'cordova-serve'
     }, {
         title: 'Cordova Common',
         id: 'common',
         packageName: 'cordova-common',
         jiraComponentName: 'cordova-common',
-        repoName: 'cordova-lib',
-        path: 'cordova-common',
-        versionPrefix: 'common',
-        isModule: true
+        repoName: 'cordova-common'
     }, {
         title: 'Cordova Fetch',
         id: 'fetch',
         packageName: 'cordova-fetch',
-        repoName: 'cordova-lib',
-        path: 'cordova-fetch',
-        versionPrefix: 'fetch',
-        isModule: true,
+        repoName: 'cordova-fetch',
         jiraComponentName: 'cordova-fetch'
     }, {
         title: 'Cordova Create',

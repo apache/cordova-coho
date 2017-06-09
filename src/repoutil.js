@@ -308,8 +308,7 @@ var toolRepos = [
         title: 'Cordova Lib',
         id: 'lib',
         repoName: 'cordova-lib',
-        jiraComponentName: 'cordova-lib',
-        path: 'cordova-lib'
+        jiraComponentName: 'cordova-lib'
     }, {
         title: 'Cordova Serve',
         id: 'serve',

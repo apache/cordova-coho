@@ -24,31 +24,31 @@ var shell = require('shelljs');
 var origWorkingDir = path.resolve(process.cwd());
 var baseWorkingDir = origWorkingDir;
 
-exports.resolveUserSpecifiedPath = function(p) {
+exports.resolveUserSpecifiedPath = function (p) {
     return path.resolve(origWorkingDir, p);
 };
 
-exports.initWorkingDir = function(chdir) {
-    if(chdir) {
+exports.initWorkingDir = function (chdir) {
+    if (chdir) {
         var newDir = path.resolve(__dirname, '..', '..');
         process.chdir(newDir);
         baseWorkingDir = newDir;
     }
     console.log('Running from ' + baseWorkingDir);
-}
+};
 
-exports.getBaseDir = function() {
+exports.getBaseDir = function () {
     return baseWorkingDir;
-}
+};
 
-exports.fatal = function() {
+exports.fatal = function () {
     console.error.apply(console, arguments);
     process.exit(1);
 };
 
 exports.prefixLength = 30;
 
-exports.print = function() {
+exports.print = function () {
     var newArgs = Array.prototype.slice.call(arguments);
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
@@ -61,11 +61,11 @@ exports.print = function() {
         }
         var prefix = chalk.magenta.bold(curDir) + chalk.yellow(banner);
         newArgs.unshift(prefix);
-        newArgs = newArgs.map(function(val) { return val.replace(/\n/g, '\n' + prefix + ' ') });
+        newArgs = newArgs.map(function (val) { return val.replace(/\n/g, '\n' + prefix + ' '); });
     }
 
     console.log.apply(console, newArgs);
-}
+};
 
 exports.setShellSilent = function (func) {
     var origShellSilent = shell.config.silent;

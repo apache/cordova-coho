@@ -18,13 +18,13 @@ under the License.
 */
 
 var optimist = require('optimist');
-var path = require('path');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*() {
-    var opt = flagutil.registerRepoFlag(optimist), cmd;
+module.exports = function * () {
+    var opt = flagutil.registerRepoFlag(optimist);
+    var cmd;
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
@@ -44,12 +44,11 @@ module.exports = function*() {
         cmd = [process.env['SHELL'] || 'sh', '-c', argv._[1]];
     }
 
-    yield repoutil.forEachRepo(repos, function*(repo) {
-         var replacedCmd = [];
-         for (var i = 0; i < cmd.length; i++) {
-            replacedCmd[i] = cmd[i].replace(/\$r/g, repo.repoName);    
-         }
-         yield executil.execHelper(replacedCmd, false, true);
+    yield repoutil.forEachRepo(repos, function * (repo) {
+        var replacedCmd = [];
+        for (var i = 0; i < cmd.length; i++) {
+            replacedCmd[i] = cmd[i].replace(/\$r/g, repo.repoName);
+        }
+        yield executil.execHelper(replacedCmd, false, true);
     });
-}
-
+};

@@ -30,7 +30,7 @@ var fs = require('fs');
 var path = require('path');
 var repoclone = require('./repo-clone');
 
-module.exports = function*(argv) {
+module.exports = function * (argv) {
     /** Specifies the default repos to build nightlies for */
     var DEFAULT_NIGHTLY_REPOS = ['cli', 'lib', 'fetch', 'common', 'create', 'coho'];
 
@@ -44,12 +44,12 @@ module.exports = function*(argv) {
         )
         .options('pretend', {
             desc: 'Don\'t actually publish to npm, just print what would be run.',
-            type:'boolean'
+            type: 'boolean'
         })
-        .default({ r: DEFAULT_NIGHTLY_REPOS})
+        .default({ r: DEFAULT_NIGHTLY_REPOS })
         .argv;
 
-    if(argv.h) {
+    if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
@@ -64,7 +64,7 @@ module.exports = function*(argv) {
 
     // Update version in package.json and other respective files for every repo
     // and update dependencies to use nightly versions of packages to be released
-    yield repoutil.forEachRepo(reposToBuild, function*(repo) {
+    yield repoutil.forEachRepo(reposToBuild, function * (repo) {
         apputil.print('Updating ' + repo.id + ' version to ' + VERSIONS[repo.id]);
         yield versionutil.updateRepoVersion(repo, VERSIONS[repo.id], { commitChanges: false });
         updateRepoDependencies(repo, VERSIONS);
@@ -81,21 +81,21 @@ module.exports = function*(argv) {
     options.pretend = argv.pretend;
     options.r = reposToBuild.map(function (repo) { return repo.id; });
 
-    //publish to npm under nightly tag
+    // publish to npm under nightly tag
     yield npmpublish.publishTag(options);
 };
 
-function* prepareRepos(repoNames) {
+function * prepareRepos (repoNames) {
     // Clone and update required repos
     apputil.print('Cloning and updating required repositories...');
     var reposToClone = flagutil.computeReposFromFlag(['tools'].concat(repoNames));
-    yield repoclone.cloneRepos(reposToClone, /*silent=*/true);
-    yield repoupdate.updateRepos(reposToClone, /*silent=*/true);
+    yield repoclone.cloneRepos(reposToClone, /* silent= */true);
+    yield repoupdate.updateRepos(reposToClone, /* silent= */true);
 
     // Remove local changes and sync up with remote master
     apputil.print('Resetting repositories to "master" branches...');
     var reposToUpdate = flagutil.computeReposFromFlag(repoNames);
-    yield repoutil.forEachRepo(reposToUpdate, function*() {
+    yield repoutil.forEachRepo(reposToUpdate, function * () {
         yield gitutil.gitClean();
         yield gitutil.resetFromOrigin();
     });
@@ -106,7 +106,7 @@ function* prepareRepos(repoNames) {
  * @param {Object} repo Current repo which dependencies need to be updated
  * @param {Object<String, String>} dependencies Map of package's id's and nightly versions
  */
-function updateRepoDependencies(repo, dependencies) {
+function updateRepoDependencies (repo, dependencies) {
     var packageJSONPath = path.join(process.cwd(), 'package.json');
     var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
@@ -132,7 +132,7 @@ function updateRepoDependencies(repo, dependencies) {
  * @param SHA {String} String to use to generate nightly version
  * @returns {String} A newly generated nightly suffix
  */
-function getNightlySuffix(SHA) {
+function getNightlySuffix (SHA) {
     var currentDate = new Date();
     var nightlySuffix = '-nightly.' + currentDate.getUTCFullYear() + '.' +
         (currentDate.getUTCMonth() + 1) + '.' + currentDate.getUTCDate() +
@@ -147,7 +147,7 @@ function getNightlySuffix(SHA) {
  * @param {Object[]} repos An array of cordova repos
  * @returns {Object} Mapped object
  */
-function* retrieveVersions(repos) {
+function * retrieveVersions (repos) {
     var SHAJSON = yield retrieveSha(repos);
 
     return Object.keys(SHAJSON).reduce(function (result, repoId) {

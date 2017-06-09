@@ -27,49 +27,49 @@ var apputil = require('./apputil');
 var url = require('url');
 var opener = require('opener');
 
-module.exports = function *(argv) {
+module.exports = function * (argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     opt.options('branch', {
-            desc: 'Topic branch for which to create pull request (Default: current branch) ',
-            demand: false
-        });
+        desc: 'Topic branch for which to create pull request (Default: current branch) ',
+        demand: false
+    });
     argv = opt
         .usage('Launch github URL to create PR\n' +
         '\n' +
         'Usage: $0 create-pr --branch <topic_branch>')
         .argv;
-   if (argv.h) {
+    if (argv.h) {
         optimist.showHelp();
         process.exit(1);
-   }
-   var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
-   var currentBranch = opt.branch;
-   if (!currentBranch) {
-       currentBranch = yield gitutil.retrieveCurrentBranchName();
-   }
-   if (currentBranch == 'master') {
-       console.log('You can crate a PR only for a topic branch that is not master. Use --branch to specify the topic branch or checkout to the topic branch.');
-   }
-   var remoteInfo = yield getRemoteName(currentBranch);
-   var remoteFork = yield getRemoteForkName(remoteInfo.remoteName);
-   var url = REMOTE + currentRepo.repoName + '/compare/master...'  + remoteFork + ':' + remoteInfo.remoteBranch + '?expand=1';
-   console.log("Navigating to: " + url);
-   opener(url);
-}
+    }
+    var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
+    var currentBranch = opt.branch;
+    if (!currentBranch) {
+        currentBranch = yield gitutil.retrieveCurrentBranchName();
+    }
+    if (currentBranch === 'master') {
+        console.log('You can crate a PR only for a topic branch that is not master. Use --branch to specify the topic branch or checkout to the topic branch.');
+    }
+    var remoteInfo = yield getRemoteName(currentBranch);
+    var remoteFork = yield getRemoteForkName(remoteInfo.remoteName);
+    var url = REMOTE + currentRepo.repoName + '/compare/master...' + remoteFork + ':' + remoteInfo.remoteBranch + '?expand=1';
+    console.log('Navigating to: ' + url);
+    opener(url);
+};
 
-function* getRemoteForkName(remoteName) {
-    var remotes = (yield executil.execHelper(executil.ARGS('git remote -v'), /*silent*/ true)).split('\n');
+function * getRemoteForkName (remoteName) {
+    var remotes = (yield executil.execHelper(executil.ARGS('git remote -v'), /* silent */ true)).split('\n');
     var remoteUrl;
-    for (var i = 0; i < remotes.length; i++)  {
-       //fork    https://github.com/forkName/cordova-coho.git (push)
-       var tokens = remotes[i].split(/\s+/);
-       if (tokens[2] === '(push)' && tokens[0] === remoteName) {
-           remoteUrl = tokens[1];
-           break;
-       }
+    for (var i = 0; i < remotes.length; i++) {
+       // fork    https://github.com/forkName/cordova-coho.git (push)
+        var tokens = remotes[i].split(/\s+/);
+        if (tokens[2] === '(push)' && tokens[0] === remoteName) {
+            remoteUrl = tokens[1];
+            break;
+        }
     }
     if (!remoteUrl) {
-         apputil.fatal('Cannot find remote Url: ' + remotes);
+        apputil.fatal('Cannot find remote Url: ' + remotes);
     }
     var parsed = url.parse(remoteUrl);
     // parsed => /forkName/cordova-coho.git
@@ -77,27 +77,27 @@ function* getRemoteForkName(remoteName) {
     return forkName;
 }
 
-function* getRemoteName(currentBranch) {
-    var branches = (yield executil.execHelper(executil.ARGS('git branch -vv'), /*silent*/ true)).split('\n');
+function * getRemoteName (currentBranch) {
+    var branches = (yield executil.execHelper(executil.ARGS('git branch -vv'), /* silent */ true)).split('\n');
     //* create-pr           3bed9b5 [remotes/fork/create-pr] Add support for launching URL to create a PR
-    for (var i = 0; i < branches.length; i++)  {
+    for (var i = 0; i < branches.length; i++) {
         //* create-pr           3bed9b5 [remotes/fork/create-pr] Add support for launching URL to create a PR
-        //0   1                    2       3
+        // 0   1                    2       3
         var tokens = branches[i].split(/\s+/);
-        if (tokens[0] == '*') {
+        if (tokens[0] === '*') {
             // found the current branch
-            if(currentBranch !== tokens[1]) {
+            if (currentBranch !== tokens[1]) {
                 apputil.fatal('Unexpected format. Cannot find remote branch: ' + tokens[1] + '!== ' + currentBranch);
             }
             // if there is no upstream remote specified - we have no choice but to bail
             var remote = tokens[3];
-            if(remote.indexOf('[') !== 0) {
-                apputil.fatal('Cannot determine upstream remote branch. Have you already pushed it? \n' + 
+            if (remote.indexOf('[') !== 0) {
+                apputil.fatal('Cannot determine upstream remote branch. Have you already pushed it? \n' +
                     'To push and set upstream: git push -u <remoteFork> ' + currentBranch + '\n' +
                     'To set upstream branch:   git branch --set-upstream <remoteFork>');
             }
             // Strip off the []
-            remote = remote.substring(1, remote.length -1);
+            remote = remote.substring(1, remote.length - 1);
             tokens = remote.split('/');
             var remoteName = tokens[0];
             var remoteBranch = tokens[1];
@@ -105,7 +105,7 @@ function* getRemoteName(currentBranch) {
                 remoteName = tokens[1];
                 remoteBranch = tokens[2];
             }
-            return { remoteName : remoteName, remoteBranch: remoteBranch};
+            return { remoteName: remoteName, remoteBranch: remoteBranch };
         }
     }
     apputil.fatal('Unexpected error. Cannot determine remote: ' + branches);

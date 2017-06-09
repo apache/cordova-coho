@@ -26,16 +26,16 @@ var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var print = apputil.print;
 
-module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    var opt = optimist
+module.exports = function * (argv) {
+    var opt = flagutil.registerRepoFlag(optimist);
+    var opt = optimist // eslint-disable-line no-redeclare
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to reset. Can be specified multiple times to specify multiple branches.',
             default: 'master'
-         });
+        });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    var argv = opt // eslint-disable-line no-redeclare
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
                '    git commit                             (commit any pending changes)\n' +
@@ -50,21 +50,21 @@ module.exports = function*(argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    if (argv.r == 'auto') {
+    if (argv.r === 'auto') {
         apputil.fatal('"-r auto" is not allowed for repo-reset. Please enumerate repos explicitly');
     }
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
     yield module.exports.resetRepos(repos, branches);
-}
+};
 
-module.exports.resetRepos = function*(repos, branches) {
-    yield repoutil.forEachRepo(repos, function*(repo) {
+module.exports.resetRepos = function * (repos, branches) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         // Determine remote name.
         yield repoupdate.updateRepos([repo], [], true);
         var branchName = yield gitutil.retrieveCurrentBranchName();
-        if (branches.indexOf(branchName) == -1) {
-            yield gitutil.stashAndPop(repo, function*() {
+        if (branches.indexOf(branchName) === -1) {
+            yield gitutil.stashAndPop(repo, function * () {
                 yield cleanRepo(repo, branches);
             });
         } else {
@@ -73,7 +73,7 @@ module.exports.resetRepos = function*(repos, branches) {
     });
 };
 
-function *cleanRepo(repo, branches) {
+function * cleanRepo (repo, branches) {
     for (var i = 0; i < branches.length; ++i) {
         var branchName = branches[i];
         if (!(yield gitutil.localBranchExists(branchName))) {
@@ -96,7 +96,7 @@ function *cleanRepo(repo, branches) {
                 print(repo.repoName + ' on branch ' + branchName + ': No local commits to reset.');
             }
         } else {
-            if ((yield gitutil.retrieveCurrentBranchName()) == branchName) {
+            if ((yield gitutil.retrieveCurrentBranchName()) === branchName) {
                 yield gitutil.gitCheckout('master');
             }
             print(repo.repoName + ' deleting local-only branch ' + branchName + '.');

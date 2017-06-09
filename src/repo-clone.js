@@ -24,16 +24,16 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var print = apputil.print;
 
-module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
+module.exports = function * (argv) {
+    var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt = flagutil.registerDepthFlag(opt);
-    var argv = opt
+    var argv = opt // eslint-disable-line no-redeclare
         .usage('Clones git repositories as siblings of cordova-coho (unless --no-chdir or --global is used). If the repositories are already cloned, then this is a no-op.\n\n' +
                'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos]')
         .argv;
 
-    if (argv.h || argv.r == 'auto') {
+    if (argv.h || argv.r === 'auto') {
         optimist.showHelp();
         process.exit(1);
     }
@@ -42,9 +42,9 @@ module.exports = function*(argv) {
 
     var repos = flagutil.computeReposFromFlag(argv.r, {includeSvn: true});
     yield cloneRepos(repos, false, depth);
-}
+};
 
-function createRepoUrl(repo) {
+function createRepoUrl (repo) {
     if (repo.github) {
         return 'https://github.com/apache/' + repo.repoName + '.git';
     } else {
@@ -52,16 +52,16 @@ function createRepoUrl(repo) {
     }
 }
 
-function *cloneRepos(repos, quiet, depth) {
-    var failures = [];
+function * cloneRepos (repos, quiet, depth) {
+    var failures = []; // eslint-disable-line no-unused-vars
     var numSkipped = 0;
 
     var clonePromises = [];
     for (var i = 0; i < repos.length; ++i) {
         var repo = repos[i];
         if (fs.existsSync(repo.repoName)) {
-            if(!quiet) print('Repo already cloned: ' + repo.repoName);
-            numSkipped +=1 ;
+            if (!quiet) print('Repo already cloned: ' + repo.repoName);
+            numSkipped += 1;
         } else if (repo.svn) {
             clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName + ' ' + '--trust-server-cert --non-interactive')));
         } else {
@@ -81,4 +81,3 @@ function *cloneRepos(repos, quiet, depth) {
     }
 }
 module.exports.cloneRepos = cloneRepos;
-

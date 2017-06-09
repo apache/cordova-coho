@@ -23,15 +23,15 @@ var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
+module.exports = function * (argv) {
+    var opt = flagutil.registerRepoFlag(optimist);
     opt = opt
         .options('version', {
             desc: 'The version of the release. E.g. 2.7.1-rc2',
             demand: true
-         })
+        });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    var argv = opt // eslint-disable-line no-redeclare
         .usage('List the apache git repo urls for release artifacts.\n' +
                '\n' +
                'Usage: $0 list-release-urls [-r repos] --version=2.7.1-rc2')
@@ -45,7 +45,7 @@ module.exports = function*(argv) {
     var version = argv['version'];
 
     var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         if (!(yield gitutil.tagExists(version))) {
             console.error('Tag "' + version + '" does not exist in repo ' + repo.repoName);
             return;
@@ -54,5 +54,4 @@ module.exports = function*(argv) {
         console.log(url);
         yield executil.execHelper(executil.ARGS('git show-ref ' + version), 2, true);
     });
-}
-
+};

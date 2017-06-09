@@ -17,17 +17,16 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
 var executil = require('./executil');
 
-exports.update = function*() {
+exports.update = function * () {
     yield executil.execHelper(executil.ARGS('svn update'), false, false);
-}
+};
 
-exports.add = function*(location) {
+exports.add = function * (location) {
     yield executil.execHelper(executil.ARGS('svn add ' + location), false, false);
-}
+};
 
-exports.commit = function*(username, password, msg) {
+exports.commit = function * (username, password, msg) {
     yield executil.execHelper(['svn', 'commit', '--username', username, '--password', password, '-m', '"' + msg + '"'], false, false);
-}
+};

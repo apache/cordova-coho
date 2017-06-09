@@ -18,12 +18,11 @@ under the License.
 */
 
 var optimist = require('optimist');
-var path = require('path');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*() {
+module.exports = function * () {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt.usage('A version of `git shortlog -s` aggregated across multiple repos.\n' +
@@ -31,6 +30,7 @@ module.exports = function*() {
               'Usage: $0 shortlog [--repo=ios] [--days=7] [--filter=regexp]\n' +
               '    --filter: Sum up all commits that match this pattern\n' +
               '    --days=n: Show commits from the past n days');
+    /* eslint-disable no-undef */
     argv = opt.argv;
 
     if (argv.h) {
@@ -40,13 +40,13 @@ module.exports = function*() {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var emailFilter = argv.filter && new RegExp(argv.filter);
     var days = argv.days || 7;
-
+    /* eslint-enable no-undef */
     var resultsByAuthor = Object.create(null);
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         var cmd = executil.ARGS('git shortlog -s -e --no-merges ', '--since=' + days + ' days ago');
         var output = yield executil.execHelper(cmd, true);
         if (output) {
-            output.split(/\n/).forEach(function(line) {
+            output.split(/\n/).forEach(function (line) {
                 var m = /\s*(\d+).*?<(.*?)>/.exec(line);
                 var author = m[2];
                 var count = +m[1];
@@ -57,19 +57,19 @@ module.exports = function*() {
 
     var total = 0;
     var filterTotal = 0;
-    var records = Object.keys(resultsByAuthor).map(function(author) {
+    var records = Object.keys(resultsByAuthor).map(function (author) {
         var count = resultsByAuthor[author];
         total += count;
         if (emailFilter && emailFilter.exec(author)) {
             filterTotal += count;
         }
-        return {author:author, count:count};
+        return {author: author, count: count};
     });
-    records.sort(function(a,b) {
+    records.sort(function (a, b) {
         return b.count - a.count;
     });
 
-    records.forEach(function(r) {
+    records.forEach(function (r) {
         console.log(r.count + '\t' + r.author);
     });
     console.log();
@@ -77,4 +77,4 @@ module.exports = function*() {
         console.log('Total that mathed filter: ' + filterTotal);
     }
     console.log('Total Commits: ' + total);
-}
+};

@@ -22,14 +22,13 @@ var path = require('path');
 var shelljs = require('shelljs');
 var xml2js = require('xml2js');
 var apputil = require('./apputil');
-var executil = require('./executil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 
-function *getRepoVersion(repo) {
+function * getRepoVersion (repo) {
     var version;
-    yield repoutil.forEachRepo([repo], function*() {
+    yield repoutil.forEachRepo([repo], function * () {
         var platformPackage = path.join(process.cwd(), 'package.json');
         var platformPackageJson = require(platformPackage);
         version = platformPackageJson.version;
@@ -39,43 +38,43 @@ function *getRepoVersion(repo) {
 
 exports.getRepoVersion = getRepoVersion;
 
-function removeDev(version) {
+function removeDev (version) {
     var newVersion = version.replace('-dev', '');
     return newVersion;
 }
 exports.removeDev = removeDev;
 
-//updates platformsConfig.json
-//Needs to be passed a object which includes repo.id as key
-//and the new version as value
-//ex {android:4.0.0}
-function updatePlatformsConfig(newValues) {
+// updates platformsConfig.json
+// Needs to be passed a object which includes repo.id as key
+// and the new version as value
+// ex {android:4.0.0}
+function updatePlatformsConfig (newValues) {
 
     var platformsConfig = path.join(repoutil.getRepoDir(repoutil.getRepoById('lib')),
         'src/platforms/platformsConfig.json');
     var platformsJS = require(platformsConfig);
 
     flagutil.computeReposFromFlag('active-platform')
-    .forEach(function(repo) {
+    .forEach(function (repo) {
         if (newValues[repo.id]) {
             // For blackberry platformsConfig.json uses 'blackberry10' key
-            var correctRepoId = (repo.id === 'blackberry') ? "blackberry10" : repo.id;
+            var correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
             platformsJS[correctRepoId].version = newValues[repo.id];
         }
     });
 
-    fs.writeFileSync(platformsConfig, JSON.stringify(platformsJS, null, 4) + '\n', 'utf8', function(err) {
-        if (err) return console.log (err);
+    fs.writeFileSync(platformsConfig, JSON.stringify(platformsJS, null, 4) + '\n', 'utf8', function (err) {
+        if (err) return console.log(err);
     });
 }
 exports.updatePlatformsConfig = updatePlatformsConfig;
 
-exports.getReleaseBranchNameFromVersion = function(version) {
+exports.getReleaseBranchNameFromVersion = function (version) {
     if (/-dev$/.test(version)) {
         return 'master';
     }
     return version.replace(/\d+(-?rc\d)?$/, 'x');
-}
+};
 
 /**
  * Updates VERSION file, version executable script, package.json and
@@ -88,32 +87,32 @@ exports.getReleaseBranchNameFromVersion = function(version) {
  * @param {Boolean} [opts.commitChanges=true] Specifies whether to commit changes
  *   to the repo after update is done.
  */
-exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
+exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the VERSION files.
     // TODO: why do we read files asynchronously in this function, but write
     // and check for existence synchronously?
     var versionFilePaths = repo.versionFilePaths || ['VERSION'];
     var isPlatformRepo = !!repoutil.isInRepoGroup(repo, 'platform');
     if (isPlatformRepo && fs.existsSync(versionFilePaths[0])) {
-        versionFilePaths.forEach(function(versionFilePath) {
+        versionFilePaths.forEach(function (versionFilePath) {
             fs.writeFileSync(versionFilePath, version + '\n');
         });
         shelljs.config.fatal = true;
-        if (repo.id == 'android' || repo.id == 'amazon-fireos') {
+        if (repo.id === 'android' || repo.id === 'amazon-fireos') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
             // Set build.gradle version, vcsTag, and name
             shelljs.sed('-i', /version.*=.*/, "version = '" + version + "'", path.join('framework', 'build.gradle'));
             shelljs.sed('-i', /vcsTag.*=.*/, "vcsTag = '" + version + "'", path.join('framework', 'build.gradle'));
             shelljs.sed('-i', /version.{\n.*(name.*=.*)/, "version {\n            name = '" + version + "'", path.join('framework', 'build.gradle'));
-        } else if (repo.id == 'ios' || repo.id == 'osx') {
+        } else if (repo.id === 'ios' || repo.id === 'osx') {
             shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '";', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
-        } else if (repo.id == 'blackberry') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'lib', 'version.js'));
-        } else if (repo.id == 'firefoxos' || repo.id == 'browser' || repo.id == 'ubuntu') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project','cordova', 'version'));
-        } else if (repo.id == 'windows') {
-            if(fs.existsSync(path.join('template', 'cordova', 'version'))) {
+        } else if (repo.id === 'blackberry') {
+            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project', 'cordova', 'lib', 'version.js'));
+        } else if (repo.id === 'firefoxos' || repo.id === 'browser' || repo.id === 'ubuntu') {
+            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project', 'cordova', 'version'));
+        } else if (repo.id === 'windows') {
+            if (fs.existsSync(path.join('template', 'cordova', 'version'))) {
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
             }
         }
@@ -146,14 +145,14 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
     var isPluginRepo = !!repoutil.isInRepoGroup(repo, 'plugins');
     if (isPluginRepo) {
         var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
-        xmlFilePaths.forEach(function(xmlFile) {
+        xmlFilePaths.forEach(function (xmlFile) {
             if (fs.existsSync(xmlFile)) {
                 fs.readFile(xmlFile, {encoding: 'utf-8'}, function (err, data) {
                     if (err) throw err;
-                    xml2js.parseString(data, function(err, xml) {
+                    xml2js.parseString(data, function (err, xml) {
                         if (err) throw err;
                         var prev_version = xml.plugin['$'].version;
-                        shelljs.sed('-i', new RegExp('version="' + prev_version + '"','i'), 'version="' + version + '"', xmlFile);
+                        shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);
                     });
                 });
             } else {
@@ -169,4 +168,4 @@ exports.updateRepoVersion = function *updateRepoVersion(repo, version, opts) {
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
         yield gitutil.commitChanges('Set VERSION to ' + version + ' (via coho)');
     }
-}
+};

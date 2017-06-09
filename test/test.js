@@ -18,14 +18,14 @@ under the License.
 */
 
 try {
-    eval('(function*(){})');
+    eval('(function*(){})'); // eslint-disable-line no-eval
 } catch (e) {
     try {
         require('gnode'); // Enable generators support
     } catch (e) {
-        console.log('Please run "npm install" from this directory:\n\t' + __dirname);
+        console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
         process.exit(2);
     }
 }
 
-require('tape-runner')()
+require('tape-runner')();

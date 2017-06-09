@@ -18,30 +18,28 @@ under the License.
 */
 
 var optimist = require('optimist');
-var apputil = require('./apputil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 var executil = require('./executil');
-var print = apputil.print;
 
-function *publishTag(options) {
+function * publishTag (options) {
     var opt = flagutil.registerHelpFlag(optimist);
 
-    //argv was passed through another function, set defaults to appease demand.
-    if(options) {
+    // argv was passed through another function, set defaults to appease demand.
+    if (options) {
         opt = opt
             .options('tag', {
-                default:options.tag
+                default: options.tag
             })
-            .options('r',  {
-                default:options.r
+            .options('r', {
+                default: options.r
             })
             .options('pretend', {
-                default:options.pretend
-            })
+                default: options.pretend
+            });
     }
 
-    argv = opt
+    argv = opt // eslint-disable-line no-undef
         .usage('Publishes current version of a repo to a specified npm tag. \n' +
                'Usage: $0 npm-publish --tag rc -r cli -r lib')
         .options('tag', {
@@ -51,69 +49,69 @@ function *publishTag(options) {
         .options('r', {
             alias: 'repos',
             desc: 'Which repo(s) to publish',
-            demand:true
+            demand: true
         })
         .options('pretend', {
             desc: 'Don\'t actually run commands, just print what would be run.',
-            type:'boolean'
+            type: 'boolean'
         })
         .argv;
 
-    if(argv.h) {
-        optimist.showHelp();
+    if (argv.h) { // eslint-disable-line no-undef
+        optimist.showHelp(); // eslint-disable-line no-undef
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true }); // eslint-disable-line no-undef
 
-    //npm publish --tag argv.tag
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        yield executil.execOrPretend(executil.ARGS('npm publish --tag ' + argv.tag), argv.pretend);
+    // npm publish --tag argv.tag
+    yield repoutil.forEachRepo(repos, function * (repo) {
+        yield executil.execOrPretend(executil.ARGS('npm publish --tag ' + argv.tag), argv.pretend); // eslint-disable-line no-undef
     });
 }
 
 module.exports.publishTag = publishTag;
 
-//Gets last nightly tag and unpublishes it
-function *unpublishNightly(options) {
+// Gets last nightly tag and unpublishes it
+function * unpublishNightly (options) {
     var opt = flagutil.registerHelpFlag(optimist);
 
-    if(options) {
+    if (options) {
         opt = opt
             .options('pretend', {
-                default:options.pretend
+                default: options.pretend
             })
             .options('r', {
-                default:options.r
-            })
+                default: options.r
+            });
     }
 
     var argv = opt
-        .usage("Unpublishes the nightly version for the cli & lib from npm \n" +
-                "Usage: $0 npm-unpublish-nightly")
-        .options("pretend", {
+        .usage('Unpublishes the nightly version for the cli & lib from npm \n' +
+                'Usage: $0 npm-unpublish-nightly')
+        .options('pretend', {
             desc: "Don't actually run commands, just print what would be run",
-            type: "boolean"
+            type: 'boolean'
         })
         .options('r', {
-            desc: "Which repo(s) to unpublish",
+            desc: 'Which repo(s) to unpublish',
             demand: true
         })
         .argv;
 
-    if(argv.h) {
+    if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
 
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         var packageId = repo.packageName || repo.repoName;
         var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageId + ' dist-tags.nightly'));
 
         if (oldNightlyVersion && oldNightlyVersion !== 'undefined') {
-            yield executil.execOrPretend(executil.ARGS('npm unpublish '+ packageId + '@' + oldNightlyVersion), argv.pretend);
+            yield executil.execOrPretend(executil.ARGS('npm unpublish ' + packageId + '@' + oldNightlyVersion), argv.pretend);
         }
     });
 }

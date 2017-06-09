@@ -17,31 +17,30 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
 var apputil = require('./apputil');
 var repoutil = require('./repoutil');
 
-exports.registerHelpFlag = function(opt) {
+exports.registerHelpFlag = function (opt) {
     return opt.options('h', {
         alias: 'help',
         desc: 'Shows help information.'
     });
-}
+};
 
-exports.registerRepoFlag = function(opt) {
+exports.registerRepoFlag = function (opt) {
     return opt.options('r', {
         alias: 'repo',
-        desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.',
+        desc: 'Which repos to operate on. Multiple flags allowed. This can be repo IDs or repo groups. Use the list-repos command see valid values.'
     });
-}
+};
 
-exports.registerDepthFlag = function(opt) {
+exports.registerDepthFlag = function (opt) {
     return opt.options('depth', {
         desc: 'Value of --depth flag for git repos.'
     });
-}
+};
 
-exports.computeReposFromFlag = function(flagValue, opts) {
+exports.computeReposFromFlag = function (flagValue, opts) {
     opts = opts || {};
     var includeSvn = opts.includeSvn;
     var includeModules = opts.includeModules;
@@ -54,7 +53,7 @@ exports.computeReposFromFlag = function(flagValue, opts) {
     var ret = [];
     var addedIds = {};
     var addedRepos = {};
-    function addRepo(repo) {
+    function addRepo (repo) {
         if (!addedIds[repo.id]) {
             addedIds[repo.id] = true;
 
@@ -76,8 +75,8 @@ exports.computeReposFromFlag = function(flagValue, opts) {
             }
         }
     }
-    values.forEach(function(value) {
-        if (value == '.') {
+    values.forEach(function (value) {
+        if (value === '.') {
             value = repoutil.resolveCwdRepo();
         }
         var repo = repoutil.getRepoById(value);
@@ -92,24 +91,22 @@ exports.computeReposFromFlag = function(flagValue, opts) {
     });
     if (!includeSvn) {
         var hadSvn = false;
-        ret = ret.filter(function(r) {
+        ret = ret.filter(function (r) {
             hadSvn = hadSvn || !!r.svn;
             return !r.svn;
         });
-        if (hadSvn && !(values.length == 1 && values[0] == 'auto')) {
+        if (hadSvn && !(values.length === 1 && values[0] === 'auto')) {
             console.warn('Skipping one or more non-git repos');
         }
     }
 
     return ret;
-}
+};
 
-exports.validateVersionString = function(version, opt_allowNonSemver) {
+exports.validateVersionString = function (version, opt_allowNonSemver) {
     var pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
     if (!pattern.test(version)) {
         apputil.fatal('Versions must be in the form #.#.#-[rc#]');
     }
     return version;
-}
-
-
+};

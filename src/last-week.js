@@ -18,36 +18,36 @@ under the License.
 */
 
 var optimist = require('optimist');
-var path = require('path');
 var apputil = require('./apputil');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*() {
+module.exports = function * () {
     var meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt)
         .options('me', {
-                      desc: 'Show only your commits. Short for --user=' + meEmail + ' --cherry-picks=false',
-                      type: 'boolean'
-                   })
+            desc: 'Show only your commits. Short for --user=' + meEmail + ' --cherry-picks=false',
+            type: 'boolean'
+        })
         .options('cherry-picks', {
-                      desc: 'Show changes that you authored, even if you didn\'t commit them',
-                      type: 'boolean',
-                      default: true
-                   })
+            desc: 'Show changes that you authored, even if you didn\'t commit them',
+            type: 'boolean',
+            default: true
+        })
         .options('user', {
-                      desc: 'Show commits for the given user (substring match)',
-                      type: 'string'
-                   })
+            desc: 'Show commits for the given user (substring match)',
+            type: 'string'
+        })
         .options('days', {
-                      desc: 'Show history for this many days instead of past week.',
-                      type: 'number'
-                   })
+            desc: 'Show history for this many days instead of past week.',
+            type: 'number'
+        })
         .usage('Shows formatted git log for changes in the past 7 days.\n' +
                '\n' +
                'Usage: $0 last-week [--repo=ios] [--me] [--days=7] [--cherry-picks] [--user=someone]');
+    /* eslint-disable no-undef */
     argv = opt.argv;
 
     if (argv.h) {
@@ -55,13 +55,13 @@ module.exports = function*() {
         process.exit(1);
     }
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
-    var filterByEmail = !!argv.me || !! argv.user;
+    var filterByEmail = !!argv.me || !!argv.user;
     var days = argv.days || 7;
     var userEmail = filterByEmail && (argv.user || meEmail);
     var showCherryPicks = !argv.me && argv['cherry-picks'];
     var commitCount = 0;
     var pullRequestCount = 0;
-
+    /* eslint-enable no-undef */
     var cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
     if (filterByEmail) {
         cmd.push('--author=' + userEmail);
@@ -71,7 +71,7 @@ module.exports = function*() {
     }
 
     apputil.print('Running command: ' + cmd.join(' ') + ' --format="$REPO_NAME %s" --since="' + days + ' days ago"');
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
         var format = '--format=' + repoName;
         if (!filterByEmail) {
@@ -88,14 +88,14 @@ module.exports = function*() {
     if (filterByEmail) {
         console.log('\nPull requests:');
         cmd = executil.ARGS('git log --no-merges --date=short --fixed-strings', '--committer=' + userEmail);
-        yield repoutil.forEachRepo(repos, function*(repo) {
+        yield repoutil.forEachRepo(repos, function * (repo) {
             var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
             var output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
                 '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
             if (output) {
-                output.split('\n').forEach(function(line) {
+                output.split('\n').forEach(function (line) {
                     line = line.replace(/(.*?)\|/, '');
-                    if (RegExp.lastParen.indexOf(userEmail) == -1) {
+                    if (RegExp.lastParen.indexOf(userEmail) === -1) {
                         console.log(line);
                         pullRequestCount += 1;
                     }
@@ -110,4 +110,4 @@ module.exports = function*() {
     } else {
         console.log('Total Commits: ' + commitCount);
     }
-}
+};

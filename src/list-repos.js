@@ -19,20 +19,19 @@ under the License.
 
 var repoutil = require('./repoutil');
 
-module.exports = function*(argv) {
+module.exports = function * (argv) {
     console.log('Valid values for the --repo flag:');
     console.log('');
     console.log('Repositories:');
-    repoutil.repoGroups.all.forEach(function(repo) {
+    repoutil.repoGroups.all.forEach(function (repo) {
         console.log('    ' + repo.id);
     });
     console.log('');
     console.log('Repository Groups:');
     var groupNames = Object.keys(repoutil.repoGroups);
     groupNames.sort();
-    groupNames.forEach(function(groupName) {
-        console.log('    ' + groupName + ' (' + repoutil.repoGroups[groupName].map(function(repo) { return repo.id }).join(', ') + ')');
+    groupNames.forEach(function (groupName) {
+        console.log('    ' + groupName + ' (' + repoutil.repoGroups[groupName].map(function (repo) { return repo.id; }).join(', ') + ')');
     });
     process.exit(0);
-}
-
+};

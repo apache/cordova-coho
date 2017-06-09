@@ -17,7 +17,6 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
 var optimist = require('optimist');
 var apputil = require('./apputil');
 var executil = require('./executil');
@@ -27,22 +26,22 @@ var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var print = apputil.print;
 
-module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    var opt = optimist
+module.exports = function * (argv) {
+    var opt = flagutil.registerRepoFlag(optimist);
+    var opt = optimist // eslint-disable-line no-redeclare
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches. The local version of the branch is compared with the origin\'s version unless --b2 is specified.'
-         })
+        })
         .options('branch2', {
             desc: 'The name of the branch to diff against. This is origin/$branch by default.'
-         })
+        })
         .options('diff', {
             desc: 'Show a diff of the changes.',
             default: false
-         })
+        });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    var argv = opt // eslint-disable-line no-redeclare
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
                'Example usage: $0 repo-status -r auto -b master -b 2.9.x\n' +
@@ -57,18 +56,18 @@ module.exports = function*(argv) {
     var branches2 = branches && argv.branch2 && (Array.isArray(argv.branch2) ? argv.branch2 : [argv.branch2]);
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    if (branches2 && branches && branches.length != branches2.length) {
+    if (branches2 && branches && branches.length !== branches2.length) {
         apputil.fatal('Must specify the same number of --branch and --branch2 flags');
     }
 
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         if (repo.svn) {
             print('repo-status not implemented for svn repos');
             return;
         }
         // Determine remote name.
         yield repoupdate.updateRepos([repo], [], true);
-        var actualBranches = branches ? branches : ['master'];
+        var actualBranches = branches || ['master'];
         for (var i = 0; i < actualBranches.length; ++i) {
             var branchName = actualBranches[i];
             if (!(yield gitutil.localBranchExists(branchName))) {
@@ -88,8 +87,8 @@ module.exports = function*(argv) {
         }
     });
     if (argv.diff) {
-        yield repoutil.forEachRepo(repos, function*(repo) {
-            var actualBranches = branches ? branches : ['master'];
+        yield repoutil.forEachRepo(repos, function * (repo) {
+            var actualBranches = branches || ['master'];
             for (var i = 0; i < actualBranches.length; ++i) {
                 var branchName = actualBranches[i];
                 if (!(yield gitutil.localBranchExists(branchName))) {
@@ -107,5 +106,4 @@ module.exports = function*(argv) {
             }
         });
     }
-}
-
+};

@@ -26,16 +26,16 @@ var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var print = apputil.print;
 
-module.exports = function*(argv) {
-    var opt = flagutil.registerRepoFlag(optimist)
-    var opt = optimist
+module.exports = function * (argv) {
+    var opt = flagutil.registerRepoFlag(optimist);
+    var opt = optimist // eslint-disable-line
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
             default: ['master']
-         });
+        });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    var argv = opt // eslint-disable-line
         .usage('Pushes changes to the remote repository.\n' +
                '\n' +
                'Usage: $0 repo-push -r auto -b master -b 2.9.x')
@@ -48,7 +48,7 @@ module.exports = function*(argv) {
     var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         // Update first.
         yield repoupdate.updateRepos([repo], branches, false);
         for (var i = 0; i < branches.length; ++i) {
@@ -72,5 +72,4 @@ module.exports = function*(argv) {
             }
         }
     });
-}
-
+};

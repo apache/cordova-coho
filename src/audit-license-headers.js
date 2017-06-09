@@ -18,7 +18,6 @@ under the License.
 */
 
 var fs = require('fs');
-var os = require('os');
 var path = require('path');
 var chalk = require('chalk');
 var shelljs = require('shelljs');
@@ -47,52 +46,52 @@ var COMMON_RAT_EXCLUDES = [
     '.jshintrc',
     '*.xcworkspacedata',
     '*.xccheckout',
-    '*.xcscheme',
+    '*.xcscheme'
 ];
 
-var RAT_IGNORE_PATH          = '.ratignore';
+var RAT_IGNORE_PATH = '.ratignore';
 var RATIGNORE_COMMENT_PREFIX = '#';
 
 var RAT_NAME = 'apache-rat-0.12';
-var RAT_URL  = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.12/apache-rat-0.12-bin.tar.gz';
+var RAT_URL = 'https://dist.apache.org/repos/dist/release/creadur/apache-rat-0.12/apache-rat-0.12-bin.tar.gz';
 
-function startsWith(string, prefix) {
+function startsWith (string, prefix) {
     return string.indexOf(prefix) === 0;
 }
 
-function isComment(pattern) {
+function isComment (pattern) {
     return startsWith(pattern.trim(), RATIGNORE_COMMENT_PREFIX);
 }
 
-module.exports = function*() {
+module.exports = function * () {
 
     var opt = flagutil.registerRepoFlag(optimist);
-    opt     = flagutil.registerHelpFlag(opt);
+    opt = flagutil.registerHelpFlag(opt);
 
     opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
               '\n' +
-              'Usage: $0 audit-license-headers --repo=name [-r repos]')
-    argv = opt.argv;
+              'Usage: $0 audit-license-headers --repo=name [-r repos]');
+    argv = opt.argv; // eslint-disable-line no-undef
 
-    if (argv.h) {
+    if (argv.h) { // eslint-disable-line no-undef
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true}); // eslint-disable-line no-undef
     yield module.exports.scrubRepos(repos);
-}
+};
 
-module.exports.scrubRepos = function*(repos, silent, ignoreError, win, fail) {
+module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
     // Check that RAT command exists.
     var ratPath;
-    yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
-        ratPath = path.join(process.cwd(), RAT_NAME, RAT_NAME+'.jar');
+    yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {
+        ratPath = path.join(process.cwd(), RAT_NAME, RAT_NAME + '.jar');
     });
 
     if (!fs.existsSync(ratPath)) {
         console.log('RAT tool not found, downloading to: ' + ratPath);
-        yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function*() {
+        yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {
             // TODO: this will not work on windows right?
             if (shelljs.which('curl')) {
                 yield executil.execHelper(['sh', '-c', 'curl "' + RAT_URL + '" | tar xz']);
@@ -109,13 +108,13 @@ module.exports.scrubRepos = function*(repos, silent, ignoreError, win, fail) {
 
     // NOTE:
     //      the CWD in a callback is the directory for its respective repo
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         var excludePatterns = COMMON_RAT_EXCLUDES;
 
         // read in exclude patterns from repo's .ratignore, one pattern per line
         if (fs.existsSync(RAT_IGNORE_PATH)) {
 
-            var ratignoreFile  = fs.readFileSync(RAT_IGNORE_PATH);
+            var ratignoreFile = fs.readFileSync(RAT_IGNORE_PATH);
             var ratignoreLines = ratignoreFile.toString().trim().split('\n');
 
             // add only non-empty and non-comment lines
@@ -133,8 +132,8 @@ module.exports.scrubRepos = function*(repos, silent, ignoreError, win, fail) {
         });
 
         // run Rat
-        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function(stdout) {
+        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function (stdout) {
             if (win) win(repo, stdout);
         });
     });
-}
+};

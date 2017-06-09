@@ -25,19 +25,19 @@ var flagutil = require('./flagutil');
 
 var packman = 'npm';
 
-function *createLink(argv) {
+function * createLink (argv) {
     var opt = flagutil.registerHelpFlag(optimist);
     argv = opt
         .usage('Does an npm-link of the modules that we publish. Ensures we are testing live versions of our own dependencies instead of the last published version.\n' +
                '\n' +
                'Usage: $0 npm-link' +
-               'Example usage: $0 npm-link --use-yarn\n' 
+               'Example usage: $0 npm-link --use-yarn\n'
                )
         .options('use-yarn', {
             desc: 'Use the yarn package manager instead of npm',
             type: 'bool',
             default: false
-         })
+        })
         .argv;
 
     if (argv.h) {
@@ -52,76 +52,76 @@ function *createLink(argv) {
         console.log('Using npm');
     }
 
-    function npmLinkIn(linkedModule, installingModule) {
-       cdInto(installingModule);
+    function npmLinkIn (linkedModule, installingModule) {
+        cdInto(installingModule);
        // 'npm link' will automatically unbuild a non-linked module if it is present,
        // so don't need to explicitly 'rm -r' it first.
-       shelljs.exec(packman + " link " + linkedModule);
-       cdOutOf();
-    }
-
-    function npmLinkOut(moduleName) {
-        cdInto(moduleName);
-        shelljs.exec(packman + " link");
+        shelljs.exec(packman + ' link ' + linkedModule);
         cdOutOf();
     }
 
-    console.log("npm-linking dependent modules");
+    function npmLinkOut (moduleName) {
+        cdInto(moduleName);
+        shelljs.exec(packman + ' link');
+        cdOutOf();
+    }
+
+    console.log('npm-linking dependent modules');
 
     // Do npm-link
-    npmLinkOut("cordova-cli");
-    npmLinkOut("cordova-common");
-    npmLinkOut("cordova-create");
-    npmLinkOut("cordova-fetch");
-    npmLinkOut("cordova-js");
-    npmLinkOut("cordova-lib");
-    npmLinkOut("cordova-plugman");
-    npmLinkOut("cordova-serve");
+    npmLinkOut('cordova-cli');
+    npmLinkOut('cordova-common');
+    npmLinkOut('cordova-create');
+    npmLinkOut('cordova-fetch');
+    npmLinkOut('cordova-js');
+    npmLinkOut('cordova-lib');
+    npmLinkOut('cordova-plugman');
+    npmLinkOut('cordova-serve');
 
     // Do npm-link <module> in cordova-fetch
-    npmLinkIn("cordova-common", "cordova-fetch");
-    
+    npmLinkIn('cordova-common', 'cordova-fetch');
+
     // Do npm-link <module> in cordova-create
-    npmLinkIn("cordova-common", "cordova-create");
-    npmLinkIn("cordova-fetch", "cordova-create");
-    
+    npmLinkIn('cordova-common', 'cordova-create');
+    npmLinkIn('cordova-fetch', 'cordova-create');
+
     // Do npm-link <module> in cordova-lib
-    npmLinkIn("cordova-common", "cordova-lib");
-    npmLinkIn("cordova-create", "cordova-lib");
-    npmLinkIn("cordova-fetch", "cordova-lib");
-    npmLinkIn("cordova-js", "cordova-lib");
-    npmLinkIn("cordova-serve", "cordova-lib");
+    npmLinkIn('cordova-common', 'cordova-lib');
+    npmLinkIn('cordova-create', 'cordova-lib');
+    npmLinkIn('cordova-fetch', 'cordova-lib');
+    npmLinkIn('cordova-js', 'cordova-lib');
+    npmLinkIn('cordova-serve', 'cordova-lib');
 
     // Do npm-link <module> in cordova-cli
-    npmLinkIn("cordova-common", "cordova-cli");
-    npmLinkIn("cordova-create", "cordova-cli");
-    npmLinkIn("cordova-fetch", "cordova-cli");
-    npmLinkIn("cordova-js", "cordova-cli");
-    npmLinkIn("cordova-lib", "cordova-cli");
-    npmLinkIn("cordova-serve", "cordova-cli");
+    npmLinkIn('cordova-common', 'cordova-cli');
+    npmLinkIn('cordova-create', 'cordova-cli');
+    npmLinkIn('cordova-fetch', 'cordova-cli');
+    npmLinkIn('cordova-js', 'cordova-cli');
+    npmLinkIn('cordova-lib', 'cordova-cli');
+    npmLinkIn('cordova-serve', 'cordova-cli');
 
     // Do npm-link <module> in cordova-plugman
-    npmLinkIn("cordova-common", "cordova-plugman");
-    npmLinkIn("cordova-create", "cordova-plugman");
-    npmLinkIn("cordova-fetch", "cordova-plugman");
-    npmLinkIn("cordova-js", "cordova-plugman");
-    npmLinkIn("cordova-lib", "cordova-plugman");
-    npmLinkIn("cordova-serve", "cordova-plugman");
+    npmLinkIn('cordova-common', 'cordova-plugman');
+    npmLinkIn('cordova-create', 'cordova-plugman');
+    npmLinkIn('cordova-fetch', 'cordova-plugman');
+    npmLinkIn('cordova-js', 'cordova-plugman');
+    npmLinkIn('cordova-lib', 'cordova-plugman');
+    npmLinkIn('cordova-serve', 'cordova-plugman');
 }
 
 module.exports = createLink;
 
-function cdInto(moduleName) {
+function cdInto (moduleName) {
     shelljs.pushd(moduleName);
 }
 
-function cdOutOf() {
+function cdOutOf () {
     shelljs.popd();
 }
 
 function verifyLink (linkedModule, installedModule) {
     cdInto(installedModule);
-    var linkedPath = path.join(shelljs.pwd(), "node_modules", linkedModule);
+    var linkedPath = path.join(shelljs.pwd(), 'node_modules', linkedModule);
     if (!fs.existsSync(linkedPath)) {
         return false;
     }

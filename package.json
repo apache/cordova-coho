@@ -9,9 +9,12 @@
   "dependencies": {
     "chalk": "~0.4",
     "co": "~4.0",
+    "co-stream": "0.1.1",
     "glob": "^5.0.14",
     "gnode": "^0.1.0",
+    "inquirer": "2.0.0",
     "jasmine": "^2.5.3",
+    "jira-client": "4.2.0",
     "jira-linkify": "^2.3.0",
     "nlf": "^1.4.3",
     "opener": "^1.4.1",
@@ -21,12 +24,16 @@
     "semver": "^4.2.0",
     "shelljs": "0.1.4",
     "treeify": "^1.0.1",
-    "jira-client": "4.2.0",
-    "inquirer": "2.0.0",
-    "xml2js": "0.4.17",
-    "co-stream": "0.1.1"
+    "xml2js": "0.4.17"
   },
   "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "nsp": ">=2.0.1",
     "tap-dot": "^1.0.0",
     "tap-spec": "^4.0.0",
@@ -37,7 +44,8 @@
     "oldtest": "node test/test.js | tap-spec",
     "test": "npm run jasmine",
     "cover": "istanbul cover --root src --print detail jasmine",
-    "jasmine": "jasmine --captureExceptions --color"
+    "jasmine": "jasmine --captureExceptions --color",
+    "eslint": "eslint test && eslint src"
   },
   "repository": {
     "type": "git",

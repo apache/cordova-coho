@@ -23,7 +23,7 @@ var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 
-module.exports = function*(argv) {
+module.exports = function * (argv) {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     argv = opt
@@ -40,8 +40,8 @@ module.exports = function*(argv) {
     var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
     var tag;
-    yield repoutil.forEachRepo(repos, function*(repo) {
-        if (argv.tag){
+    yield repoutil.forEachRepo(repos, function * (repo) {
+        if (argv.tag) {
             tag = argv.tag;
         } else {
             tag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
@@ -54,4 +54,3 @@ module.exports = function*(argv) {
         console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
     });
 };
-

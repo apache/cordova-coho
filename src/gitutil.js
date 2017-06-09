@@ -17,7 +17,6 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
 var executil = require('./executil');
 var gitutil = exports;
 var semver = require('semver');
@@ -29,8 +28,8 @@ var semver = require('semver');
  * @returns {Array} - the most recent tag as as the 0th index in an array (with the second recent as the next index), or null if no version tags are found.
  * ignores r tags in plugins
  */
-exports.findMostRecentTag = function*(prefix) {
-    prefix = prefix && prefix + "-";
+exports.findMostRecentTag = function * (prefix) {
+    prefix = prefix && prefix + '-';
     var finalBest;
     var lastBest;
 
@@ -39,7 +38,7 @@ exports.findMostRecentTag = function*(prefix) {
             var modifiedCurBest, modifiedValue;
             if (prefix) {
                 // Ignore values that don't start with prefix, and strip prefix from the value we're going to test
-                if (value.indexOf(prefix) !== 0 ) {
+                if (value.indexOf(prefix) !== 0) {
                     modifiedValue = null;
                     modifiedCurBest = null;
                 } else {
@@ -47,13 +46,13 @@ exports.findMostRecentTag = function*(prefix) {
                     modifiedCurBest = curBest && curBest.substr(prefix.length);
                 }
             } else {
-                //used to strip out r for plugins, but now leave it in so they fail semver check
+                // used to strip out r for plugins, but now leave it in so they fail semver check
                 modifiedCurBest = curBest;
                 modifiedValue = value;
             }
 
             if (semver.valid(modifiedValue)) {
-                //use finalBest to hold onto reference outside of reduce function
+                // use finalBest to hold onto reference outside of reduce function
                 finalBest = !curBest ? value : semver.gt(modifiedCurBest, modifiedValue) ? finalBest : value;
                 if (curBest < finalBest) {
                     lastBest = curBest;
@@ -64,7 +63,7 @@ exports.findMostRecentTag = function*(prefix) {
                     lastBest = curBest;
                 }
                 return curBest;
-            } else if(finalBest) {
+            } else if (finalBest) {
                 if (curBest < finalBest) {
                     lastBest = curBest;
                 }
@@ -73,22 +72,22 @@ exports.findMostRecentTag = function*(prefix) {
             return null;
         });
 
-        if (ret) {
-            if (lastBest) {
-                return [ ret, lastBest ];
-            } else {
-                return [ ret ];
-            }
+    if (ret) {
+        if (lastBest) {
+            return [ ret, lastBest ];
         } else {
-            return null;
+            return [ ret ];
         }
+    } else {
+        return null;
+    }
 };
 
-exports.tagExists = function*(tagName) {
+exports.tagExists = function * (tagName) {
     return !!(yield executil.execHelper(executil.ARGS('git tag --list ' + tagName), true));
-}
+};
 
-exports.retrieveCurrentBranchName = function*(allowDetached) {
+exports.retrieveCurrentBranchName = function * (allowDetached) {
     var ref;
     try {
         ref = yield executil.execHelper(executil.ARGS('git symbolic-ref HEAD'), true, true);
@@ -103,9 +102,9 @@ exports.retrieveCurrentBranchName = function*(allowDetached) {
         throw new Error('Could not parse branch name from: ' + ref);
     }
     return match[1];
-}
+};
 
-exports.remoteBranchExists = function*(repo, branch) {
+exports.remoteBranchExists = function * (repo, branch) {
     var branch_token = (repo.remoteName || 'origin') + '/' + branch;
     var stdout = yield executil.execHelper(executil.ARGS('git branch -r --list ' + branch_token), false, false);
     if (stdout.indexOf(branch_token) > -1) {
@@ -113,9 +112,9 @@ exports.remoteBranchExists = function*(repo, branch) {
     } else {
         return false;
     }
-}
+};
 
-exports.stashAndPop = function*(repo, func) {
+exports.stashAndPop = function * (repo, func) {
     var requiresStash = yield gitutil.pendingChangesExist();
     var branchName = yield gitutil.retrieveCurrentBranchName();
 
@@ -129,70 +128,70 @@ exports.stashAndPop = function*(repo, func) {
     if (requiresStash) {
         yield executil.execHelper(executil.ARGS('git stash pop'));
     }
-}
+};
 
-exports.pendingChangesExist = function*() {
+exports.pendingChangesExist = function * () {
     return !!(yield executil.execHelper(executil.ARGS('git status --porcelain'), true));
-}
+};
 
-exports.gitCheckout = function*(branchName) {
+exports.gitCheckout = function * (branchName) {
     var curBranch = yield gitutil.retrieveCurrentBranchName(true);
-    if (curBranch != branchName) {
+    if (curBranch !== branchName) {
         return yield executil.execHelper(executil.ARGS('git checkout -q ', branchName));
     }
-}
+};
 
-exports.createNewBranch = function*(branchName) {
+exports.createNewBranch = function * (branchName) {
     return yield executil.execHelper(executil.ARGS('git branch ', branchName));
-}
+};
 
-exports.localBranchExists = function*(name) {
+exports.localBranchExists = function * (name) {
     return !!(yield executil.execHelper(executil.ARGS('git branch --list ' + name), true));
-}
+};
 
-exports.retrieveCurrentTagName = function() {
+exports.retrieveCurrentTagName = function () {
     // This will return the tag name plus commit info it not directly at a tag.
     // That's fine since all users of this function are meant to use the result
     // in an equality check.
     return executil.execHelper(executil.ARGS('git describe --tags HEAD'), true, true);
-}
+};
 
-exports.hashForRef = function(ref) {
+exports.hashForRef = function (ref) {
     return executil.execHelper(executil.ARGS('git rev-parse', ref), true, true);
 };
 
-exports.resetFromOrigin = function() {
+exports.resetFromOrigin = function () {
     return executil.execHelper(executil.ARGS('git reset --hard origin/master'), false, true);
-}
+};
 
-exports.gitClean = function() {
+exports.gitClean = function () {
     return executil.execHelper(executil.ARGS('git clean -d -f'), false, true);
-}
+};
 
-exports.summaryOfChanges = function*(base_sha) {
+exports.summaryOfChanges = function * (base_sha) {
     var cmd = executil.ARGS('git log --topo-order --no-merges');
     cmd.push(['--pretty=format:* %s']);
     cmd.push(base_sha + '..master');
     return yield executil.execHelper(cmd, true, false);
-}
+};
 
-exports.commitChanges = function*(commit_msg) {
+exports.commitChanges = function * (commit_msg) {
     return yield executil.execHelper(executil.ARGS('git commit -am', commit_msg));
-}
+};
 
-exports.tagRepo = function*(version) {
+exports.tagRepo = function * (version) {
     return yield executil.execHelper(executil.ARGS('git tag', version));
-}
+};
 
-exports.pushToOrigin = function*(ref) {
+exports.pushToOrigin = function * (ref) {
     return yield executil.execHelper(executil.ARGS('git push origin', ref));
-}
+};
 
-exports.diff = function*(first, second) {
+exports.diff = function * (first, second) {
     var args = executil.ARGS('git diff', first + '..' + second);
     return yield executil.execHelper(args, true, false);
-}
+};
 
-exports.merge = function*(ref, win, fail) {
+exports.merge = function * (ref, win, fail) {
     return yield executil.execHelper(executil.ARGS('git merge', ref), false, false, win, fail);
-}
+};

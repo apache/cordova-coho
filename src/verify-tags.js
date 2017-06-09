@@ -22,12 +22,11 @@ var apputil = require('./apputil');
 var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
-var print = apputil.print;
 var chalk = require('chalk');
 var Q = require('q');
 var readline = require('readline');
 
-function readInput() {
+function readInput () {
     var ret = Q.defer();
 
     var rl = readline.createInterface({
@@ -49,9 +48,9 @@ function readInput() {
     return ret.promise;
 }
 
-exports.createCommand = function*(argv) {
+exports.createCommand = function * (argv) {
     var opt = flagutil.registerHelpFlag(optimist);
-    var argv = opt
+    var argv = opt // eslint-disable-line
         .usage('Makes sure the given hashs match the tags.\n' +
                'Paste the output of the `print-tags` into this command to verify.\n' +
                'e.g.:     cordova-plugin-camera: 0.3.0 (4fa934e06f)\n' +
@@ -71,15 +70,15 @@ exports.createCommand = function*(argv) {
     var pattern = /\s*(cordova-.+?):\s*(.*?)\s+\((.*?)\)/g;
     var m;
     var results = [];
-    while (m = pattern.exec(input)) {
+    while (m = pattern.exec(input)) { // eslint-disable-line no-cond-assign
         results.push({repoId: m[1], tagName: m[2], hash: m[3]});
     }
     if (results.length === 0) {
         apputil.fatal('Error processing input.');
     }
     var hadErrors = false;
-    for (var i = 0, entry; entry = results[i]; ++i) {
-        yield repoutil.forEachRepo([repoutil.getRepoById(entry.repoId)], function*(repo) {
+    for (var i = 0, entry; entry = results[i]; ++i) { // eslint-disable-line no-cond-assign
+        yield repoutil.forEachRepo([repoutil.getRepoById(entry.repoId)], function * (repo) {
             var foundHash = yield gitutil.hashForRef(entry.tagName);
             if (!foundHash) {
                 // Plugins have a prefixed 'r'
@@ -98,5 +97,4 @@ exports.createCommand = function*(argv) {
     if (hadErrors) {
         console.log('Some tags didn\'t exist. Try updating your repositories and trying again.');
     }
-}
-
+};

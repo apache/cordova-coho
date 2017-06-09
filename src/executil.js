@@ -23,7 +23,7 @@ var print = apputil.print;
 
 var gitCommitCount = 0;
 
-function ARGS(s, var_args) {
+function ARGS (s, var_args) {
     var ret = s.trim().split(/\s+/);
     for (var i = 1; i < arguments.length; ++i) {
         ret.push(arguments[i]);
@@ -40,9 +40,9 @@ exports.verbose = false;
 // silent == 3 ==> print command, don't print output
 // TODO: this function should be consolidated to promises, and shouldnt take win/fail callbacks.
 // some async confusion here
-function execHelper(cmdAndArgs, silent, allowError, win, fail) {
+function execHelper (cmdAndArgs, silent, allowError, win, fail) {
     // there are times where we want silent but not allowError.
-    if (null == allowError) {
+    if (allowError == null) {
         // default to allow failure if being silent.
         allowError = allowError || silent;
     }
@@ -54,10 +54,10 @@ function execHelper(cmdAndArgs, silent, allowError, win, fail) {
         print('Executing:', cmdAndArgs.join(' '));
     }
     var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
-    return result.then(win || null, fail || function(e) {
+    return result.then(win || null, fail || function (e) {
         if (allowError) {
             throw e;
-        } else if (+silent != 1) {
+        } else if (+silent !== 1) {
             print(e.output);
         }
         process.exit(2);
@@ -65,10 +65,10 @@ function execHelper(cmdAndArgs, silent, allowError, win, fail) {
 }
 exports.execHelper = execHelper;
 
-function reportGitPushResult(repos, branches) {
+function reportGitPushResult (repos, branches) {
     print('');
     if (gitCommitCount) {
-        var flagsStr = repos.map(function(r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function(b) { return '-b ' + b; }).join(' ');
+        var flagsStr = repos.map(function (r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function (b) { return '-b ' + b; }).join(' ');
         print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         print('To review changes:');
         print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' --diff | less');
@@ -83,7 +83,7 @@ function reportGitPushResult(repos, branches) {
 
 exports.reportGitPushResult = reportGitPushResult;
 
-function *execOrPretend(cmd, pretend) {
+function * execOrPretend (cmd, pretend) {
     if (pretend) {
         print('PRETENDING TO RUN: ' + cmd.join(' '));
     } else {

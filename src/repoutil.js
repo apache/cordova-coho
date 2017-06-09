@@ -35,7 +35,7 @@ var platformRepos = [
         title: 'iOS',
         versions: ['9.0', '9.1', '9.2', '9.3', '10.0', '10.1', '10.2', '10.3'],
         id: 'ios',
-        github: true,        
+        github: true,
         repoName: 'cordova-ios',
         jiraComponentName: 'cordova-ios',
         cordovaJsPaths: ['CordovaLib/cordova.js'],
@@ -52,7 +52,7 @@ var platformRepos = [
     }, {
         title: 'Windows',
         id: 'windows',
-        github: true,        
+        github: true,
         repoName: 'cordova-windows',
         jiraComponentName: 'cordova-windows',
         cordovaJsSrcName: 'cordova.windows.js',
@@ -96,7 +96,7 @@ var platformRepos = [
     }, {
         title: 'Browser',
         id: 'browser',
-        github: true,        
+        github: true,
         repoName: 'cordova-browser',
         jiraComponentName: 'cordova-browser',
         cordovaJsSrcName: 'cordova.browser.js',
@@ -419,23 +419,22 @@ var repoGroups = {
     'plugin': pluginRepos,
     'plugins': pluginRepos,
     'tools': toolRepos,
-    'active-platform': platformRepos.filter(function(r) { return !r.inactive }),
-    'active-plugins': pluginRepos.filter(function(r) { return !r.inactive }),
-    'release-repos': allRepos.filter(function(r) { return !r.inactive })
+    'active-platform': platformRepos.filter(function (r) { return !r.inactive; }),
+    'active-plugins': pluginRepos.filter(function (r) { return !r.inactive; }),
+    'release-repos': allRepos.filter(function (r) { return !r.inactive; })
 };
 repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);
 repoGroups['nightly'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('lib')]);
 
-repoGroups.__defineGetter__('auto', function() {
-    return allRepos.filter(function(repo) {
+repoGroups.__defineGetter__('auto', function () {
+    return allRepos.filter(function (repo) {
         return fs.existsSync(repo.repoName);
     });
 });
 
-
 exports.repoGroups = repoGroups;
 
-function isInRepoGroup(repoToCheck, groupName) {
+function isInRepoGroup (repoToCheck, groupName) {
     var repos = repoGroups[groupName];
     if (!repos) return false;
     return repos.some(function (repo) {
@@ -444,11 +443,11 @@ function isInRepoGroup(repoToCheck, groupName) {
 }
 exports.isInRepoGroup = isInRepoGroup;
 
-function getRepoById(id, opt_repos) {
+function getRepoById (id, opt_repos) {
     // Strip cordova- prefix if it exists.
     var repos = opt_repos || allRepos;
     for (var i = 0; i < repos.length; ++i) {
-        if (repos[i].id == id || repos[i].packageName == id || repos[i].repoName == id) {
+        if (repos[i].id === id || repos[i].packageName === id || repos[i].repoName === id) {
             return repos[i];
         }
     }
@@ -458,7 +457,7 @@ exports.getRepoById = getRepoById;
 
 var isInForEachRepoFunction = false;
 
-exports.forEachRepo = function*(repos, func) {
+exports.forEachRepo = function * (repos, func) {
     for (var i = 0; i < repos.length; ++i) {
         var repo = repos[i];
         var origPath = isInForEachRepoFunction ? process.cwd() : '..';
@@ -469,8 +468,8 @@ exports.forEachRepo = function*(repos, func) {
         // TODO: rely less on process.cwd()
         isInForEachRepoFunction = true;
 
-        //cordova-lib lives inside of a top level cordova-lib directory
-        if(repo.id === 'lib'){
+        // cordova-lib lives inside of a top level cordova-lib directory
+        if (repo.id === 'lib') {
             origPath = origPath + '/..';
         }
         var repoDir = getRepoDir(repo);
@@ -483,11 +482,11 @@ exports.forEachRepo = function*(repos, func) {
 
         shelljs.cd(origPath);
 
-        isInForEachRepoFunction = !((origPath === '..')||(origPath === '../..'));
+        isInForEachRepoFunction = !((origPath === '..') || (origPath === '../..'));
     }
-}
+};
 
-function resolveCwdRepo() {
+function resolveCwdRepo () {
     var curPath = apputil.resolveUserSpecifiedPath('.');
     var prevPath;
     for (;;) {
@@ -496,7 +495,7 @@ function resolveCwdRepo() {
             return value;
         }
         curPath = path.resolve(curPath, '..');
-        if (curPath == prevPath) {
+        if (curPath === prevPath) {
             apputil.fatal('Repo could not be resolved because you are not in a cordova repository.');
         }
         prevPath = curPath;
@@ -504,7 +503,7 @@ function resolveCwdRepo() {
 }
 exports.resolveCwdRepo = resolveCwdRepo;
 
-function getRepoDir(repo) {
+function getRepoDir (repo) {
     var baseWorkingDir = apputil.getBaseDir();
     var repoDir = path.join(baseWorkingDir, repo.repoName);
     if (repo.path) {
@@ -514,7 +513,7 @@ function getRepoDir(repo) {
 }
 exports.getRepoDir = getRepoDir;
 
-function getRepoIncludePath(repo) {
+function getRepoIncludePath (repo) {
     var repoPath = repo.path;
     if (!repoPath) {
         return [];
@@ -529,13 +528,13 @@ function getRepoIncludePath(repo) {
     // The harder case - this is the main repo. We want to include the repo root folder and the folder pointed to by
     // repo.path, but exclude all module folders.
     var matchingRepos = allRepos.filter(function (testRepo) {
-        return testRepo.isModule && testRepo.repoName == repo.repoName;
+        return testRepo.isModule && testRepo.repoName === repo.repoName;
     });
 
     return matchingRepos.reduce(function (previous, moduleRepo) {
         // Note that wwe have to do the '../' stuff because we're not in the root directory of the repo.
         previous.push(':!../' + moduleRepo.path);
         return previous;
-    },  ['--', '../']);
+    }, ['--', '../']);
 }
 exports.getRepoIncludePath = getRepoIncludePath;

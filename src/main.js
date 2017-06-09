@@ -17,7 +17,6 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
 var executil = require('./executil');
 
 try {
@@ -26,12 +25,12 @@ try {
     // Ensure npm install has been run.
     Object.keys(require('../package').dependencies).forEach(require);
 } catch (e) {
-    console.log('Please run "npm install" from this directory:\n\t' + __dirname);
+    console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
     process.exit(2);
 }
 var apputil = require('./apputil');
 
-function *lazyRequire(name, opt_prop) {
+function * lazyRequire (name, opt_prop) {
     if (opt_prop) {
         yield require(name)[opt_prop];
     } else {
@@ -39,7 +38,7 @@ function *lazyRequire(name, opt_prop) {
     }
 }
 
-module.exports = function() {
+module.exports = function () {
     var repoCommands = [
         {
             name: 'repo-clone',
@@ -67,105 +66,105 @@ module.exports = function() {
             entryPoint: lazyRequire('./list-repos')
         }];
     var releaseCommands = [{
-            name: 'prepare-platform-release-branch',
-            desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
-            entryPoint: lazyRequire('./platform-release', 'prepareReleaseBranchCommand')
-        }, {
-            name: 'tag-platform-release',
-            desc: 'Tags repos for a release.',
-            entryPoint: lazyRequire('./platform-release', 'tagReleaseBranchCommand')
-        }, {
-            name: 'audit-license-headers',
-            desc: 'Uses Apache RAT to look for missing license headers.',
-            entryPoint: lazyRequire('./audit-license-headers')
-        }, {
-            name: 'check-license',
-            desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
-            entryPoint: lazyRequire('./check-license')
-        }, {
-            name: 'create-archive',
-            desc: 'Zips up a tag, signs it, and adds checksum files.',
-            entryPoint: lazyRequire('./create-verify-archive', 'createCommand')
-        }, {
-            name: 'verify-archive',
-            desc: 'Checks that archives are properly signed and hashed.',
-            entryPoint: lazyRequire('./create-verify-archive', 'verifyCommand')
-        }, {
-            name: 'print-tags',
-            desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
-            entryPoint: lazyRequire('./print-tags')
-        }, {
-            name: 'verify-tags',
-            desc: 'Verify the tags match the hashes within VOTE emails.',
-            entryPoint: lazyRequire('./verify-tags')
-        }, {
-            name: 'list-release-urls',
-            desc: 'List the apache git repo urls for release artifacts.',
-            entryPoint: lazyRequire('./list-release-urls')
-        }, {
-            name: 'nightly',
-            desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
-            entryPoint: lazyRequire('./nightly')
-        }, {
-            name: 'prepare-tools-release',
-            desc: 'Prepares tools for release',
-            entryPoint: lazyRequire('./tools-release', 'prepareToolsRelease')
-        }, {
-            name: 'prepare-plugins-release',
-            desc: 'Prepares plugins for release',
-            entryPoint: lazyRequire('./plugin-release', 'interactive')
-        }, {
-            name: 'npm-publish-tag',
-            desc: 'Publishes current version of repo to specified tag',
-            entryPoint: lazyRequire('./npm-publish', 'publishTag')
-        }, {
-            name: 'update-release-notes',
-            desc: 'Updates release notes with commits since the most recent tag.',
-            entryPoint: lazyRequire('./update-release-notes')
-        },  {
-            name: 'npm-unpublish-nightly',
-            desc: 'Unpublishes last nightly versions for all specified repositories',
-            entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
-        }];
+        name: 'prepare-platform-release-branch',
+        desc: 'Branches, updates JS, updates VERSION. Safe to run multiple times.',
+        entryPoint: lazyRequire('./platform-release', 'prepareReleaseBranchCommand')
+    }, {
+        name: 'tag-platform-release',
+        desc: 'Tags repos for a release.',
+        entryPoint: lazyRequire('./platform-release', 'tagReleaseBranchCommand')
+    }, {
+        name: 'audit-license-headers',
+        desc: 'Uses Apache RAT to look for missing license headers.',
+        entryPoint: lazyRequire('./audit-license-headers')
+    }, {
+        name: 'check-license',
+        desc: 'Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.',
+        entryPoint: lazyRequire('./check-license')
+    }, {
+        name: 'create-archive',
+        desc: 'Zips up a tag, signs it, and adds checksum files.',
+        entryPoint: lazyRequire('./create-verify-archive', 'createCommand')
+    }, {
+        name: 'verify-archive',
+        desc: 'Checks that archives are properly signed and hashed.',
+        entryPoint: lazyRequire('./create-verify-archive', 'verifyCommand')
+    }, {
+        name: 'print-tags',
+        desc: 'Prints out tags & hashes for the given repos. Used in VOTE emails.',
+        entryPoint: lazyRequire('./print-tags')
+    }, {
+        name: 'verify-tags',
+        desc: 'Verify the tags match the hashes within VOTE emails.',
+        entryPoint: lazyRequire('./verify-tags')
+    }, {
+        name: 'list-release-urls',
+        desc: 'List the apache git repo urls for release artifacts.',
+        entryPoint: lazyRequire('./list-release-urls')
+    }, {
+        name: 'nightly',
+        desc: 'Builds and publishes nightly builds of cordova-cli using the latest commits for each platform.',
+        entryPoint: lazyRequire('./nightly')
+    }, {
+        name: 'prepare-tools-release',
+        desc: 'Prepares tools for release',
+        entryPoint: lazyRequire('./tools-release', 'prepareToolsRelease')
+    }, {
+        name: 'prepare-plugins-release',
+        desc: 'Prepares plugins for release',
+        entryPoint: lazyRequire('./plugin-release', 'interactive')
+    }, {
+        name: 'npm-publish-tag',
+        desc: 'Publishes current version of repo to specified tag',
+        entryPoint: lazyRequire('./npm-publish', 'publishTag')
+    }, {
+        name: 'update-release-notes',
+        desc: 'Updates release notes with commits since the most recent tag.',
+        entryPoint: lazyRequire('./update-release-notes')
+    }, {
+        name: 'npm-unpublish-nightly',
+        desc: 'Unpublishes last nightly versions for all specified repositories',
+        entryPoint: lazyRequire('./npm-publish', 'unpublishNightly')
+    }];
     var otherCommands = [{
-            name: 'list-pulls',
-            desc: 'Shows a list of GitHub pull requests for all specified repositories.',
-            entryPoint: lazyRequire('./list-pulls')
-        }, {
-            name: 'merge-pr',
-            desc: 'Merges specified PR',
-            entryPoint: lazyRequire('./merge-pr'),
-            noChdir : true
-        }, {
-            name: 'create-pr',
-            desc: 'Launches github PR UI for the specified topic branch',
-            entryPoint: lazyRequire('./create-pr'),
-            noChdir : true
-        },
-        {
-            name: 'last-week',
-            desc: 'Prints out git logs of things that happened last week.',
-            entryPoint: lazyRequire('./last-week')
-        }, {
-            name: 'shortlog',
-            desc: 'A version of `git shortlog -s` aggregated across multiple repos.',
-            entryPoint: lazyRequire('./shortlog')
-        }, {
-            name: 'for-each',
-            desc: 'Runs a shell command in each repo.',
-            entryPoint: lazyRequire('./for-each')
-        }, {
-            name: 'npm-link',
-            desc: 'Does an "npm link" of dependent modules that we own.',
-            entryPoint: lazyRequire('./npm-link')
-        }, {
-            name: 'copy-js',
-            desc: 'Generates and copies cordova.js to platform.',
-            entryPoint: lazyRequire('./platform-release.js', 'createAndCopyCordovaJSCommand')
-        }
+        name: 'list-pulls',
+        desc: 'Shows a list of GitHub pull requests for all specified repositories.',
+        entryPoint: lazyRequire('./list-pulls')
+    }, {
+        name: 'merge-pr',
+        desc: 'Merges specified PR',
+        entryPoint: lazyRequire('./merge-pr'),
+        noChdir: true
+    }, {
+        name: 'create-pr',
+        desc: 'Launches github PR UI for the specified topic branch',
+        entryPoint: lazyRequire('./create-pr'),
+        noChdir: true
+    },
+    {
+        name: 'last-week',
+        desc: 'Prints out git logs of things that happened last week.',
+        entryPoint: lazyRequire('./last-week')
+    }, {
+        name: 'shortlog',
+        desc: 'A version of `git shortlog -s` aggregated across multiple repos.',
+        entryPoint: lazyRequire('./shortlog')
+    }, {
+        name: 'for-each',
+        desc: 'Runs a shell command in each repo.',
+        entryPoint: lazyRequire('./for-each')
+    }, {
+        name: 'npm-link',
+        desc: 'Does an "npm link" of dependent modules that we own.',
+        entryPoint: lazyRequire('./npm-link')
+    }, {
+        name: 'copy-js',
+        desc: 'Generates and copies cordova.js to platform.',
+        entryPoint: lazyRequire('./platform-release.js', 'createAndCopyCordovaJSCommand')
+    }
     ];
     var commandMap = {};
-    function addToCommandMap(cmd) {
+    function addToCommandMap (cmd) {
         commandMap[cmd.name] = cmd;
     }
     repoCommands.forEach(addToCommandMap);
@@ -175,7 +174,7 @@ module.exports = function() {
     commandMap['foreach'] = commandMap['for-each'];
 
     var usage = 'Usage: $0 command [options]\n\n';
-    function addCommandUsage(cmd) {
+    function addCommandUsage (cmd) {
         usage += '    ' + cmd.name + ': ' + cmd.desc + '\n';
     }
     usage += 'Repo Management:\n';
@@ -215,7 +214,7 @@ module.exports = function() {
             command.noChdir = true;
         }
     }
-        
+
     if (command && !command.noChdir) {
         opts = opts.options('chdir', {
             desc: 'Use --no-chdir or --global to run in your CWD instead of the parent of cordova-coho/',
@@ -223,7 +222,7 @@ module.exports = function() {
             default: true
         });
     }
-    var argv = opts.check(function(argv) {
+    var argv = opts.check(function (argv) {
         var commandName = argv._[0];
         if (!commandName) {
             throw 'No command specified.';

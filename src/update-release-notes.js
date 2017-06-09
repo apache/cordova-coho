@@ -30,8 +30,7 @@ var co_stream = require('co-stream');
 
 var relNotesFile = 'RELEASENOTES.md';
 
-module.exports = function*() {
-    var meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
+module.exports = function * () {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt)
         .usage('Updates release notes with commits since the most recent tag.\n' +
@@ -42,22 +41,22 @@ module.exports = function*() {
         .options('to-tag', {desc: 'Update to a specific tag instead of "master"'})
         .options('override-date', {desc: 'Update to a specific date instead of today.'})
         .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});
-    argv = opt.argv;
+    argv = opt.argv; // eslint-disable-line no-undef
 
-    if (argv.h) {
+    if (argv.h) { // eslint-disable-line no-undef
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true}); // eslint-disable-line no-undef
 
-    yield repoutil.forEachRepo(repos, function*(repo) {
+    yield repoutil.forEachRepo(repos, function * (repo) {
         // TODO: we should use gitutil.summaryOfChanges here.
         var cmd = executil.ARGS('git log --topo-order --no-merges');
         cmd.push(['--pretty=format:* %s']);
         var fromTag, toTag, hasOneTag;
         hasOneTag = false;
-        if (argv['last-two-tags']) {
+        if (argv['last-two-tags']) { // eslint-disable-line no-undef
             var last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
             if (last_two) {
                 toTag = last_two[0];
@@ -69,12 +68,13 @@ module.exports = function*() {
                 }
             }
         } else {
-            if (argv['from-tag']){
+            /* eslint-disable no-undef */
+            if (argv['from-tag']) {
                 fromTag = argv['from-tag'];
             } else {
                 fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
             }
-            if (argv['to-tag']){
+            if (argv['to-tag']) {
                 toTag = argv['to-tag'];
             } else {
                 toTag = 'master';
@@ -101,39 +101,40 @@ module.exports = function*() {
             var final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
             fs.writeFileSync(relNotesFile, final_notes, {encoding: 'utf8'});
             return linkify.file(relNotesFile);
+            /* eslint-enable no-undef */
         }
     });
 };
 
-function backtick(text, token) {
-    return text.replace(new RegExp(" " + token, "gi"), " `" + token + "`");
+function backtick (text, token) {
+    return text.replace(new RegExp(' ' + token, 'gi'), ' `' + token + '`');
 }
 
-function bold(text, token) {
-    return text.replace(new RegExp(" " + token, "gi"), " **" + token + "**");
+function bold (text, token) {
+    return text.replace(new RegExp(' ' + token, 'gi'), ' **' + token + '**');
 }
 
-var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi;
-var VIA_COHO_COMMIT_MSG = /\(via coho\)/gi
+var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi; // eslint-disable-line no-useless-escape
+var VIA_COHO_COMMIT_MSG = /\(via coho\)/gi;
 
-function *createNotes(repo, newVersion, changes, overrideDate) {
+function * createNotes (repo, newVersion, changes, overrideDate) {
     // pump changes through JIRA linkifier first through a stream pipe
-	var transformer = linkify.stream("CB");
-	var read = new stream.Readable();
-	read._read = function(){};// noop
-	read.push(changes);
-	read.push(null);
-	var write = new stream.Writable();
-	var data = '';
-	write._write = function(chunk, encoding, done) {
-		data += chunk.toString();
-		done();
-	}
-	read.pipe(transformer).pipe(write);
+    var transformer = linkify.stream('CB');
+    var read = new stream.Readable();
+    read._read = function () {};// noop
+    read.push(changes);
+    read.push(null);
+    var write = new stream.Writable();
+    var data = '';
+    write._write = function (chunk, encoding, done) {
+        data += chunk.toString();
+        done();
+    };
+    read.pipe(transformer).pipe(write);
     yield co_stream.wait(write); // wait for the writable stream to finish/end
     // remove any commit logs in the form "Close #xxx", used for closing github pull requests.
     var lines = data.split('\n');
-    data = lines.filter(function(line) {
+    data = lines.filter(function (line) {
         return !(
            line.match(GITHUB_CLOSE_COMMIT_MSG) ||
            line.match(VIA_COHO_COMMIT_MSG)
@@ -141,27 +142,27 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
     }).join('\n');
 
     // some more release note linting: enclose in backticks certain tokens
-    ['plugin.xml', 'package.json', 'config.xml', 'README', 'InAppBrowser'].forEach(function(token) {
+    ['plugin.xml', 'package.json', 'config.xml', 'README', 'InAppBrowser'].forEach(function (token) {
         data = backtick(data, token);
     });
-    flagutil.computeReposFromFlag('platforms').map(function(r) { return r.repoName; }).forEach(function(platform_name) {
+    flagutil.computeReposFromFlag('platforms').map(function (r) { return r.repoName; }).forEach(function (platform_name) {
         data = backtick(data, platform_name);
     });
     // bold platform labels (with optional version numbers, too)
     var version_labels = [];
-    repoutil.repoGroups.platforms.filter(function(p) {
+    repoutil.repoGroups.platforms.filter(function (p) {
         // first only pull out the platform repos that we have explicitly labeled with nice version strings
         return p.versions && p.versions.length;
-    }).forEach(function(p) {
+    }).forEach(function (p) {
         // next, generate the labels for later tokenization
-        p.versions.forEach(function(v) {
+        p.versions.forEach(function (v) {
             version_labels.push(p.title + ' ' + v);
         });
     });
-    version_labels.forEach(function(label) {
+    version_labels.forEach(function (label) {
         data = bold(data, label);
     });
-    repoutil.repoGroups.platforms.map(function(r) { return r.title; }).forEach(function(platform) {
+    repoutil.repoGroups.platforms.map(function (r) { return r.title; }).forEach(function (platform) {
         data = bold(data, platform);
     });
     // then interpolate linkified changes into existing release notes and compose the final release notes string
@@ -173,7 +174,7 @@ function *createNotes(repo, newVersion, changes, overrideDate) {
     } else {
         date = new Date().toDateString().split(' ');
     }
-    return relNotesData.substr(0, headerPos) + "### " + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + data + '\n\n' + relNotesData.substr(headerPos);
+    return relNotesData.substr(0, headerPos) + '### ' + newVersion + ' (' + date[1] + ' ' + date[2] + ', ' + date[3] + ')\n' + data + '\n\n' + relNotesData.substr(headerPos);
 }
 
 module.exports.createNotes = createNotes;

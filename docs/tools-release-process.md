@@ -75,10 +75,10 @@ Ensure you're up-to-date:
 See if any dependencies are outdated
 
     (cd cordova-js && npm outdated --depth=0)
-    (cd cordova-lib/cordova-lib && npm outdated --depth=0)
-    (cd cordova-lib/cordova-fetch && npm outdated --depth=0)
-    (cd cordova-lib/cordova-common && npm outdated --depth=0)
-    (cd cordova-lib/cordova-serve && npm outdated --depth=0)
+    (cd cordova-lib && npm outdated --depth=0)
+    (cd cordova-fetch && npm outdated --depth=0)
+    (cd cordova-common && npm outdated --depth=0)
+    (cd cordova-serve && npm outdated --depth=0)
     (cd cordova-plugman && npm outdated --depth=0)
     (cd cordova-cli && npm outdated --depth=0)
     (cd cordova-create && npm outdated --depth=0)
@@ -91,12 +91,12 @@ Update them in each project's `package.json` file. Make sure to run through the 
 
 Increase the version within package.json using SemVer, and remove the `-dev` suffix
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-lib/cordova-common cordova-lib/cordova-fetch cordova-lib/cordova-serve cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
+    for l in cordova-lib cordova-plugman cordova-cli cordova-js cordova-common cordova-fetch cordova-serve cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
 If the changes merit it, manually bump the major / minor version instead of the micro. View the changes via: 
 (TODO: need to use coho to get tags for cordova-lib, fetch, common and serve. Current output is incorrect)
 
-    ( cd cordova-lib/cordova-lib; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+    ( cd cordova-lib; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
 
     ( cd cordova-plugman; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master)
 
@@ -104,11 +104,11 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
     ( cd cordova-js; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master)
     
-    ( cd cordova-lib/cordova-common; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+    ( cd cordova-common; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
     
-    ( cd cordova-lib/cordova-fetch; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+    ( cd cordova-fetch; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
     
-    ( cd cordova-lib/cordova-serve; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
+    ( cd cordova-serve; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master )
     
     ( cd cordova-create; git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags --abbrev=0)..master)
 
@@ -116,49 +116,49 @@ Update each repo's RELEASENOTES.md file with changes
 
     coho update-release-notes -r cordova-lib -r cordova-js -r cordova-plugman -r cordova-cli -r common -r fetch -r serve -r create
     # Then curate:
-    vim cordova-lib/cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md cordova-lib/cordova-common/RELEASENOTES.md cordova-lib/cordova-fetch/RELEASENOTES.md cordova-lib/cordova-serve/RELEASENOTES.md cordova-create/RELEASENOTES.md
+    vim cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md cordova-common/RELEASENOTES.md cordova-fetch/RELEASENOTES.md cordova-serve/RELEASENOTES.md cordova-create/RELEASENOTES.md
 
 Update the version of cordova-lib that cli and plugman depend on:
 
-    v="$(grep '"version"' cordova-lib/cordova-lib/package.json | cut -d'"' -f4)"
+    v="$(grep '"version"' cordova-lib/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova-lib":.*/"cordova-lib": "'$v'",/' cordova-plugman/package.json
 
 Update the version of cordova-common that cordova-lib, cli, fetch and create depend on:
 
-    v="$(grep '"version"' cordova-lib/cordova-common/package.json | cut -d'"' -f4)"
+    v="$(grep '"version"' cordova-common/package.json | cut -d'"' -f4)"
     sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-cli/package.json
     sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-plugman/package.json
-    sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-lib/cordova-lib/package.json
-    sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-lib/cordova-fetch/package.json
+    sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' package.json
+    sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-fetch/package.json
     sed -i '' -E 's/"cordova-common":.*/"cordova-common": "'$v'",/' cordova-create/package.json
 
 Update the version of cordova-js that cordova-lib depends on:
 
     v="$(grep '"version"' cordova-js/package.json | cut -d'"' -f4)"
-    sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' cordova-lib/cordova-lib/package.json
+    sed -i '' -E 's/"cordova-js":.*/"cordova-js": "'$v'",/' package.json
     
 Update the version of cordova-fetch that cordova-lib & cordova-create depend on:
 
-    v="$(grep '"version"' cordova-lib/cordova-fetch/package.json | cut -d'"' -f4)"
-    sed -i '' -E 's/"cordova-fetch":.*/"cordova-fetch": "'$v'",/' cordova-lib/cordova-lib/package.json
+    v="$(grep '"version"' cordova-fetch/package.json | cut -d'"' -f4)"
+    sed -i '' -E 's/"cordova-fetch":.*/"cordova-fetch": "'$v'",/' package.json
     sed -i '' -E 's/"cordova-fetch":.*/"cordova-fetch": "'$v'",/' cordova-create/package.json
 
 Commit these changes together into one commit
 
     for l in cordova-plugman cordova-cli cordova-js cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
-    (cd cordova-lib/cordova-lib && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-lib/cordova-common && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-lib/cordova-fetch && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-lib/cordova-serve && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    (cd cordova-lib && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    (cd cordova-common && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    (cd cordova-fetch && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    (cd cordova-serve && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
 
 ## Test
 Link repos:
 
     (cd cordova-js && rm -r node_modules && npm install && npm link)
-    (cd cordova-lib/cordova-common && rm -r node_modules && npm install && npm link)
-    (cd cordova-lib/cordova-fetch && rm -r node_modules && npm link cordova-common && npm install && npm link)
-    (cd cordova-lib/cordova-lib && rm -r node_modules && npm link cordova-js && npm link cordova-common && npm link cordova-fetch && npm install && npm link)
+    (cd cordova-common && rm -r node_modules && npm install && npm link)
+    (cd cordova-fetch && rm -r node_modules && npm link cordova-common && npm install && npm link)
+    (cd cordova-lib && rm -r node_modules && npm link cordova-js && npm link cordova-common && npm link cordova-fetch && npm install && npm link)
     (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
     (cd cordova-cli && rm -r node_modules && npm link cordova-lib && npm link cordova-common && npm install)
 
@@ -197,11 +197,11 @@ Ensure that mobilespec creates okay via plugman (you may need to manually uninst
     
 Ensure unit tests pass (plugman tests are included in lib):
 
-    (cd cordova-lib/cordova-lib; npm test)
+    (cd cordova-lib; npm test)
     (cd cordova-cli; npm test)
     (cd cordova-js; grunt test --platformVersion=4.0.0)
-    (cd cordova-lib/cordova-fetch; npm test)
-    (cd cordova-lib/cordova-common; npm test)
+    (cd cordova-fetch; npm test)
+    (cd cordova-common; npm test)
 
 Add a comment to the JIRA issue stating what you tested, and what the results were.
 
@@ -211,10 +211,10 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
     # Review commits:
     for l in cordova-plugman cordova-cli cordova-lib cordova-js cordova-create; do ( cd $l; git log -p origin/master..master ); done
     # Tag
-    for l in cordova-plugman cordova-cli cordova-lib/cordova-lib cordova-js cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
-    (cd cordova-lib/cordova-fetch; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag fetch-$v)
-    (cd cordova-lib/cordova-common; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag common-$v)
-    (cd cordova-lib/cordova-serve; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag serve-$v)
+    for l in cordova-plugman cordova-cli cordova-lib cordova-js cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    (cd cordova-fetch; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag fetch-$v)
+    (cd cordova-common; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag common-$v)
+    (cd cordova-serve; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag serve-$v)
 
 ## Create release branches if they don't yet exist
 If branches don't exist, create new ones
@@ -234,12 +234,12 @@ If branches already exist, update them
 
 ## Re-introduce -dev suffix to versions on master and commit
 
-    for l in cordova-lib/cordova-lib cordova-plugman cordova-cli cordova-js cordova-lib/cordova-fetch cordova-lib/cordova-common cordova-lib/cordova-serve cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
+    for l in cordova-lib cordova-plugman cordova-cli cordova-js cordova-fetch cordova-common cordova-serve cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi); done
     for l in cordova-plugman cordova-cli cordova-js cordova-create; do (cd $l; git commit -am "$JIRA Incremented package version to -dev"; git show ); done
-    (cd cordova-lib/cordova-lib && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
-    (cd cordova-lib/cordova-fetch && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
-    (cd cordova-lib/cordova-serve && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
-    (cd cordova-lib/cordova-common && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
+    (cd cordova-lib && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
+    (cd cordova-fetch && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
+    (cd cordova-serve && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
+    (cd cordova-common && git add package.json && git commit -m "$JIRA Incremented package version to -dev" && git show)
 
 ## Push
 
@@ -437,11 +437,11 @@ Publish any dependent modules (cordova-lib, cordova-js) to npm before creating a
 First, commit everything in the dependent modules, tag, and push.
 
     # Commit:
-    for l in cordova-lib/cordova-lib cordova-js; do ( cd $l; git add .; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
+    for l in cordova-lib cordova-js; do ( cd $l; git add .; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
     # Review commits:
     for l in cordova-lib cordova-js; do ( cd $l; git log -p origin/master..master ); done
     # Tag
-    for l in cordova-lib/cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
+    for l in cordova-lib cordova-js; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
     # Push
     for l in cordova-lib cordova-js; do ( cd $l; git push && git push --tags ); done
 

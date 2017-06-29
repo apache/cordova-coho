@@ -68,27 +68,45 @@ function *createLink(argv) {
 
     console.log("npm-linking dependent modules");
 
-    npmLinkOut("cordova-js");
-    npmLinkIn("cordova-js", "cordova-lib");
-
+    // Do npm-link
+    npmLinkOut("cordova-cli");
     npmLinkOut("cordova-common");
-    npmLinkIn("cordova-common", "cordova-fetch");
-    npmLinkIn("cordova-common", "cordova-create");
-    npmLinkIn("cordova-common", "cordova-lib");
-    npmLinkIn("cordova-common", "cordova-cli");
-
-    npmLinkOut("cordova-fetch");
-    npmLinkIn("cordova-fetch", "cordova-lib");
-
     npmLinkOut("cordova-create");
-    npmLinkIn("cordova-create", "cordova-lib");
-
+    npmLinkOut("cordova-fetch");
+    npmLinkOut("cordova-js");
+    npmLinkOut("cordova-lib");
+    npmLinkOut("cordova-plugman");
     npmLinkOut("cordova-serve");
+
+    // Do npm-link <module> in cordova-fetch
+    npmLinkIn("cordova-common", "cordova-fetch");
+    
+    // Do npm-link <module> in cordova-create
+    npmLinkIn("cordova-common", "cordova-create");
+    npmLinkIn("cordova-fetch", "cordova-create");
+    
+    // Do npm-link <module> in cordova-lib
+    npmLinkIn("cordova-common", "cordova-lib");
+    npmLinkIn("cordova-create", "cordova-lib");
+    npmLinkIn("cordova-fetch", "cordova-lib");
+    npmLinkIn("cordova-js", "cordova-lib");
     npmLinkIn("cordova-serve", "cordova-lib");
 
-    npmLinkOut("cordova-lib");
-    npmLinkIn("cordova-lib", "cordova-plugman");
+    // Do npm-link <module> in cordova-cli
+    npmLinkIn("cordova-common", "cordova-cli");
+    npmLinkIn("cordova-create", "cordova-cli");
+    npmLinkIn("cordova-fetch", "cordova-cli");
+    npmLinkIn("cordova-js", "cordova-cli");
     npmLinkIn("cordova-lib", "cordova-cli");
+    npmLinkIn("cordova-serve", "cordova-cli");
+
+    // Do npm-link <module> in cordova-plugman
+    npmLinkIn("cordova-common", "cordova-plugman");
+    npmLinkIn("cordova-create", "cordova-plugman");
+    npmLinkIn("cordova-fetch", "cordova-plugman");
+    npmLinkIn("cordova-js", "cordova-plugman");
+    npmLinkIn("cordova-lib", "cordova-plugman");
+    npmLinkIn("cordova-serve", "cordova-plugman");
 }
 
 module.exports = createLink;

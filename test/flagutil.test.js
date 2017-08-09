@@ -228,14 +228,6 @@ test('test computeReposFromFlagPluginDeviceMotion', function(t) {
     t.equal(repo[0].id, 'plugin-device-motion');
     t.equal(repo[0].repoName, 'cordova-plugin-device-motion');
 });
-test('test computeReposFromFlagPluginDeviceOrientation', function(t) {
-    t.plan(4);
-    var repo = flagutil.computeReposFromFlag('plugin-device-orientation');
-    t.equal(repo.length, 1);
-    t.equal(typeof repo[0], 'object');
-    t.equal(repo[0].id, 'plugin-device-orientation');
-    t.equal(repo[0].repoName, 'cordova-plugin-device-orientation');
-});
 
 test('test computeReposFromFlagPlugin-device', function(t) {
     t.plan(4);

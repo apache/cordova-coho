@@ -49,54 +49,72 @@ module.exports = function *(argv) {
         process.exit(1);
    }
    
+   var pull_only = argv['pull-only'];
    var localBranch = 'pr/' + argv.pr;
    var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
    var remote = 'https://github.com/apache/' + currentRepo.repoName;
    var origin = 'https://git-wip-us.apache.org/repos/asf/' + currentRepo.repoName;
-   yield gitutil.stashAndPop('', function*() {
-       var commitMessage
-       yield executil.execHelper(executil.ARGS('git checkout master'));
-    
-       yield executil.execHelper(['git', 'pull', origin, 'master']);
-       var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /*silent*/ true);
-       yield executil.execHelper(['git', 'fetch', /*force update*/ '-fu', remote,
-            'refs/pull/' + argv.pr + '/head:' + localBranch]);
-       try {
-            yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch),
-                /*silent*/ true, /*allowError*/ true);
-                commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
-               yield executil.execHelper(['git', 'commit', '--amend', '-m', 
-                    commitMessage + '\n\n This closes #' + argv.pr]);
-       } catch (e) {   
-           if (e.message.indexOf('fatal: Not possible to fast-forward, aborting.') > 0) {
-               // Let's try to rebase
-               yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
-               yield executil.execHelper(['git', 'pull', '--rebase', origin, 'master']);
-               yield executil.execHelper(executil.ARGS('git checkout master'));
-               yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch));
-               commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
-               yield executil.execHelper(['git', 'commit', '--amend', '-m', 
-                    commitMessage + '\n\n This closes #' + argv.pr]);
-           } else {
-               throw e;
-           }
-       }
-      console.log(); 
-      var commits =  yield executil.execHelper(['git', 'log',
-            '--graph',
-            '--pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset',
-            '--abbrev-commit',
-            '--stat',
-            commit + '..HEAD'], /*silent*/ true);
+   if (currentRepo.github) {
+       origin = remote;
+   }
 
-       if (commits) {
-           console.log('---------------');
-           console.log('Commits merged:');
-           console.log('---------------');
-           console.log(commits);
-           console.log(chalk.red.bold('Success! Please test, squash, and rebase to meaningful commits before pushing to remote master using: git push origin master'));
-       } else {
-           console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
-       }
-   });
+    function* mergePr(){
+        var commitMessage;
+        yield executil.execHelper(executil.ARGS('git checkout master'));
+
+        yield executil.execHelper(['git', 'pull', origin, 'master']);
+        var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /*silent*/ true);
+        yield executil.execHelper(['git', 'fetch', /*force update*/ '-fu', remote,
+                'refs/pull/' + argv.pr + '/head:' + localBranch]);
+
+        if (!pull_only) {
+            try {
+                yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch),
+                    /*silent*/ true, /*allowError*/ true);
+                    commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
+                    yield executil.execHelper(['git', 'commit', '--amend', '-m', 
+                        commitMessage + '\n\n This closes #' + argv.pr]);
+            } catch (e) {   
+                if (e.message.indexOf('fatal: Not possible to fast-forward, aborting.') > 0) {
+                    // Let's try to rebase
+                    yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
+                    yield executil.execHelper(['git', 'pull', '--rebase', origin, 'master']);
+                    yield executil.execHelper(executil.ARGS('git checkout master'));
+                    yield executil.execHelper(executil.ARGS('git merge --ff-only ' + localBranch));
+                    commitMessage = yield executil.execHelper(executil.ARGS('git log --format=%B -n 1 HEAD'), /*silent*/ true);
+                    yield executil.execHelper(['git', 'commit', '--amend', '-m', 
+                        commitMessage + '\n\n This closes #' + argv.pr]);
+                } else {
+                    throw e;
+                }
+            }
+            console.log(); 
+            var commits =  yield executil.execHelper(['git', 'log',
+                '--graph',
+                '--pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset',
+                '--abbrev-commit',
+                '--stat',
+                commit + '..HEAD'], /*silent*/ true);
+
+            if (commits) {
+                console.log('---------------');
+                console.log('Commits merged:');
+                console.log('---------------');
+                console.log(commits);
+                console.log(chalk.red.bold('Success! Please test, squash, and rebase to meaningful commits before pushing to remote master using: git push origin master'));
+            } else {
+                console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
+            }
+
+        } else {
+            // git checkout localbranch
+            yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
+        }
+    }
+   
+   if (!pull_only) {
+        yield gitutil.stashAndPop('', mergePr);
+   } else {
+       yield mergePr();
+   }
 };

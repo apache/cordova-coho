@@ -42,7 +42,9 @@ module.exports = function *(argv) {
         '    * Perform a rebase of the `pr/pr#` branch. \n' +
         '    * Attempt a `--ff-only` merge to master. \n' +
         '    * On success, it will modify the last commit\'s message to include. `This closes #pr` to ensure the corresponding PR closes on pushing to remote. \n\n' +
-        'Usage: $0 merge-pr --pr 111')
+        'Usage: $0 merge-pr --pr 111' +
+        '(optional) --pull-only   Pulls the change into a branch only, and checks it out. Does not merge it to the master branch.'
+        )
         .argv;
    if (argv.h) {
         optimist.showHelp();
@@ -105,16 +107,11 @@ module.exports = function *(argv) {
             } else {
                 console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
             }
-
-        } else {
-            // git checkout localbranch
-            yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
         }
     }
    
-   if (!pull_only) {
-        yield gitutil.stashAndPop('', mergePr);
-   } else {
-       yield mergePr();
+   yield gitutil.stashAndPop('', mergePr);
+   if (pull_only) {
+        yield executil.execHelper(executil.ARGS('git checkout ' + localBranch));
    }
 };

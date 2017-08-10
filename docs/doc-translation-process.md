@@ -105,7 +105,7 @@ Finally, it pushes the translated language files back into github.
     
     #--- git repos
     ## declare an array variable
-    declare -a gitrepos=("cordova-docs" "cordova-cli" "cordova-plugin-battery-status" "cordova-plugin-camera" "cordova-plugin-console" "cordova-plugin-contacts" "cordova-plugin-device" "cordova-plugin-device-motion" "cordova-plugin-device-orientation" "cordova-plugin-dialogs" "cordova-plugin-file" "cordova-plugin-file-transfer" "cordova-plugin-geolocation" "cordova-plugin-globalization" "cordova-plugin-inappbrowser" "cordova-plugin-media" "cordova-plugin-media-capture" "cordova-plugin-network-information" "cordova-plugin-splashscreen" "cordova-plugin-statusbar" "cordova-plugin-vibration")
+    declare -a gitrepos=("cordova-docs" "cordova-cli" "cordova-plugin-battery-status" "cordova-plugin-camera" "cordova-plugin-console" "cordova-plugin-contacts" "cordova-plugin-device" "cordova-plugin-dialogs" "cordova-plugin-file" "cordova-plugin-file-transfer" "cordova-plugin-geolocation" "cordova-plugin-globalization" "cordova-plugin-inappbrowser" "cordova-plugin-media" "cordova-plugin-media-capture" "cordova-plugin-network-information" "cordova-plugin-splashscreen" "cordova-plugin-statusbar" "cordova-plugin-vibration")
     
     
     read -p "What is the name of the JIRA issue?" jira

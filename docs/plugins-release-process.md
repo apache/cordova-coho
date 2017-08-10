@@ -73,7 +73,7 @@ TODO: Should not mention testing other than checking medic
 
 If you don't want to release all plugins, but you have specific plugins you want to release, you need to set `ACTIVE` equal to them.
 
-    ACTIVE="cordova-plugin-camera cordova-plugin-contacts cordova-plugin-device-motion"
+    ACTIVE="cordova-plugin-camera cordova-plugin-contacts"
     echo $ACTIVE
 
 ## Ensure license headers are present everywhere:

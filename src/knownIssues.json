@@ -196,5 +196,8 @@
     "dep-graph": {
         "verified-license": "MIT",
         "verified-license-notes": "https://github.com/TrevorBurnham/dep-graph#license"
+    },
+    "jschardet": {
+        "license-notes": "This license is not accepted by ASF, but since it is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of ESLINT. Do a npm ls in your repo to confirm it is only packaged with eslint"
     }
 }

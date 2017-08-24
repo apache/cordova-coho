@@ -166,7 +166,7 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
         data = bold(data, platform);
     });
     // then interpolate linkified changes into existing release notes and compose the final release notes string
-    var relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
+    var relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), {encoding: 'utf8'});
     var headerPos = relNotesData.indexOf('### ');
     var date;
     if (overrideDate) {

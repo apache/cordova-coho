@@ -65,7 +65,11 @@ E.g.:
  * Comments should be added to this bug after each top-level step below is taken
  * Set a variable for use later on:
 
-    JIRA="CB-????" # Set this to the release bug.
+    Copy and paste the following in your terminal to create a JIRA variable which we can later use to reference the issue number: JIRA="CB-?????"
+
+    Make sure to replace CB-????? with the real release issue number.
+
+    Confirm the variable is set by typing echo $JIRA.
 
 ## Update and Pin Dependencies
 Ensure you're up-to-date:
@@ -146,11 +150,7 @@ Update the version of cordova-fetch that cordova-lib & cordova-create depend on:
 
 Commit these changes together into one commit
 
-    for l in cordova-plugman cordova-cli cordova-js cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
-    (cd cordova-lib && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-common && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-fetch && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
-    (cd cordova-serve && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git add package.json RELEASENOTES.md && git commit -m "$JIRA Updated version and RELEASENOTES.md for release $v" )
+    for l in cordova-plugman cordova-cli cordova-js cordova-create cordova-lib cordova-common cordova-serve cordova-fetch; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v" ); done
 
 ## Test
 Link repos:
@@ -212,9 +212,9 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
     for l in cordova-plugman cordova-cli cordova-lib cordova-js cordova-create; do ( cd $l; git log -p origin/master..master ); done
     # Tag
     for l in cordova-plugman cordova-cli cordova-lib cordova-js cordova-create; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v ); done
-    (cd cordova-fetch; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag fetch-$v)
-    (cd cordova-common; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag common-$v)
-    (cd cordova-serve; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag serve-$v)
+    (cd cordova-fetch; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v)
+    (cd cordova-common; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v)
+    (cd cordova-serve; v="$(grep '"version"' package.json | cut -d'"' -f4)"; git tag $v)
 
 ## Create release branches if they don't yet exist
 If branches don't exist, create new ones
@@ -224,9 +224,9 @@ If branches don't exist, create new ones
     (cd cordova-js; git branch 4.1.x)
     (cd cordova-create; git branch 1.0.x)
     (cd cordova-plugman; git branch 1.3.x)
-    (cd cordova-lib; git branch fetch-1.0.x)
-    (cd cordova-lib; git branch common-1.3.x)
-    (cd cordova-lib; git branch serve-1.0.x)
+    (cd cordova-fetch; git branch 1.0.x)
+    (cd cordova-common; git branch 1.3.x)
+    (cd cordova-serve; git branch 1.0.x)
     
 If branches already exist, update them
 
@@ -243,7 +243,7 @@ If branches already exist, update them
 
 ## Push
 
-    for l in cordova-lib cordova-plugman cordova-cli cordova-js cordova-create; do ( cd $l; git push && git push --tags ); done
+    for l in cordova-lib cordova-plugman cordova-cli cordova-js cordova-create cordova-common cordova-fetch cordova-serve; do ( cd $l; git push && git push --tags ); done
 
 If the push fails due to not being fully up-to-date, either:
 1. Pull in new changes via `git pull --rebase`, and include them in the release notes / re-tag

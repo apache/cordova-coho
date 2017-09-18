@@ -166,7 +166,14 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
         data = bold(data, platform);
     });
     // then interpolate linkified changes into existing release notes and compose the final release notes string
-    var relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), {encoding: 'utf8'});
+    var relNotesData;
+    // if being run in cordova directy, cd into repo
+    if (path.basename(process.cwd()) === 'cordova') {
+        relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
+    } else {
+        // being run in repo directory (Eg cordova/cordova-plugin-device)
+        relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), {encoding: 'utf8'});
+    }
     var headerPos = relNotesData.indexOf('### ');
     var date;
     if (overrideDate) {

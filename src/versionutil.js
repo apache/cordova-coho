@@ -113,13 +113,11 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project', 'cordova', 'version'));
         } else if (repo.id === 'windows') {
             if (fs.existsSync(path.join('template', 'cordova', 'version'))) {
-                console.log('version file exists');
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
             }
         } else if (repo.id === 'browser') {
-            if (fs.existsSync(path.join('bin','template', 'cordova', 'version'))) {
-                console.log('version file exists');
-                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin','template', 'cordova', 'version'));
+            if (fs.existsSync(path.join('bin', 'template', 'cordova', 'version'))) {
+                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'template', 'cordova', 'version'));
             }
         }
         shelljs.config.fatal = false;

@@ -326,35 +326,7 @@ Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are perma
 
 ## Post blog Post
 
-
-Add blog post markdown file like `www/_posts/2016-03-12-plugin-release.md`
-
-Send PR to https://github.com/apache/cordova-docs
-
-See full instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
-
-Run a production build:
-
-    node_modules/.bin/gulp build --prod
-
-Output is located in `build-prod`
-
-    cd cordova-website
-    svn update
-Files and directories to update in `cordova-website` svn
-
-    cp -r ../cordova-docs/build-prod/announcements/2016/* public/announcements/2016/
-    cp ../cordova-docs/build-prod/blog/index.html public/blog/index.html
-    cp ../cordova-docs/build-prod/feed.xml public/feed.xml
-    cp -r ../cordova-docs/build-prod/news/2016/* public/news/2016/
-    cp ../cordova-docs/build-prod/sitemap.xml public/sitemap.xml
-    cp ../cordova-docs/build-prod/static/js/index.js public/static/js/index.js
-
-    svn status
-    svn add $NEW_FILES_HERE
-    svn update
-    # commit the new and modified files
-    svn commit -m "Add blog post for plugin release $JIRA"
+See instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
 
 ## Do other announcements
 

@@ -347,6 +347,11 @@ var toolRepos = [
         id: 'coho',
         repoName: 'cordova-coho',
         jiraComponentName: 'cordova-coho'
+    }, {
+        title: 'Cordova Node Xcode',
+        id: 'node-xcode',
+        repoName: 'cordova-node-xcode',
+        jiraComonentName: 'node-xcode'
     }
 ];
 

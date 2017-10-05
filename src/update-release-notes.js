@@ -72,7 +72,12 @@ module.exports = function * () {
             if (argv['from-tag']) {
                 fromTag = argv['from-tag'];
             } else {
-                fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
+                try {
+                    fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
+                } catch (e) {
+                    console.log(`no tags exist in ${repo.packageName}`);
+                    throw 'update-release-notes will not work'
+                }
             }
             if (argv['to-tag']) {
                 toTag = argv['to-tag'];

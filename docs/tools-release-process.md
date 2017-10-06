@@ -222,13 +222,13 @@ Add a comment to the JIRA issue stating what you tested, and what the results we
 ## Create release branches if they don't yet exist
 If branches don't exist, create new ones
 
-   
-    (cd cordova-lib; git branch 6.2.x)
+    (cd cordova-cli; git branch 7.2.x) 
+    (cd cordova-lib; git branch 7.2.x)
     (cd cordova-js; git branch 4.1.x)
     (cd cordova-create; git branch 1.0.x)
     (cd cordova-plugman; git branch 1.3.x)
     (cd cordova-fetch; git branch 1.0.x)
-    (cd cordova-common; git branch 1.3.x)
+    (cd cordova-common; git branch 2.2.x)
     (cd cordova-serve; git branch 1.0.x)
     (cd cordova-node-xcode; git branch 1.1.x)
     
@@ -345,7 +345,7 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     svn rm tools/cordova-serve-1*
     svn rm tools/cordova-common-2*
     svn rm tools/cordova-create-1*
-    svn rm tools/cordova-node-xcode-1
+    svn rm tools/cordova-node-xcode-1*
     cp ../cordova-dist-dev/$JIRA/* tools/
     svn add tools/*
     svn commit -m "$JIRA Published tools release to dist"

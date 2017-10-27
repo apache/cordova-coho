@@ -205,6 +205,10 @@
         "verified-license-notes": "https://github.com/cainus/logdriver/blob/master/LICENSE",
         "license-notes": "This is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of nodeunit."
     },
+    "progress": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/visionmedia/node-progress/blob/1.1.8/LICENSE"
+    },
     "uncrustify": {
         "license-notes": "This license is not accepted by ASF, but since it is a dev dependency, we don't ship it or ask our users to download it. We are good. Check that it is only in devDeps in package.json"
     }    

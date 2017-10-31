@@ -76,7 +76,7 @@ module.exports = function * () {
                     fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
                 } catch (e) {
                     console.log(`no tags exist in ${repo.packageName}`);
-                    throw 'update-release-notes will not work'
+                    throw 'update-release-notes will not work';
                 }
             }
             if (argv['to-tag']) {

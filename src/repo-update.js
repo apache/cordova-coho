@@ -52,7 +52,7 @@ module.exports = function * (argv) {
                '    git checkout $SAVED_ACTIVE_BRANCH\n' +
                '    git stash pop\n' +
                '\n' +
-               'Usage: $0 repo-update [--depth 10] [-b brranch] [--no-fetch] [-r repos]')
+               'Usage: $0 repo-update [--depth 10] [-b branch] [--no-fetch] [-r repos]')
         .argv;
 
     if (argv.h) {

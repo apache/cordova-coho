@@ -45,11 +45,7 @@ module.exports = function * (argv) {
 };
 
 function createRepoUrl (repo) {
-    if (repo.github) {
-        return 'https://github.com/apache/' + repo.repoName + '.git';
-    } else {
-        return 'https://git-wip-us.apache.org/repos/asf/' + repo.repoName + '.git';
-    }
+    return 'https://github.com/apache/' + repo.repoName + '.git';
 }
 
 function * cloneRepos (repos, quiet, depth) {

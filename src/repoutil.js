@@ -25,7 +25,6 @@ var apputil = require('./apputil');
 var platformRepos = [
     {
         title: 'Android',
-        github: true,
         versions: ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1'],
         id: 'android',
         repoName: 'cordova-android',
@@ -35,7 +34,6 @@ var platformRepos = [
         title: 'iOS',
         versions: ['9.0', '9.1', '9.2', '9.3', '10.0', '10.1', '10.2', '10.3'],
         id: 'ios',
-        github: true,
         repoName: 'cordova-ios',
         jiraComponentName: 'cordova-ios',
         cordovaJsPaths: ['CordovaLib/cordova.js'],
@@ -52,7 +50,6 @@ var platformRepos = [
     }, {
         title: 'Windows',
         id: 'windows',
-        github: true,
         repoName: 'cordova-windows',
         jiraComponentName: 'cordova-windows',
         cordovaJsSrcName: 'cordova.windows.js',
@@ -96,7 +93,6 @@ var platformRepos = [
     }, {
         title: 'Browser',
         id: 'browser',
-        github: true,
         repoName: 'cordova-browser',
         jiraComponentName: 'cordova-browser',
         cordovaJsSrcName: 'cordova.browser.js',

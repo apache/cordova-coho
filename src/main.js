@@ -64,6 +64,10 @@ module.exports = function () {
             name: 'list-repos',
             desc: 'Shows a list of valid values for the --repo flag.',
             entryPoint: lazyRequire('./list-repos')
+        }, {
+            name: 'remote-update',
+            desc: 'Update specified git remote to point to corresponding apache github repo',
+            entryPoint: lazyRequire('./remote-update')
         }];
     var releaseCommands = [{
         name: 'prepare-platform-release-branch',

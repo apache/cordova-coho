@@ -42,7 +42,7 @@
   },
   "scripts": {
     "oldtest": "node test/test.js | tap-spec",
-    "test": "npm run jasmine",
+    "test": "npm run eslint",
     "cover": "istanbul cover --root src --print detail jasmine",
     "jasmine": "jasmine --captureExceptions --color",
     "eslint": "eslint test && eslint src"

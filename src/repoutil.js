@@ -46,7 +46,8 @@ var platformRepos = [
         cordovaJsSrcName: 'cordova.blackberry10.js',
         cordovaJsPaths: [path.join('javascript', 'cordova.blackberry10.js')],
         versionFilePaths: [path.join('VERSION')],
-        packageFilePaths: [path.join('package.json')]
+        packageFilePaths: [path.join('package.json')],
+        inactive: true
     }, {
         title: 'Windows',
         id: 'windows',
@@ -63,14 +64,16 @@ var platformRepos = [
         jiraComponentName: 'cordova-wp8',
         cordovaJsSrcName: 'cordova.wp8.js',
         cordovaJsPaths: ['template/www/cordova.js'],
-        packageFilePaths: ['package.json']
+        packageFilePaths: ['package.json'],
+        inactive: true
     }, {
         title: 'Firefox OS',
         id: 'firefoxos',
         repoName: 'cordova-firefoxos',
         jiraComponentName: 'cordova-firefoxos',
         cordovaJsSrcName: 'cordova.firefoxos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js']
+        cordovaJsPaths: ['cordova-lib/cordova.js'],
+        inactive: true
     }, {
         title: 'Mac OSX',
         id: 'osx',
@@ -83,13 +86,15 @@ var platformRepos = [
         id: 'ubuntu',
         repoName: 'cordova-ubuntu',
         jiraComponentName: 'cordova-ubuntu',
-        cordovaJsPaths: ['www/cordova.js']
+        cordovaJsPaths: ['www/cordova.js'],
+        inactive: true
     }, {
         title: 'Amazon Fire OS',
         id: 'amazon-fireos',
         repoName: 'cordova-amazon-fireos',
         jiraComponentName: 'cordova-amazon-fireos',
-        cordovaJsPaths: ['framework/assets/www/cordova.js']
+        cordovaJsPaths: ['framework/assets/www/cordova.js'],
+        inactive: true
     }, {
         title: 'Browser',
         id: 'browser',
@@ -115,7 +120,8 @@ var platformRepos = [
         repoName: 'cordova-webos',
         jiraComponentName: 'cordova-webos',
         cordovaJsSrcName: 'cordova.webos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js']
+        cordovaJsPaths: ['cordova-lib/cordova.js'],
+        inactive: true
     }, {
         title: 'QT',
         id: 'qt',
@@ -426,6 +432,7 @@ var repoGroups = {
     'plugins': pluginRepos,
     'tools': toolRepos,
     'active-platform': platformRepos.filter(function (r) { return !r.inactive; }),
+    'active-platforms': platformRepos.filter(function (r) { return !r.inactive; }),
     'active-plugins': pluginRepos.filter(function (r) { return !r.inactive; }),
     'release-repos': allRepos.filter(function (r) { return !r.inactive; })
 };

@@ -50,11 +50,7 @@ module.exports = function * (argv) {
     var pull_only = argv['pull-only'];
     var localBranch = 'pr/' + argv.pr;
     var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
-    var remote = 'https://github.com/apache/' + currentRepo.repoName;
-    var origin = 'https://git-wip-us.apache.org/repos/asf/' + currentRepo.repoName;
-    if (currentRepo.github) {
-        origin = remote;
-    }
+    var origin = 'https://github.com/apache/' + currentRepo.repoName;
 
     function * mergePr () {
         var commitMessage;
@@ -62,7 +58,7 @@ module.exports = function * (argv) {
 
         yield executil.execHelper(['git', 'pull', origin, 'master']);
         var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /* silent */ true);
-        yield executil.execHelper(['git', 'fetch', /* force update */ '-fu', remote,
+        yield executil.execHelper(['git', 'fetch', /* force update */ '-fu', origin,
             'refs/pull/' + argv.pr + '/head:' + localBranch]);
 
         if (!pull_only) {

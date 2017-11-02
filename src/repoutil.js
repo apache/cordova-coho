@@ -191,12 +191,14 @@ var pluginRepos = [
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',
         repoName: 'cordova-plugin-device-motion',
-        jiraComponentName: 'cordova-plugin-device-motion'
+        jiraComponentName: 'cordova-plugin-device-motion',
+        inactive: true
     }, {
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
-        jiraComponentName: 'cordova-plugin-device-orientation'
+        jiraComponentName: 'cordova-plugin-device-orientation',
+        inactive: true
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',

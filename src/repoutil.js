@@ -196,7 +196,8 @@ var pluginRepos = [
         title: 'Plugin - Device Orientation',
         id: 'plugin-device-orientation',
         repoName: 'cordova-plugin-device-orientation',
-        jiraComponentName: 'cordova-plugin-device-orientation'
+        jiraComponentName: 'cordova-plugin-device-orientation',
+        inactive: true
     }, {
         title: 'Plugin - Device',
         id: 'plugin-device',

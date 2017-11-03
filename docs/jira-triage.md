@@ -40,10 +40,19 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 		- `Minor`, `Trivial`: Nice to haves.
 	- **Label**: Use the following:
 		- `regression` - A change introduced in previous release or commit that surfaced the issue. Ideally, add a link to the commit that caused the issue.
-		- `ios`, `android`, `windows` etc. platforms - If it is a plugin issue and affects one of these platforms
-		- `easyfix` - For issues that are easy for a new contributor to fix. We will eventually publish an easyfix query for new contributors to participate.
+		- `ios`, `android`, `windows`, `browser`, `node` etc. platforms - If it is a plugin issue and affects one of these platforms
+		- `beginner` or `easyfix` - For issues that are easy for a new contributor to fix. We will eventually publish an easyfix query for new contributors to participate.
 		- `triaged` - Indicates bug that has been triaged and does not need to be triaged again.
 		- `reproduced` - Bug that has a reproduction.
+		- `security`, `bug` - Issues that make the product feel broken. These are usually high priority.
+		- `legal` - Reorganizing folder structure, and other necessary (but less impactful) tasks.
+		- `dev`, `staging`, `production` - Used to describe the environment.
+		- `enhancement`, `optimization` - Used to describe improvements.
+		- `feature` - Indicates a new addition.
+		- `discussion`, `question`, `rfc` - Requires further conversation or feedback.
+		- `in progress` - A state label notifying that there is activity.
+		- `invalid`, `won't fix`, `duplicate`, `on hold` - No action needed or possible.
+
 	- **Environment**: Represents the machine setup required to reproduce the problem. Great place for mobile OS, host OS versions etc.
 	- **Affected version**: Specify the version of the component that the issue appears in.
 	- **Assigned To**: If you plan to work on a particular issue, assign it to yourself. If the issue has not been worked on by the assignee i.e. status is not `in progress` or it's clear that the assignee is not looking at this actively. The issue can be taken up by anyone.

@@ -14,6 +14,7 @@
     "gnode": "^0.1.0",
     "inquirer": "2.0.0",
     "jasmine": "^2.5.3",
+    "jasmine-co": "^1.2.2",
     "jira-client": "4.2.0",
     "jira-linkify": "^2.3.0",
     "nlf": "^1.4.3",
@@ -42,9 +43,9 @@
   },
   "scripts": {
     "oldtest": "node test/test.js | tap-spec",
-    "test": "npm run eslint",
+    "test": "npm run eslint && npm run jasmine",
     "cover": "istanbul cover --root src --print detail jasmine",
-    "jasmine": "jasmine --captureExceptions --color",
+    "jasmine": "jasmine",
     "eslint": "eslint test && eslint src"
   },
   "repository": {

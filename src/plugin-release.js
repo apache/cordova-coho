@@ -313,7 +313,7 @@ function * interactive_plugins_release () {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
                 shelljs.mkdir('-p', plugin_base);
                 process.chdir(plugin_base);
-                plugin_repos = flagutil.computeReposFromFlag('plugins', {includeSvn: true});
+                plugin_repos = flagutil.computeReposFromFlag('active-plugins', {includeSvn: true});
                 dist_svn = flagutil.computeReposFromFlag('dist', {includeSvn: true});
                 dist_dev_svn = flagutil.computeReposFromFlag('dist/dev', {includeSvn: true});
                 svn_repos = dist_svn.concat(dist_dev_svn);

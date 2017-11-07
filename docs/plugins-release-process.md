@@ -38,6 +38,26 @@ TODO: Add step about releasing cordova-plugins
 
 TODO: Should not mention testing other than checking medic
 
+# Interactive Plugins Release
+
+Though we are still working out some kinks, it is recommend to try the new coho interactive plugins release command which will handle many of the manual steps listed below.
+
+`coho prepare-plugins-release`
+
+This will do the following:
+
+* Create JIRA issue
+* Update repos
+* Let you select which repos to release
+* Let you modify release notes and finalize version to release
+* Branch, tag and push up to master
+* Increment version on master with `-dev`
+* Create svn dist archives for you to share with the cordova list for voting purposes.
+
+# Manual
+
+Try to the interactive plugins release process. If you struggle with, use the manual process which is documented below. 
+
 ## Get Buy-in
 
  1. Email the dev mailing-list and see if anyone has reason to postpone the release.

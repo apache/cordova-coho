@@ -176,7 +176,8 @@ var pluginRepos = [
         title: 'Plugin - Console',
         id: 'plugin-console',
         repoName: 'cordova-plugin-console',
-        jiraComponentName: 'cordova-plugin-console'
+        jiraComponentName: 'cordova-plugin-console',
+        inactive: true
     }, {
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
@@ -186,7 +187,8 @@ var pluginRepos = [
         title: 'Plugin - Compat',
         id: 'plugin-compat',
         repoName: 'cordova-plugin-compat',
-        jiraComponentName: 'cordova-plugin-compat'
+        jiraComponentName: 'cordova-plugin-compat',
+        inactive: true
     }, {
         title: 'Plugin - Device Motion',
         id: 'plugin-device-motion',

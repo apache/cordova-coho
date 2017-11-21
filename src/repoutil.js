@@ -215,7 +215,8 @@ var pluginRepos = [
         title: 'Plugin - File Transfer',
         id: 'plugin-file-transfer',
         repoName: 'cordova-plugin-file-transfer',
-        jiraComponentName: 'cordova-plugin-file-transfer'
+        jiraComponentName: 'cordova-plugin-file-transfer',
+        inactive: true
     }, {
         title: 'Plugin - File',
         id: 'plugin-file',

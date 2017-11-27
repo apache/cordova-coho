@@ -182,7 +182,8 @@ var pluginRepos = [
         title: 'Plugin - Contacts',
         id: 'plugin-contacts',
         repoName: 'cordova-plugin-contacts',
-        jiraComponentName: 'cordova-plugin-contacts'
+        jiraComponentName: 'cordova-plugin-contacts',
+        inactive: true
     }, {
         title: 'Plugin - Compat',
         id: 'plugin-compat',

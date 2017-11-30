@@ -179,33 +179,9 @@ To submit a fix:
     (cd androidTest2 && ./cordova/run --emulator)
     ```
 
-4) Test Project Upgrade via CLI:
-
-    ```
-    cordova create ./androidTest3 org.apache.cordova.test3 androidTest3
-    (cd androidTest3 && cordova platform add android@4.1.1)
-    (cd androidTest3 && cordova platform update ../cordova-android)
-    (cd androidTest3 && cordova run android --device)
-    (cd androidTest3 && cordova platform ls)
-    ```
-
-The output from `cordova platform ls` should show the new version of `cordova-android`.
-
-5) Test Project Upgrade for non-cli projects:
-
-    ```
-    (cd cordova-android && git checkout 4.1.x)
-    ./cordova-android/bin/create ./androidTest4 org.apache.cordova.test4 androidTest4
-    (cd cordova-android && git checkout 5.0.x)
-    (cd androidTest4 && ../cordova-android/bin/update .)
-    (cd androidTest4 && ./cordova/build)
-    (cd androidTest4 && ./cordova/run --device)
-    (cd androidTest4 && ./cordova/version)
-    ```
-
 The output from `./cordova/version` should show the new version of `cordova-android`.
 
- 6) Run cordova-lib tests
+ 4) Run cordova-lib tests
 
     ```
     (cd cordova-lib/cordova-lib && npm test)

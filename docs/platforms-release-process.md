@@ -31,7 +31,7 @@ Replace `Android` with the platform you are releasing.
 
 ## Get Buy-in
 
-Email the dev mailing-list and see if anyone has reason to postpone the release.
+Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
 
 E.g.:
 
@@ -63,13 +63,13 @@ See if any dependencies are outdated
 
     (cd cordova-android && npm outdated --depth=0)
 
-Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies.
+Update them in each project's `package.json` file. Make sure to run through the test section below for compatibility issues. The `--depth=0` prevents from listing dependencies of dependencies.
 
-Checkin updated modules (use npm 3.10.1+)
+Check-in updated modules (use npm 3.10.1+)
 
     rm -rf node_modules
     npm install --production (skips devDependencies)
-    git add node_modules/* (checkin all modules needed for platform add git url)
+    git add node_modules/* (check-in all modules needed for platform add git url)
     git commit -m "$JIRA Updated checked-in node_modules"
     npm install (Re-add devDependencies for ability to run tests locally)
 
@@ -79,12 +79,12 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 
     coho audit-license-headers -r android | less
 
-Ensure all dependencies and subdependencies have Apache-compatible licenses
+Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
 
 ## Prepare Release
-Increase the version within package.json using SemVer, and remove the `-dev` suffix
+Increase the version within package.json using SemVer, and remove the `-dev` suffix.
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
@@ -94,13 +94,13 @@ If the changes merit it, manually bump the major / minor/ patch version in `pack
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
 
-Update the repos `RELEASENOTES.md` file with changes since the last release
+Update the repos `RELEASENOTES.md` file with changes since the last release.
 
     coho update-release-notes -r android
     # Then curate:
     vim cordova-android/RELEASENOTES.md
 
-Commit these changes together into one commit
+Commit these changes together into one commit.
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
 
@@ -109,7 +109,7 @@ Commit these changes together into one commit
 **PATCH RELEASE NOTES**
 
 
-If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate hunk).
+If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate chunk).
 
     git checkout master
     git checkout -p RELEASENOTES_COMMIT_SHA_HASH
@@ -126,7 +126,7 @@ After, prepare your release branch by using `coho prepare-release-branch` comman
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
 
 
-Run the following command (make sure to replace the version below with what is listed inside `package.json`)
+Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 
     coho prepare-platform-release-branch --version 5.0.0 -r android
     # Ensure commits look okay on both branches
@@ -160,7 +160,7 @@ To submit a fix:
     (cd mobilespec && cordova run android --emulator)
     ```
 
-2) Create a hello world app using the cordova CLI
+2) Create a hello world app using the cordova CLI.
 
     ```
     cordova create ./androidTest org.apache.cordova.test androidTest
@@ -169,7 +169,7 @@ To submit a fix:
     (cd androidTest && cordova run android --emulator)
     ```
 
-3) Run your platform's `./bin/create` script. Ensure generated project builds & runs both through an IDE and through the cordova/* scripts
+3) Run your platform's `./bin/create` script. Ensure the generated project builds & runs both through an IDE and through the cordova/* scripts.
 
 
     ```
@@ -181,13 +181,13 @@ To submit a fix:
 
 The output from `./cordova/version` should show the new version of `cordova-android`.
 
- 4) Run cordova-lib tests
+ 4) Run cordova-lib tests.
 
     ```
     (cd cordova-lib/cordova-lib && npm test)
     ```
 
-Feel free to cleanup the projects you just created
+Feel free to clean up the projects you just created.
 
     ```
     rm -rf androidTest*

@@ -40,7 +40,7 @@ TODO: Should not mention testing other than checking medic
 
 # Interactive Plugins Release
 
-Though we are still working out some kinks, it is recommend to try the new coho interactive plugins release command which will handle many of the manual steps listed below.
+Though we are still working out some kinks, it is recommended to try the new coho interactive plugins release command which will handle many of the manual steps listed below.
 
 `coho prepare-plugins-release`
 

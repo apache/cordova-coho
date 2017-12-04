@@ -27,7 +27,7 @@ This page describes the technical steps for releasing the `Hello-world-app` (see
 
 ## Get Buy-in
 
-Email the dev mailing-list and see if anyone has reason to postpone the release.
+Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
 
 E.g.:
 
@@ -52,7 +52,7 @@ E.g.:
 
 ## Update Release Notes & Version
 
-Increate the version within `package.json` using `SemVer`, and remove teh `-dev` suffix.
+Increment the version within `package.json` using `SemVer`, and remove the `-dev` suffix.
 
     (cd cordova-app-hello-world; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "cordova-app-hello-world: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi)
      
@@ -143,7 +143,7 @@ Upload:
 Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ## Start VOTE Thread
-Send an email to dev ML with: 
+Send an email to dev mailing list with: 
 
 __Subject:__
 
@@ -251,7 +251,7 @@ Subject: [ANNOUNCEMENT] Cordova App Hello World Release
     Do the same things regarding announcements as described in cadence-release-process, where they make sense.
 
 ## Close JIRA Issue
- * Double check that the issue has comments that record the steps you took
+ * Double check that the issue includes comments that record the steps you took
  * Mark it as fixed
 
 ## Finally:

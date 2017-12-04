@@ -24,8 +24,8 @@
 ## Version Format
 
 `SemVer` ([Semantic Version](http://www.semver.org)) will be used as the
-version format for all components, including platforms, plugman, CLI, core
-plugins. Doing so is important when describing dependencies in a sane way
+version format for all components, including platforms, plugman, CLI, and core
+plugins. Doing so is important when describing dependencies in a logical way
 (e.g. within plugin.xml files). Although the CLI previously used a
 `CadVer-SemVer` format, it now uses a simple `SemVer` format. The `CadVer` format
 is no longer used in any Cordova components. The plugins no longer have an `r`
@@ -60,7 +60,7 @@ Platform versions will all be separate and independent. So there may be a
 time. The bumping of version numbers of each platform should be appropriate
 to the new content being added to that platform. The `cordova platform add`
 command will add a platform version specific to the CLI by default.
-Alternatively the user may manually specify an explicit version of that
+Alternatively, the user may manually specify an explicit version of that
 platform to be installed (i.e., `cordova platform add android@4.0.1`).
 The CLI will hold the list of default versions for each platform
 (i.e., platform version pinning). Platform docs should be stored in each
@@ -86,7 +86,7 @@ is the platform pin, then the CLI receives a bump to its third digit, no
 matter the size of the version bump to those platform(s). If the CLI requires
 a change beyond updating the pin to handle the new platform, or if the CLI
 has other changes, then the `SemVer` semantics still apply for the CLI -
-the second or even first digit of the CLI version may get bumped. Further,
+the second or even first digit of the CLI version may get bumped. Furthermore,
 if `cordova-lib` or `plugman` have a version bump due to new content (beyond
 updating the pin), then at least the same digit of the CLI version should get
 bumped, since the CLI is primarily composed of `cordova-lib` and `plugman`.
@@ -103,7 +103,7 @@ CLI depends on `nopt`), the `package.json` should fully pin the version of
 the dependent component (i.e., "nopt": "2.3.4") (dependency pinning).
 This is in lieu of npm-shrinkwrap since npm-shrinkwrap is not reasonably mature.
 
-For users that want to install a "fixed recipie" of specific versions
+For users that want to install a "fixed recipe" of specific versions
 of all the Cordova components, there are two ways to do that:
 
 - using specific version numbers:
@@ -153,8 +153,8 @@ native code.
    * These releases contain non-critical bug fixes as well as new features.
    * Releases generally happen on Thursdays, but can be done on any day so long as it's been a week since the previous release.
  3. __Platform Releases__
-   * Release whenever platform maintainers decide they want to release
-   * Tools also get updated with a platform release
+   * Release whenever platform maintainers decide they want to release.
+   * Tools also get updated with a platform release.
 
 When a component is released, it is tested against the most recent released
 version of its peer components. Note that this is the only combination that is
@@ -164,7 +164,7 @@ example, when a plugin is released, it is tested against the latest released
 platforms and tools.
 
 Users are encouraged to use versions that are "date clustered". The reason for
-this is the testing described in the previous paragraph. Attemping to use a
+this is the testing described in the previous paragraph. Attempting to use a
 component that is an outlier in age compared to the other components may yield
 unpredictable behavior, since that combination may not have been tested by
 the community.

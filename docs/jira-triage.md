@@ -19,12 +19,12 @@
 #
 -->
 
-#JIRA Issue Triage Process
+# JIRA Issue Triage Process
 
-##Goal
+## Goal
 Every issue needs to be triaged. A triaged issue is actionable and there is an eventual desire to resolve it and has all the fields set accurately. In particular, low quality issues are eliminated from the system. Also, critical issues need to be fixed asap and this process should highlight those.
 
-##Process
+## Process
 Go through each [unresolved bug that is not labeled 'triaged' ordered by created Date](https://issues.apache.org/jira/issues/?jql=status%20not%20in%20(Resolved%2C%20Closed)%20AND%20(labels%20is%20EMPTY%20OR%20labels%20!%3D%20triaged)%20AND%20%20project%20%3D%20CB%20ORDER%20BY%20createdDate%20DESC).
 
 - Ensure the bug details has sufficient details for a repro. If not, message the reporter with questions. If the reporter does not respond in 4 business days. Resolve the bug as `Invalid`. They are welcome to re-activate the bug with details at a later date.
@@ -59,16 +59,16 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 
 At the end of triage session, send an e-mail to the dev list discussing bugs that need urgent attention. Good bugs in this area are recent regressions or other issues having a wide impact. These would require a patch release to fix them.
 
-##Asking for help
+## Asking for help
 Sometimes while there is a bug or a feature request that seems valid, but it might not be high priority for one of the committers to fix. Following up with the issue reporter quickly and coaching him through making a contribution with a pull request is a good idea.
 
-##Tips when asking for more info from reporter
+## Tips when asking for more info from reporter
 - If the cordova version is not provided, ask reporter to use “cordova -v” to verify which version of cordova he/she is using.
 - If the platform version is not provided, ask the reporter to use “cordova platform ls” to verify which platform version he/she is using.
 - If the issue is unclear, ask the reporter to provide more details via screen shot, sample code, or a command line log.
  
-##Dealing with feature requests
+## Dealing with feature requests
 New features to plugins should ideally be cross platform (at least across more than one major platform - Android, iOS, Windows). The design should account for ease of detection or meaningful degradation in the absence of the feature on a partcular platform. For feature requests that are overly specific to a particular usecase - we should resolve them with resolution reason `Later` or `Won't Fix`. There is little value in carrying the debt of these issues.
 
-##Open issues
+## Open issues
 - Assignments: Who does JIRA triage? Do we need a weekly rotation duty? Should we publish a schedule? Should we distribute by component?

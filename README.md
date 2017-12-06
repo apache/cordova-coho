@@ -44,7 +44,7 @@ Easiest way on OS X & Linux:
 Easiest way on Windows:
     [http://nodejs.org/](http://nodejs.org/)
 
-# Installation
+## Installation
 
 ```bash    
 npm install -g cordova-coho
@@ -52,7 +52,7 @@ npm install -g cordova-coho
 
 On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`, you might have to run the command using `sudo`.    
 
-## Alternately, you could also clone & use `coho`
+### Alternately, you could also clone & use `coho`
 
 ```bash
 mkdir -p cordova
@@ -63,7 +63,7 @@ npm install
 npm link # Might need sudo for some configurations
 ```
 
-# Cloning/Updating Cordova repositories
+## Cloning/Updating Cordova repositories
 
 ```bash
 mkdir cordova-repos
@@ -75,7 +75,7 @@ coho repo-update -g -r all
 
 The `all` repo id will clone **all** Apache Cordova repositories into the current working directory. 
 
-# Docs
+## Docs
 
     coho --help
 
@@ -92,15 +92,15 @@ To see valid repo ids and repo group ids for use with Coho, use the `list-repos`
 
     coho list-repos    
 
-## Note about global context
+### Note about global context
 
 Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
 
-# Contributing
+## Contributing
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
 [how to contribute on our website][contribute]. 
 
-## Issues
+### Issues
 
 If you find issues with this tool, please follow our guidelines for [reporting issues]. 
 We do not use the GitHub issue system as an Apache project, we have a JIRA issue management system which covers over 50+ CLI, platform, and plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.

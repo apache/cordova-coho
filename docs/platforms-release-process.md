@@ -73,6 +73,8 @@ Checkin updated modules (use npm 3.10.1+)
     git commit -m "$JIRA Updated checked-in node_modules"
     npm install (Re-add devDependencies for ability to run tests locally)
 
+Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
+
 ## Release Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.

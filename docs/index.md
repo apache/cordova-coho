@@ -35,8 +35,7 @@
 * [Committer workflow](committer-workflow.md)
 * [Code Reviews](code-reviews.md)
 * [Processing Pull Requests](processing-pull-requests.md)
-* [Triaging JIRAS](jira-triage.md)
+* [Triaging JIRA issues](jira-triage.md)
 
 ## Misc
-* [Doc translation Process](doc-translation-process.md)
-* [Storing Repo Versions Desing](storing-repo-versions-design.md)
+* [Storing Repo Versions Design](storing-repo-versions-design.md)

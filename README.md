@@ -24,7 +24,7 @@
 
 # Cordova Coho
 
-> The command line tool to for Apache Cordova contributors to manage [ Apache Cordova](http://cordova.apache.org) repositories, and to help with releases and pull requests.
+> Command line tool for Apache Cordova contributors to manage [Apache Cordova](http://cordova.apache.org) repositories, and to help with releases and pull requests.
 
 This repository has the following purposes:
 
@@ -52,14 +52,16 @@ npm install -g cordova-coho
 
 On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`, you might have to run the command using `sudo`.    
 
-## Alternately, you could also clone & Use `coho`
+## Alternately, you could also clone & use `coho`
 
-    mkdir -p cordova
-    cd cordova
-    git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
-    cd cordova-coho
-    npm install
-    npm link # Might need sudo for some configurations
+```bash
+mkdir -p cordova
+cd cordova
+git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
+cd cordova-coho
+npm install
+npm link # Might need sudo for some configurations
+```
 
 # Cloning/Updating Cordova repositories
 
@@ -70,7 +72,6 @@ coho repo-update -g -r all
 ```
 
 `repo-update` will clone a repo if it is missing -- if it exists, it updates it.
-
 
 The `all` repo id will clone **all** Apache Cordova repositories into the current working directory. 
 
@@ -91,18 +92,18 @@ To see valid repo ids and repo group ids for use with Coho, use the `list-repos`
 
     coho list-repos    
 
+## Note about global context
+
+Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
 
 # Contributing
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
 [how to contribute on our website][contribute]. 
 
-# TO-DO + Issues
+## Issues
 
 If you find issues with this tool, please follow our guidelines for [reporting issues]. 
-We do not use github issue system as an Apache project, we have a JIRA issue management system which covers over 50+ cli, platform, 
-plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.
-
-Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
+We do not use the GitHub issue system as an Apache project, we have a JIRA issue management system which covers over 50+ CLI, platform, and plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.
 
 [Contribute]: http://cordova.apache.org/contribute/
 [Reporting issues]: http://cordova.apache.org/contribute/issues.html

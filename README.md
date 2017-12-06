@@ -29,14 +29,12 @@
 This repository has the following purposes:
 
 1. To hold committer-relevant [documentation](docs/index.md)
-
 2. To hold release automation scripts
-  - e.g. coho create-archive && coho verify-archive
-  - e.g. CrowdIn scripts
-
+   - e.g. coho create-archive && coho verify-archive
+   - e.g. CrowdIn scripts
 3. To hold generally useful dev scripts
-  - e.g. coho repo-clone
-  - e.g. coho --help
+   - e.g. coho repo-clone
+   - e.g. coho --help
 
 ## Node.js is a pre-requisite:
 

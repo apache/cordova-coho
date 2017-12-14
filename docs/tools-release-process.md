@@ -89,7 +89,7 @@ See if any dependencies are outdated
     (cd cordova-create && npm outdated --depth=0)
     (cd cordova-node-xcode && npm outdated --depth=0)
 
-Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies. As of this writing, the following packages are behind and are not safe to upgrade:
+Update them in each project's `package.json` file. Make sure to run through the test section below for compatibility issues. The `--depth=0` prevents from listing dependencies of dependencies. As of this writing, the following packages are behind and are not safe to upgrade:
  * nopt for plugman - see [CB-7915](https://issues.apache.org/jira/browse/CB-7915)
  * elementtree - elementtree@0.1.6 breaks tests in cordova-lib, investigation needed.
 
@@ -434,7 +434,7 @@ If there are any dependencies or devDependencies that are out of date, open a Ji
 
 ## Outdated Shrinkwrap
 
-These instructions are being kept here inscase we decide to start using shrinkwrap again.
+These instructions are being kept here in case we decide to start using shrinkwrap again.
 
 Before creating the shrinkwrap on the cli, do the following so that the shrinkwrap will have the correct content:
 

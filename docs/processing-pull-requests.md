@@ -27,7 +27,7 @@ For a visual walkthrough, see slides from ApacheCon 2015 talk on [Committer Tool
  * Ensure you are familiar with [committer-workflow.md](committer-workflow.md)
 
 ## Step 0:
-Find what requests need attention by looking a the GitHub page.
+Find what requests need attention by looking at the GitHub page.
 
 To look at them in aggregate:
 
@@ -55,7 +55,7 @@ To close a pull request that is no longer relevant / active:
  * If there is no JIRA issue for the change, create one
    * Ensure the JIRA issue has a link to the pull request
    * Ensure the pull request has a link to the JIRA issue
- * View the user's branch in github and request changes be made (if applicable) by adding comments in the web interface
+ * View the user's branch in GitHub and request changes be made (if applicable) by adding comments in the web interface
 
 ## Step 2: Ensure they have signed the Contributor Agreement
  * For trivial changes, this is not necessary (e.g. use your judgement - e.g. less than 100 lines of code)
@@ -72,7 +72,7 @@ Run the following as an exemplary way to merge to master:
 This command will do the following:
 * Update your local master.
 * Fetch the PR and create a branch named `pr/pr#`
-* Attempt a `--ff-only` merge to master. If this fails then: 
+* Attempt a `--ff-only` merge to master. If this fails, then: 
     * Perform a rebase of the `pr/pr#` branch.
     * Attempt a `--ff-only` merge to master. 
     * On success, it will modify the last commit's message to include. 'This closes #pr' to ensure the corresponding PR closes on pushing to remote.

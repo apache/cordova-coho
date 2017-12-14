@@ -24,5 +24,5 @@
 We use GitHub pull requests for code reviews.
 1. Commit to a branch on your own fork of the repo that you're changing
 2. Use GitHub to create a pull request
-3. Email out the link to it
+3. Email out the link to it to dev@cordova.apache.org
 

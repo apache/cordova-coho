@@ -93,6 +93,10 @@ Update them in each project's `package.json` file. Make sure to run through the 
  * nopt for plugman - see [CB-7915](https://issues.apache.org/jira/browse/CB-7915)
  * elementtree - elementtree@0.1.6 breaks tests in cordova-lib, investigation needed.
 
+## Update pinned platforms
+
+Make sure pinned platforms are up to date in https://github.com/apache/cordova-lib/blob/master/src/platforms/platformsConfig.json, if not, update them
+
 ## Update Release Notes & Version
 
 Increase the version within package.json using SemVer, and remove the `-dev` suffix

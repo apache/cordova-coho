@@ -57,7 +57,7 @@ On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`,
 ```bash
 mkdir -p cordova
 cd cordova
-git clone https://git-wip-us.apache.org/repos/asf/cordova-coho.git
+git clone https://github.com/apache/cordova-coho
 cd cordova-coho
 npm install
 npm link # Might need sudo for some configurations

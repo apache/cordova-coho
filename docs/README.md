@@ -19,7 +19,7 @@
 #
 -->
 
-# cordova-coho Documentation
+# cordova-coho Usage / Cordova Committer Documentation
 
 This is a collection of documentation on processes using `cordova-coho`:
 

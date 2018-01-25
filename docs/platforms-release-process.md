@@ -21,9 +21,41 @@
 
 # Release Process for ''Platforms Releases''
 
-Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
+This page describes the technical steps for releasing a `Platforms Release`.
 
-This page describes the technical steps for releasing a `Platforms Release` (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
+It describes the following steps:
+
+- Get Buy-in
+- Creating JIRA issues
+- Update and Pin Dependencies
+- Release Check
+- Prepare Release
+- Testing
+    - What to test
+        - Android Extras
+        - iOS Extras
+- Push Changes
+- Publish RC to dist/dev
+- Documentation to Update
+- Prepare Blog Post
+- Start VOTE Thread
+- Email the result of the vote
+- If the Vote does *not* Pass
+- Otherwise: Publish to dist/ & npm
+- Uploading to Bintray (Android only)
+- Add permanent apache release tag
+- Details
+    - Tell Apache about Release
+    - Update the Docs
+    - Announce It!
+- Additional Information
+    - Moving Tags
+
+(Yes this list is long and scary, but represents the content below)
+
+> See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
+>
+> Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
 
 TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
 

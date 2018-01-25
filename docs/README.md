@@ -25,6 +25,8 @@ This is a collection of documentation on processes using `cordova-coho`:
 
 ## Release Processes
 
+Follow these processes to release...
+
 * [Tools](tools-release-process.md) (CLI etc.)
 * [Platforms](platforms-release-process.md) (iOS, Android, Windows etc.)
 * [Plugins](plugins-release-process.md)
@@ -38,6 +40,8 @@ This is a collection of documentation on processes using `cordova-coho`:
 * [Setting up GPG](setting-up-gpg.md)
 
 ## Committer Workflow
+
+Things a committer frequently does:
 
 * [Committer workflow](committer-workflow.md)
 * [Code Reviews](code-reviews.md)

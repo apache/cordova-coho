@@ -26,6 +26,7 @@ This page describes the technical steps for doing a `Platforms Release`.
 It describes the following steps:
     
 - [General instructions](#general-instructions)
+  * [Repository setup](#repository-setup)
 - [Get Buy-in](#get-buy-in)
 - [Create JIRA issue](#create-jira-issue)
 - [Update and Pin Dependencies](#update-and-pin-dependencies)
@@ -67,7 +68,12 @@ It describes the following steps:
 
 - See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
 - Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
-- Replace `Android` with the platform you are releasing.
+- Replace `Android` with the platform you are releasing in the instructions below.
+
+### Repository setup
+
+You should have your platform repository checked out in a folder where you als ohave checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
+](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
 ## Get Buy-in
 
@@ -182,9 +188,9 @@ If you are releasing new commits from an already-existing release branch, rememb
 
 Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
 
- * Updating `cordova.js` snapshot
- * Creating a release branch (if it doesn't already exist)
- * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
+1. Creating a release branch (if it doesn't already exist)
+2. Updating `cordova.js` snapshot
+3. Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 

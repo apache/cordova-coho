@@ -279,19 +279,32 @@ Create a JIRA issue for it, and mark it as a blocker.
 
 ## Push Changes
 
+### Push commits
+
+All good? Have another look at the changes:
+
     coho repo-status -r android -b master -b 5.0.x
-    # If changes look right:
+
+If changes look right:
+
     coho repo-push -r android -b master -b 5.0.x
 
-Tag & Push:
+This pushes the commits in both `master` and `5.0.x` (the release branch) to the remote.
+
+### Tag and push tag
+
+Before you tag, run this command:
 
     coho tag-platform-release --version 3.5.0 -r android --pretend
-    # Seems okay:
+    
+Seems okay? Then execute it by running:
+
     coho tag-platform-release --version 3.5.0 -r android
 
 The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
 ## Publish RC to dist/dev
+
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
@@ -308,20 +321,23 @@ Upload:
 
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
 
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+Find your release here: https://dist.apache.org/repos/dist/dev/cordova/ / https://dist.apache.org/repos/dist/release/cordova/
 
 ## Documentation To Update
 
 For your platform:
+
  1. Ensure the [Upgrade Guide](http://cordova.apache.org/docs/en/latest/guide/platforms/android/upgrade.html) for your platform is up-to-date
  2. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
 ## Prepare Blog Post
+
  * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
  * Instructions on publishing a blog post are on the [cordova-docs repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
  * Get blog post proofread by submitting a PR to cordova-docs and asking someone on dev list to +1 it.
 
 ## Start VOTE Thread
+
 Send an email to dev ML with: (replace `android` with your platform)
 
 __Subject:__

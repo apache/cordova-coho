@@ -27,7 +27,7 @@ It describes the following steps:
     
 - [General instructions](#general-instructions)
 - [Get Buy-in](#get-buy-in)
-- [Creating JIRA issues](#creating-jira-issues)
+- [Create JIRA issue](#create-jira-issue)
 - [Update and Pin Dependencies](#update-and-pin-dependencies)
 - [Release Check](#release-check)
 - [Prepare Release](#prepare-release)
@@ -35,7 +35,7 @@ It describes the following steps:
   * [What to Test](#what-to-test)
     + [Android Extras](#android-extras)
     + [iOS Extras](#ios-extras)
-- [Push Changes:](#push-changes-)
+- [Push Changes](#push-changes)
 - [Publish RC to dist/dev](#publish-rc-to-dist-dev)
 - [Documentation To Update](#documentation-to-update)
 - [Prepare Blog Post](#prepare-blog-post)
@@ -77,7 +77,7 @@ E.g.:
 
 Double check you replace "Android" in the subject and mail body - there is no undo for emails.
 
-## Creating JIRA issues
+## Create JIRA issue
 
  * Create a JIRA issue to track the status of the release.
    * Make it of type "Task"
@@ -239,7 +239,7 @@ Feel free to clean up the projects you just created.
  * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
  * Test the Makefile via `make`
 
-## Push Changes:
+## Push Changes
 
     coho repo-status -r android -b master -b 5.0.x
     # If changes look right:

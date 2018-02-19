@@ -24,33 +24,35 @@
 This page describes the technical steps for doing a `Platforms Release`.
 
 It describes the following steps:
-
-- General instructions
-- Get Buy-in
-- Creating JIRA issues
-- Update and Pin Dependencies
-- Release Check
-- Prepare Release
-- Testing
-    - What to test
-        - Android Extras
-        - iOS Extras
-- Push Changes
-- Publish RC to dist/dev
-- Documentation to Update
-- Prepare Blog Post
-- Start VOTE Thread
-- Email the result of the vote
-- If the Vote does *not* Pass
-- Otherwise: Publish to dist/ & npm
-- Uploading to Bintray (Android only)
-- Add permanent apache release tag
-- Details
-    - Tell Apache about Release
-    - Update the Docs
-    - Announce It!
-- Additional Information
-    - Moving Tags
+    
+- [General instructions](#general-instructions)
+- [Get Buy-in](#get-buy-in)
+- [Creating JIRA issues](#creating-jira-issues)
+- [Update and Pin Dependencies](#update-and-pin-dependencies)
+- [Release Check](#release-check)
+- [Prepare Release](#prepare-release)
+- [Testing](#testing)
+  * [What to Test](#what-to-test)
+    + [Android Extras](#android-extras)
+    + [iOS Extras](#ios-extras)
+- [Push Changes:](#push-changes-)
+- [Publish RC to dist/dev](#publish-rc-to-dist-dev)
+- [Documentation To Update](#documentation-to-update)
+- [Prepare Blog Post](#prepare-blog-post)
+- [Start VOTE Thread](#start-vote-thread)
+- [Email the result of the vote](#email-the-result-of-the-vote)
+- [If the Vote does *not* Pass](#if-the-vote-does--not--pass)
+- [Otherwise: Publish to dist/ & npm](#otherwise--publish-to-dist----npm)
+- [Uploading to Bintray (Android only)](#uploading-to-bintray--android-only-)
+- [Add permanent apache release tag](#add-permanent-apache-release-tag)
+- [Details](#details)
+  * [Tell Apache about Release](#tell-apache-about-release)
+  * [Update the Docs](#update-the-docs)
+  * [Announce It!](#announce-it-)
+- [Additional Information](#additional-information)
+  * [Moving Tags](#moving-tags)
+    
+<!-- created with https://ecotrust-canada.github.io/markdown-toc/ -->
 
 (Yes this list is long and scary, but represents the content below)
 
@@ -402,11 +404,11 @@ Follow the README at https://github.com/apache/cordova-docs, and specifically th
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
 
-# Additional Information
+## Additional Information
  * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)
  * [AndroidReleaseChecklist](https://wiki.apache.org/cordova/AndroidReleaseChecklist)
 
-## Moving Tags
+### Moving Tags
 
 If you need to move a tag before the release, here is how to do that:
 

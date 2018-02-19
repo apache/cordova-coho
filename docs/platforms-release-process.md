@@ -19,7 +19,7 @@
 #
 -->
 
-# Release Process for ''Platforms Releases''
+# Release Process for Platforms
 
 This page describes the technical steps for releasing a `Platforms Release`.
 
@@ -73,6 +73,8 @@ E.g.:
     Any outstanding patches to land?
 
     If not, I will start the release tomorrow.
+
+Make sure to replace "Android" in the subject and mail body.
 
 ## Creating JIRA issues
 

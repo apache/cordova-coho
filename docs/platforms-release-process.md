@@ -162,8 +162,12 @@ Note: This command [doesn't actually work](https://issues.apache.org/jira/browse
 Update the repos `RELEASENOTES.md` file with changes since the last release.
 
     coho update-release-notes -r android
-    # Then curate:
+
+Then curate:
+
     vim cordova-android/RELEASENOTES.md
+    
+or use your favotire text editor manually.
 
 ### Commit Version and Release Notes
 
@@ -195,7 +199,9 @@ Create and prepare your release branch by using `coho prepare-release-branch` co
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 
     coho prepare-platform-release-branch --version 5.0.0 -r android
-    # Ensure commits look okay on both branches
+
+Then ensure commits look okay on both branches
+
     coho repo-status -r android -b master -b 5.0.x
 
 ## Testing

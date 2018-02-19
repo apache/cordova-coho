@@ -123,6 +123,9 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
     coho check-license -r android
 
 ## Prepare Release
+
+### Increase version
+
 Increase the version within package.json using SemVer, and remove the `-dev` suffix.
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
@@ -133,20 +136,21 @@ If the changes merit it, manually bump the major / minor/ patch version in `pack
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
 
+### Release Notes
+
 Update the repos `RELEASENOTES.md` file with changes since the last release.
 
     coho update-release-notes -r android
     # Then curate:
     vim cordova-android/RELEASENOTES.md
 
+### Commit Version and Release Notes
+
 Commit these changes together into one commit.
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
 
----
-
-**PATCH RELEASE NOTES**
-
+### Special Case 1: Release notes in release branch for patch release
 
 If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate chunk).
 
@@ -155,15 +159,17 @@ If you have prepared the release notes in your release branch for a patch releas
 
 For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailability.h (via coho)` into the master branch as well.
 
----
+### Special Case 2: releasing new commits from an already-existing release branch
 
 If you are releasing new commits from an already-existing release branch, remember to merge in or cherry-pick relevant commits from master into the release branch!
 
-After, prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+### Release Branch
+
+Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+
  * Updating `cordova.js` snapshot
  * Creating a release branch (if it doesn't already exist)
  * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
-
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 

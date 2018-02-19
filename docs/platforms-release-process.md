@@ -105,7 +105,8 @@ JIRA="CB-????" # Set this to the release bug.
 ```
 
 ## Update and Pin Dependencies
-Ensure you're up-to-date:
+
+Ensure your checkout of the repository is up-to-date:
 
     coho repo-update -r android
 
@@ -208,29 +209,16 @@ Then ensure commits look okay on both branches
 
 Once all the repos are branched, we focus on testing & fixing all of the regressions we find.
 
-When a regression is found:
-
- * Create a JIRA issue for it, and mark it as a blocker.
-
-To submit a fix:
-
-    git checkout master
-    git commit -am 'Your commit message'
-    git push origin master
-    git log     # note the first five or six digits of the commit hash
-    git checkout 5.0.x
-    git cherry-pick -x commit_hash
-    git push origin 5.0.x
-
 ### What to Test
 
-1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
+1) Run [mobile-spec](https://github.com/apache/cordova-mobile-spec/).  
 
     ```
     ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
     (cd mobilespec && cordova run android --device)
     (cd mobilespec && cordova run android --emulator)
     ```
+    Don't forget to run through the manual tests in there in addition to the automatic tests.
 
 2) Create a hello world app using the cordova CLI.
 
@@ -251,20 +239,20 @@ To submit a fix:
     (cd androidTest2 && ./cordova/run --emulator)
     ```
 
-The output from `./cordova/version` should show the new version of `cordova-android`.
+The output from `./cordova/version` should show the new version you defined above.
 
- 4) Run cordova-lib tests.
+4) Run cordova-lib tests.
 
     ```
     (cd cordova-lib/cordova-lib && npm test)
     ```
-
-Feel free to clean up the projects you just created.
+    
+5) Clean up the project(s) you just created.
 
     ```
     rm -rf androidTest*
     ```
-
+    
 #### Android Extras
 
  * Unit tests in: [test](https://github.com/apache/incubator-cordova-android/tree/master/test) directory
@@ -273,6 +261,21 @@ Feel free to clean up the projects you just created.
 
  * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
  * Test the Makefile via `make`
+
+### When a regression is found
+
+Create a JIRA issue for it, and mark it as a blocker.
+
+### To submit a fix
+
+    git checkout master
+    git commit -am 'Your commit message'
+    git push origin master
+    git log     # note the first five or six digits of the commit hash
+    git checkout 5.0.x
+    git cherry-pick -x commit_hash
+    git push origin 5.0.x
+
 
 ## Push Changes
 

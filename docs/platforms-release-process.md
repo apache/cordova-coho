@@ -80,14 +80,16 @@ Double check you replace "Android" in the subject and mail body - there is no un
 ## Create JIRA issue
 
  * Create a JIRA issue to track the status of the release.
-   * Make it of type "Task"
-   * Title should be "Cordova-Android Platform Release _August 21, 2014_"
-   * Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
+   - Make it of type "Task"
+   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
+   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
  * Comments should be added to this bug after each top-level step below is taken
- * Set a variable in your terminal for use later on:
+ * Set a variable in your terminal for use later on
 
 
-    JIRA="CB-????" # Set this to the release bug.
+```
+JIRA="CB-????" # Set this to the release bug.
+```
 
 ## Update and Pin Dependencies
 Ensure you're up-to-date:

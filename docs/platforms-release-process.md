@@ -137,6 +137,8 @@ This command removes `-dev` from the `version` entry in `package.json`:
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
+Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13809). You can also replace `-dev` manually of course.
+
 Note: In `cordova-android`, also remember to handle the version in `framework/build.gradle`.
 
 ### Increase version
@@ -146,6 +148,8 @@ If the changes merit it, **manually** bump the major / minor/ patch version in `
 To decide if this release merits it, view the changes via:
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
+
+Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13901). You can also check out the changes manually (or via the next step).
 
 ### Create Release Notes
 

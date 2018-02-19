@@ -31,6 +31,13 @@ It describes the following steps:
 - [Update and Pin Dependencies](#update-and-pin-dependencies)
 - [Release Check](#release-check)
 - [Prepare Release](#prepare-release)
+  * [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
+  * [Increase version](#increase-version)
+  * [Create Release Notes](#create-release-notes)
+  * [Commit Version and Release Notes](#commit-version-and-release-notes)
+  * [Special Case 1: Release notes in release branch for patch release](#special-case-1-release-notes-in-release-branch-for-patch-release)
+  * [Special Case 2: releasing new commits from an already-existing release branch](#special-case-2-releasing-new-commits-from-an-already-existing-release-branch)
+  * [Create Release Branch](#create-release-branch)
 - [Testing](#testing)
   * [What to Test](#what-to-test)
     + [Android Extras](#android-extras)
@@ -124,7 +131,7 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
 ## Prepare Release
 
-### Remove the `-dev` suffix on the version in package.json
+### Remove the `-dev` suffix from version
 
 This command removes `-dev` from the `version` entry in `package.json`:
 
@@ -167,7 +174,7 @@ For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailabil
 
 If you are releasing new commits from an already-existing release branch, remember to merge in or cherry-pick relevant commits from master into the release branch!
 
-### Release Branch
+### Create Release Branch
 
 Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
 

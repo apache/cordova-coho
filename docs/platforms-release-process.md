@@ -19,9 +19,9 @@
 #
 -->
 
-# Release Process for Platforms
+# Release Process for Cordova Platforms
 
-This page describes the technical steps for releasing a `Platforms Release`.
+This page describes the technical steps for doing a `Platforms Release`.
 
 It describes the following steps:
 

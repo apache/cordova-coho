@@ -124,19 +124,23 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
 ## Prepare Release
 
-### Increase version
+### Remove the `-dev` suffix on the version in package.json
 
-Increase the version within package.json using SemVer, and remove the `-dev` suffix.
+This command removes `-dev` from the `version` entry in `package.json`:
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-In `cordova-android`, also remember to bump the version in `framework/build.gradle`.
+Note: In `cordova-android`, also remember to handle the version in `framework/build.gradle`.
 
-If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
+### Increase version
+
+If the changes merit it, **manually** bump the major / minor/ patch version in `package.json`. 
+
+To decide if this release merits it, view the changes via:
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
 
-### Release Notes
+### Create Release Notes
 
 Update the repos `RELEASENOTES.md` file with changes since the last release.
 

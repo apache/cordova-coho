@@ -25,6 +25,7 @@ This page describes the technical steps for releasing a `Platforms Release`.
 
 It describes the following steps:
 
+- General instructions
 - Get Buy-in
 - Creating JIRA issues
 - Update and Pin Dependencies
@@ -53,13 +54,11 @@ It describes the following steps:
 
 (Yes this list is long and scary, but represents the content below)
 
-> See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
->
-> Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
+## General instructions
 
-TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
-
-Replace `Android` with the platform you are releasing.
+- See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
+- Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
+- Replace `Android` with the platform you are releasing.
 
 ## Get Buy-in
 
@@ -69,12 +68,12 @@ E.g.:
 
     Subject: [DISCUSS] Cordova-Android Release
 
-    Does anyone have any reason to delay a cordova-android platform release?
+    Does anyone have any reason to delay a cordova-_android_ platform release?
     Any outstanding patches to land?
 
     If not, I will start the release tomorrow.
 
-Make sure to replace "Android" in the subject and mail body.
+Double check you replace "Android" in the subject and mail body - there is no undo for emails.
 
 ## Creating JIRA issues
 

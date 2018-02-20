@@ -28,10 +28,9 @@
 
 This repository has the following purposes:
 
-1. To hold committer-relevant [documentation](docs/index.md)
+1. To hold committer-relevant [documentation](docs/)
 2. To hold release automation scripts
    - e.g. `coho create-archive && coho verify-archive`
-   - e.g. CrowdIn scripts
 3. To hold generally useful dev scripts
    - e.g. `coho repo-clone`
    - e.g. `coho --help`
@@ -45,6 +44,8 @@ Easiest way on Windows:
     [http://nodejs.org/](http://nodejs.org/)
 
 ## Installation
+
+### Via `npm`
 
 ```bash    
 npm install -g cordova-coho
@@ -66,8 +67,6 @@ npm link # Might need sudo for some configurations
 ## Cloning/Updating Cordova repositories
 
 ```bash
-mkdir cordova-repos
-cd cordova-repos
 coho repo-update -g -r all
 ```
 
@@ -97,6 +96,7 @@ To see valid repo ids and repo group ids for use with Coho, use the `list-repos`
 Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
 
 ## Contributing
+
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
 [how to contribute on our website][contribute]. 
 

@@ -64,12 +64,12 @@ It describes the following steps:
   * [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
   * [Otherwise: Publish real release to `dist/` & npm](#otherwise-publish-real-release-to-dist--npm)
   * [(Android only) Uploading to Bintray](#android-only-uploading-to-bintray)
-- [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
-- [Other stuff that should be moved up to the appropriate places](#other-stuff-that-should-be-moved-up-to-the-appropriate-places)
+  * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
   * [Tell Apache about Release](#tell-apache-about-release)
+- [Other stuff that should be reviewed and moved up to the appropriate places](#other-stuff-that-should-be-reviewed-and-moved-up-to-the-appropriate-places)
   * [Update the Docs](#update-the-docs)
   * [Announce It!](#announce-it)
-- [Additional Information](#additional-information)
+  * [Additional Information](#additional-information)
   * [Moving Tags](#moving-tags)
     
 <!-- created with https://ecotrust-canada.github.io/markdown-toc/ and some manual fixing -->

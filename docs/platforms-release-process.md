@@ -305,7 +305,7 @@ Seems okay? Then execute it by running:
 
 This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
-## Publish Release Candidate to dist/dev
+## Publish Release Candidate to `dist/dev`
 
 **Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006).
 
@@ -325,22 +325,26 @@ Upload:
 
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
 
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/ / https://dist.apache.org/repos/dist/release/cordova/
+If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
-## Documentation To Update
+## Documentation
+
+### Documentation To Update
 
 For your platform:
 
  1. Ensure the [Upgrade Guide](http://cordova.apache.org/docs/en/latest/guide/platforms/android/upgrade.html) for your platform is up-to-date
  2. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
-## Prepare Blog Post
+### Prepare Blog Post
 
  * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
  * Instructions on publishing a blog post are on the [cordova-docs repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
  * Get blog post proofread by submitting a PR to cordova-docs and asking someone on dev list to +1 it.
 
-## Start VOTE Thread
+## Voting and real Release
+
+### Start VOTE Thread
 
 Send an email to dev ML with: (replace `android` with your platform)
 
@@ -377,7 +381,7 @@ __Body:__
     * Ensured continuous build was green when repo was tagged
 
 
-## Email the result of the vote
+### Email the result of the vote
 Respond to the vote thread with:
 
     The vote has now closed. The results are:
@@ -394,14 +398,14 @@ Respond to the vote thread with:
 
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
-## If the Vote does *not* Pass
+### If the Vote does *not* Pass
 * Revert adding of `-dev`
 * Address the concerns
 * Re-tag release using `git tag -f`
 * Add back `-dev`
 * Start a new vote
 
-## Otherwise: Publish to dist/ & npm
+### Otherwise: Publish real release to `dist/` & npm
 
 (replace `android` with your platform)
 
@@ -422,7 +426,7 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
-## Uploading to Bintray (Android only)
+### (Android only) Uploading to Bintray
 
 1. Add the cordova bintray username and API key as system variables. Your `BINTRAY_USER` should be the username "cordova". The API key is available on the [bintray cordova "edit profile" page](https://bintray.com/profile/edit) - the last option in the menu on the left is "API Key". Find it there. [Credentials to log into the bintray site are on the PMC private SVN](https://svn.apache.org/repos/private/pmc/cordova/logins/bintray.txt). If you have trouble, ask the Project Management Committee (pmc) for the credentials. Confirm that your key and user name are set:
 
@@ -440,13 +444,15 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
 3. Load up the bintray webpage for cordova-android: https://bintray.com/cordova/maven/cordova-android. You should see a notification/warning about publishing the latest release. Hit the Publish link!
 
-## Add permanent apache release tag
+## Add permanent Apache release tag to repository
 
 Make a copy of your released tag with a prefix of `rel/YOURTAG`. These are permanent release tags for Apache.
 
     (cd cordova-android; git checkout 5.1.0; git tag rel/5.1.0; git push origin --tags; git checkout master)
 
-##  Details
+That's it!
+
+##  Other stuff that should be moved up to the appropriate places
 
 ### Tell Apache about Release
 
@@ -458,11 +464,13 @@ Make a copy of your released tag with a prefix of `rel/YOURTAG`. These are perma
 Follow the README at https://github.com/apache/cordova-docs, and specifically the deploy section: https://github.com/apache/cordova-docs#deploying
 
 ### Announce It!
+
  1. Announce the release to the world!
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
 
 ## Additional Information
+
  * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)
  * [AndroidReleaseChecklist](https://wiki.apache.org/cordova/AndroidReleaseChecklist)
 

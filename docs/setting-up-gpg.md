@@ -21,9 +21,16 @@
 
 # Creating a PGP key for Releases
 
+- You need a PGP key to sign releases for Apache Cordova. 
+- [GnuPG, short `gpg`](http://www.apache.org/dev/openpgp.html#gnupg) is the Apache recommended client to create and manage these keys.
+
+## Installation
+
 On a Mac:
 
     brew install gpg
+
+## Create a key
 
 How to create a key: http://www.apache.org/dev/openpgp.html#generate-key
  * email = you@apache.org
@@ -44,6 +51,7 @@ Example Output:
 
 In this example, `8A496450` is your `$KEY_ID`
 
+## Publish Key
 
 Publish to `dist/KEYS`:
 
@@ -54,7 +62,6 @@ Publish to `dist/KEYS`:
     ( cd cordova-dist && svn diff )
     # Commit
     ( cd cordova-dist && svn commit -m "Added my signing PGP key to KEYS" )
-
 
 Publish to `keys.gnupg.net`
 

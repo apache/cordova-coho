@@ -211,16 +211,16 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
 
 ### What to Test
 
-1) Run [mobile-spec](https://github.com/apache/cordova-mobile-spec/).  
+1) Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
 
     ```
     ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
     (cd mobilespec && cordova run android --device)
     (cd mobilespec && cordova run android --emulator)
     ```
-    Don't forget to run through the manual tests in there in addition to the automatic tests.
+    This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
 
-2) Create a hello world app using the cordova CLI.
+2) Create a hello world app using the `cordova` CLI:
 
     ```
     cordova create ./androidTest org.apache.cordova.test androidTest
@@ -228,9 +228,9 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
     (cd androidTest && cordova run android --device)
     (cd androidTest && cordova run android --emulator)
     ```
+    This should create an app showing the Cordova logo, "Apache Cordova" and a green "Device is ready" box.
 
-3) Run your platform's `./bin/create` script. Ensure the generated project builds & runs both through an IDE and through the cordova/* scripts.
-
+3) Run your platform's `./bin/create` script and run the resulting project:
 
     ```
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
@@ -238,6 +238,8 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
     (cd androidTest2 && ./cordova/run --device)
     (cd androidTest2 && ./cordova/run --emulator)
     ```
+    This should create an app showing a white screen. 
+    Ensure the generated project files also build through an IDE.
 
 The output from `./cordova/version` should show the new version you defined above.
 

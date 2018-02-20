@@ -230,37 +230,37 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
 
 Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
 
-    ```
-    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
-    (cd mobilespec && cordova run android --device)
-    (cd mobilespec && cordova run android --emulator)
-    ```
-    This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
+```
+./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
+(cd mobilespec && cordova run android --device)
+(cd mobilespec && cordova run android --emulator)
+```
+This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
 
 ### 2) hello world app with `cordova` CLI
 
 Create a hello world app using the `cordova` CLI:
 
-    ```
-    cordova create ./androidTest org.apache.cordova.test androidTest
-    (cd androidTest && cordova platform add ../cordova-android)
-    (cd androidTest && cordova run android --device)
-    (cd androidTest && cordova run android --emulator)
-    ```
-    This should create an app showing the Cordova logo, "Apache Cordova" and a green "Device is ready" box.
+```
+cordova create ./androidTest org.apache.cordova.test androidTest
+(cd androidTest && cordova platform add ../cordova-android)
+(cd androidTest && cordova run android --device)
+(cd androidTest && cordova run android --emulator)
+```
+This should create an app showing the Cordova logo, "Apache Cordova" and a green "Device is ready" box.
 
 ### 3) `/bin` scripts 
 
 Run your platform's `./bin/create` script and run the resulting project:
 
-    ```
-    ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
-    (cd androidTest2 && ./cordova/build)
-    (cd androidTest2 && ./cordova/run --device)
-    (cd androidTest2 && ./cordova/run --emulator)
-    ```
-    This should create an app showing a white screen. 
-    Ensure the generated project files also build through an IDE.
+```
+./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
+(cd androidTest2 && ./cordova/build)
+(cd androidTest2 && ./cordova/run --device)
+(cd androidTest2 && ./cordova/run --emulator)
+```
+This should create an app showing a white screen. 
+Ensure the generated project files also build through an IDE.
 
 The output from `./cordova/version` should show the new version you defined above.
 
@@ -268,17 +268,17 @@ The output from `./cordova/version` should show the new version you defined abov
 
 Run cordova-lib tests.
 
-    ```
-    (cd cordova-lib/cordova-lib && npm test)
-    ```
+```
+(cd cordova-lib/cordova-lib && npm test)
+```
     
 ### 5) Clean up
 
 Clean up the project(s) you just created.
 
-    ```
-    rm -rf androidTest*
-    ```
+```
+rm -rf androidTest*
+```
     
 ### Android Extras
 

@@ -376,7 +376,7 @@ Send an email to dev ML with: (replace `android` with your platform)
 
 __Subject:__
 
-    [Vote] 5.0.0 Android Release
+    [VOTE] Cordova-Android 5.0.0 Release
 
 __Body:__
 

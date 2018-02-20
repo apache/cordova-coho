@@ -23,6 +23,7 @@
 
 - You need a PGP key to sign releases for Apache Cordova. 
 - [GnuPG, short `gpg`](http://www.apache.org/dev/openpgp.html#gnupg) is the Apache recommended client to create and manage these keys.
+- PGP, GPG, GnuPG, OpenPGP can be confusing - [read about the background](https://www.goanywhere.com/blog/2013/07/18/openpgp-pgp-gpg-difference)
 
 ## Installation
 
@@ -32,7 +33,7 @@ On a Mac:
 
 On Windows:
 
-???
+    ???
 
 ## Create a key
 

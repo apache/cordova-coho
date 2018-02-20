@@ -30,11 +30,21 @@ On a Mac:
 
     brew install gpg
 
+On Windows:
+
+???
+
 ## Create a key
 
-How to create a key: http://www.apache.org/dev/openpgp.html#generate-key
+How to create a key: 
+http://www.apache.org/dev/openpgp.html#generate-key
+
  * email = you@apache.org
  * description = CODE SIGNING KEY
+
+Then follow these instructions: http://www.apache.org/dev/openpgp.html#generation-final-steps
+
+## Get Key ID
 
 Look at your keyring:
 
@@ -55,7 +65,7 @@ In this example, `8A496450` is your `$KEY_ID`
 
 Publish to `dist/KEYS`:
 
-    # Clone if you don't have it already:
+    # Clone `cordova-dist` if you don't have it already:
     coho repo-clone -r dist
     gpg --armor --export $KEY_ID >> cordova-dist/KEYS
     # Make sure that's the only change to the file
@@ -93,4 +103,3 @@ Phew! That was easy :P
 Import any extra committer's keys via:
 
     curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import
-

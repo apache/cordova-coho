@@ -303,7 +303,7 @@ Seems okay? Then execute it by running:
 
     coho tag-platform-release --version 5.0.0 -r android
 
-The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
+This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
 ## Publish RC to dist/dev
 

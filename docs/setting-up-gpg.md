@@ -73,6 +73,8 @@ Publish to `dist/KEYS`:
     ( cd cordova-dist && svn diff )
     # Commit
     ( cd cordova-dist && svn commit -m "Added my signing PGP key to KEYS" )
+    
+See [committer subversion access](https://www.apache.org/dev/version-control.html#https-svn) for information how to access SVN (TLDR: add `--username=...` to the `svn commit` command if needed).
 
 Publish to `keys.gnupg.net`
 

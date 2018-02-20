@@ -472,7 +472,7 @@ echo $BINTRAY_KEY
 
 3. Load up the bintray webpage for cordova-android: https://bintray.com/cordova/maven/cordova-android. You should see a notification/warning about publishing the latest release. Hit the Publish link!
 
-## Add permanent Apache release tag to repository
+### Add permanent Apache release tag to repository
 
 Make a copy of your released tag with a prefix of `rel/YOURTAG`:
 
@@ -480,14 +480,16 @@ Make a copy of your released tag with a prefix of `rel/YOURTAG`:
 
 These are permanent release tags for Apache.
 
-That's it!
-
-##  Other stuff that should be moved up to the appropriate places
-
 ### Tell Apache about Release
 
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-$PLATFORM@x.x.x"
+
+That's it!
+
+----
+
+##  Other stuff that should be reviewed and moved up to the appropriate places
 
 ### Update the Docs
 
@@ -495,11 +497,11 @@ Follow the README at https://github.com/apache/cordova-docs, and specifically th
 
 ### Announce It!
 
- 1. Announce the release to the world!
+1. Announce the release to the world!
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
 
-## Additional Information
+### Additional Information
 
  * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)
  * [AndroidReleaseChecklist](https://wiki.apache.org/cordova/AndroidReleaseChecklist)

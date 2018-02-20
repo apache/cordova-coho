@@ -333,7 +333,7 @@ This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
 ## Publish Release Candidate to `dist/dev`
 
-**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006). It also needs you do [have a secret key setup](setting-up-gpg.md)
+**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006). You also need do [have a secret key set up](setting-up-gpg.md) for signing the release.
 
 Ensure you have the svn repos checked out:
 
@@ -389,7 +389,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
     The package was published from its corresponding git tag:
-    PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0
+    ### PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0 ###
 
     Note that you can test it out via:
 
@@ -405,9 +405,11 @@ __Body:__
     * Ran coho audit-license-headers over the relevant repos
     * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repo was tagged
+    * ### Add all the other things you did to confirm the working of the release ###
 
 
 ### Email the result of the vote
+
 Respond to the vote thread with:
 
     The vote has now closed. The results are:
@@ -443,38 +445,40 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     svn commit -m "$JIRA Published android release to dist"
     npm publish platforms/cordova-android-5.0.0.tgz
 
+Find your release here: https://dist.apache.org/repos/dist/release/cordova/
+
+Now you can also remove the release candidate:
+
     cd ../cordova-dist-dev
     svn up
     svn rm $JIRA
     svn commit -m "$JIRA Removing release candidates from dist/dev"
     cd ..
 
-
-Find your release here: https://dist.apache.org/repos/dist/release/cordova/
-
 ### (Android only) Uploading to Bintray
 
 1. Add the cordova bintray username and API key as system variables. Your `BINTRAY_USER` should be the username "cordova". The API key is available on the [bintray cordova "edit profile" page](https://bintray.com/profile/edit) - the last option in the menu on the left is "API Key". Find it there. [Credentials to log into the bintray site are on the PMC private SVN](https://svn.apache.org/repos/private/pmc/cordova/logins/bintray.txt). If you have trouble, ask the Project Management Committee (pmc) for the credentials. Confirm that your key and user name are set:
 
 ```
-    echo $BINTRAY_USER
-    echo $BINTRAY_KEY
+echo $BINTRAY_USER
+echo $BINTRAY_KEY
 ```
 
 2. Run the following command (replace 6.2.2 with released version):
 
 ```
-    (cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
-
+(cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
 ```
 
 3. Load up the bintray webpage for cordova-android: https://bintray.com/cordova/maven/cordova-android. You should see a notification/warning about publishing the latest release. Hit the Publish link!
 
 ## Add permanent Apache release tag to repository
 
-Make a copy of your released tag with a prefix of `rel/YOURTAG`. These are permanent release tags for Apache.
+Make a copy of your released tag with a prefix of `rel/YOURTAG`:
 
     (cd cordova-android; git checkout 5.1.0; git tag rel/5.1.0; git push origin --tags; git checkout master)
+
+These are permanent release tags for Apache.
 
 That's it!
 

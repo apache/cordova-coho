@@ -44,7 +44,7 @@ It describes the following steps:
     + [Android Extras](#android-extras)
     + [iOS Extras](#ios-extras)
 - [Push Changes](#push-changes)
-- [Publish RC to dist/dev](#publish-rc-to-distdev)
+- [Publish Release Candidate to dist/dev](#publish-release-candidate-to-distdev)
 - [Documentation To Update](#documentation-to-update)
 - [Prepare Blog Post](#prepare-blog-post)
 - [Start VOTE Thread](#start-vote-thread)
@@ -305,7 +305,9 @@ Seems okay? Then execute it by running:
 
 This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
-## Publish RC to dist/dev
+## Publish Release Candidate to dist/dev
+
+**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006).
 
 Ensure you have the svn repos checked out:
 

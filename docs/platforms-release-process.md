@@ -75,7 +75,9 @@ It describes the following steps:
 You should have your platform repository checked out in a folder where you als ohave checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
 ](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
-## Get Buy-in
+## Before you start
+
+### Get Buy-in
 
 Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
 
@@ -90,7 +92,7 @@ E.g.:
 
 Double check you replace "Android" in the subject and mail body - there is no undo for emails.
 
-## Create JIRA issue
+### Create JIRA issue
 
  * Create a JIRA issue to track the status of the release.
    - Make it of type "Task"
@@ -104,7 +106,9 @@ Double check you replace "Android" in the subject and mail body - there is no un
 JIRA="CB-????" # Set this to the release bug.
 ```
 
-## Update and Pin Dependencies
+## Before Release
+
+### Update and Pin Dependencies
 
 Ensure your checkout of the repository is up-to-date:
 
@@ -125,8 +129,9 @@ Check-in updated modules (use npm 3.10.1+)
     npm install (Re-add devDependencies for ability to run tests locally)
 
 Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
+Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
 
-## Release Check
+### Release Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 
@@ -209,9 +214,9 @@ Then ensure commits look okay on both branches
 
 Once all the repos are branched, we focus on testing & fixing all of the regressions we find.
 
-### What to Test
+### 1) Plugin tests with `cordova-mobile-spec` project
 
-1) Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
+Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
 
     ```
     ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
@@ -220,7 +225,9 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
     ```
     This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
 
-2) Create a hello world app using the `cordova` CLI:
+### 2) hello world app with `cordova` CLI
+
+Create a hello world app using the `cordova` CLI:
 
     ```
     cordova create ./androidTest org.apache.cordova.test androidTest
@@ -230,7 +237,9 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
     ```
     This should create an app showing the Cordova logo, "Apache Cordova" and a green "Device is ready" box.
 
-3) Run your platform's `./bin/create` script and run the resulting project:
+### 3) `/bin` scripts 
+
+Run your platform's `./bin/create` script and run the resulting project:
 
     ```
     ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
@@ -243,23 +252,27 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
 
 The output from `./cordova/version` should show the new version you defined above.
 
-4) Run cordova-lib tests.
+### 4) `cordova-lib` tests
+
+Run cordova-lib tests.
 
     ```
     (cd cordova-lib/cordova-lib && npm test)
     ```
     
-5) Clean up the project(s) you just created.
+### 5) Clean up
+
+Clean up the project(s) you just created.
 
     ```
     rm -rf androidTest*
     ```
     
-#### Android Extras
+### Android Extras
 
  * Unit tests in: [test](https://github.com/apache/incubator-cordova-android/tree/master/test) directory
 
-#### iOS Extras
+### iOS Extras
 
  * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
  * Test the Makefile via `make`
@@ -277,7 +290,6 @@ Create a JIRA issue for it, and mark it as a blocker.
     git checkout 5.0.x
     git cherry-pick -x commit_hash
     git push origin 5.0.x
-
 
 ## Push Changes
 
@@ -327,7 +339,7 @@ Upload:
 
 If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
-## Documentation
+## Documentation and Communication
 
 ### Documentation To Update
 
@@ -338,11 +350,11 @@ For your platform:
 
 ### Prepare Blog Post
 
- * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
- * Instructions on publishing a blog post are on the [cordova-docs repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
- * Get blog post proofread by submitting a PR to cordova-docs and asking someone on dev list to +1 it.
+ * Gather highlights from `RELEASENOTES.md` into a Release Announcement blog post
+ * Instructions on publishing a blog post are on the [`cordova-docs` repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
+ * Get blog post proofread by submitting a PR to `cordova-docs` and asking someone on dev list to +1 it.
 
-## Voting and real Release
+## Voting and Release
 
 ### Start VOTE Thread
 

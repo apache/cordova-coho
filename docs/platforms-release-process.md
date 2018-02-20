@@ -301,9 +301,11 @@ Create a JIRA issue for it, and mark it as a blocker.
     git log     # note the first five or six digits of the commit hash
     git checkout 5.0.x
     git cherry-pick -x commit_hash
-    git push origin 5.0.x
+    # git push origin 5.0.x
 
 ## Push Changes
+
+**Attention**: This is the moment of truth: The following actions will push your work to the remote repository. Until now you only worked locally and could just delete everything if something went wrong. From here on this will get more difficult.
 
 ### Push commits
 
@@ -331,7 +333,7 @@ This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
 ## Publish Release Candidate to `dist/dev`
 
-**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006).
+**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006). It also needs you do [have a secret key setup](setting-up-gpg.md)
 
 Ensure you have the svn repos checked out:
 

@@ -297,11 +297,11 @@ This pushes the commits in both `master` and `5.0.x` (the release branch) to the
 
 Before you tag, run this command:
 
-    coho tag-platform-release --version 3.5.0 -r android --pretend
+    coho tag-platform-release --version 5.0.0 -r android --pretend
     
 Seems okay? Then execute it by running:
 
-    coho tag-platform-release --version 3.5.0 -r android
+    coho tag-platform-release --version 5.0.0 -r android
 
 The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
 
@@ -313,7 +313,7 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 5.0.0
 
 Sanity Check:
 
@@ -409,7 +409,7 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
-    npm publish platforms/cordova-android-3.5.0.tgz
+    npm publish platforms/cordova-android-5.0.0.tgz
 
     cd ../cordova-dist-dev
     svn up

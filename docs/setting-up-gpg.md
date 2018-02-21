@@ -21,13 +21,31 @@
 
 # Creating a PGP key for Releases
 
+- You need a PGP key to sign releases for Apache Cordova. 
+- [GnuPG, short `gpg`](http://www.apache.org/dev/openpgp.html#gnupg) is the Apache recommended client to create and manage these keys.
+- PGP, GPG, GnuPG, OpenPGP can be confusing - [read about the background](https://www.goanywhere.com/blog/2013/07/18/openpgp-pgp-gpg-difference)
+
+## Installation
+
 On a Mac:
 
     brew install gpg
 
-How to create a key: http://www.apache.org/dev/openpgp.html#generate-key
+On Windows:
+
+    ???
+
+## Create a key
+
+How to create a key: 
+http://www.apache.org/dev/openpgp.html#generate-key
+
  * email = you@apache.org
  * description = CODE SIGNING KEY
+
+Then follow these instructions: http://www.apache.org/dev/openpgp.html#generation-final-steps
+
+## Get Key ID
 
 Look at your keyring:
 
@@ -44,17 +62,19 @@ Example Output:
 
 In this example, `8A496450` is your `$KEY_ID`
 
+## Publish Key
 
 Publish to `dist/KEYS`:
 
-    # Clone if you don't have it already:
+    # Clone `cordova-dist` if you don't have it already:
     coho repo-clone -r dist
     gpg --armor --export $KEY_ID >> cordova-dist/KEYS
     # Make sure that's the only change to the file
     ( cd cordova-dist && svn diff )
     # Commit
     ( cd cordova-dist && svn commit -m "Added my signing PGP key to KEYS" )
-
+    
+See [committer subversion access](https://www.apache.org/dev/version-control.html#https-svn) for information how to access SVN (TLDR: add `--username=...` to the `svn commit` command if needed).
 
 Publish to `keys.gnupg.net`
 
@@ -86,4 +106,3 @@ Phew! That was easy :P
 Import any extra committer's keys via:
 
     curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import
-

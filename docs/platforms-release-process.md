@@ -65,11 +65,14 @@ It describes the following steps:
   * [Otherwise: Publish real release to `dist/` & npm](#otherwise-publish-real-release-to-dist--npm)
   * [(Android only) Uploading to Bintray](#android-only-uploading-to-bintray)
   * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
+- [Follow up steps](#follow-up-steps)
   * [Tell Apache about Release](#tell-apache-about-release)
+  * [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
+  * [Announce It!](#announce-it)
+  * [Close JIRA issue](#close-jira-issue)
+  * [Finally](#finally)
 - [Other stuff that should be reviewed and moved up to the appropriate places](#other-stuff-that-should-be-reviewed-and-moved-up-to-the-appropriate-places)
   * [Update the Docs](#update-the-docs)
-  * [Announce It!](#announce-it)
-  * [Additional Information](#additional-information)
   * [Moving Tags](#moving-tags)
     
 <!-- created with https://ecotrust-canada.github.io/markdown-toc/ and some manual fixing -->
@@ -481,12 +484,35 @@ Make a copy of your released tag with a prefix of `rel/YOURTAG`:
 
 These are permanent release tags for Apache.
 
+## Follow up steps
+
 ### Tell Apache about Release
 
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-$PLATFORM@x.x.x"
 
-That's it!
+### Email a release announcement to the mailing list
+
+    Subject: [ANNOUNCEMENT] Cordova Android 5.0.0 Release
+    
+    Cordova-windows@VERSION has been released!
+
+### Announce It!
+
+Announce the release to the world!
+
+* Publish the release blog post
+* Tweet it on https://twitter.com/apachecordova
+   
+### Close JIRA Issue
+
+- Double check that the issue includes comments that record the steps you took
+- Mark it as fixed
+
+### Finally
+
+- Update these instructions if they were missing anything.
+- That's it!
 
 ----
 
@@ -496,11 +522,7 @@ That's it!
 
 Follow the README at https://github.com/apache/cordova-docs, and specifically the deploy section: https://github.com/apache/cordova-docs#deploying
 
-### Announce It!
 
-1. Announce the release to the world!
-   * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
-   * Tweet it on https://twitter.com/apachecordova
 
 ### Moving Tags
 

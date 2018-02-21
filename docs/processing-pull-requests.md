@@ -50,12 +50,12 @@ To close a pull request that is no longer relevant / active:
  * Create an empty commit in the repo of the pull request via:
    * `git commit --allow-empty -m "Closing stale pull request: close #99"
 
-## Step 1: Review the change (part 1)
+## Step 1: Review the change
  * Ensure that we actually want the change (if unsure, bring it up on the ML)
  * If there is no JIRA issue for the change, create one
    * Ensure the JIRA issue has a link to the pull request
    * Ensure the pull request has a link to the JIRA issue
- * View the user's branch in GitHub and request changes be made (if applicable) by adding comments in the web interface
+ * View the PR and user's branch in GitHub and request changes be made (if applicable) by adding comments in the web interface
 
 ## Step 2: Ensure they have signed the Contributor Agreement
  * For trivial changes, this is not necessary (e.g. use your judgement - e.g. less than 100 lines of code)
@@ -64,7 +64,31 @@ To close a pull request that is no longer relevant / active:
 
 _Thanks for the pull request. I've had a look at it and think it looks good. Before we can merge it though, you need to sign Apache's Contributor License Agreement (can be done online):  http://www.apache.org/licenses/#clas_
 
-## Step 3: Merge the change
+## Step 3: Testing
+ * You are responsible for testing the changes that push.
+   * Refer to [committer-workflow.md](committer-workflow.md) for how to test each repo.
+ * If it would be appropriate to write a test
+   * Either write one yourself, or ask the author to do so.
+   * If you write one yourself, commit it in a follow-up (don't squash it with theirs)
+
+## Step 4: Merge the change
+
+There are two ways to merge a PR.
+
+The goal is to have one or more commits in `master` that are connected to both the original author and you as the commiter, and include the JIRA issue number in the form CB-#### (no "[]"'s, no ":").
+
+Example commit message:
+
+    CB-6124 Make `cordova plugin remove` resilient to a missing plugin directory
+
+    This breaks a couple prepare tests that Andrew deletes in the next commit.
+
+    github: close #57
+
+### Step 4a: Merge using GitHub UI
+GitHub offers a simple way to [merge PRs using its UI](https://help.github.com/articles/merging-a-pull-request/#merging-a-pull-request-on-github). "Squash and merge" will squash all commits together, "Merge pull request" create one merge request of the changes. Both will let you set or edit the commit message. If the original author already did a great job with commits and its commit messages, you also can "Rebase and merge" the PR directly onto `master`.
+
+### Step 4b: Merge using `coho`
 Run the following as an exemplary way to merge to master:
 
     coho merge-pr --pr <pr#>
@@ -77,21 +101,11 @@ This command will do the following:
     * Attempt a `--ff-only` merge to master. 
     * On success, it will modify the last commit's message to include. 'This closes #pr' to ensure the corresponding PR closes on pushing to remote.
 
-You should:
+You then should:
  * Squash as many commits as is reasonable together.
- * Re-write commit messages to include JIRA issue numbers in the form CB-#### (no "[]"'s, no ":")
  * In the final commit message (if there are multiple), [tell GitHub to close the pull request](https://help.github.com/articles/closing-issues-via-commit-messages)
 
-Example:
-
-    CB-6124 Make `cordova plugin remove` resilient to a missing plugin directory
-
-    This breaks a couple prepare tests that Andrew deletes in the next commit.
-
-    github: close #57
-
-## Step 4: Check the author
-
+#### Step 4b1: Check the author
 Git keeps track of the author of commits separately from the committer of the commit.
 
 Typically, both of these values are set to the person submitting the pull request.
@@ -105,22 +119,15 @@ You can check these fields with the following command:
 If the author is set to YOU, and you'd like to reset it to the original author, you can amend the commit:
 
     git commit --amend --author=some_author_id_here
-
-## Step 5: Review the change (part 2)
- * You are responsible for testing the changes that push.
-   * Refer to [committer-workflow.md](committer-workflow.md) for how to test each repo.
- * If it would be appropriate to write a test
-   * Either write one yourself, or ask the author to do so.
-   * If you write one yourself, commit it in a follow-up (don't squash it with theirs)
-
-## Step 6: Push the change
+    
+#### Step 4b2: Push the change
 
     git push
-
-## Step 7: Update JIRA
+    
+## Step 5: Update JIRA
  * Same as you would as if you authored the change.
 
-## Step 8: Final details
+## Step 6: Final details
  * The commit will get attached to the pull request automatically from the "closes #" in the commit message.
  * If you haven't done so already, thank them for their contribution via a pull request comment :).
 

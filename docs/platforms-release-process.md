@@ -501,11 +501,6 @@ Follow the README at https://github.com/apache/cordova-docs, and specifically th
    * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
    * Tweet it on https://twitter.com/apachecordova
 
-### Additional Information
-
- * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)
- * [AndroidReleaseChecklist](https://wiki.apache.org/cordova/AndroidReleaseChecklist)
-
 ### Moving Tags
 
 If you need to move a tag before the release, here is how to do that:

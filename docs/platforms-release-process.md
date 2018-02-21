@@ -32,7 +32,7 @@ It describes the following steps:
   * [Create JIRA issue](#create-jira-issue)
 - [Before Release](#before-release)
   * [Update and Pin Dependencies](#update-and-pin-dependencies)
-  * [Release Check](#release-check)
+  * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
   * [Increase version](#increase-version)
@@ -143,7 +143,7 @@ Check-in updated modules (use npm 3.10.1+)
 Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
 Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
 
-### Release Check
+### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 

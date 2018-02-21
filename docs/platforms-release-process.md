@@ -210,9 +210,10 @@ If you are releasing new commits from an already-existing release branch, rememb
 
 Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
 
-1. Creating a release branch (if it doesn't already exist)
-2. Updating `cordova.js` snapshot
-3. Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
+1. Creates a release branch `5.0.x` (if it doesn't already exist)
+2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
+3. Updates version numbers (`VERSION` files) on `5.0.x`
+4. On `master`, it gives version (`VERSION` files & package.json) a minor bump and adds `-dev` (=> `5.1.0-dev`)
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 

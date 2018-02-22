@@ -176,7 +176,7 @@ To decide if this release merits it, view the changes via:
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
 
-Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13901). You can also check out the changes manually (or via the next step).
+Note: This command [doesn't work on Windows command line](https://issues.apache.org/jira/browse/CB-13901). But you can look at the changes since the last tag manually (or via the next step).
 
 ### Create Release Notes
 

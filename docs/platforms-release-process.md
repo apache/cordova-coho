@@ -87,7 +87,7 @@ It describes the following steps:
 
 ### Repository setup
 
-You should have your platform repository checked out in a folder where you als ohave checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
+You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
 ](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
 ## Before you start
@@ -215,7 +215,7 @@ Create and prepare your release branch by using `coho prepare-release-branch` co
 
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
-3. Updates version numbers (`VERSION` files) on `5.0.x`
+3. Updates version numbers (`VERSION` and similar [e.g. `build.gradle` for Android] files) on `5.0.x`
 4. On `master`, it gives version (`VERSION` files & package.json) a minor bump and adds `-dev` (=> `5.1.0-dev`)
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).

@@ -19,17 +19,81 @@
 #
 -->
 
-# Release Process for ''Platforms Releases''
+# Release Process for Cordova Platforms
 
-Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
+This page describes the technical steps for doing a `Platforms Release`.
 
-This page describes the technical steps for releasing a `Platforms Release` (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
+It describes the following steps:
 
-TODO: We may want to be using [signed tags](http://git-scm.com/book/en/Git-Basics-Tagging), or at least annotated tags.
+- [General instructions](#general-instructions)
+  * [Repository setup](#repository-setup)
+- [Before you start](#before-you-start)
+  * [Get Buy-in](#get-buy-in)
+  * [Create JIRA issue](#create-jira-issue)
+- [Before Release](#before-release)
+  * [Update and Pin Dependencies](#update-and-pin-dependencies)
+  * [License Check](#license-check)
+- [Prepare Release](#prepare-release)
+  * [Set release version in `package.json`](#set-release-version-in-packagejson)
+    - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
+    - [Optional: Increase version](#optional-increase-version)
+  * [Create Release Notes](#create-release-notes)
+  * [Commit Version and Release Notes](#commit-version-and-release-notes)
+  * [Special Case 1: Release notes in release branch for patch release](#special-case-1-release-notes-in-release-branch-for-patch-release)
+  * [Special Case 2: releasing new commits from an already-existing release branch](#special-case-2-releasing-new-commits-from-an-already-existing-release-branch)
+  * [Create Release Branch](#create-release-branch)
+- [Testing](#testing)
+  * [1) Plugin tests with `cordova-mobile-spec` project](#1-plugin-tests-with-cordova-mobile-spec-project)
+  * [2) hello world app with `cordova` CLI](#2-hello-world-app-with-cordova-cli)
+  * [3) `/bin` scripts](#3-bin-scripts)
+  * [4) `cordova-lib` tests](#4-cordova-lib-tests)
+  * [5) Clean up](#5-clean-up)
+  * [Android Extras](#android-extras)
+  * [iOS Extras](#ios-extras)
+  * [When a regression is found](#when-a-regression-is-found)
+  * [To submit a fix](#to-submit-a-fix)
+- [Push Changes](#push-changes)
+  * [Push commits](#push-commits)
+  * [Tag and push tag](#tag-and-push-tag)
+- [Publish Release Candidate to `dist/dev`](#publish-release-candidate-to-distdev)
+- [Documentation and Communication](#documentation-and-communication)
+  * [Documentation To Update](#documentation-to-update)
+  * [Prepare Blog Post](#prepare-blog-post)
+- [Voting and Release](#voting-and-release)
+  * [Start VOTE Thread](#start-vote-thread)
+  * [Email the result of the vote](#email-the-result-of-the-vote)
+  * [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
+  * [Otherwise: Publish real release to `dist/` & npm](#otherwise-publish-real-release-to-dist--npm)
+  * [(Android only) Uploading to Bintray](#android-only-uploading-to-bintray)
+  * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
+- [Follow up steps](#follow-up-steps)
+  * [Tell Apache about Release](#tell-apache-about-release)
+  * [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
+  * [Announce It!](#announce-it)
+  * [Close JIRA issue](#close-jira-issue)
+  * [Finally](#finally)
+- [Other stuff that should be reviewed and moved up to the appropriate places](#other-stuff-that-should-be-reviewed-and-moved-up-to-the-appropriate-places)
+  * [Update the Docs](#update-the-docs)
+  * [Moving Tags](#moving-tags)
+    
+<!-- created with https://ecotrust-canada.github.io/markdown-toc/ and some manual fixing -->
 
-Replace `Android` with the platform you are releasing.
+(Yes this list is long and scary, but represents the content below)
 
-## Get Buy-in
+## General instructions
+
+- See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
+- Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
+- Replace `Android` with the platform you are releasing in the instructions below.
+
+### Repository setup
+
+You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
+](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
+
+## Before you start
+
+### Get Buy-in
 
 Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
 
@@ -37,25 +101,32 @@ E.g.:
 
     Subject: [DISCUSS] Cordova-Android Release
 
-    Does anyone have any reason to delay a cordova-android platform release?
+    Does anyone have any reason to delay a cordova-_android_ platform release?
     Any outstanding patches to land?
 
     If not, I will start the release tomorrow.
 
-## Creating JIRA issues
+Double check you replace "Android" in the subject and mail body - there is no undo for emails.
+
+### Create JIRA issue
 
  * Create a JIRA issue to track the status of the release.
-   * Make it of type "Task"
-   * Title should be "Cordova-Android Platform Release _August 21, 2014_"
-   * Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
+   - Make it of type "Task"
+   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
+   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
  * Comments should be added to this bug after each top-level step below is taken
- * Set a variable in your terminal for use later on:
+ * Set a variable in your terminal for use later on
 
 
-    JIRA="CB-????" # Set this to the release bug.
+```
+JIRA="CB-????" # Set this to the release bug.
+```
 
-## Update and Pin Dependencies
-Ensure you're up-to-date:
+## Before Release
+
+### Update and Pin Dependencies
+
+Ensure your checkout of the repository is up-to-date:
 
     coho repo-update -r android
 
@@ -74,8 +145,9 @@ Check-in updated modules (use npm 3.10.1+)
     npm install (Re-add devDependencies for ability to run tests locally)
 
 Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
+Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
 
-## Release Check
+### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 
@@ -86,30 +158,48 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
     coho check-license -r android
 
 ## Prepare Release
-Increase the version within package.json using SemVer, and remove the `-dev` suffix.
+
+Preparation of the release includes a) handling version numbers, b) creating nice release notes and c) creating the release branch.
+
+### Set release version in `package.json`
+
+#### Remove the `-dev` suffix from version
+
+This command removes `-dev` from the `version` entry in `package.json`:
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-In `cordova-android`, also remember to bump the version in `framework/build.gradle`.
+Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13809). You can also replace `-dev` in `package.json` manually of course.
 
-If the changes merit it, manually bump the major / minor/ patch version in `package.json`. View the changes via:
+#### Optional: Increase version
+
+If the changes merit it, also **manually** bump the major / minor/ patch version in `package.json`. 
+
+To decide if this release merits it, view the changes via:
 
     ( cd cordova-android && git log --pretty=format:'* %s' --topo-order --no-merges $(git describe --tags $(git rev-list --tags --max-count=1))..master )
+
+Note: This command [doesn't work on Windows command line](https://issues.apache.org/jira/browse/CB-13901). But you can look at the changes since the last tag manually (or via the next step).
+
+### Create Release Notes
 
 Update the repos `RELEASENOTES.md` file with changes since the last release.
 
     coho update-release-notes -r android
-    # Then curate:
+
+Then curate:
+
     vim cordova-android/RELEASENOTES.md
+    
+or use your favotire text editor manually.
+
+### Commit Version and Release Notes
 
 Commit these changes together into one commit.
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
 
----
-
-**PATCH RELEASE NOTES**
-
+### Special Case 1: Release notes in release branch for patch release
 
 If you have prepared the release notes in your release branch for a patch release, you will have to cherry-pick the RELEASENOTES only into your master branch as well (stage only the appropriate chunk).
 
@@ -118,31 +208,99 @@ If you have prepared the release notes in your release branch for a patch releas
 
 For iOS, you may have to cherry-pick the commit for `Added X.Y.Z to CDVAvailability.h (via coho)` into the master branch as well.
 
----
+### Special Case 2: releasing new commits from an already-existing release branch
 
 If you are releasing new commits from an already-existing release branch, remember to merge in or cherry-pick relevant commits from master into the release branch!
 
-After, prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
- * Updating `cordova.js` snapshot
- * Creating a release branch (if it doesn't already exist)
- * Updating version numbers (`VERSION` file & package.json). On `master`, it gives version a minor bump and adds `-dev`
+### Create Release Branch
 
+Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+
+1. Creates a release branch `5.0.x` (if it doesn't already exist)
+2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
+3. Propagates version number from `package.json` to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
+4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 
     coho prepare-platform-release-branch --version 5.0.0 -r android
-    # Ensure commits look okay on both branches
+
+Then ensure commits look okay on both branches
+
     coho repo-status -r android -b master -b 5.0.x
 
 ## Testing
 
 Once all the repos are branched, we focus on testing & fixing all of the regressions we find.
 
-When a regression is found:
+### 1) Plugin tests with `cordova-mobile-spec` project
 
- * Create a JIRA issue for it, and mark it as a blocker.
+Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
 
-To submit a fix:
+```
+./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
+(cd mobilespec && cordova run android --device)
+(cd mobilespec && cordova run android --emulator)
+```
+This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
+
+### 2) hello world app with `cordova` CLI
+
+Create a hello world app using the `cordova` CLI:
+
+```
+cordova create ./androidTest org.apache.cordova.test androidTest
+(cd androidTest && cordova platform add ../cordova-android)
+(cd androidTest && cordova run android --device)
+(cd androidTest && cordova run android --emulator)
+```
+This should create an app showing the Cordova logo, "Apache Cordova" and a green "Device is ready" box.
+
+### 3) `/bin` scripts 
+
+Run your platform's `./bin/create` script and run the resulting project:
+
+```
+./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
+(cd androidTest2 && ./cordova/build)
+(cd androidTest2 && ./cordova/run --device)
+(cd androidTest2 && ./cordova/run --emulator)
+```
+This should create an app showing a white screen. 
+Ensure the generated project files also build through an IDE.
+
+The output from `./cordova/version` should show the new version you defined above.
+
+### 4) `cordova-lib` tests
+
+Run cordova-lib tests.
+
+```
+(cd cordova-lib/cordova-lib && npm test)
+```
+    
+### 5) Clean up
+
+Clean up the project(s) you just created.
+
+```
+rm -rf androidTest*
+```
+    
+### Android Extras
+
+ * Unit tests in: [test](https://github.com/apache/incubator-cordova-android/tree/master/test) directory
+
+### iOS Extras
+
+ * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
+ * Test the Makefile via `make`
+
+### When a regression is found
+
+Create a JIRA issue for it, and mark it as a blocker.
+
+### To submit a fix
 
     git checkout master
     git commit -am 'Your commit message'
@@ -150,82 +308,47 @@ To submit a fix:
     git log     # note the first five or six digits of the commit hash
     git checkout 5.0.x
     git cherry-pick -x commit_hash
-    git push origin 5.0.x
+    # git push origin 5.0.x
 
-### What to Test
+## Push Changes
 
-1) Run [mobile-spec](http://git-wip-us.apache.org/repos/asf/cordova-mobile-spec.git). Don't forget to run through the manual tests in addition to the automatic tests.
+**Attention**: This is the moment of truth: The following actions will push your work to the remote repository. Until now you only worked locally and could just delete everything if something went wrong. From here on this will get more difficult.
 
-    ```
-    ./cordova-mobile-spec/createmobilespec/createmobilespec.js --android --forceplugins
-    (cd mobilespec && cordova run android --device)
-    (cd mobilespec && cordova run android --emulator)
-    ```
+### Push commits
 
-2) Create a hello world app using the cordova CLI.
-
-    ```
-    cordova create ./androidTest org.apache.cordova.test androidTest
-    (cd androidTest && cordova platform add ../cordova-android)
-    (cd androidTest && cordova run android --device)
-    (cd androidTest && cordova run android --emulator)
-    ```
-
-3) Run your platform's `./bin/create` script. Ensure the generated project builds & runs both through an IDE and through the cordova/* scripts.
-
-
-    ```
-    ./cordova-android/bin/create ./androidTest2 org.apache.cordova.test2 androidTest2
-    (cd androidTest2 && ./cordova/build)
-    (cd androidTest2 && ./cordova/run --device)
-    (cd androidTest2 && ./cordova/run --emulator)
-    ```
-
-The output from `./cordova/version` should show the new version of `cordova-android`.
-
- 4) Run cordova-lib tests.
-
-    ```
-    (cd cordova-lib/cordova-lib && npm test)
-    ```
-
-Feel free to clean up the projects you just created.
-
-    ```
-    rm -rf androidTest*
-    ```
-
-#### Android Extras
-
- * Unit tests in: [test](https://github.com/apache/incubator-cordova-android/tree/master/test) directory
-
-#### iOS Extras
-
- * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
- * Test the Makefile via `make`
-
-## Push Changes:
+All good? Have another look at the changes:
 
     coho repo-status -r android -b master -b 5.0.x
-    # If changes look right:
+
+If changes look right:
+
     coho repo-push -r android -b master -b 5.0.x
 
-Tag & Push:
+This pushes the commits in both `master` and `5.0.x` (the release branch) to the remote.
 
-    coho tag-platform-release --version 3.5.0 -r android --pretend
-    # Seems okay:
-    coho tag-platform-release --version 3.5.0 -r android
+### Tag and push tag
 
-The `coho tag-release` command also tags `cordova-js` with `android-5.0.0` and pushes it.
+Before you tag, run this command:
 
-## Publish RC to dist/dev
+    coho tag-platform-release --version 5.0.0 -r android --pretend
+    
+Seems okay? Then execute it by running:
+
+    coho tag-platform-release --version 5.0.0 -r android
+
+This command also tags `cordova-js` with `android-5.0.0` and pushes it.
+
+## Publish Release Candidate to `dist/dev`
+
+**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006). You also need do [have a secret key set up](setting-up-gpg.md) for signing the release.
+
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
 
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 3.5.0
+    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 5.0.0
 
 Sanity Check:
 
@@ -235,25 +358,32 @@ Upload:
 
     (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
 
-Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
-## Documentation To Update
+## Documentation and Communication
+
+### Documentation To Update
 
 For your platform:
+
  1. Ensure the [Upgrade Guide](http://cordova.apache.org/docs/en/latest/guide/platforms/android/upgrade.html) for your platform is up-to-date
  2. Ensure the other guides listed in the sidebar are up-to-date for your platform
 
-## Prepare Blog Post
- * Gather highlights from RELEASENOTES.md into a Release Announcement blog post
- * Instructions on publishing a blog post are on the [cordova-docs repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
- * Get blog post proofread by submitting a PR to cordova-docs and asking someone on dev list to +1 it.
+### Prepare Blog Post
 
-## Start VOTE Thread
+ * Gather highlights from `RELEASENOTES.md` into a Release Announcement blog post
+ * Instructions on publishing a blog post are on the [`cordova-docs` repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
+ * Get blog post proofread by submitting a PR to `cordova-docs` and asking someone on dev list to +1 it.
+
+## Voting and Release
+
+### Start VOTE Thread
+
 Send an email to dev ML with: (replace `android` with your platform)
 
 __Subject:__
 
-    [Vote] 5.0.0 Android Release
+    [VOTE] Cordova-Android 5.0.0 Release
 
 __Body:__
 
@@ -266,7 +396,7 @@ __Body:__
     https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
 
     The package was published from its corresponding git tag:
-    PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0
+    ### PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0 ###
 
     Note that you can test it out via:
 
@@ -282,9 +412,11 @@ __Body:__
     * Ran coho audit-license-headers over the relevant repos
     * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repo was tagged
+    * ### Add all the other things you did to confirm the working of the release ###
 
 
-## Email the result of the vote
+### Email the result of the vote
+
 Respond to the vote thread with:
 
     The vote has now closed. The results are:
@@ -301,14 +433,17 @@ Respond to the vote thread with:
 
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
-## If the Vote does *not* Pass
+### If the Vote does *not* Pass
+
 * Revert adding of `-dev`
 * Address the concerns
 * Re-tag release using `git tag -f`
 * Add back `-dev`
 * Start a new vote
 
-## Otherwise: Publish to dist/ & npm
+### Otherwise: Publish real release to `dist/` & npm
+
+First move the release package files to `dist/`:
 
 (replace `android` with your platform)
 
@@ -318,7 +453,10 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
-    npm publish platforms/cordova-android-3.5.0.tgz
+
+Now you can find your release here: https://dist.apache.org/repos/dist/release/cordova/
+
+Then you can also remove the release candidate from `dist-dev/`:
 
     cd ../cordova-dist-dev
     svn up
@@ -326,54 +464,88 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     svn commit -m "$JIRA Removing release candidates from dist/dev"
     cd ..
 
+And finally you can publish your package to `npm`:
 
-Find your release here: https://dist.apache.org/repos/dist/release/cordova/
+    cd cordova-dist
+    npm publish platforms/cordova-android-5.0.0.tgz
 
-## Uploading to Bintray (Android only)
+Note: On Windows you have to replace `/` with `\` for this command to work.
+
+Check online if everything worked: https://www.npmjs.com/package/cordova-windows
+
+You should now also be able to add your platform via the version number using the CLI:
+
+    cordova create platformTest
+    cd platformTest
+    cordova platform add android@5.0.0
+
+### (Android only) Uploading to Bintray
 
 1. Add the cordova bintray username and API key as system variables. Your `BINTRAY_USER` should be the username "cordova". The API key is available on the [bintray cordova "edit profile" page](https://bintray.com/profile/edit) - the last option in the menu on the left is "API Key". Find it there. [Credentials to log into the bintray site are on the PMC private SVN](https://svn.apache.org/repos/private/pmc/cordova/logins/bintray.txt). If you have trouble, ask the Project Management Committee (pmc) for the credentials. Confirm that your key and user name are set:
 
 ```
-    echo $BINTRAY_USER
-    echo $BINTRAY_KEY
+echo $BINTRAY_USER
+echo $BINTRAY_KEY
 ```
 
 2. Run the following command (replace 6.2.2 with released version):
 
 ```
-    (cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
-
+(cd cordova-android/framework && git checkout 6.2.2 && gradle bintrayUpload)
 ```
 
 3. Load up the bintray webpage for cordova-android: https://bintray.com/cordova/maven/cordova-android. You should see a notification/warning about publishing the latest release. Hit the Publish link!
 
-## Add permanent apache release tag
+### Add permanent Apache release tag to repository
 
-Make a copy of your released tag with a prefix of `rel/YOURTAG`. These are permanent release tags for Apache.
+Make a copy of your released tag with a prefix of `rel/YOURTAG`:
 
     (cd cordova-android; git checkout 5.1.0; git tag rel/5.1.0; git push origin --tags; git checkout master)
 
-##  Details
+These are permanent release tags for Apache.
+
+## Follow up steps
 
 ### Tell Apache about Release
 
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
-2. Use version "cordova-$PLATFORM@x.x.x"
+2. Use `cordova-$PLATFORM@x.x.x` as "Full version name"
+3. Click "Update release data" to submit it to the list
+
+### Email a release announcement to the mailing list
+
+    Subject: [ANNOUNCEMENT] Cordova Android 5.0.0 Release
+    
+    Cordova-windows@VERSION has been released!
+
+### Announce It!
+
+Announce the release to the world!
+
+* Publish the release blog post
+* Tweet it on https://twitter.com/apachecordova
+   
+### Close JIRA Issue
+
+- Double check that the issue includes comments that record the steps you took
+- Mark it as fixed
+
+### Finally
+
+- Update these instructions if they were missing anything.
+- That's it!
+
+----
+
+##  Other stuff that should be reviewed and moved up to the appropriate places
 
 ### Update the Docs
 
 Follow the README at https://github.com/apache/cordova-docs, and specifically the deploy section: https://github.com/apache/cordova-docs#deploying
 
-### Announce It!
- 1. Announce the release to the world!
-   * Create a blog post for it (instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md))
-   * Tweet it on https://twitter.com/apachecordova
 
-# Additional Information
- * [IOSReleaseChecklist](https://wiki.apache.org/cordova/IOSReleaseChecklist)
- * [AndroidReleaseChecklist](https://wiki.apache.org/cordova/AndroidReleaseChecklist)
 
-## Moving Tags
+### Moving Tags
 
 If you need to move a tag before the release, here is how to do that:
 

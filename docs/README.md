@@ -19,18 +19,29 @@
 #
 -->
 
-# Table of Contents
-## Release Process
+# cordova-coho Usage / Cordova Committer Documentation
 
-* [Tools release process](tools-release-process.md)
-* [Platform release process](platforms-release-process.md)
-* [Plugins release process](plugins-release-process.md)
-* [Hello world app release process](app-hello-world-release-process.md)
+This is a collection of documentation on processes using `cordova-coho`:
+
+## Release Processes
+
+Follow these processes to release...
+
+* [Tools](tools-release-process.md) (CLI etc.)
+* [Platforms](platforms-release-process.md) (iOS, Android, Windows etc.)
+* [Plugins](plugins-release-process.md)
+* [Hello world app](app-hello-world-release-process.md)
+* [`cordova-coho` itself](coho-release-process.md)
+
+### About Releases
+
 * [Versioning and release strategy](versioning-and-release-strategy.md)
 * [Release Voting](release-voting.md)
 * [Setting up GPG](setting-up-gpg.md)
 
 ## Committer Workflow
+
+Things a committer frequently does:
 
 * [Committer workflow](committer-workflow.md)
 * [Code Reviews](code-reviews.md)
@@ -40,3 +51,4 @@
 ## Misc
 
 * [Storing Repo Versions Design](storing-repo-versions-design.md)
+* [Access to Apache's jenkins CI setup (deprecated)](jenkins-access.md)

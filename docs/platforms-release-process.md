@@ -34,8 +34,9 @@ It describes the following steps:
   * [Update and Pin Dependencies](#update-and-pin-dependencies)
   * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
-  * [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
-  * [Increase version](#increase-version)
+  * [Set release version in `package.json`](#set-release-version-in-packagejson)
+    - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
+    - [Optional: Increase version](#optional-increase-version)
   * [Create Release Notes](#create-release-notes)
   * [Commit Version and Release Notes](#commit-version-and-release-notes)
   * [Special Case 1: Release notes in release branch for patch release](#special-case-1-release-notes-in-release-branch-for-patch-release)
@@ -158,19 +159,21 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
 ## Prepare Release
 
-### Remove the `-dev` suffix from version
+Preparation of the release includes a) handling version numbers, b) creating nice release notes and c) creating the release branch.
+
+### Set release version in `package.json`
+
+#### Remove the `-dev` suffix from version
 
 This command removes `-dev` from the `version` entry in `package.json`:
 
     for l in cordova-android; do ( cd $l; v="$(grep '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version to $v2"; sed -i '' -E 's/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13809). You can also replace `-dev` manually of course.
+Note: This command [doesn't actually work](https://issues.apache.org/jira/browse/CB-13809). You can also replace `-dev` in `package.json` manually of course.
 
-Note: In `cordova-android`, also remember to handle the version in `framework/build.gradle`.
+#### Optional: Increase version
 
-### Increase version
-
-If the changes merit it, **manually** bump the major / minor/ patch version in `package.json`. 
+If the changes merit it, also **manually** bump the major / minor/ patch version in `package.json`. 
 
 To decide if this release merits it, view the changes via:
 
@@ -215,8 +218,8 @@ Create and prepare your release branch by using `coho prepare-release-branch` co
 
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
-3. Updates version numbers (`VERSION` and similar [e.g. `build.gradle` for Android] files) on `5.0.x`
-4. On `master`, it gives version (`VERSION` files & package.json) a minor bump and adds `-dev` (=> `5.1.0-dev`)
+3. Propagates version number from `package.json` to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
+4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 

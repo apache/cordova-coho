@@ -434,6 +434,7 @@ Respond to the vote thread with:
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ### If the Vote does *not* Pass
+
 * Revert adding of `-dev`
 * Address the concerns
 * Re-tag release using `git tag -f`
@@ -508,7 +509,8 @@ These are permanent release tags for Apache.
 ### Tell Apache about Release
 
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
-2. Use version "cordova-$PLATFORM@x.x.x"
+2. Use `cordova-$PLATFORM@x.x.x` as "Full version name"
+3. Click "Update release data" to submit it to the list
 
 ### Email a release announcement to the mailing list
 

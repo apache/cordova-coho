@@ -442,6 +442,8 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ### Otherwise: Publish real release to `dist/` & npm
 
+First move the release package files to `dist/`:
+
 (replace `android` with your platform)
 
     cd cordova-dist
@@ -450,17 +452,31 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
     cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
     svn add platforms/cordova-android*
     svn commit -m "$JIRA Published android release to dist"
-    npm publish platforms/cordova-android-5.0.0.tgz
 
-Find your release here: https://dist.apache.org/repos/dist/release/cordova/
+Now you can find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
-Now you can also remove the release candidate:
+Then you can also remove the release candidate from `dist-dev/`:
 
     cd ../cordova-dist-dev
     svn up
     svn rm $JIRA
     svn commit -m "$JIRA Removing release candidates from dist/dev"
     cd ..
+
+And finally you can publish your package to `npm`:
+
+    cd cordova-dist
+    npm publish platforms/cordova-android-5.0.0.tgz
+
+Note: On Windows you have to replace `/` with `\` for this command to work.
+
+Check online if everything worked: https://www.npmjs.com/package/cordova-windows
+
+You should now also be able to add your platform via the version number using the CLI:
+
+    cordova create platformTest
+    cd platformTest
+    cordova platform add android@5.0.0
 
 ### (Android only) Uploading to Bintray
 

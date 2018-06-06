@@ -211,5 +211,13 @@
     },
     "uncrustify": {
         "license-notes": "This license is not accepted by ASF, but since it is a dev dependency, we don't ship it or ask our users to download it. We are good. Check that it is only in devDeps in package.json"
-    }    
+    },
+    "spdx-exceptions": {
+        "verified-license": "CC-BY-3.0",
+        "license-notes": "This is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of eslint-plugin-import."
+    },
+    "spdx-license-ids": {
+        "verified-license": "CC0-1.0",
+        "license-notes": "This is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of eslint-plugin-import."
+    }
 }

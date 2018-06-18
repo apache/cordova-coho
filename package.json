@@ -42,7 +42,8 @@
     "tape-runner": "^0.3.0"
   },
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run eslint && npm run jasmine && npm run tape-test",
+    "tape-test": "node test/test.js | tap-spec",
     "cover": "istanbul cover --root src --print detail jasmine",
     "jasmine": "jasmine",
     "eslint": "eslint test && eslint src"

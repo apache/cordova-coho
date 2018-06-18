@@ -18,9 +18,11 @@ under the License.
 */
 
 var path = require('path');
+
 var apputil = require('../src/apputil');
 var repoutil = require('../src/repoutil');
 var flagutil = require('../src/flagutil');
+
 var TIMEOUT = 60000;
 
 describe("flagutil unit tests", function () {
@@ -36,11 +38,12 @@ describe("flagutil unit tests", function () {
 	it("Test#002 : computeReposFromFlag returns correct repo (platform) info", function () {
 		var repo = flagutil.computeReposFromFlag('android');
 		expect(repo).toEqual(
-			[ Object({ 
-			title: 'Android', 
-			id: 'android', 
-			repoName: 'cordova-android', 
-			jiraComponentName: 'Android', 
+			[ Object({
+			title: 'Android',
+			versions: [ '4.4', '5.0', '5.1', '6.0', '7.0', '7.1' ],
+			id: 'android',
+			repoName: 'cordova-android',
+			jiraComponentName: 'cordova-android',
 			cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ] }) ]
 		);
 	},TIMEOUT);
@@ -51,7 +54,7 @@ describe("flagutil unit tests", function () {
 		[ { title: 'Plugin - Camera',
 		    id: 'plugin-camera',
 		    repoName: 'cordova-plugin-camera',
-		    jiraComponentName: 'Plugin Camera' } ]
+		    jiraComponentName: 'cordova-plugin-camera' } ]
 		);
 	},TIMEOUT);
 
@@ -61,7 +64,7 @@ describe("flagutil unit tests", function () {
 		[ { title: 'Docs',
 		    id: 'docs',
 		    repoName: 'cordova-docs',
-		    jiraComponentName: 'Docs' } ]
+		    jiraComponentName: 'cordova-docs' } ]
 		);
 	},TIMEOUT);
 

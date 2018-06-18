@@ -86,11 +86,11 @@ describe("Correct version is passed to gradle.build", function () {
 		var androidVersion = yield versionutil.updateRepoVersion(androidRepo, "6.4.0-dev");
 		// Check call count
 		expect(fs.writeFileSync.calls.count()).toEqual(1);
-		expect(fs.existsSync.calls.count()).toEqual(2);
-		expect(fs.readFile.calls.count()).toEqual(1);
-		expect(repoutil.isInRepoGroup.calls.count()).toEqual(1);
-		expect(repoutil.isInRepoGroup.calls.count()).toEqual(1);
-		expect(gitutil.pendingChangesExist.calls.count()).toEqual(3);
+		expect(fs.existsSync.calls.count()).toEqual(4);
+		expect(fs.readFile.calls.count()).toEqual(3);
+		expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
+		expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
+		expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
 		expect(executil.execHelper.calls.count()).toEqual(1);
 		expect(apputil.print.calls.count()).toEqual(0);
 		expect(shell.sed.calls.count()).toEqual(5);
@@ -106,10 +106,10 @@ describe("Correct version is passed to gradle.build", function () {
 		var iosVersion = yield versionutil.updateRepoVersion(iosRepo, "4.2.0-dev");
 		// Check call count
 		expect(fs.writeFileSync.calls.count()).toEqual(1);
-		expect(fs.existsSync.calls.count()).toEqual(2);
-		expect(repoutil.isInRepoGroup.calls.count()).toEqual(1);
-		expect(fs.readFile.calls.count()).toEqual(1);
-		expect(gitutil.pendingChangesExist.calls.count()).toEqual(3);
+		expect(fs.existsSync.calls.count()).toEqual(4);
+		expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
+		expect(fs.readFile.calls.count()).toEqual(3);
+		expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
 		expect(shell.sed.calls.count()).toEqual(1);
 		expect(apputil.print.calls.count()).toEqual(0);
 		expect(executil.execHelper.calls.count()).toEqual(1);
@@ -121,10 +121,10 @@ describe("Correct version is passed to gradle.build", function () {
 		var windowsVersion = yield versionutil.updateRepoVersion(windowsRepo, "4.5.0-dev");
 		// Check call count
 		expect(fs.writeFileSync.calls.count()).toEqual(1);
-		expect(fs.existsSync.calls.count()).toEqual(3);
-		expect(repoutil.isInRepoGroup.calls.count()).toEqual(1);
-		expect(gitutil.pendingChangesExist.calls.count()).toEqual(3);
-		expect(fs.readFile.calls.count()).toEqual(1);
+		expect(fs.existsSync.calls.count()).toEqual(5);
+		expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
+		expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
+		expect(fs.readFile.calls.count()).toEqual(3);
 		expect(shell.sed.calls.count()).toEqual(1);
 		expect(apputil.print.calls.count()).toEqual(0);
 		expect(executil.execHelper.calls.count()).toEqual(1);
@@ -136,10 +136,10 @@ describe("Correct version is passed to gradle.build", function () {
 		var browserVersion = yield versionutil.updateRepoVersion(browserRepo, "4.1.0-dev");
 		//Check call count
 		expect(fs.writeFileSync.calls.count()).toEqual(1);
-		expect(fs.existsSync.calls.count()).toEqual(2);
-		expect(repoutil.isInRepoGroup.calls.count()).toEqual(1);
-		expect(gitutil.pendingChangesExist.calls.count()).toEqual(3);
-		expect(fs.readFile.calls.count()).toEqual(1);
+		expect(fs.existsSync.calls.count()).toEqual(5);
+		expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
+		expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
+		expect(fs.readFile.calls.count()).toEqual(3);
 		expect(shell.sed.calls.count()).toEqual(1);
 		expect(apputil.print.calls.count()).toEqual(0);
 		expect(executil.execHelper.calls.count()).toEqual(1);

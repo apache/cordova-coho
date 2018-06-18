@@ -399,7 +399,7 @@ test('test computeReposFromFlagServe', function (t) {
     t.equal(repo.length, 1);
     t.equal(typeof repo[0], 'object');
     t.equal(repo[0].id, 'serve');
-    t.equal(repo[0].repoName, 'cordova-lib');
+    t.equal(repo[0].repoName, 'cordova-serve');
 });
 test('test computeReposFromFlagJs', function (t) {
     t.plan(4);

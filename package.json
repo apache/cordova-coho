@@ -1,6 +1,6 @@
 {
   "name": "cordova-coho",
-  "version": "1.0.1",
+  "version": "1.0.2-dev",
   "description": "Apache Cordova release tool",
   "main": "./coho",
   "bin": {

@@ -142,7 +142,9 @@ function * updateJsSnapshot (repo, version, commit) {
                     // git fetch and update master for cordovajs
                     yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
                     yield gitutil.gitCheckout('master');
+                    yield executil.execHelper(executil.ARGS('npm install'), false, true); // WORKAROUND PART 1 for local grunt issue in cordova-js
                     yield executil.execHelper(executil.ARGS('grunt compile:' + repo.id + ' --platformVersion=' + version), false, true);
+                    shelljs.rm('-fr', 'node_modules'); // WORKAROUND PART 2 for local grunt issue in cordova-js
                     hasBuiltJs = version;
                 });
             });

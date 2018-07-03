@@ -130,7 +130,7 @@ function * updateCDVAvailabilityFile (version) {
     fs.writeFileSync(iosFile, iosFileContents.join('\n'));
 }
 
-function * updateJsSnapshot (repo, version, commit) {
+function * updateJsSnapshot (repo, version, commit, branch) {
     function * ensureJsIsBuilt () {
         var cordovaJsRepo = repoutil.getRepoById('js');
         if (repo.id === 'blackberry') {
@@ -139,9 +139,12 @@ function * updateJsSnapshot (repo, version, commit) {
         if (hasBuiltJs !== version) {
             yield repoutil.forEachRepo([cordovaJsRepo], function * () {
                 yield gitutil.stashAndPop(cordovaJsRepo, function * () {
-                    // git fetch and update master for cordovajs
-                    yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
-                    yield gitutil.gitCheckout('master');
+                    // git fetch and update master (or fetch other branch) for cordova-js
+                    if (branch === 'master') {
+                        yield repoupdate.updateRepos([cordovaJsRepo], [branch], false);
+                    }
+                    yield executil.execHelper(executil.ARGS('git checkout -q ' + branch));
+                    yield gitutil.gitCheckout(branch);
                     yield executil.execHelper(executil.ARGS('npm install'), false, true); // WORKAROUND PART 1 for local grunt issue in cordova-js
                     yield executil.execHelper(executil.ARGS('grunt compile:' + repo.id + ' --platformVersion=' + version), false, true);
                     shelljs.rm('-fr', 'node_modules'); // WORKAROUND PART 2 for local grunt issue in cordova-js
@@ -177,13 +180,16 @@ exports.createAndCopyCordovaJSCommand = function * () {
                '    1. Generates a new cordova.js.\n' +
                '    2. Replaces platform\'s cordova.js file.\n' +
                '\n' +
-               'Usage: $0 copy-js -r platform')
+               'Usage: $0 copy-js -r platform [--js <cordova-js branch or tag name>]')
     );
 
     var repos = flagutil.computeReposFromFlag(argv.r);
+
+    var jsBranchName = argv.js ? argv.js : 'master';
+
     yield repoutil.forEachRepo(repos, function * (repo) {
         var version = yield handleVersion(repo, argv.version, false);
-        yield updateJsSnapshot(repo, version, false);
+        yield updateJsSnapshot(repo, version, false, jsBranchName);
     });
 };
 
@@ -199,11 +205,17 @@ exports.prepareReleaseBranchCommand = function * () {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-platform-release-branch -r platform [--version=3.6.0]')
+               'Usage: $0 prepare-platform-release-branch -r platform [--version=3.6.0] [-b <platform branch name>] [--js <cordova-js branch or tag name>]')
     );
 
     var repos = flagutil.computeReposFromFlag(argv.r);
+
+    // XXX TBD ???:
     var branchName = null;
+
+    var isOtherRepoBranch = !!argv.b;
+    var repoBranchName = isOtherRepoBranch ? argv.b : 'master';
+    var jsBranchName = argv.js ? argv.js : 'master';
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
@@ -211,34 +223,32 @@ exports.prepareReleaseBranchCommand = function * () {
     yield repoutil.forEachRepo(repos, function * (repo) {
         var platform = repo.id;
         var version = yield handleVersion(repo, argv.version, true);
-        var branchName = versionutil.getReleaseBranchNameFromVersion(version);
+        var releaseBranchName = isOtherRepoBranch ? repoBranchName :
+                versionutil.getReleaseBranchNameFromVersion(version);
 
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch + update master
-            yield repoupdate.updateRepos([repo], ['master'], false);
+            yield repoupdate.updateRepos([repo], [repoBranchName], false);
 
             // Either create or pull down the branch.
-            if (yield gitutil.remoteBranchExists(repo, branchName)) {
+            if (yield gitutil.remoteBranchExists(repo, releaseBranchName)) {
                 print('Remote branch already exists for repo: ' + repo.repoName);
                 // Check out and rebase.
-                yield repoupdate.updateRepos([repo], [branchName], true);
-                yield gitutil.gitCheckout(branchName);
-            } else if (yield gitutil.localBranchExists(branchName)) {
-                yield executil.execHelper(executil.ARGS('git checkout ' + branchName));
+                yield repoupdate.updateRepos([repo], [releaseBranchName], true);
+                yield gitutil.gitCheckout(releaseBranchName);
+            } else if (yield gitutil.localBranchExists(releaseBranchName)) {
+                yield executil.execHelper(executil.ARGS('git checkout ' + releaseBranchName));
+            } else if (isOtherRepoBranch) {
+                yield executil.execHelper(executil.ARGS('git checkout ' + repoBranchName));
             } else {
                 yield gitutil.gitCheckout('master');
-                yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName));
+                yield executil.execHelper(executil.ARGS('git checkout -b ' + releaseBranchName));
             }
 
-            print(repo.repoName + ': Update JS snapshot version for VERSION "' + version + '" on branch "' + branchName + '".');
-            yield updateJsSnapshot(repo, version, true);
+            yield updateJsSnapshot(repo, version, true, jsBranchName);
 
-            print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + branchName + '".');
-            yield versionutil.updateRepoVersion(repo, version);
-
-            if (platform === 'ios') {
+            if (platform === 'ios' && /\d$/.test(version)) {
                 // Updates version in CDVAvailability.h file
-                print(repo.repoName + ': Update CDVAvailability.h for VERSION to "' + version + '" on branch "' + branchName + '".');
                 yield updateCDVAvailabilityFile(version);
                 // Git commit changes
                 if (yield gitutil.pendingChangesExist()) {
@@ -246,15 +256,23 @@ exports.prepareReleaseBranchCommand = function * () {
                 }
             }
 
+            print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + releaseBranchName + '".');
+            yield versionutil.updateRepoVersion(repo, version);
+
+            // skip remaining steps for this repo if other repo branch was specified:
+            if (isOtherRepoBranch) return;
+
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
             yield versionutil.updateRepoVersion(repo, devVersion);
-            yield updateJsSnapshot(repo, devVersion, true);
-            yield gitutil.gitCheckout(branchName);
+            yield updateJsSnapshot(repo, devVersion, true, jsBranchName);
+            yield gitutil.gitCheckout(releaseBranchName);
         });
     });
-    executil.reportGitPushResult(repos, ['master', branchName]);
+
+    // XXX TBD ???:
+    executil.reportGitPushResult(repos, [repoBranchName, branchName]);
 };
 
 function * tagJs (repo, version, pretend) {

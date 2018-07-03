@@ -45,7 +45,7 @@ exports.createCommand = function * (argv) {
             type: 'boolean'
         })
         .options('sign', {
-            desc: 'Whether to create .asc, .md5, .sha files (defaults to true)',
+            desc: 'Whether to create .asc, .sha512 files (defaults to true)',
             type: 'boolean',
             default: 'true'
         })
@@ -55,7 +55,7 @@ exports.createCommand = function * (argv) {
         });
     opt = flagutil.registerHelpFlag(opt);
     var argv = opt // eslint-disable-line
-        .usage('Creates a .zip, .asc, .md5, .sha for a repo at a tag or hash.\n' +
+        .usage('Creates a .zip, .asc, .sha for a repo at a tag or hash.\n' +
                'Refer to ' + settingUpGpg + ' for how to set up gpg\n' +
                '\n' +
                'Usage: $0 create-archive [--tag tagname] [--sign] --repo=name [-r repos] --dest cordova-dist-dev/CB-1111')
@@ -125,7 +125,6 @@ function * createArchive (repo, tag, outDir, sign) {
     print('Created archive: ' + outPath);
     if (sign) {
         yield executil.execHelper(executil.ARGS('gpg --armor --detach-sig --output', outPath + '.asc', outPath), false, false);
-        fs.writeFileSync(outPath + '.md5', (yield computeHash(outPath, 'MD5')) + '\n');
         fs.writeFileSync(outPath + '.sha512', (yield computeHash(outPath, 'SHA512')) + '\n');
     }
     return outPath;
@@ -136,7 +135,7 @@ exports.createArchive = createArchive;
 exports.verifyCommand = function * () {
     var opt = flagutil.registerHelpFlag(optimist);
     var argv = opt
-        .usage('Ensures the given .zip files match their neighbouring .asc, .md5, .sha files.\n' +
+        .usage('Ensures the given .zip files match their neighbouring .asc, .sha512 files.\n' +
                'Refer to ' + settingUpGpg + ' for how to set up gpg\n' +
                '\n' +
                'Usage: $0 verify-archive a.zip b.zip c.zip')
@@ -171,10 +170,7 @@ function * verifyArchive (archive) {
     if (result === null) {
         apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
     }
-    var md5 = yield computeHash(archive, 'MD5');
-    if (extractHashFromOutput(fs.readFileSync(archive + '.md5', 'utf8')) !== md5) {
-        apputil.fatal('MD5 does not match.');
-    }
+
     var sha = yield computeHash(archive, 'SHA512');
     var archiveFileName = archive + '.sha512';
     var oldArchiveFileName = archive + '.sha';

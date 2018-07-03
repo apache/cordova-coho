@@ -5,3 +5,5 @@ apache-rat-0.12
 node_modules
 .idea
 **/*.swp
+
+.DS_Store

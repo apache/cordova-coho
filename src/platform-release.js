@@ -197,7 +197,7 @@ exports.prepareReleaseBranchCommand = function * () {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-release-branch -r platform [--version=3.6.0]')
+               'Usage: $0 prepare-platform-release-branch -r platform [--version=3.6.0]')
     );
 
     var repos = flagutil.computeReposFromFlag(argv.r);

@@ -228,6 +228,7 @@ exports.prepareReleaseBranchCommand = function * () {
                 yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName));
             }
 
+            print(repo.repoName + ': Update JS snapshot version for VERSION "' + version + '" on branch "' + branchName + '".');
             yield updateJsSnapshot(repo, version, true);
 
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + branchName + '".');
@@ -235,6 +236,7 @@ exports.prepareReleaseBranchCommand = function * () {
 
             if (platform === 'ios') {
                 // Updates version in CDVAvailability.h file
+                print(repo.repoName + ': Update CDVAvailability.h for VERSION to "' + version + '" on branch "' + branchName + '".');
                 yield updateCDVAvailabilityFile(version);
                 // Git commit changes
                 if (yield gitutil.pendingChangesExist()) {

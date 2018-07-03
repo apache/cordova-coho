@@ -214,14 +214,7 @@ exports.prepareReleaseBranchCommand = function * () {
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
-            if (platform === 'ios') {
-                // Updates version in CDVAvailability.h file
-                yield updateCDVAvailabilityFile(version);
-                // Git commit changes
-                if (yield gitutil.pendingChangesExist()) {
-                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
-                }
-            }
+
             // Either create or pull down the branch.
             if (yield gitutil.remoteBranchExists(repo, branchName)) {
                 print('Remote branch already exists for repo: ' + repo.repoName);
@@ -236,8 +229,18 @@ exports.prepareReleaseBranchCommand = function * () {
             }
 
             yield updateJsSnapshot(repo, version, true);
+
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + branchName + '".');
             yield versionutil.updateRepoVersion(repo, version);
+
+            if (platform === 'ios') {
+                // Updates version in CDVAvailability.h file
+                yield updateCDVAvailabilityFile(version);
+                // Git commit changes
+                if (yield gitutil.pendingChangesExist()) {
+                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
+                }
+            }
 
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);

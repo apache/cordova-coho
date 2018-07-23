@@ -170,6 +170,15 @@ Link repos:
     (cd cordova-plugman && rm -r node_modules && npm link cordova-lib && npm install)
     (cd cordova-cli && rm -r node_modules && npm link cordova-lib && npm link cordova-common && npm install)
 
+Check results of `npm audit`: ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-js && npm audit)
+    (cd cordova-common && npm audit)
+    (cd cordova-fetch && npm audit)
+    (cd cordova-lib && npm audit)
+    (cd cordova-plugman && npm audit)
+    (cd cordova-cli && npm audit)
+
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 
     coho audit-license-headers -r js | less

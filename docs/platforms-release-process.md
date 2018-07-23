@@ -147,6 +147,12 @@ Check-in updated modules (use npm 3.10.1+)
 Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
 Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
 
+### npm audit check
+
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-android && npm audit)
+
 ### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.

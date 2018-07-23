@@ -275,11 +275,13 @@ exports.prepareReleaseBranchCommand = function * () {
     executil.reportGitPushResult(repos, [repoBranchName, branchName]);
 };
 
-function * tagJs (repo, version, pretend) {
+function * tagJs (repo, version, pretend, tagOnly) {
 
     function * execOrPretend (cmd) {
         if (pretend) {
             print('PRETENDING TO RUN: ' + cmd.join(' '));
+        } else if (tagOnly && cmd[1] === 'push') {
+            print('SKIP: ' + cmd.join(' '));
         } else {
             yield executil.execHelper(cmd);
         }
@@ -306,9 +308,13 @@ exports.tagReleaseBranchCommand = function * (argv) {
     var argv = configureReleaseCommandFlags(optimist // eslint-disable-line
         .usage('Tags a release branches.\n' +
                '\n' +
-               'Usage: $0 tag-release --version=2.8.0-rc1 -r platform')
+               'Usage: $0 tag-release --version=2.8.0-rc1 -r platform [--pretend] [--tag-only]')
         .options('pretend', {
             desc: 'Don\'t actually run git commands, just print out what would be run.',
+            type: 'boolean'
+        })
+        .options('tag-only', {
+            desc: 'Don\'t actually push to origin, just print out what would be pushed.',
             type: 'boolean'
         })
     );
@@ -316,6 +322,7 @@ exports.tagReleaseBranchCommand = function * (argv) {
     var version = flagutil.validateVersionString(argv.version);
     var pretend = argv.pretend;
     var branchName = versionutil.getReleaseBranchNameFromVersion(version);
+    var tagOnly = argv['tag-only'];
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
@@ -323,6 +330,8 @@ exports.tagReleaseBranchCommand = function * (argv) {
     function * execOrPretend (cmd) {
         if (pretend) {
             print('PRETENDING TO RUN: ' + cmd.join(' '));
+        } else if (tagOnly && cmd[1] === 'push') {
+            print('SKIP: ' + cmd.join(' '));
         } else {
             yield executil.execHelper(cmd);
         }
@@ -354,7 +363,7 @@ exports.tagReleaseBranchCommand = function * (argv) {
             } else {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }
-            yield tagJs(repo, version, pretend);
+            yield tagJs(repo, version, pretend, tagOnly);
 
         });
     });

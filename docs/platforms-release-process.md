@@ -23,18 +23,21 @@
 
 This page describes the technical steps for doing a `Platforms Release`.
 
+## Table of contents
+
 It describes the following steps:
 
 - [General instructions](#general-instructions)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
+  * [Read through Apache release policy](#read-through-apache-release-policy)
+- [Before Release](#before-release)
+  * [npm audit check](#npm-audit-check)
+  * [Check dependencies](#check-dependencies)
+  * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+  * [License Check](#license-check)
   * [Get Buy-in](#get-buy-in)
   * [Create JIRA issue](#create-jira-issue)
-- [Before Release](#before-release)
-  * [Check dependencies](#check-dependencies)
-  * [Update and Pin Dependencies](#update-and-pin-dependencies)
-  * [npm audit check](#npm-audit-check)
-  * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Set release version in `package.json`](#set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
@@ -95,6 +98,62 @@ You should have your platform repository checked out in a folder where you also 
 
 ## Before you start
 
+### Read through Apache release policy
+
+Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
+
+## Before Release
+
+### npm audit check
+
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-android && npm audit)
+
+### Check dependencies
+
+Ensure your checkout of the repository is up-to-date:
+
+    coho repo-update -r android
+
+See if any dependencies are outdated
+
+    (cd cordova-android && npm outdated --depth=0)
+
+(The `--depth=0` prevents from listing dependencies of dependencies.)
+
+### Resolve any outdated dependencies
+
+**Alternative 1:**
+
+- Explicitly pin the outdated dependency versions in the `dependencies` section of `package.json`.
+- Raise a new JIRA issue to update the dependencies in an upcoming release.
+
+**Alternative 2:**
+
+Within a new JIRA issue: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+
+Check-in updated modules (use npm 3.10.1+)
+
+    rm -rf node_modules
+    npm install --production (skips devDependencies)
+    git add node_modules/* (check-in all modules needed for platform add git url)
+    git commit -m "$JIRA Updated checked-in node_modules"
+    npm install (Re-add devDependencies for ability to run tests locally)
+
+Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
+Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
+
+### License Check
+
+Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
+
+    coho audit-license-headers -r android | less
+
+Ensure all dependencies and subdependencies have Apache-compatible licenses.
+
+    coho check-license -r android
+
 ### Get Buy-in
 
 Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
@@ -123,51 +182,6 @@ Double check you replace "Android" in the subject and mail body - there is no un
 ```
 JIRA="CB-????" # Set this to the release bug.
 ```
-
-## Before Release
-
-### Check dependencies
-
-Ensure your checkout of the repository is up-to-date:
-
-    coho repo-update -r android
-
-See if any dependencies are outdated
-
-    (cd cordova-android && npm outdated --depth=0)
-
-(The `--depth=0` prevents from listing dependencies of dependencies.)
-
-### Update and Pin Dependencies
-
-Update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
-
-Check-in updated modules (use npm 3.10.1+)
-
-    rm -rf node_modules
-    npm install --production (skips devDependencies)
-    git add node_modules/* (check-in all modules needed for platform add git url)
-    git commit -m "$JIRA Updated checked-in node_modules"
-    npm install (Re-add devDependencies for ability to run tests locally)
-
-Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
-Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
-
-### npm audit check
-
-Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
-
-    (cd cordova-android && npm audit)
-
-### License Check
-
-Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
-
-    coho audit-license-headers -r android | less
-
-Ensure all dependencies and subdependencies have Apache-compatible licenses.
-
-    coho check-license -r android
 
 ## Prepare Release
 

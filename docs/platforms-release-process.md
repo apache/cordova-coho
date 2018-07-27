@@ -97,7 +97,7 @@ You should have your platform repository checked out in a folder where you also 
 
 ### Request buy-in
 
-Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
+Email the dev mailing-list at <dev@cordova.apache.org> and see if anyone has reason to postpone the release.
 
 E.g.:
 

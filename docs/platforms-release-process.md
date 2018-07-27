@@ -192,7 +192,7 @@ Preparation of the release includes a) handling version numbers, b) creating nic
 
 ### Optional: Set release version in `package.json`
 
-This should automatically be done by the `coho prepare-platform-release-branch` command as described in [Create Release Branch](#create-release-branch) section below.
+This should be automatically done by the `coho prepare-platform-release-branch` command as described in [Create Release Branch](#create-release-branch) section below.
 
 #### Remove the `-dev` suffix from version
 

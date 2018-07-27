@@ -222,7 +222,7 @@ Then curate:
 
     vim cordova-android/RELEASENOTES.md
     
-or use your favotire text editor manually.
+or use your favorite text editor manually.
 
 ### Commit Release Notes and optional version changes together
 

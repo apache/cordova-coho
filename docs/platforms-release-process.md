@@ -31,6 +31,7 @@ It describes the following steps:
   * [Get Buy-in](#get-buy-in)
   * [Create JIRA issue](#create-jira-issue)
 - [Before Release](#before-release)
+  * [Check dependencies](#check-dependencies)
   * [Update and Pin Dependencies](#update-and-pin-dependencies)
   * [npm audit check](#npm-audit-check)
   * [License Check](#license-check)
@@ -125,7 +126,7 @@ JIRA="CB-????" # Set this to the release bug.
 
 ## Before Release
 
-### Update and Pin Dependencies
+### Check dependencies
 
 Ensure your checkout of the repository is up-to-date:
 
@@ -135,7 +136,11 @@ See if any dependencies are outdated
 
     (cd cordova-android && npm outdated --depth=0)
 
-Update them in each project's `package.json` file. Make sure to run through the test section below for compatibility issues. The `--depth=0` prevents from listing dependencies of dependencies.
+(The `--depth=0` prevents from listing dependencies of dependencies.)
+
+### Update and Pin Dependencies
+
+Update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
 Check-in updated modules (use npm 3.10.1+)
 

@@ -40,11 +40,11 @@ It describes the following steps:
   * [Get Buy-in](#get-buy-in)
   * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
-  * [Set release version in `package.json`](#set-release-version-in-packagejson)
+  * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
     - [Optional: Increase version](#optional-increase-version)
   * [Create Release Notes](#create-release-notes)
-  * [Commit Version and Release Notes](#commit-version-and-release-notes)
+  * [Commit Release Notes and optional version changes together](#commit-release-notes-and-optional-version-changes-together)
   * [Special Case 1: Release notes in release branch for patch release](#special-case-1-release-notes-in-release-branch-for-patch-release)
   * [Special Case 2: releasing new commits from an already-existing release branch](#special-case-2-releasing-new-commits-from-an-already-existing-release-branch)
   * [Create Release Branch](#create-release-branch)
@@ -190,7 +190,9 @@ JIRA="CB-????" # Set this to the release bug.
 
 Preparation of the release includes a) handling version numbers, b) creating nice release notes and c) creating the release branch.
 
-### Set release version in `package.json`
+### Optional: Set release version in `package.json`
+
+This should automatically be done by the `coho prepare-platform-release-branch` command as described in [Create Release Branch](#create-release-branch) section below.
 
 #### Remove the `-dev` suffix from version
 
@@ -222,11 +224,13 @@ Then curate:
     
 or use your favotire text editor manually.
 
-### Commit Version and Release Notes
+### Commit Release Notes and optional version changes together
 
-Commit these changes together into one commit.
+Commit these changes together in a single commit (one commit).
 
-    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
+    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Update RELEASENOTES & version for release $v")
+
+(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not updated in `package.json`.)
 
 ### Special Case 1: Release notes in release branch for patch release
 
@@ -243,11 +247,11 @@ If you are releasing new commits from an already-existing release branch, rememb
 
 ### Create Release Branch
 
-Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+Create and prepare your release branch by using `coho prepare-platform-release-branch` command, which handles the following steps:
 
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
-3. Propagates version number from `package.json` to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
+3. Propagates version number from `--version` argument (or from `package.json` if there is no `--version` argument) to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
 4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).

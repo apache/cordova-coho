@@ -32,12 +32,12 @@ It describes the following steps:
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
   * [Read through Apache release policy](#read-through-apache-release-policy)
+  * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
   * [Check dependencies](#check-dependencies)
   * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
   * [License Check](#license-check)
-  * [Get Buy-in](#get-buy-in)
   * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
@@ -105,6 +105,23 @@ You should have your platform repository checked out in a folder where you also 
 
 Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
 
+### Request buy-in
+
+Email the dev mailing-list at <dev@cordova.apache.org> and see if anyone has reason to postpone the release.
+
+E.g.:
+
+    Subject: [DISCUSS] Cordova-Android Release
+
+    Does anyone have any reason to delay a cordova-_android_ platform release?
+    Any outstanding patches to land?
+
+    If not, I will start the release tomorrow.
+
+Double check you replace "Android" in the subject and mail body - there is no undo for emails.
+
+Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
+
 ## Before Release
 
 ### npm audit check
@@ -157,22 +174,9 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
 
-### Get Buy-in
-
-Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
-
-E.g.:
-
-    Subject: [DISCUSS] Cordova-Android Release
-
-    Does anyone have any reason to delay a cordova-_android_ platform release?
-    Any outstanding patches to land?
-
-    If not, I will start the release tomorrow.
-
-Double check you replace "Android" in the subject and mail body - there is no undo for emails.
-
 ### Create JIRA issue
+
+After waiting for any possible objections from the email sent according to the [Request buy-in](#request-buy-in) section above:
 
  * Create a JIRA issue to track the status of the release.
    - Make it of type "Task"

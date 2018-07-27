@@ -32,6 +32,7 @@ It describes the following steps:
   * [Create JIRA issue](#create-jira-issue)
 - [Before Release](#before-release)
   * [Update and Pin Dependencies](#update-and-pin-dependencies)
+  * [npm audit check](#npm-audit-check)
   * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Set release version in `package.json`](#set-release-version-in-packagejson)

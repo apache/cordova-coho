@@ -28,6 +28,7 @@ This page describes the technical steps for doing a `Platforms Release`.
 It describes the following steps:
 
 - [General instructions](#general-instructions)
+  * [Read first](#read-first)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
   * [Read through Apache release policy](#read-through-apache-release-policy)
@@ -86,6 +87,8 @@ It describes the following steps:
 (Yes this list is long and scary, but represents the content below)
 
 ## General instructions
+
+### Read first
 
 - See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
 - Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)

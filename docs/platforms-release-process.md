@@ -23,24 +23,28 @@
 
 This page describes the technical steps for doing a `Platforms Release`.
 
+## Table of contents
+
 It describes the following steps:
 
 - [General instructions](#general-instructions)
+  * [Read first](#read-first)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
+  * [Read through Apache release policy](#read-through-apache-release-policy)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
-  * [Check dependencies](#check-dependencies)
-  * [Update and Pin Dependencies](#update-and-pin-dependencies)
   * [npm audit check](#npm-audit-check)
+  * [Check dependencies](#check-dependencies)
+  * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
   * [License Check](#license-check)
   * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
-  * [Set release version in `package.json`](#set-release-version-in-packagejson)
+  * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
     - [Optional: Increase version](#optional-increase-version)
   * [Create Release Notes](#create-release-notes)
-  * [Commit Version and Release Notes](#commit-version-and-release-notes)
+  * [Commit Release Notes and optional version changes together](#commit-release-notes-and-optional-version-changes-together)
   * [Special Case 1: Release notes in release branch for patch release](#special-case-1-release-notes-in-release-branch-for-patch-release)
   * [Special Case 2: releasing new commits from an already-existing release branch](#special-case-2-releasing-new-commits-from-an-already-existing-release-branch)
   * [Create Release Branch](#create-release-branch)
@@ -84,6 +88,8 @@ It describes the following steps:
 
 ## General instructions
 
+### Read first
+
 - See: [versioning-and-release-strategy.md](versioning-and-release-strategy.md) for general versioning information
 - Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
 - Replace `Android` with the platform you are releasing in the instructions below.
@@ -94,6 +100,10 @@ You should have your platform repository checked out in a folder where you also 
 ](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
 ## Before you start
+
+### Read through Apache release policy
+
+Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
 
 ### Request buy-in
 
@@ -114,6 +124,12 @@ Note that it would be possible to continue with some of the [Before Release](#be
 
 ## Before Release
 
+### npm audit check
+
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-android && npm audit)
+
 ### Check dependencies
 
 Ensure your checkout of the repository is up-to-date:
@@ -126,9 +142,16 @@ See if any dependencies are outdated
 
 (The `--depth=0` prevents from listing dependencies of dependencies.)
 
-### Update and Pin Dependencies
+### Resolve any outdated dependencies
 
-Update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+**Alternative 1:**
+
+- Explicitly pin the outdated dependency versions in the `dependencies` section of `package.json`.
+- Raise a new JIRA issue to update the dependencies in an upcoming release.
+
+**Alternative 2:**
+
+Within a new JIRA issue: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
 Check-in updated modules (use npm 3.10.1+)
 
@@ -140,12 +163,6 @@ Check-in updated modules (use npm 3.10.1+)
 
 Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
 Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
-
-### npm audit check
-
-Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
-
-    (cd cordova-android && npm audit)
 
 ### License Check
 
@@ -177,7 +194,9 @@ JIRA="CB-????" # Set this to the release bug.
 
 Preparation of the release includes a) handling version numbers, b) creating nice release notes and c) creating the release branch.
 
-### Set release version in `package.json`
+### Optional: Set release version in `package.json`
+
+This should be automatically done by the `coho prepare-platform-release-branch` command as described in [Create Release Branch](#create-release-branch) section below.
 
 #### Remove the `-dev` suffix from version
 
@@ -207,13 +226,15 @@ Then curate:
 
     vim cordova-android/RELEASENOTES.md
     
-or use your favotire text editor manually.
+or use your favorite text editor manually.
 
-### Commit Version and Release Notes
+### Commit Release Notes and optional version changes together
 
-Commit these changes together into one commit.
+Commit these changes together in a single commit (one commit).
 
-    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Updated RELEASENOTES and Version for release $v")
+    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Update RELEASENOTES & version for release $v")
+
+(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not yet updated in `package.json`.)
 
 ### Special Case 1: Release notes in release branch for patch release
 
@@ -230,11 +251,11 @@ If you are releasing new commits from an already-existing release branch, rememb
 
 ### Create Release Branch
 
-Create and prepare your release branch by using `coho prepare-release-branch` command, which handles the following steps:
+Create and prepare your release branch by using `coho prepare-platform-release-branch` command, which handles the following steps:
 
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
-3. Propagates version number from `package.json` to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
+3. Propagates version number from `--version` argument (or from `package.json` if there is no `--version` argument) to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
 4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).

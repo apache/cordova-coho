@@ -176,7 +176,7 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
 ### Create JIRA issue
 
-After waiting for any possible objections from [Request Buy-in](#request-buy-in):
+After waiting for any possible objections from the email sent according to the [Request buy-in](#request-buy-in) section above:
 
  * Create a JIRA issue to track the status of the release.
    - Make it of type "Task"

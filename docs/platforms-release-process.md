@@ -28,13 +28,13 @@ It describes the following steps:
 - [General instructions](#general-instructions)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
-  * [Get Buy-in](#get-buy-in)
-  * [Create JIRA issue](#create-jira-issue)
+  * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
   * [Check dependencies](#check-dependencies)
   * [Update and Pin Dependencies](#update-and-pin-dependencies)
   * [npm audit check](#npm-audit-check)
   * [License Check](#license-check)
+  * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
   * [Set release version in `package.json`](#set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
@@ -95,7 +95,7 @@ You should have your platform repository checked out in a folder where you also 
 
 ## Before you start
 
-### Get Buy-in
+### Request buy-in
 
 Email the dev mailing-list at dev@cordova.apache.org and see if anyone has reason to postpone the release.
 
@@ -110,19 +110,7 @@ E.g.:
 
 Double check you replace "Android" in the subject and mail body - there is no undo for emails.
 
-### Create JIRA issue
-
- * Create a JIRA issue to track the status of the release.
-   - Make it of type "Task"
-   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
-   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
- * Comments should be added to this bug after each top-level step below is taken
- * Set a variable in your terminal for use later on
-
-
-```
-JIRA="CB-????" # Set this to the release bug.
-```
+Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
 
 ## Before Release
 
@@ -168,6 +156,22 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
+
+### Create JIRA issue
+
+After waiting for any possible objections from [Request Buy-in](#request-buy-in):
+
+ * Create a JIRA issue to track the status of the release.
+   - Make it of type "Task"
+   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
+   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
+ * Comments should be added to this bug after each top-level step below is taken
+ * Set a variable in your terminal for use later on
+
+
+```
+JIRA="CB-????" # Set this to the release bug.
+```
 
 ## Prepare Release
 

@@ -230,7 +230,7 @@ Commit these changes together in a single commit (one commit).
 
     (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Update RELEASENOTES & version for release $v")
 
-(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not updated in `package.json`.)
+(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not yet updated in `package.json`.)
 
 ### Special Case 1: Release notes in release branch for patch release
 

@@ -222,6 +222,8 @@ Update the repos `RELEASENOTES.md` file with changes since the last release.
 
     coho update-release-notes -r android
 
+(`--from-tag` and/or `--to-tag` may be needed in case of non-master branch)
+
 Then curate:
 
     vim cordova-android/RELEASENOTES.md

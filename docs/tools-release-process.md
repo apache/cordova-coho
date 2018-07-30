@@ -127,7 +127,11 @@ If the changes merit it, manually bump the major / minor version instead of the 
 Update each repo's RELEASENOTES.md file with changes
 
     coho update-release-notes -r cordova-lib -r cordova-js -r cordova-plugman -r cordova-cli -r common -r fetch -r serve -r create -r node-xcode
-    # Then curate:
+
+(individual `coho update-release-notes` commands with `--from-tag` and/or `--to-tag` may be needed in case of non-master branch)
+
+Then curate:
+
     vim cordova-lib/RELEASENOTES.md cordova-cli/RELEASENOTES.md cordova-plugman/RELEASENOTES.md cordova-js/RELEASENOTES.md cordova-common/RELEASENOTES.md cordova-fetch/RELEASENOTES.md cordova-serve/RELEASENOTES.md cordova-create/RELEASENOTES.md cordova-node-xcode/RELEASENOTES.md
 
 Update the version of cordova-lib that cli and plugman depend on:

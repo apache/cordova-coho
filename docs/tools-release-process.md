@@ -45,6 +45,14 @@ This document describes how to release all tools packages at once but this is no
  * release a single tools package
  * release multiple tools packages in sequence, as needed to satisfy 
 
+### Dependency graph
+
+*Draft* dependency graph by [@raphinesse (Raphael von der Grün)](https://github.com/raphinesse) (see [apache/cordova-discuss#101 issuecomment-402857794](https://github.com/apache/cordova-discuss/issues/101#issuecomment-402857794)):
+
+![Cordova tooling dependency graph](https://user-images.githubusercontent.com/1006620/42348357-7a70c496-80a9-11e8-9ec9-2ad4ce6db1b3.png "Cordova tooling dependency graph")
+
+(with `cordova-common` -> `cordova-registry-mapper` removed from `master` branch of `cordova-common`)
+
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.

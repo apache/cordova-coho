@@ -32,6 +32,19 @@ A tools release is performed by a single person each week. We call this person t
 ## Decide on the next version numbers
 According [versioning-and-release-strategy.md](versioning-and-release-strategy.md) patch version bumps (the last of 3 numbers) should only be used for fixes and updates of references to platform versions. For any change in functionality, the second (minor) part of the version should be bumped and new branch created. Instructions for creating a new release branch are further down on this page.
 
+## Tools release planning
+
+### cordova-create principle
+
+The most important principle is that packages such as `cordova-lib` and `cordova-cli` should not use multiple versions of `cordova-common` through the chain of dependencies. This means that if `cordova-common` is updated it should be released before other packages such as `cordova-fetch`, `cordova-create`, `cordova-lib`, `cordova-cli`, etc.
+
+### Alternative approaches
+
+This document describes how to release all tools packages at once but this is not the only possible approach. The following alternative approaches are also possible:
+
+ * release a single tools package
+ * release multiple tools packages in sequence, as needed to satisfy 
+
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.

@@ -86,6 +86,7 @@ exports.getReleaseBranchNameFromVersion = function (version) {
  * @param {Object}  [opts]  An options object
  * @param {Boolean} [opts.commitChanges=true] Specifies whether to commit changes
  *   to the repo after update is done.
+ * @param {String}  [opts.pre=''] Optional commit prefix
  */
 exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the VERSION files.
@@ -174,6 +175,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
         var versionDescription = pendingChangesExistInJSON ?
             'version & VERSION' : 'VERSION';
-        yield gitutil.commitChanges('Set ' + versionDescription + ' to ' + version + ' (via coho)');
+        var pre = opts.pre || '';
+        yield gitutil.commitChanges(pre + 'Set ' + versionDescription + ' to ' + version + ' (via coho)');
     }
 };

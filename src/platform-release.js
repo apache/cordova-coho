@@ -130,7 +130,7 @@ function * updateCDVAvailabilityFile (version) {
     fs.writeFileSync(iosFile, iosFileContents.join('\n'));
 }
 
-function * updateJsSnapshot (repo, version, commit, branch) {
+function * updateJsSnapshot (repo, version, commit, branch, commitPrefixOrUndefined) {
     function * ensureJsIsBuilt () {
         var cordovaJsRepo = repoutil.getRepoById('js');
         if (repo.id === 'blackberry') {
@@ -170,7 +170,8 @@ function * updateJsSnapshot (repo, version, commit, branch) {
         });
         if (commit === true) {
             if (yield gitutil.pendingChangesExist()) {
-                yield executil.execHelper(executil.ARGS('git commit -am', 'Update JS snapshot to version ' + version + ' (via coho)'));
+                var pre = !!commitPrefixOrUndefined ? commitPrefixOrUndefined : '';
+                yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Update JS snapshot to version ' + version + ' (via coho)'));
             }
         }
     } else if (repoutil.repoGroups.all.indexOf(repo) !== -1) {
@@ -209,7 +210,7 @@ exports.prepareReleaseBranchCommand = function * () {
                'Command can also be used to update the JS snapshot after release \n' +
                'branches have been created.\n' +
                '\n' +
-               'Usage: $0 prepare-platform-release-branch -r platform [--version=3.6.0] [-b <platform branch name>] [--js <cordova-js branch or tag name>]')
+               'Usage: $0 prepare-platform-release-branch -r platform [--version=3.6.0] [-b <platform branch name>] [--js <cordova-js branch or tag name>] [--pre <COMMIT-PREFIX (with space at the end if needed)>')
     );
 
     var repos = flagutil.computeReposFromFlag(argv.r);
@@ -220,6 +221,7 @@ exports.prepareReleaseBranchCommand = function * () {
     var isOtherRepoBranch = !!argv.b;
     var repoBranchName = isOtherRepoBranch ? argv.b : 'master';
     var jsBranchName = argv.js ? argv.js : 'master';
+    var pre = argv.pre ? argv.pre : '';
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
@@ -249,19 +251,19 @@ exports.prepareReleaseBranchCommand = function * () {
                 yield executil.execHelper(executil.ARGS('git checkout -b ' + releaseBranchName));
             }
 
-            yield updateJsSnapshot(repo, version, true, jsBranchName);
+            yield updateJsSnapshot(repo, version, true, jsBranchName, pre);
 
             if (platform === 'ios' && /\d$/.test(version)) {
                 // Updates version in CDVAvailability.h file
                 yield updateCDVAvailabilityFile(version);
                 // Git commit changes
                 if (yield gitutil.pendingChangesExist()) {
-                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
+                    yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Add ' + version + ' to CDVAvailability.h (via coho).'));
                 }
             }
 
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + releaseBranchName + '".');
-            yield versionutil.updateRepoVersion(repo, version);
+            yield versionutil.updateRepoVersion(repo, version, {commitChanges:true, pre:pre});
 
             // skip remaining steps for this repo if other repo branch was specified:
             if (isOtherRepoBranch) return;
@@ -272,7 +274,7 @@ exports.prepareReleaseBranchCommand = function * () {
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
-            yield versionutil.updateRepoVersion(repo, devVersion);
+            yield versionutil.updateRepoVersion(repo, devVersion, {commitChanges:true, pre:pre});
             yield updateJsSnapshot(repo, devVersion, true, jsBranchName);
             yield gitutil.gitCheckout(releaseBranchName);
         });

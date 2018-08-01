@@ -171,7 +171,7 @@ function * updateJsSnapshot (repo, version, commit, branch, commitPrefixOrUndefi
         if (commit === true) {
             if (yield gitutil.pendingChangesExist()) {
                 var pre = !!commitPrefixOrUndefined ? commitPrefixOrUndefined : '';
-                yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Update JS snapshot to version ' + version + ' (via coho)'));
+                yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Update JS to version ' + version + ' (via coho)'));
             }
         }
     } else if (repoutil.repoGroups.all.indexOf(repo) !== -1) {

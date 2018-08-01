@@ -45,6 +45,12 @@ This document describes how to release all tools packages at once but this is no
  * release a single tools package
  * release multiple tools packages in sequence, as needed to satisfy 
 
+### Dependency graph
+
+From [apache/cordova-discuss#101 issuecomment-402857794](https://github.com/apache/cordova-discuss/issues/101#issuecomment-402857794) by [@raphinesse (Raphael von der Grün)](https://github.com/raphinesse):
+
+![Cordova tooling dependency graph](https://user-images.githubusercontent.com/1006620/42348357-7a70c496-80a9-11e8-9ec9-2ad4ce6db1b3.png "Cordova tooling dependency graph")
+
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.

@@ -266,6 +266,9 @@ exports.prepareReleaseBranchCommand = function * () {
             // skip remaining steps for this repo if other repo branch was specified:
             if (isOtherRepoBranch) return;
 
+            // or skip remaining steps if not a final release version:
+            if (version.indexOf('-') !== -1) return;
+
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');

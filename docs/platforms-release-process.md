@@ -33,7 +33,7 @@ It describes the following steps:
 - [Before you start](#before-you-start)
   * [Read through Apache release policy](#read-through-apache-release-policy)
   * [Request buy-in](#request-buy-in)
-  * [Ensure changes are in a dev version](ensure-changes-are-in-a-dev-version)
+  * [Ensure changes are in a dev version](#ensure-changes-are-in-a-dev-version)
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
   * [Check dependencies](#check-dependencies)

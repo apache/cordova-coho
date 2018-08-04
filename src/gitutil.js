@@ -137,6 +137,10 @@ exports.pendingChangesExist = function * () {
 exports.gitCheckout = function * (branchName) {
     var curBranch = yield gitutil.retrieveCurrentBranchName(true);
     if (curBranch !== branchName) {
+        // EXTRA WORKAROUND SOLUTION for package.json,
+        // as needed for cordova-osx & Windows
+        // FUTURE TBD better solution for package.json?
+        yield executil.execHelper(executil.ARGS('git checkout -- package.json'));
         return yield executil.execHelper(executil.ARGS('git checkout -q ', branchName));
     }
 };

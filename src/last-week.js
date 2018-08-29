@@ -47,8 +47,8 @@ module.exports = function * () {
         .usage('Shows formatted git log for changes in the past 7 days.\n' +
                '\n' +
                'Usage: $0 last-week [--repo=ios] [--me] [--days=7] [--cherry-picks] [--user=someone]');
-    /* eslint-disable no-undef */
-    argv = opt.argv;
+
+    let argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
@@ -61,7 +61,7 @@ module.exports = function * () {
     var showCherryPicks = !argv.me && argv['cherry-picks'];
     var commitCount = 0;
     var pullRequestCount = 0;
-    /* eslint-enable no-undef */
+
     var cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
     if (filterByEmail) {
         cmd.push('--author=' + userEmail);

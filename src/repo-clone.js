@@ -24,11 +24,11 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var print = apputil.print;
 
-module.exports = function * (argv) {
+module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt = flagutil.registerDepthFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Clones git repositories as siblings of cordova-coho (unless --no-chdir or --global is used). If the repositories are already cloned, then this is a no-op.\n\n' +
                'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos]')
         .argv;

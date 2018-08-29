@@ -30,8 +30,8 @@ module.exports = function * () {
               'Usage: $0 shortlog [--repo=ios] [--days=7] [--filter=regexp]\n' +
               '    --filter: Sum up all commits that match this pattern\n' +
               '    --days=n: Show commits from the past n days');
-    /* eslint-disable no-undef */
-    argv = opt.argv;
+
+    let argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
@@ -40,8 +40,7 @@ module.exports = function * () {
     var repos = flagutil.computeReposFromFlag(argv.r);
     var emailFilter = argv.filter && new RegExp(argv.filter);
     var days = argv.days || 7;
-    /* eslint-enable no-undef */
-    var resultsByAuthor = Object.create(null);
+    var resultsByAuthor = {};
     yield repoutil.forEachRepo(repos, function * (repo) {
         var cmd = executil.ARGS('git shortlog -s -e --no-merges ', '--since=' + days + ' days ago');
         var output = yield executil.execHelper(cmd, true);

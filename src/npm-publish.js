@@ -39,7 +39,7 @@ function * publishTag (options) {
             });
     }
 
-    argv = opt // eslint-disable-line no-undef
+    let argv = opt
         .usage('Publishes current version of a repo to a specified npm tag. \n' +
                'Usage: $0 npm-publish --tag rc -r cli -r lib')
         .options('tag', {
@@ -57,16 +57,16 @@ function * publishTag (options) {
         })
         .argv;
 
-    if (argv.h) { // eslint-disable-line no-undef
-        optimist.showHelp(); // eslint-disable-line no-undef
+    if (argv.h) {
+        optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true }); // eslint-disable-line no-undef
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     // npm publish --tag argv.tag
     yield repoutil.forEachRepo(repos, function * (repo) {
-        yield executil.execOrPretend(executil.ARGS('npm publish --tag ' + argv.tag), argv.pretend); // eslint-disable-line no-undef
+        yield executil.execOrPretend(executil.ARGS('npm publish --tag ' + argv.tag), argv.pretend);
     });
 }
 

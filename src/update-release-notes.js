@@ -41,14 +41,14 @@ module.exports = function * () {
         .options('to-tag', {desc: 'Update to a specific tag instead of "master"'})
         .options('override-date', {desc: 'Update to a specific date instead of today.'})
         .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});
-    argv = opt.argv; // eslint-disable-line no-undef
+    let argv = opt.argv;
 
-    if (argv.h) { // eslint-disable-line no-undef
+    if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true}); // eslint-disable-line no-undef
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         // TODO: we should use gitutil.summaryOfChanges here.
@@ -56,7 +56,7 @@ module.exports = function * () {
         cmd.push(['--pretty=format:* %s']);
         var fromTag, toTag, hasOneTag;
         hasOneTag = false;
-        if (argv['last-two-tags']) { // eslint-disable-line no-undef
+        if (argv['last-two-tags']) {
             var last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
             if (last_two) {
                 toTag = last_two[0];
@@ -68,7 +68,7 @@ module.exports = function * () {
                 }
             }
         } else {
-            /* eslint-disable no-undef */
+
             if (argv['from-tag']) {
                 fromTag = argv['from-tag'];
             } else {
@@ -106,7 +106,6 @@ module.exports = function * () {
             var final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
             fs.writeFileSync(relNotesFile, final_notes, {encoding: 'utf8'});
             return linkify.file(relNotesFile);
-            /* eslint-enable no-undef */
         }
     });
 };

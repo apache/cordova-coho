@@ -23,16 +23,10 @@
 
 ## Version Format
 
-`SemVer` ([Semantic Version](http://www.semver.org)) will be used as the
+`SemVer` ([Semantic Versioning](http://www.semver.org)) will be used as the
 version format for all components, including platforms, plugman, CLI, and core
-plugins. Doing so is important when describing dependencies in a logical way
-(e.g. within plugin.xml files). Although the CLI previously used a
-`CadVer-SemVer` format, it now uses a simple `SemVer` format. The `CadVer` format
-is no longer used in any Cordova components. The plugins no longer have an `r`
-prefix.
-
-The semantics of `SemVer` should be followed, bumping the appropriate digit
-based on the impact of the new content.
+plugins. The semantics of `SemVer` should be followed, bumping the appropriate digit
+based on the impact of the new content: `MAJOR.MINOR.PATCH`
 
 ## Branching and Tagging
 
@@ -45,29 +39,43 @@ branch (i.e., "3.8.0" tag is put on the "3.8.x" branch).
 
 ## Version Behavior
 
+### Plugin Version Behavior
+
 Plugin versions will all be separate and independent. So there may be a "1.2.0"
 of the Device plugin, and a "3.4.5" of the Camera plugin at the same time.
 The bumping of the version numbers of each plugin should be appropriate to the
-new content added to that plugin. The `cordova plugin add` command will add
+new content added to that plugin. 
+
+The `cordova plugin add` command will add
 the most recent compatible version of that plugin by default. Alternately the user
 may manually specify an explicit version of that plugin to be installed (i.e.,
-`cordova plugin add org.apache.cordova.device@1.2.0`). Plugin docs should be
+`cordova plugin add org.apache.cordova.device@1.2.0`). 
+
+Plugin docs should be
 stored in each plugin repo, so that the docs are versioned with their source
 code.
+
+### Platform Version Behavior
 
 Platform versions will all be separate and independent. So there may be a
 "3.7.0" of the iOS platform and a "4.0.0" of the Android platform at the same
 time. The bumping of version numbers of each platform should be appropriate
-to the new content being added to that platform. The `cordova platform add`
+to the new content being added to that platform.
+
+The `cordova platform add`
 command will add a platform version specific to the CLI by default.
 Alternatively, the user may manually specify an explicit version of that
 platform to be installed (i.e., `cordova platform add android@4.0.1`).
 The CLI will hold the list of default versions for each platform
-(i.e., platform version pinning). Platform docs should be stored in each
+(i.e., platform version pinning).
+
+Platform docs should be stored in each
 platform repo, so that the docs are versioned with their source code.
 
 Platforms will have an &lt;engine&gt; tag or equivalent, to specify when a
 platform requires a newer version of the CLI.
+
+### `cordova-js` Version Behavior
 
 `cordova-js` versions should continue to be single-sourced, meaning that when
 `cordova-js` is used by multiple components such as `cordova-lib` or
@@ -76,20 +84,27 @@ modified upon insertion to the consuming component, but instead should retain
 its build-time value. This means that there may be different versions of
 `cordova-js` in use across Cordova components.
 
+### Tools Version Behavior
+
 `cordova-lib`, `plugman`, and CLI versions will all be separate. So there
 may be a "0.25.3" version of `plugman` and a "1.3.2" version of `cordova-lib`
 and a "3.8.0" version of the CLI at the same time. The bumping of version
 numbers of each of the tool components should be appropriate to the new
-content being added to that individual component. One exception to this
+content being added to that individual component.
+
+One exception to this
 is that when a new platform is released, and if the only update in the CLI
 is the platform pin, then the CLI receives a bump to its third digit, no
 matter the size of the version bump to those platform(s). If the CLI requires
 a change beyond updating the pin to handle the new platform, or if the CLI
 has other changes, then the `SemVer` semantics still apply for the CLI -
-the second or even first digit of the CLI version may get bumped. Furthermore,
+the second or even first digit of the CLI version may get bumped.
+
+Furthermore,
 if `cordova-lib` or `plugman` have a version bump due to new content (beyond
 updating the pin), then at least the same digit of the CLI version should get
 bumped, since the CLI is primarily composed of `cordova-lib` and `plugman`.
+
 Tools docs should be stored in each
 tool repo, so that the docs are versioned with their source code.
 
@@ -97,22 +112,24 @@ The CLI version number will be the "name" of the Cordova version. Thus
 tools and platform updates will cause a bump of the "Cordova version",
 but plugins will not.
 
+### Pinning
+
 Where Cordova components have dependencies upon other Cordova components
 (i.e., CLI depends on `cordova-lib`) or upon third-party components (i.e.,
 CLI depends on `nopt`), the `package.json` should fully pin the version of
 the dependent component (i.e., "nopt": "2.3.4") (dependency pinning).
 This is in lieu of npm-shrinkwrap since npm-shrinkwrap is not reasonably mature.
 
+### Installing specific versions
+
 For users that want to install a "fixed recipe" of specific versions
-of all the Cordova components, there are two ways to do that:
+of all the Cordova components, there is one way to do that:
 
 - using specific version numbers:
 
         npm install cordova@3.8.0
         cordova platform add android@4.0.1
-        cordova plugin add org.apache.cordova.device@1.2.3
-
-- `cordova --experimental save` and `cordova --experimental restore`.
+        cordova plugin add cordova-plugin-device@1.2.3
 
 Do note that third-party dependencies which themselves have dependencies on
 other third-party content (i.e., `nopt` depends on `abbrev`), those relationships
@@ -129,32 +146,27 @@ When a user updates the version of the CLI they have installed, this CLI
 update has no effect on the platform and plugin versions that are already
 installed in their project, but they may receive a warning or notice if
 the installed platform versions are older than the versions pinned by
-the CLI. However, if they subsequently do a `cordova platform update`
-they will get the pinned version specified in their newer CLI.
+the CLI.
 
 Release notes should be easy for users to find and understand. This is important
 because of the non-trivial number of components.
 
-At some future time, there may be added a `cordova upgrade` command,
-which would install the new pinned versions of all platforms (possibly
-replacing, or possibly alongside existing platforms), and not attempt to update
-a specific platform in-place. There are cases where users have modified platform
-native code.
 
-# Release Strategies
- 1. __On-Demand Releases__
-   * Any repository can do an on-demand release at any time.
-   * These releases contain critical bug fixes that can't wait for the next scheduled release.
- 2. __Weekly Releases__
-   * These occur at most once a week (if there are no commits worth releasing, then skip the release).
-     * Rationale: Reduces the number of releases to at most one per week so that users are not annoyed by having to update too frequently.
-     * Rationale: Reduces the number of blog posts and release notes to write.
-   * These releases apply to: `CLI`, `Plugman`, and `Core Plugins`.
-   * These releases contain non-critical bug fixes as well as new features.
-   * Releases generally happen on Thursdays, but can be done on any day so long as it's been a week since the previous release.
- 3. __Platform Releases__
-   * Release whenever platform maintainers decide they want to release.
-   * Tools also get updated with a platform release.
+## Release Strategies
+
+1. __On-Demand Releases__
+   - Any repository can do an on-demand release at any time.
+   - These releases contain critical bug fixes that can't wait for the next scheduled release.
+2. __Weekly Releases__
+   - These occur at most once a week (if there are no commits worth releasing, then skip the release).
+      - Rationale: Reduces the number of releases to at most one per week so that users are not annoyed by having to update too frequently.
+      - Rationale: Reduces the number of blog posts and release notes to write.
+      These releases apply to: `CLI`, `Plugman`, and `Core Plugins`.
+   - These releases contain non-critical bug fixes as well as new features.
+   - Releases generally happen on Thursdays, but can be done on any day so long as it's been a week since the previous release.
+3. __Platform Releases__
+   - Release whenever platform maintainers decide they want to release.
+   - Tools also get updated with a platform release.
 
 When a component is released, it is tested against the most recent released
 version of its peer components. Note that this is the only combination that is

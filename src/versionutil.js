@@ -131,13 +131,11 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the package.json VERSION.
     var packageFilePaths = repo.packageFilePaths || ['package.json'];
     if (fs.existsSync(packageFilePaths[0])) {
-        fs.readFile(packageFilePaths[0], {encoding: 'utf-8'}, function (err, data) {
-            if (err) throw err;
-            var packageJSON = JSON.parse(data);
-            packageJSON.version = version;
-            // use 2 spaces indent similar to npm
-            fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, 2) + '\n');
-        });
+        var data = fs.readFileSync(packageFilePaths[0], {encoding: 'utf-8'});
+        var packageJSON = JSON.parse(data);
+        packageJSON.version = version;
+        // use 2 spaces indent similar to npm
+        fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, 2) + '\n');
         if (!(yield gitutil.pendingChangesExist())) {
             apputil.print('package.json file was already up-to-date.');
         }
@@ -151,13 +149,11 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
         xmlFilePaths.forEach(function (xmlFile) {
             if (fs.existsSync(xmlFile)) {
-                fs.readFile(xmlFile, {encoding: 'utf-8'}, function (err, data) {
+                var data = fs.readFileSync(xmlFile, {encoding: 'utf-8'});
+                xml2js.parseString(data, {async: false}, function (err, xml) {
                     if (err) throw err;
-                    xml2js.parseString(data, function (err, xml) {
-                        if (err) throw err;
-                        var prev_version = xml.plugin['$'].version;
-                        shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);
-                    });
+                    var prev_version = xml.plugin['$'].version;
+                    shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);
                 });
             } else {
                 console.warn('No ' + xmlFile + ' file exists in repo ' + repo.repoName);

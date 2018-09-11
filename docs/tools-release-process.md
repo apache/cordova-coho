@@ -225,10 +225,6 @@ Ensure that mobilespec creates okay via CLI:
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
     (cd mobilespec && ./cordova build && ./cordova run android)
 
-Ensure that mobilespec creates okay via CLI and browserify:
-
-    (cd mobilespec && ./cordova prepare --browserify && ./cordova build && ./cordova run android)
-
 Ensure uninstall doesn't cause errors:
 
     (cd mobilespec && ./cordova plugin remove cordova-plugin-file-transfer)

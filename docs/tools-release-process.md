@@ -53,6 +53,8 @@ This document describes how to release all tools packages at once but this is no
 
 (with `cordova-common` -> `cordova-registry-mapper` removed from `master` branch of `cordova-common`)
 
+NOTE: Whenever we start a new major release it is possible that the `master` branch of Cordova packages will have explicit dependency on previous patch release of other packages.
+
 ## Get Buy-in
 
 Email the dev mailing-list and see if anyone has reason to postpone the release.

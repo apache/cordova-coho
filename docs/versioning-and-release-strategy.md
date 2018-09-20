@@ -127,7 +127,7 @@ of all the Cordova components, there is one way to do that:
 
 - using specific version numbers:
 
-        npm install cordova@3.8.0
+        npm install -g cordova@3.8.0
         cordova platform add android@4.0.1
         cordova plugin add cordova-plugin-device@1.2.3
 

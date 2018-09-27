@@ -67,9 +67,13 @@ For example, someone else might say:
 
     +1
 
-    * Confirmed sigs & hashes with `coho verify-archive`
-    * Verified sha1s match tags with `coho verify-tags`
-    * Re-created archives to ensure contents match release candidate
+    * Confirmed sigs & hashes with `coho verify-archive` [1]
+    * Verified sha1s match tags with `coho verify-tags` [2]
+    * Re-created archives to ensure contents match release candidate [3]
+
+[1] ???
+[2] Go to the directory where you ran `coho repo-clone` before. Execute `coho verify-tags -g`, then paste the tag string from the email (e.g. `cordova-cli: 8.1.1 (3f8d9c88d6)`), then press [Enter] and wait a bit (I had to hit Enter again to unstuck the process as well). You should get an output like `cordova-cli: Tag hash verified.`.
+[3] ???
 
 About the quality of the release (in the list above):
   - We strive to maintain release-worthy quality at all times.

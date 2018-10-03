@@ -21,6 +21,13 @@
 
 # Setting up `gpg`
 
+- [Creating a PGP key for Releases](#creating-a-pgp-key-for-releases)
+  * [Installation](#installation)
+  * [Create a key](#create-a-key)
+  * [Get Key ID](#get-key-id)
+  * [Publish Key](#publish-key)
+- [Importing PMC Members' PGP keys](#importing-pmc-members--pgp-keys)
+
 ## Creating a PGP key for Releases
 
 - You need a PGP key to sign releases for Apache Cordova. 

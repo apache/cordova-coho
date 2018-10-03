@@ -19,13 +19,15 @@
 #
 -->
 
-# Creating a PGP key for Releases
+# Setting up `gpg`
+
+## Creating a PGP key for Releases
 
 - You need a PGP key to sign releases for Apache Cordova. 
 - [GnuPG, short `gpg`](http://www.apache.org/dev/openpgp.html#gnupg) is the Apache recommended client to create and manage these keys.
 - PGP, GPG, GnuPG, OpenPGP can be confusing - [read about the background](https://www.goanywhere.com/blog/2013/07/18/openpgp-pgp-gpg-difference)
 
-## Installation
+### Installation
 
 On a Mac:
 
@@ -35,7 +37,7 @@ On Windows:
 
     ???
 
-## Create a key
+### Create a key
 
 How to create a key: 
 http://www.apache.org/dev/openpgp.html#generate-key
@@ -45,7 +47,7 @@ http://www.apache.org/dev/openpgp.html#generate-key
 
 Then follow these instructions: http://www.apache.org/dev/openpgp.html#generation-final-steps
 
-## Get Key ID
+### Get Key ID
 
 Look at your keyring:
 
@@ -62,7 +64,7 @@ Example Output:
 
 In this example, `8A496450` is your `$KEY_ID`
 
-## Publish Key
+### Publish Key
 
 Publish to `dist/KEYS`:
 
@@ -99,7 +101,7 @@ Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID)
 Phew! That was easy :P
 
 
-# Importing PMC Members' PGP keys
+## Importing PMC Members' PGP keys
 
     curl "https://people.apache.org/keys/group/cordova.asc" | gpg --import
 

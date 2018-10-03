@@ -106,11 +106,3 @@ Note that for some commands you may need to use the `-g` or `--global` flag to w
 
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
 [how to contribute on our website][contribute]. 
-
-### Issues
-
-If you find issues with this tool, please follow our guidelines for [reporting issues]. 
-We do not use the GitHub issue system as an Apache project, we have a JIRA issue management system which covers over 50+ CLI, platform, and plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.
-
-[Contribute]: http://cordova.apache.org/contribute/
-[Reporting issues]: http://cordova.apache.org/contribute/issues.html

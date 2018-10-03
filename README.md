@@ -49,6 +49,7 @@ Easiest way on Windows:
 
 ```bash    
 npm install -g cordova-coho
+coho
 ```    
 
 On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`, you might have to run the command using `sudo`.    
@@ -62,6 +63,12 @@ git clone https://github.com/apache/cordova-coho
 cd cordova-coho
 npm install
 npm link # Might need sudo for some configurations
+coho
+```
+
+Or you can just call coho directly in your clone:
+```bash
+C:\Projects\Cordova\cordova-coho\coho.cmd
 ```
 
 ## Cloning/Updating Cordova repositories

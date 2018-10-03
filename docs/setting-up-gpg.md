@@ -26,7 +26,7 @@
   * [Create a key](#create-a-key)
   * [Get Key ID](#get-key-id)
   * [Publish Key](#publish-key)
-- [Importing PMC Members' PGP keys](#importing-pmc-members--pgp-keys)
+- [Importing PMC Members' PGP keys](#importing-pmc-members-pgp-keys)
 
 ## Creating a PGP key for Releases
 

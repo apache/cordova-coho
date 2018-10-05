@@ -22,19 +22,18 @@ var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
-module.exports = function * (argv) {
-    console.log('here');
+module.exports = function * (_argv) {
+
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
 
-    var opt = opt // eslint-disable-line no-redeclare
-        .options('remote', {
-            desc: 'The name of the remote you want to update. Example: origin',
-            default: ['origin']
-        });
+    opt = opt.options('remote', {
+        desc: 'The name of the remote you want to update. Example: origin',
+        default: ['origin']
+    });
 
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Updates specified git remotes to apache github repos by performing the following command:\n' +
                '    for each specified repo:\n' +
                '        git remote set-url $REMOTE APACHE_GITHUB_URL' +

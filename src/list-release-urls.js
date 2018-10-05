@@ -23,7 +23,7 @@ var flagutil = require('./flagutil');
 var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 
-module.exports = function * (argv) {
+module.exports = function * () {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = opt
         .options('version', {
@@ -31,7 +31,7 @@ module.exports = function * (argv) {
             demand: true
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('List the apache git repo urls for release artifacts.\n' +
                '\n' +
                'Usage: $0 list-release-urls [-r repos] --version=2.7.1-rc2')

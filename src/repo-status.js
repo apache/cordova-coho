@@ -26,9 +26,9 @@ var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var print = apputil.print;
 
-module.exports = function * (argv) {
+module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
-    var opt = optimist // eslint-disable-line no-redeclare
+    opt = optimist
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to report on. Can be specified multiple times to specify multiple branches. The local version of the branch is compared with the origin\'s version unless --b2 is specified.'
@@ -41,7 +41,7 @@ module.exports = function * (argv) {
             default: false
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Reports what changes exist locally that are not yet pushed.\n' +
                '\n' +
                'Example usage: $0 repo-status -r auto -b master -b 2.9.x\n' +

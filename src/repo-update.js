@@ -25,10 +25,10 @@ var gitutil = require('./gitutil');
 var repoutil = require('./repoutil');
 var print = apputil.print;
 
-module.exports = function * (argv) {
+module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
-    var opt = opt // eslint-disable-line no-redeclare
+    opt = opt
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to update. Can be specified multiple times to update multiple branches.',
@@ -40,7 +40,7 @@ module.exports = function * (argv) {
             default: true
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Updates git repositories by performing the following commands:\n' +
                '    save active branch\n' +
                '    git fetch $REMOTE \n' +
@@ -135,7 +135,7 @@ function * updateRepos (repos, branches, noFetch) {
                             /* silent */ true, /* allowError */ false);
                 }
             }
-            var staleBranches = branches.filter(function (branchName) { // eslint-disable-line no-redeclare
+            staleBranches = branches.filter(function (branchName) {
                 return !!staleBranches[branchName];
             });
             if (!staleBranches.length) {

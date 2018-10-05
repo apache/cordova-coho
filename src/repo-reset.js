@@ -26,16 +26,16 @@ var repoutil = require('./repoutil');
 var repoupdate = require('./repo-update');
 var print = apputil.print;
 
-module.exports = function * (argv) {
+module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
-    var opt = optimist // eslint-disable-line no-redeclare
+    opt = optimist
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to reset. Can be specified multiple times to specify multiple branches.',
             default: 'master'
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
                '    git commit                             (commit any pending changes)\n' +

@@ -180,6 +180,7 @@ function * determineApacheRemote (repo) {
 
     // prefer github - in particular, ASF remote does not respond well to repo-update command.
     [
+        'git@github.com:apache/',
         'github.com/apache/',
         'git-wip-us.apache.org/repos/asf/',
         'git.apache.org/'

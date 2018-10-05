@@ -144,8 +144,7 @@ module.exports = function () {
         desc: 'Launches github PR UI for the specified topic branch',
         entryPoint: lazyRequire('./create-pr'),
         noChdir: true
-    },
-    {
+    }, {
         name: 'last-week',
         desc: 'Prints out git logs of things that happened last week.',
         entryPoint: lazyRequire('./last-week')
@@ -165,6 +164,13 @@ module.exports = function () {
         name: 'copy-js',
         desc: 'Generates and copies cordova.js to platform.',
         entryPoint: lazyRequire('./platform-release.js', 'createAndCopyCordovaJSCommand')
+    }, {
+        name: 'version',
+        desc: 'Outputs the version of coho.',
+        entryPoint: function * outputVersion () {
+            console.log(require('../package').version);
+            yield Promise.resolve();
+        }
     }
     ];
     var commandMap = {};

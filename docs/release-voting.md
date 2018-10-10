@@ -83,3 +83,14 @@ Given these:
   - Manual testing can be done with release candidates, but is not strictly necessary.
   - Bugs don't block releases, but regressions generally do.
 
+## Non-Binding Votes
+
+Our goal is to be inclusive in everything we do.  If a non-pmc takes the time to vote on a release, we should acknowledge that they did so in the vote summary thread under the heading `non-binding-votes`.  
+Sample text is included in:
+- [plugins-release-process](plugins-release-process.md)
+- [app-hello-world-release-process](app-hello-world-release-process.md)
+- [coho-release-process](coho-release-process.md)
+- [platforms-release-process](platforms-release-process.md)
+- [tools-release-process](tools-release-process.md)
+
+Non-binding votes benefit us all, the more people who verify a release the better; additionally, it is a good way for someone who wants to become a committer/pmc to show their interest.

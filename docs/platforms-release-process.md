@@ -459,6 +459,16 @@ Respond to the vote thread with:
 
     The vote has passed.
 
+If there were any votes from non-pmc, include them in an additional `Non-Binding` section.
+
+    Positive Non-Binding Votes: (# that +1'ed)
+
+    .. names of all +1 non-PMC members ..
+
+    Negative Non-Binding Votes: (# that -1'ed)
+
+    .. names of all -1 non-PMC members ..
+
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ### If the Vote does *not* Pass

@@ -624,7 +624,7 @@ function * interactive_plugins_release () {
                     yield gitutil.gitCheckout(release_branch_name);
                     if (previous_release_branch_head) {
                         // release branch previously existed.
-                        var diff = yield gitutil.diff(previous_release_branch_head, 'HEAD');
+                        let diff = yield gitutil.diff(previous_release_branch_head, 'HEAD');
                         rb_prompts.push({
                             type: 'confirm',
                             name: 'rb_' + plugin_name,
@@ -632,7 +632,7 @@ function * interactive_plugins_release () {
                         });
                     } else {
                         // release branch did NOT exist previously, this is a new release branch.
-                        var diff = yield gitutil.diff('master', release_branch_name); // eslint-disable-line no-redeclare
+                        let diff = yield gitutil.diff('master', release_branch_name);
                         rb_prompts.push({
                             type: 'confirm',
                             name: 'rb_' + plugin_name,

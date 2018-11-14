@@ -34,9 +34,9 @@ According [versioning-and-release-strategy.md](versioning-and-release-strategy.m
 
 ## Tools release planning
 
-### cordova-create principle
+### cordova-common singleton rule
 
-The most important principle is that packages such as `cordova-lib` and `cordova-cli` should not use multiple versions of `cordova-common` through the chain of dependencies. This means that if `cordova-common` is updated it should be released before other packages such as `cordova-fetch`, `cordova-create`, `cordova-lib`, `cordova-cli`, etc.
+The most important rule is that packages such as `cordova-lib` and `cordova-cli` should not use multiple versions of `cordova-common` through the chain of dependencies. This rule is due to the use of multiple singletons in `cordova-common`. This means that if `cordova-common` is updated it should be released before other packages such as `cordova-fetch`, `cordova-create`, `cordova-lib`, `cordova-cli`, etc.
 
 ### Alternative approaches
 
@@ -225,10 +225,6 @@ Ensure that mobilespec creates okay via CLI:
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
     (cd mobilespec && ./cordova build && ./cordova run android)
 
-Ensure that mobilespec creates okay via CLI and browserify:
-
-    (cd mobilespec && ./cordova prepare --browserify && ./cordova build && ./cordova run android)
-
 Ensure uninstall doesn't cause errors:
 
     (cd mobilespec && ./cordova plugin remove cordova-plugin-file-transfer)
@@ -359,6 +355,16 @@ Respond to the vote thread with:
     .. names of all -1 PMC members ..
 
     The vote has passed.
+
+If there were any votes from non-pmc, include them in an additional `Non-Binding` section.
+
+    Positive Non-Binding Votes: (# that +1'ed)
+
+    .. names of all +1 non-PMC members ..
+
+    Negative Non-Binding Votes: (# that -1'ed)
+
+    .. names of all -1 non-PMC members ..
 
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 

@@ -83,15 +83,15 @@ function * handleVersion (repo, ver, validate) {
     return version;
 }
 
-function configureReleaseCommandFlags (opt) {
-    var opt = flagutil.registerRepoFlag(opt); // eslint-disable-line no-redeclare
+function configureReleaseCommandFlags (_opt) {
+    var opt = flagutil.registerRepoFlag(_opt);
     opt = opt
         .options('version', {
             desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]'
         });
     opt = flagutil.registerHelpFlag(opt);
-    /* eslint-disable no-undef */
-    argv = opt.argv;
+
+    let argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
@@ -100,7 +100,7 @@ function configureReleaseCommandFlags (opt) {
 
     return argv;
 }
-/* eslint-enable no-undef */
+
 var hasBuiltJs = '';
 
 // Adds the version to CDVAvailability.h for iOS

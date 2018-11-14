@@ -20,7 +20,7 @@
 -->
 
 [![Build Status](https://travis-ci.org/apache/cordova-coho.svg?branch=master)](https://travis-ci.org/apache/cordova-coho)
-[![Build Status](https://ci.appveyor.com/api/projects/status/1y9yh5ys72h6l5sy)](https://ci.appveyor.com/project/stumped2/cordova-coho)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-coho?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-coho)
 
 # Cordova Coho
 
@@ -49,6 +49,7 @@ Easiest way on Windows:
 
 ```bash    
 npm install -g cordova-coho
+coho
 ```    
 
 On Mac OS X / Linux, if you didn't use a node version manager like `nvm` or `n`, you might have to run the command using `sudo`.    
@@ -62,6 +63,12 @@ git clone https://github.com/apache/cordova-coho
 cd cordova-coho
 npm install
 npm link # Might need sudo for some configurations
+coho
+```
+
+Or you can just call coho directly in your clone:
+```bash
+C:\Projects\Cordova\cordova-coho\coho.cmd
 ```
 
 ## Cloning/Updating Cordova repositories
@@ -99,11 +106,3 @@ Note that for some commands you may need to use the `-g` or `--global` flag to w
 
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
 [how to contribute on our website][contribute]. 
-
-### Issues
-
-If you find issues with this tool, please follow our guidelines for [reporting issues]. 
-We do not use the GitHub issue system as an Apache project, we have a JIRA issue management system which covers over 50+ CLI, platform, and plugin repos in the Cordova project. Use the "cordova-coho" component for Cordova Coho issues.
-
-[Contribute]: http://cordova.apache.org/contribute/
-[Reporting issues]: http://cordova.apache.org/contribute/issues.html

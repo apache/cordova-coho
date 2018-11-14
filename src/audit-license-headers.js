@@ -71,14 +71,14 @@ module.exports = function * () {
     opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
               '\n' +
               'Usage: $0 audit-license-headers --repo=name [-r repos]');
-    argv = opt.argv; // eslint-disable-line no-undef
+    let argv = opt.argv;
 
-    if (argv.h) { // eslint-disable-line no-undef
+    if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true}); // eslint-disable-line no-undef
+    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
     yield module.exports.scrubRepos(repos);
 };
 

@@ -33,10 +33,10 @@ var knownIssuesFile = path.join('cordova-coho', 'src', 'knownIssues.json');
 var reposWithDependencies = [];
 var flagged = [];
 
-module.exports = function * (argv) {
+module.exports = function * () {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line no-redeclare
+    var argv = opt
         .usage('Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.\n\n' +
                'Usage: $0 check-license --repo=name [-r repos]')
         .argv;

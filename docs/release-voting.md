@@ -67,9 +67,13 @@ For example, someone else might say:
 
     +1
 
-    * Confirmed sigs & hashes with `coho verify-archive`
-    * Verified sha1s match tags with `coho verify-tags`
-    * Re-created archives to ensure contents match release candidate
+    * Confirmed sigs & hashes with `coho verify-archive` [1]
+    * Verified sha1s match tags with `coho verify-tags` [2]
+    * Re-created archives to ensure contents match release candidate [3]
+
+- [1] Download all files from the `https://dist.apache.org/repos/dist/...` link in the email (`*.tgz`, `*.tgz.asc` and `*.tgz.sha512`). Run `coho verify-archive ....tgz` in the download folder. (If you have gpg problems, look at https://github.com/apache/cordova-coho/blob/master/docs/setting-up-gpg.md)
+- [2] Go to the directory where you ran `coho repo-clone` before. Execute `coho verify-tags -g`, then paste the tag string from the email (e.g. `cordova-cli: 8.1.1 (3f8d9c88d6)`), then press [Enter] and wait a bit (I had to hit Enter again to unstuck the process as well). You should get an output like `cordova-cli: Tag hash verified.`.
+- [3] ???
 
 About the quality of the release (in the list above):
   - We strive to maintain release-worthy quality at all times.
@@ -79,3 +83,14 @@ Given these:
   - Manual testing can be done with release candidates, but is not strictly necessary.
   - Bugs don't block releases, but regressions generally do.
 
+## Non-Binding Votes
+
+Our goal is to be inclusive in everything we do.  If a non-pmc takes the time to vote on a release, we should acknowledge that they did so in the vote summary thread under the heading `non-binding-votes`.  
+Sample text is included in:
+- [plugins-release-process](plugins-release-process.md)
+- [app-hello-world-release-process](app-hello-world-release-process.md)
+- [coho-release-process](coho-release-process.md)
+- [platforms-release-process](platforms-release-process.md)
+- [tools-release-process](tools-release-process.md)
+
+Non-binding votes benefit us all, the more people who verify a release the better; additionally, it is a good way for someone who wants to become a committer/pmc to show their interest.

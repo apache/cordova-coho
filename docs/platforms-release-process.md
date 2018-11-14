@@ -153,17 +153,6 @@ See if any dependencies are outdated
 
 Within a new JIRA issue: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
-Check-in updated modules (use npm 3.10.1+)
-
-    rm -rf node_modules
-    npm install --production (skips devDependencies)
-    git add node_modules/* (check-in all modules needed for platform add git url)
-    git commit -m "$JIRA Updated checked-in node_modules"
-    npm install (Re-add devDependencies for ability to run tests locally)
-
-Note: This will commit these changes directly to the `master` branch of the platform you are working on. This is intended.
-Alternatively you might do this in a branch and open a PR for updating and pinning the dependencies.
-
 ### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
@@ -481,6 +470,16 @@ Respond to the vote thread with:
     .. names of all -1 PMC members ..
 
     The vote has passed.
+
+If there were any votes from non-pmc, include them in an additional `Non-Binding` section.
+
+    Positive Non-Binding Votes: (# that +1'ed)
+
+    .. names of all +1 non-PMC members ..
+
+    Negative Non-Binding Votes: (# that -1'ed)
+
+    .. names of all -1 non-PMC members ..
 
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 

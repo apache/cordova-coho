@@ -264,7 +264,7 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
 
 ### Prerequisite: npm test
 
-Ensure that `npm test` succeeds. (This can be done by checking for a green build. Exception is `cordova-osx`, waiting for <https://github.com/apache/cordova-osx/issues/71> to be resolved.)
+Ensure that `npm test` succeeds. (This can be done by checking for a green build.)
 
 ### 1) Plugin tests with `cordova-mobile-spec` project
 

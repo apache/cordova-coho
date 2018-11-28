@@ -264,7 +264,9 @@ Once all the repos are branched, we focus on testing & fixing all of the regress
 
 ### Prerequisite: npm test
 
-Ensure that `npm test` succeeds. (This can be done by checking for a green build.)
+Ensure that `npm test` succeeds locally.
+
+Ensure that the continuous build, which checks the status of `npm test`, is green on GitHub.
 
 ### 1) Plugin tests with `cordova-mobile-spec` project
 

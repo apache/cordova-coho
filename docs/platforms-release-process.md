@@ -49,14 +49,13 @@ It describes the following steps:
   * [Special Case 2: releasing new commits from an already-existing release branch](#special-case-2-releasing-new-commits-from-an-already-existing-release-branch)
   * [Create Release Branch](#create-release-branch)
 - [Testing](#testing)
+  * [Prerequisite: npm test](#prerequisite-npm-test)
   * [1) Plugin tests with `cordova-mobile-spec` project](#1-plugin-tests-with-cordova-mobile-spec-project)
   * [2) hello world app with `cordova` CLI](#2-hello-world-app-with-cordova-cli)
   * [3) `/bin` scripts](#3-bin-scripts)
   * [4) `cordova-lib` tests](#4-cordova-lib-tests)
   * [5) Clean up](#5-clean-up)
   * [Extra Android unit tests](#extra-android-unit-tests)
-  * [Extra iOS unit tests](#extra-ios-unit-tests)
-  * [When a regression is found](#when-a-regression-is-found)
   * [To submit a fix](#to-submit-a-fix)
 - [Push Changes](#push-changes)
   * [Push commits](#push-commits)
@@ -261,6 +260,12 @@ Then ensure commits look okay on both branches
 
 Once all the repos are branched, we focus on testing & fixing all of the regressions we find.
 
+### Prerequisite: npm test
+
+Ensure that `npm test` succeeds locally.
+
+Ensure that the continuous build, which checks the status of `npm test`, is green on GitHub.
+
 ### 1) Plugin tests with `cordova-mobile-spec` project
 
 Create and run a [mobile-spec](https://github.com/apache/cordova-mobile-spec/) project:  
@@ -314,14 +319,6 @@ Clean up the project(s) you just created.
 ```
 rm -rf androidTest*
 ```
-    
-### Extra Android unit tests
-
- * Unit tests in: [cordova-android / test](https://github.com/apache/cordova-android/tree/master/test)
-
-### Extra iOS unit tests
-
- * Unit tests in: [cordova-ios / tests / CordovaLibTests](https://github.com/apache/cordova-ios/tree/master/tests/CordovaLibTests)
 
 ### When a regression is found
 

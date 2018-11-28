@@ -317,11 +317,11 @@ rm -rf androidTest*
     
 ### Extra Android unit tests
 
- * Unit tests in: [cordova-android / test](https://github.com/apache/cordova-android/tree/master/test)
+ * `cordova-android` unit tests that are already covered by `npm test`: [cordova-android / test](https://github.com/apache/cordova-android/tree/master/test)
 
 ### Extra iOS unit tests
 
- * Unit tests in: [cordova-ios / tests / CordovaLibTests](https://github.com/apache/cordova-ios/tree/master/tests/CordovaLibTests)
+ * `cordova-ios` unit tests that are already covered by `npm test`: [cordova-ios / tests / CordovaLibTests](https://github.com/apache/cordova-ios/tree/master/tests/CordovaLibTests)
 
 ### When a regression is found
 

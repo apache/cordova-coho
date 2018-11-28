@@ -54,8 +54,8 @@ It describes the following steps:
   * [3) `/bin` scripts](#3-bin-scripts)
   * [4) `cordova-lib` tests](#4-cordova-lib-tests)
   * [5) Clean up](#5-clean-up)
-  * [Android Extras](#android-extras)
-  * [iOS Extras](#ios-extras)
+  * [Extra Android unit tests](#extra-android-unit-tests)
+  * [Extra iOS unit tests](#extra-ios-unit-tests)
   * [When a regression is found](#when-a-regression-is-found)
   * [To submit a fix](#to-submit-a-fix)
 - [Push Changes](#push-changes)
@@ -315,14 +315,13 @@ Clean up the project(s) you just created.
 rm -rf androidTest*
 ```
     
-### Android Extras
+### Extra Android unit tests
 
- * Unit tests in: [test](https://github.com/apache/incubator-cordova-android/tree/master/test) directory
+ * Unit tests in: [cordova-android / test](https://github.com/apache/cordova-android/tree/master/test)
 
-### iOS Extras
+### Extra iOS unit tests
 
- * Unit tests in: [CordovaLibTests/CordovaTests.xcodeproj](https://git-wip-us.apache.org/repos/asf?p=cordova-ios.git;a=tree;f=CordovaLibTests;h=88ba8e3c286159151b378efb1b0c39ef26dac550;hb=HEAD)
- * Test the Makefile via `make`
+ * Unit tests in: [cordova-ios / tests / CordovaLibTests](https://github.com/apache/cordova-ios/tree/master/tests/CordovaLibTests)
 
 ### When a regression is found
 

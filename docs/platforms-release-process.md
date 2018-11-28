@@ -55,7 +55,7 @@ It describes the following steps:
   * [3) `/bin` scripts](#3-bin-scripts)
   * [4) `cordova-lib` tests](#4-cordova-lib-tests)
   * [5) Clean up](#5-clean-up)
-  * [Extra Android unit tests](#extra-android-unit-tests)
+  * [When a regression is found](#when-a-regression-is-found)
   * [To submit a fix](#to-submit-a-fix)
 - [Push Changes](#push-changes)
   * [Push commits](#push-commits)

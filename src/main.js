@@ -17,18 +17,25 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var executil = require('./executil');
+const dependenciesStatusIgnored = checkPackageDependencies();
 
-try {
-    var co = require('co');
-    var optimist = require('optimist');
-    // Ensure npm install has been run.
-    Object.keys(require('../package').dependencies).forEach(require);
-} catch (e) {
-    console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
-    process.exit(2);
+const co = require('co');
+const optimist = require('optimist');
+
+const executil = require('./executil');
+const apputil = require('./apputil');
+
+function checkPackageDependencies () {
+    try {
+        Object.keys(require('../package').dependencies).forEach(require);
+    } catch (e) {
+        console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
+        process.exit(2);
+    }
+
+    // return value should not really matter:
+    return true;
 }
-var apputil = require('./apputil');
 
 function * lazyRequire (name, opt_prop) {
     if (opt_prop) {

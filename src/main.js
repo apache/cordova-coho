@@ -26,7 +26,7 @@ const optimist = require('optimist');
 const executil = require('./executil');
 const apputil = require('./apputil');
 
-const lazyRequire = require('./lazy-require-util.js');
+const lazyRequire = require('./lazy-require-util');
 
 module.exports = function () {
     const repoCommands = [

@@ -21,7 +21,10 @@ try {
     // Ensure npm install has been run.
     Object.keys(require('../package').dependencies).forEach(require);
 } catch (e) {
-    console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
+    const path = require('path'); // Built-in Node.js module
+    console.log(
+       'Please run "npm install" from this directory:\n\t' +
+        path.join(__dirname, '..')); // correct path
     process.exit(2);
 }
 

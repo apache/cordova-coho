@@ -17,13 +17,8 @@ specific language governing permissions and limitations
 under the License.
 */
 
-try {
-    // Ensure npm install has been run.
-    Object.keys(require('../package').dependencies).forEach(require);
-} catch (e) {
-    console.log('Please run "npm install" from this directory:\n\t' + __dirname); // eslint-disable-line no-path-concat
-    process.exit(2);
-}
+// Verify that npm install was run before importing anything else
+require('./check-npm-install-util');
 
 const co = require('co');
 const optimist = require('optimist');
@@ -31,13 +26,7 @@ const optimist = require('optimist');
 const executil = require('./executil');
 const apputil = require('./apputil');
 
-function * lazyRequire (name, opt_prop) {
-    if (opt_prop) {
-        yield require(name)[opt_prop];
-    } else {
-        yield require(name);
-    }
-}
+const lazyRequire = require('./lazy-require-util.js');
 
 module.exports = function () {
     const repoCommands = [

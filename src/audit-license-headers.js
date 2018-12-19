@@ -42,6 +42,7 @@ var COMMON_RAT_EXCLUDES = [
     'node_modules',
     'thirdparty',
     'package.json',
+    'package-lock.json',
     'component.json',
     '.jshintrc',
     '*.xcworkspacedata',

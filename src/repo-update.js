@@ -106,11 +106,6 @@ function * updateRepos (repos, branches, noFetch) {
     if (branches && branches.length) {
         var errors = '';
         yield repoutil.forEachRepo(repos, function * (repo) {
-            if (repo.id === 'firefoxos' && process.platform === 'win32') {
-                console.log('Skipping firefox OS repo on Windows as it fails due to max path length issues');
-                return;
-            }
-
             if (repo.svn) {
                 try {
                     yield executil.execHelper(executil.ARGS('svn up'), /* silent */ false, /* allowError */ true);

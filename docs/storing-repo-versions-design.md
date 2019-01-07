@@ -86,15 +86,9 @@ Current support:
 
     ||'''Platform'''||'''Support'''||
     ||Android       || {*}         ||
-    ||BB10          || {o}         ||
     ||iOS           || {o}         ||
     ||OSX           || {o}         ||
-    ||QT            || {o}         ||
-    ||Tizen         || {o}         ||
-    ||WebOS         || {o}         ||
     ||Win           || {o}         ||
-    ||WP7           || {o}         ||
-    ||WP8           || {o}         ||
     ||www           || {o}         ||
 
 ## Cordova JS
@@ -112,5 +106,3 @@ Current state is that we have master & dev branches. This is because plugman pul
 
 ## Plugman & CLI
 cordova-plugman and cordova-cli follow the same scheme as platforms.
-
-

@@ -60,7 +60,6 @@ For example, the Release Manager would say:
 Note: here are the repos with continuous builds:
 
   * https://github.com/apache/cordova-lib
-  * https://github.com/apache/cordova-wp8
   * https://github.com/apache/cordova-windows
 
 For example, someone else might say:

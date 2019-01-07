@@ -39,16 +39,6 @@ var platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'BlackBerry',
-        id: 'blackberry',
-        repoName: 'cordova-blackberry',
-        jiraComponentName: 'cordova-blackberry',
-        cordovaJsSrcName: 'cordova.blackberry10.js',
-        cordovaJsPaths: [path.join('javascript', 'cordova.blackberry10.js')],
-        versionFilePaths: [path.join('VERSION')],
-        packageFilePaths: [path.join('package.json')],
-        inactive: true
-    }, {
         title: 'Windows',
         id: 'windows',
         repoName: 'cordova-windows',
@@ -58,23 +48,6 @@ var platformRepos = [
         versionFilePaths: ['VERSION'],
         packageFilePaths: ['package.json']
     }, {
-        title: 'Windows Phone 8.0',
-        id: 'wp8',
-        repoName: 'cordova-wp8',
-        jiraComponentName: 'cordova-wp8',
-        cordovaJsSrcName: 'cordova.wp8.js',
-        cordovaJsPaths: ['template/www/cordova.js'],
-        packageFilePaths: ['package.json'],
-        inactive: true
-    }, {
-        title: 'Firefox OS',
-        id: 'firefoxos',
-        repoName: 'cordova-firefoxos',
-        jiraComponentName: 'cordova-firefoxos',
-        cordovaJsSrcName: 'cordova.firefoxos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js'],
-        inactive: true
-    }, {
         title: 'Mac OSX',
         id: 'osx',
         repoName: 'cordova-osx',
@@ -82,58 +55,12 @@ var platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'Ubuntu',
-        id: 'ubuntu',
-        repoName: 'cordova-ubuntu',
-        jiraComponentName: 'cordova-ubuntu',
-        cordovaJsPaths: ['www/cordova.js'],
-        inactive: true
-    }, {
-        title: 'Amazon Fire OS',
-        id: 'amazon-fireos',
-        repoName: 'cordova-amazon-fireos',
-        jiraComponentName: 'cordova-amazon-fireos',
-        cordovaJsPaths: ['framework/assets/www/cordova.js'],
-        inactive: true
-    }, {
         title: 'Browser',
         id: 'browser',
         repoName: 'cordova-browser',
         jiraComponentName: 'cordova-browser',
         cordovaJsSrcName: 'cordova.browser.js',
         cordovaJsPaths: ['cordova-lib/cordova.js']
-    }, {
-        title: 'Bada',
-        id: 'bada',
-        repoName: 'cordova-bada',
-        jiraComponentName: 'cordova-bada',
-        inactive: true
-    }, {
-        title: 'Bada WAC',
-        id: 'bada-wac',
-        repoName: 'cordova-bada-wac',
-        jiraComponentName: 'cordova-bada',
-        inactive: true
-    }, {
-        title: 'WebOS',
-        id: 'webos',
-        repoName: 'cordova-webos',
-        jiraComponentName: 'cordova-webos',
-        cordovaJsSrcName: 'cordova.webos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js'],
-        inactive: true
-    }, {
-        title: 'QT',
-        id: 'qt',
-        repoName: 'cordova-qt',
-        jiraComponentName: 'cordova-qt',
-        inactive: true
-    }, {
-        title: 'Tizen',
-        id: 'tizen',
-        repoName: 'cordova-tizen',
-        jiraComponentName: 'cordova-tizen',
-        inactive: true
     }
 ];
 
@@ -153,11 +80,6 @@ var nonPlatformRepos = [
         id: 'app-hello-world',
         repoName: 'cordova-app-hello-world',
         jiraComponentName: 'cordova-app-hello-world'
-    }, {
-        title: 'Template Reference',
-        id: 'cordova-template-reference',
-        repoName: 'cordova-template-reference',
-        jiraComponentName: 'cordova-template-reference'
     }
 ];
 
@@ -173,36 +95,6 @@ var pluginRepos = [
         repoName: 'cordova-plugin-camera',
         jiraComponentName: 'cordova-plugin-camera'
     }, {
-        title: 'Plugin - Console',
-        id: 'plugin-console',
-        repoName: 'cordova-plugin-console',
-        jiraComponentName: 'cordova-plugin-console',
-        inactive: true
-    }, {
-        title: 'Plugin - Contacts',
-        id: 'plugin-contacts',
-        repoName: 'cordova-plugin-contacts',
-        jiraComponentName: 'cordova-plugin-contacts',
-        inactive: true
-    }, {
-        title: 'Plugin - Compat',
-        id: 'plugin-compat',
-        repoName: 'cordova-plugin-compat',
-        jiraComponentName: 'cordova-plugin-compat',
-        inactive: true
-    }, {
-        title: 'Plugin - Device Motion',
-        id: 'plugin-device-motion',
-        repoName: 'cordova-plugin-device-motion',
-        jiraComponentName: 'cordova-plugin-device-motion',
-        inactive: true
-    }, {
-        title: 'Plugin - Device Orientation',
-        id: 'plugin-device-orientation',
-        repoName: 'cordova-plugin-device-orientation',
-        jiraComponentName: 'cordova-plugin-device-orientation',
-        inactive: true
-    }, {
         title: 'Plugin - Device',
         id: 'plugin-device',
         repoName: 'cordova-plugin-device',
@@ -213,12 +105,6 @@ var pluginRepos = [
         repoName: 'cordova-plugin-dialogs',
         jiraComponentName: 'cordova-plugin-dialogs'
     }, {
-        title: 'Plugin - File Transfer',
-        id: 'plugin-file-transfer',
-        repoName: 'cordova-plugin-file-transfer',
-        jiraComponentName: 'cordova-plugin-file-transfer',
-        inactive: true
-    }, {
         title: 'Plugin - File',
         id: 'plugin-file',
         repoName: 'cordova-plugin-file',
@@ -228,11 +114,6 @@ var pluginRepos = [
         id: 'plugin-geolocation',
         repoName: 'cordova-plugin-geolocation',
         jiraComponentName: 'cordova-plugin-geolocation'
-    }, {
-        title: 'Plugin - Globalization',
-        id: 'plugin-globalization',
-        repoName: 'cordova-plugin-globalization',
-        jiraComponentName: 'cordova-plugin-globalization'
     }, {
         title: 'Plugin - InAppBrowser',
         id: 'plugin-inappbrowser',
@@ -254,6 +135,11 @@ var pluginRepos = [
         repoName: 'cordova-plugin-network-information',
         jiraComponentName: 'cordova-plugin-network-information'
     }, {
+        title: 'Plugin - Screen Orientation',
+        id: 'plugin-screen-orientation',
+        repoName: 'cordova-plugin-screen-orientation',
+        jiraComponentName: 'cordova-plugin-screen-orientation'
+    }, {
         title: 'Plugin - Splash Screen',
         id: 'plugin-splashscreen',
         repoName: 'cordova-plugin-splashscreen',
@@ -263,11 +149,6 @@ var pluginRepos = [
         id: 'plugin-statusbar',
         repoName: 'cordova-plugin-statusbar',
         jiraComponentName: 'cordova-plugin-statusbar'
-    }, {
-        title: 'Plugin - Screen Orientation',
-        id: 'plugin-screen-orientation',
-        repoName: 'cordova-plugin-screen-orientation',
-        jiraComponentName: 'cordova-plugin-screen-orientation'
     }, {
         title: 'Plugin - Vibration',
         id: 'plugin-vibration',
@@ -279,14 +160,8 @@ var pluginRepos = [
         repoName: 'cordova-plugin-whitelist',
         jiraComponentName: 'cordova-plugin-whitelist'
     }, {
-        title: 'Plugin - Legacy Whitelist',
-        id: 'plugin-legacy-whitelist',
-        repoName: 'cordova-plugin-legacy-whitelist',
-        jiraComponentName: 'cordova-plugin-whitelist',
-        inactive: true
-    }, {
         title: 'Plugin - WKWebView Engine',
-        id: 'cordova-plugin-wkwebview-engine',
+        id: 'plugin-wkwebview-engine',
         repoName: 'cordova-plugin-wkwebview-engine',
         jiraComponentName: 'cordova-plugin-wkwebview-engine'
     }, {
@@ -365,40 +240,10 @@ var toolRepos = [
 
 var otherRepos = [
     {
-        title: 'Cordova Medic',
-        id: 'medic',
-        repoName: 'cordova-medic',
-        jiraComponentName: 'cordova-medic',
-        inactive: true
-    }, {
         title: 'Cordova Paramedic',
         id: 'paramedic',
         repoName: 'cordova-paramedic',
         jiraComponentName: 'cordova-paramedic',
-        inactive: true
-    }, {
-        title: 'Cordova App Harness',
-        id: 'app-harness',
-        repoName: 'cordova-app-harness',
-        inactive: true,
-        jiraComponentName: 'cordova-app-harness'
-    }, {
-        title: 'Cordova Labs',
-        id: 'labs',
-        repoName: 'cordova-labs',
-        jiraComponentName: 'cordova-labs',
-        inactive: true
-    }, {
-        title: 'Cordova Registry Website',
-        id: 'registry-web',
-        repoName: 'cordova-registry-web',
-        jiraComponentName: 'cordova-registry-web',
-        inactive: true
-    }, {
-        title: 'Cordova Registry DB',
-        id: 'registry',
-        repoName: 'cordova-registry',
-        jiraComponentName: 'cordova-registry',
         inactive: true
     }, {
         title: 'Apache dist/release/cordova',

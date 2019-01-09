@@ -61,7 +61,7 @@ function * getRemoteForkName (remoteName) {
     var remotes = (yield executil.execHelper(executil.ARGS('git remote -v'), /* silent */ true)).split('\n');
     var remoteUrl;
     for (var i = 0; i < remotes.length; i++) {
-       // fork    https://github.com/forkName/cordova-coho.git (push)
+        // fork    https://github.com/forkName/cordova-coho.git (push)
         var tokens = remotes[i].split(/\s+/);
         if (tokens[2] === '(push)' && tokens[0] === remoteName) {
             remoteUrl = tokens[1];

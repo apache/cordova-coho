@@ -71,7 +71,7 @@ exports.createCommand = function * (argv) {
     var m;
     var results = [];
     while (m = pattern.exec(input)) { // eslint-disable-line no-cond-assign
-        results.push({repoId: m[1], tagName: m[2], hash: m[3]});
+        results.push({ repoId: m[1], tagName: m[2], hash: m[3] });
     }
     if (results.length === 0) {
         apputil.fatal('Error processing input.');

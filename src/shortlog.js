@@ -62,7 +62,7 @@ module.exports = function * () {
         if (emailFilter && emailFilter.exec(author)) {
             filterTotal += count;
         }
-        return {author: author, count: count};
+        return { author: author, count: count };
     });
     records.sort(function (a, b) {
         return b.count - a.count;

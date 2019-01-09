@@ -429,9 +429,9 @@ var otherRepos = [
 ];
 
 var allRepos = platformRepos.concat(nonPlatformRepos,
-                                    pluginRepos,
-                                    toolRepos,
-                                    otherRepos);
+    pluginRepos,
+    toolRepos,
+    otherRepos);
 
 var repoGroups = {
     'all': allRepos,

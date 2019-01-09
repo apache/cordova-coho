@@ -52,7 +52,7 @@ function execHelper (cmdAndArgs, silent, allowError, win, fail) {
     if (!silent || silent === 3 || exports.verbose) {
         apputil.print('Executing:', cmdAndArgs.join(' '));
     }
-    var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), {stdio: (silent && (silent !== 2)) ? 'default' : 'inherit'});
+    var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), { stdio: (silent && (silent !== 2)) ? 'default' : 'inherit' });
     return result.then(win || null, fail || function (e) {
         if (allowError) {
             throw e;

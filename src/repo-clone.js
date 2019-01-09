@@ -40,7 +40,7 @@ module.exports = function * (_argv) {
 
     var depth = argv.depth ? argv.depth : null;
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeSvn: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
     yield cloneRepos(repos, false, depth);
 };
 

@@ -313,9 +313,9 @@ function * interactive_plugins_release () {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
                 shelljs.mkdir('-p', plugin_base);
                 process.chdir(plugin_base);
-                plugin_repos = flagutil.computeReposFromFlag('active-plugins', {includeSvn: true});
-                dist_svn = flagutil.computeReposFromFlag('dist', {includeSvn: true});
-                dist_dev_svn = flagutil.computeReposFromFlag('dist/dev', {includeSvn: true});
+                plugin_repos = flagutil.computeReposFromFlag('active-plugins', { includeSvn: true });
+                dist_svn = flagutil.computeReposFromFlag('dist', { includeSvn: true });
+                dist_dev_svn = flagutil.computeReposFromFlag('dist/dev', { includeSvn: true });
                 svn_repos = dist_svn.concat(dist_dev_svn);
                 dist_svn = dist_svn[0];
                 dist_dev_svn = dist_dev_svn[0];
@@ -367,7 +367,7 @@ function * interactive_plugins_release () {
                     })[0];
                     if (unknown[0] !== '0') {
                         // There are some unknown licenses!
-                        unknown_licenses.push({repo: repo.repoName, unknown: unknown});
+                        unknown_licenses.push({ repo: repo.repoName, unknown: unknown });
                     }
                 });
                 return yield Promise.resolve(unknown_licenses);
@@ -414,7 +414,7 @@ function * interactive_plugins_release () {
                     console.log(repo.repoName, '\'s current version is', current_version);
                     var devless_version = versionutil.removeDev(current_version);
                     plugin_data[repo.repoName].current_release = devless_version;
-                    yield versionutil.updateRepoVersion(repo, devless_version, {commitChanges: false});
+                    yield versionutil.updateRepoVersion(repo, devless_version, { commitChanges: false });
                 });
             })();
         }).then(function () {
@@ -469,13 +469,13 @@ function * interactive_plugins_release () {
                         // Overwrite plugin version
                         var previous_assumed_version = plugin_data[plugin_name].current_release;
                         plugin_data[plugin_name].current_release = release_notes[plugin_name + '-version'];
-                        yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, {commitChanges: false});
+                        yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, { commitChanges: false });
                         // also overwrite the version originally specified in the release notes file, since we changed it now!
                         var rn = release_notes[plugin_name];
                         var new_rn = rn.replace(new RegExp('### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
                         release_notes[plugin_name] = new_rn;
                     }
-                    fs.writeFileSync(update_release_notes.FILE, release_notes[plugin_name], {encoding: 'utf8'});
+                    fs.writeFileSync(update_release_notes.FILE, release_notes[plugin_name], { encoding: 'utf8' });
                     /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
                      * - tag each plugin repo with $v */
                     if (yield gitutil.pendingChangesExist()) {
@@ -568,7 +568,7 @@ function * interactive_plugins_release () {
                     yield gitutil.gitCheckout('master');
                     // store previous master HEAD, for later comparison/showing of diff
                     plugin_data[plugin_name].previous_master_head = gitutil.hashForRef('master');
-                    yield versionutil.updateRepoVersion(repo, newest_version, {commitChanges: true});
+                    yield versionutil.updateRepoVersion(repo, newest_version, { commitChanges: true });
                 });
             })();
         }).then(function () {
@@ -761,7 +761,7 @@ function * interactive_plugins_release () {
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
-     /* 16. Bonus: separate script to 'approve' a plugins release, which would:
+    /* 16. Bonus: separate script to 'approve' a plugins release, which would:
      *   - publish the artifacts to dist/ in apache
      *   - "tell apache about the release" which has a TODO to write a helper to POST the request appropriately.
      *   - publish to npm

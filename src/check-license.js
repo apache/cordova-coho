@@ -45,7 +45,7 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     checkLicense(repos);
 };
 

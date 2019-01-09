@@ -37,10 +37,10 @@ module.exports = function * () {
         '\n' +
         'Usage: $0 update-release-notes [--repo=ios]'
         )
-        .options('from-tag', {desc: 'Update since a specific tag instead of the "most recent" tag'})
-        .options('to-tag', {desc: 'Update to a specific tag instead of "master"'})
-        .options('override-date', {desc: 'Update to a specific date instead of today.'})
-        .options('last-two-tags', {desc: 'Update with the latest and previous tagged commits'});
+        .options('from-tag', { desc: 'Update since a specific tag instead of the "most recent" tag' })
+        .options('to-tag', { desc: 'Update to a specific tag instead of "master"' })
+        .options('override-date', { desc: 'Update to a specific date instead of today.' })
+        .options('last-two-tags', { desc: 'Update with the latest and previous tagged commits' });
     let argv = opt.argv;
 
     if (argv.h) {
@@ -48,7 +48,7 @@ module.exports = function * () {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         // TODO: we should use gitutil.summaryOfChanges here.
@@ -104,7 +104,7 @@ module.exports = function * () {
                 newVersion = toTag;
             }
             var final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
-            fs.writeFileSync(relNotesFile, final_notes, {encoding: 'utf8'});
+            fs.writeFileSync(relNotesFile, final_notes, { encoding: 'utf8' });
             return linkify.file(relNotesFile);
         }
     });
@@ -140,7 +140,7 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
     var lines = data.split('\n');
     data = lines.filter(function (line) {
         return !(
-           line.match(GITHUB_CLOSE_COMMIT_MSG) ||
+            line.match(GITHUB_CLOSE_COMMIT_MSG) ||
            line.match(VIA_COHO_COMMIT_MSG)
         );
     }).join('\n');
@@ -173,10 +173,10 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
     var relNotesData;
     // if being run in cordova directy, cd into repo
     if (path.basename(process.cwd()) === 'cordova') {
-        relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), {encoding: 'utf8'});
+        relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), { encoding: 'utf8' });
     } else {
         // being run in repo directory (Eg cordova/cordova-plugin-device)
-        relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), {encoding: 'utf8'});
+        relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), { encoding: 'utf8' });
     }
     var headerPos = relNotesData.indexOf('### ');
     var date;

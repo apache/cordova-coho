@@ -79,7 +79,7 @@ module.exports = function * () {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     yield module.exports.scrubRepos(repos);
 };
 

@@ -32,7 +32,7 @@ function * createLink (argv) {
                '\n' +
                'Usage: $0 npm-link' +
                'Example usage: $0 npm-link --use-yarn\n'
-               )
+        )
         .options('use-yarn', {
             desc: 'Use the yarn package manager instead of npm',
             type: 'bool',
@@ -54,8 +54,8 @@ function * createLink (argv) {
 
     function npmLinkIn (linkedModule, installingModule) {
         cdInto(installingModule);
-       // 'npm link' will automatically unbuild a non-linked module if it is present,
-       // so don't need to explicitly 'rm -r' it first.
+        // 'npm link' will automatically unbuild a non-linked module if it is present,
+        // so don't need to explicitly 'rm -r' it first.
         shelljs.exec(packman + ' link ' + linkedModule);
         cdOutOf();
     }

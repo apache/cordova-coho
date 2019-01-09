@@ -55,13 +55,13 @@ function updatePlatformsConfig (newValues) {
     var platformsJS = require(platformsConfig);
 
     flagutil.computeReposFromFlag('active-platform')
-    .forEach(function (repo) {
-        if (newValues[repo.id]) {
+        .forEach(function (repo) {
+            if (newValues[repo.id]) {
             // For blackberry platformsConfig.json uses 'blackberry10' key
-            var correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
-            platformsJS[correctRepoId].version = newValues[repo.id];
-        }
-    });
+                var correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
+                platformsJS[correctRepoId].version = newValues[repo.id];
+            }
+        });
 
     fs.writeFileSync(platformsConfig, JSON.stringify(platformsJS, null, 4) + '\n', 'utf8', function (err) {
         if (err) return console.log(err);
@@ -131,7 +131,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the package.json VERSION.
     var packageFilePaths = repo.packageFilePaths || ['package.json'];
     if (fs.existsSync(packageFilePaths[0])) {
-        var data = fs.readFileSync(packageFilePaths[0], {encoding: 'utf-8'});
+        var data = fs.readFileSync(packageFilePaths[0], { encoding: 'utf-8' });
         var packageJSON = JSON.parse(data);
         packageJSON.version = version;
         // use 2 spaces indent similar to npm
@@ -149,8 +149,8 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
         xmlFilePaths.forEach(function (xmlFile) {
             if (fs.existsSync(xmlFile)) {
-                var data = fs.readFileSync(xmlFile, {encoding: 'utf-8'});
-                xml2js.parseString(data, {async: false}, function (err, xml) {
+                var data = fs.readFileSync(xmlFile, { encoding: 'utf-8' });
+                xml2js.parseString(data, { async: false }, function (err, xml) {
                     if (err) throw err;
                     var prev_version = xml.plugin['$'].version;
                     shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);

@@ -109,7 +109,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
             if (fs.existsSync(path.join('template', 'cordova', 'version'))) {
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
             }
-        } else if (repo.id === 'browser') {
+        } else if (repo.id === 'browser' || repo.id === 'electron') {
             if (fs.existsSync(path.join('bin', 'template', 'cordova', 'version'))) {
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'template', 'cordova', 'version'));
             }

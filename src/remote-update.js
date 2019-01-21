@@ -26,6 +26,7 @@ module.exports = function * (_argv) {
 
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
+    opt = flagutil.registerSshFlag(opt);
 
     opt = opt.options('remote', {
         desc: 'The name of the remote you want to update. Example: origin',
@@ -49,13 +50,14 @@ module.exports = function * (_argv) {
 
     var remote = argv.remote;
     var repos = flagutil.computeReposFromFlag(argv.r, true);
+    var useSsh = !!argv.ssh;
 
     // ensure that any missing repos are cloned
     // yield require('./repo-clone').cloneRepos(repos, true, depth);
-    yield updateRemote(repos, remote);
+    yield updateRemote(repos, remote, useSsh);
 };
 
-function * updateRemote (repos, remote) {
+function * updateRemote (repos, remote, useSsh) {
 
     yield repoutil.forEachRepo(repos, function * (repo) {
 
@@ -64,7 +66,11 @@ function * updateRemote (repos, remote) {
             return;
         }
 
-        yield executil.execHelper(executil.ARGS('git remote set-url ' + remote + ' https://github.com/apache/' + repo.repoName + '.git'), false, false);
+        var repoUrl = useSsh ?
+            'git@github.com:apache/' + repo.repoName :
+            'https://github.com/apache/' + repo.repoName + '.git';
+
+        yield executil.execHelper(executil.ARGS('git remote set-url ' + remote + ' ' + repoUrl), false, false);
 
     });
 }

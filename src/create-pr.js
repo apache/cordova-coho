@@ -71,7 +71,10 @@ function * getRemoteForkName (remoteName) {
     if (!remoteUrl) {
         apputil.fatal('Cannot find remote Url: ' + remotes);
     }
-    var parsed = url.parse(remoteUrl);
+
+    // 'url.parse' was deprecated since v11.0.0. Use 'url.URL' constructor instead
+    var parsed = url.parse(remoteUrl); // eslint-disable-line
+
     // parsed => /forkName/cordova-coho.git
     var forkName = (parsed.pathname.split('/'))[1];
     return forkName;

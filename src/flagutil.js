@@ -40,6 +40,12 @@ exports.registerDepthFlag = function (opt) {
     });
 };
 
+exports.registerSshFlag = function (opt) {
+    return opt.options('ssh', {
+        desc: 'Boolean value to determin if git repos are fetched with git+ssh or https.'
+    });
+};
+
 exports.computeReposFromFlag = function (flagValue, opts) {
     opts = opts || {};
     var includeSvn = opts.includeSvn;

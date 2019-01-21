@@ -28,9 +28,11 @@ module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt = flagutil.registerDepthFlag(opt);
+    opt = flagutil.registerSshFlag(opt);
+
     var argv = opt
         .usage('Clones git repositories as siblings of cordova-coho (unless --no-chdir or --global is used). If the repositories are already cloned, then this is a no-op.\n\n' +
-               'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos]')
+               'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos] [--ssh]')
         .argv;
 
     if (argv.h || argv.r === 'auto') {
@@ -39,16 +41,19 @@ module.exports = function * (_argv) {
     }
 
     var depth = argv.depth ? argv.depth : null;
+    var useSsh = !!argv.ssh;
 
     var repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
-    yield cloneRepos(repos, false, depth);
+    yield cloneRepos(repos, false, depth, useSsh);
 };
 
-function createRepoUrl (repo) {
-    return 'https://github.com/apache/' + repo.repoName + '.git';
+function createRepoUrl (repo, useSsh) {
+    return useSsh ?
+        'git@github.com:apache/' + repo.repoName :
+        'https://github.com/apache/' + repo.repoName + '.git';
 }
 
-function * cloneRepos (repos, quiet, depth) {
+function * cloneRepos (repos, quiet, depth, useSsh) {
     var failures = []; // eslint-disable-line no-unused-vars
     var numSkipped = 0;
 
@@ -62,7 +67,7 @@ function * cloneRepos (repos, quiet, depth) {
             clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName + ' ' + '--trust-server-cert --non-interactive')));
         } else {
             var depthArg = depth == null ? '' : '--depth ' + depth + ' ';
-            clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + depthArg + createRepoUrl(repo))));
+            clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + depthArg + createRepoUrl(repo, useSsh))));
         }
     }
 

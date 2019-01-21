@@ -28,6 +28,7 @@ var print = apputil.print;
 module.exports = function * (_argv) {
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
+    opt = flagutil.registerSshFlag(opt);
     opt = opt
         .options('b', {
             alias: 'branch',
@@ -69,8 +70,10 @@ module.exports = function * (_argv) {
             repos.map(function (r) { return r.repoName.length + 2; }))
     );
 
+    var useSsh = !!argv.ssh;
+
     // ensure that any missing repos are cloned
-    yield require('./repo-clone').cloneRepos(repos, true, depth);
+    yield require('./repo-clone').cloneRepos(repos, true, depth, useSsh);
     yield updateRepos(repos, branches, !argv.fetch);
 };
 

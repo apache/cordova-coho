@@ -103,14 +103,20 @@ function configureReleaseCommandFlags (_opt) {
 
 var hasBuiltJs = '';
 
-// Adds the version to CDVAvailability.h for iOS
-function * updateCDVAvailabilityFile (version) {
-    var iosFile = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
-    var iosFileContents = fs.readFileSync(iosFile, 'utf8');
-    iosFileContents = iosFileContents.split('\n');
+// Adds the version to CDVAvailability.h for iOS or OSX
+function * updateCDVAvailabilityFile (version, platform) {
+    // Default to iOS
+    let file = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
 
-    var lineNumberToInsertLine = iosFileContents.indexOf('/* coho:next-version,insert-before */');
-    var lineNumberToReplaceLine = iosFileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
+    if (platform === 'osx') {
+        file = path.join(process.cwd(), 'CordovaLib', 'CordovaLib', 'Classes', 'Commands', 'CDVAvailability.h');
+    }
+
+    var fileContents = fs.readFileSync(file, 'utf8');
+    fileContents = fileContents.split('\n');
+
+    var lineNumberToInsertLine = fileContents.indexOf('/* coho:next-version,insert-before */');
+    var lineNumberToReplaceLine = fileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
 
     var versionNumberUnderscores = version.split('.').join('_');
     var versionNumberZeroes = version.split('.').join('0');
@@ -118,16 +124,16 @@ function * updateCDVAvailabilityFile (version) {
     var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
     var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
 
-    if (iosFileContents[lineNumberToInsertLine - 1] === lineToAdd) {
+    if (fileContents[lineNumberToInsertLine - 1] === lineToAdd) {
         print('Version already exists in CDVAvailability.h');
         lineNumberToReplaceLine = lineNumberToReplaceLine - 1;
     } else {
-        iosFileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
+        fileContents.splice(lineNumberToInsertLine, 0, lineToAdd);
     }
 
-    iosFileContents[lineNumberToReplaceLine] = lineToReplace;
+    fileContents[lineNumberToReplaceLine] = lineToReplace;
 
-    fs.writeFileSync(iosFile, iosFileContents.join('\n'));
+    fs.writeFileSync(file, fileContents.join('\n'));
 }
 
 function * updateJsSnapshot (repo, version, commit) {
@@ -211,9 +217,9 @@ exports.prepareReleaseBranchCommand = function * () {
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
-            if (platform === 'ios') {
+            if (platform === 'ios' || platform === 'osx') {
                 // Updates version in CDVAvailability.h file
-                yield updateCDVAvailabilityFile(version);
+                yield updateCDVAvailabilityFile(version, platform);
                 // Git commit changes
                 if (yield gitutil.pendingChangesExist()) {
                     yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));

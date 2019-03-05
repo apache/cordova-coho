@@ -103,6 +103,13 @@ var platformRepos = [
         cordovaJsSrcName: 'cordova.browser.js',
         cordovaJsPaths: ['cordova-lib/cordova.js']
     }, {
+        title: 'Electron',
+        id: 'electron',
+        repoName: 'cordova-electron',
+        jiraComponentName: 'cordova-electron',
+        cordovaJsSrcName: 'cordova.electron.js',
+        cordovaJsPaths: ['cordova-lib/cordova.js']
+    }, {
         title: 'Bada',
         id: 'bada',
         repoName: 'cordova-bada',

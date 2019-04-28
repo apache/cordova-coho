@@ -29,7 +29,7 @@ var repoutil = require('./repoutil');
 
 // constants
 var COMMON_RAT_EXCLUDES = [
-    // Binrary Files
+    // Binary Files
     '*.wav',
     '*.webloc',
 

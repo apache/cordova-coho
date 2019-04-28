@@ -29,25 +29,25 @@ var repoutil = require('./repoutil');
 
 // constants
 var COMMON_RAT_EXCLUDES = [
+    // Binary Files
     '*.wav',
     '*.webloc',
-    '*jasmine-1.2.0*',
-    'jasmine-2.0.0',
-    'topcoat-0.7.5',
-    '*.xcodeproj',
-    '.*',
-    '*-Info.plist',
-    'Info.plist',
-    'VERSION',
-    'node_modules',
-    'thirdparty',
-    'package.json',
-    'package-lock.json',
-    'component.json',
-    '.jshintrc',
+
+    // iOS Related
     '*.xcworkspacedata',
     '*.xccheckout',
-    '*.xcscheme'
+    '*.xcscheme',
+    '*.xcodeproj',
+    '*-Info.plist',
+    'Info.plist',
+
+    // Other
+    '.*',
+    '*.json', // Excludes all JSON files because commenting is not supported.
+    '*.txt', // Excludes all text files because commenting is not supported.
+    'VERSION',
+    'node_modules',
+    'thirdparty'
 ];
 
 var RAT_IGNORE_PATH = '.ratignore';

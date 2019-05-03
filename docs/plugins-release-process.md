@@ -25,7 +25,43 @@ This page describes the steps for doing a Plugins Release.
 
 ## Table of Contents
 
-TODO
+  * [Interactive Plugins Release](#interactive-plugins-release)
+  * [Manual](#manual)
+    + [Before you start](#before-you-start)
+      - [Get Buy-in](#get-buy-in)
+    + [Before Release](#before-release)
+      - [Create JIRA issues](#create-jira-issues)
+      - [Make sure you're up-to-date](#make-sure-youre-up-to-date)
+      - [Identify which plugins have changes](#identify-which-plugins-have-changes)
+      - [Ensure license headers are present everywhere](#ensure-license-headers-are-present-everywhere)
+      - [Ensure all dependencies and subdependencies have Apache-compatible licenses](#ensure-all-dependencies-and-subdependencies-have-apache-compatible-licenses)
+    + [Prepare Release](#prepare-release)
+      - [Update Version](#update-version)
+      - [Update RELEASENOTES.md](#update-releasenotesmd)
+      - [Commit Release Notes and optional version changes together](#commit-release-notes-and-optional-version-changes-together)
+    + [Test](#test)
+    + [Push Changes](#push-changes)
+      - [Tag](#tag)
+      - [Create Release Branch](#create-release-branch)
+      - [Update version to add back -dev suffix](#update-version-to-add-back--dev-suffix)
+      - [Push tags, branches and changes](#push-tags-branches-and-changes)
+    + [Publish Release Candidate to `dist/dev`](#publish-release-candidate-to-distdev)
+    + [Documentation and Communication](#documentation-and-communication)
+      - [Prepare Blog Post](#prepare-blog-post)
+    + [Voting and Release](#voting-and-release)
+      - [Start VOTE Thread](#start-vote-thread)
+      - [Voting](#voting)
+      - [Email the result of the vote](#email-the-result-of-the-vote)
+      - [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
+    + [Otherwise: Publish to `dist/` & npm](#otherwise-publish-to-dist--npm)
+      - [Add new apache release tags](#add-new-apache-release-tags)
+    + [Follow up steps](#follow-up-steps)
+      - [Tell Apache about Release](#tell-apache-about-release)
+      - [Post blog Post](#post-blog-post)
+      - [Do other announcements](#do-other-announcements)
+      - [Close JIRA Issue](#close-jira-issue)
+      - [Finally](#finally)
+
 
 ## 
 
@@ -97,7 +133,7 @@ If you don't want to release all plugins, but you have specific plugins you want
 #### Ensure license headers are present everywhere:
 
     coho audit-license-headers -r active-plugins | less
-    Tip: Skim by searching for "Unknown Licenses"
+    // Tip: Skim by searching for "Unknown Licenses"
 
 For reference, see this [background](http://www.apache.org/legal/src-headers.html)
 
@@ -268,7 +304,7 @@ Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires s
     coho repo-update -r plugins
     coho check-license -r active-plugins
     coho audit-license-headers -r active-plugins | less
-    # Tip: Skim by searching for "Unknown Licenses"
+    // Tip: Skim by searching for "Unknown Licenses"
 
 3) Test
 
@@ -327,7 +363,7 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 * Start a new vote
 
 
-## Otherwise: Publish to `dist/` & npm
+### Otherwise: Publish to `dist/` & npm
 
 If you've lost your list of ACTIVE:
 
@@ -357,7 +393,7 @@ Publish to npm
         npm publish $l-*.tgz
     ) done;
 
-## Add new apache release tags
+#### Add new apache release tags
 
 Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
 

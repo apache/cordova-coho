@@ -167,7 +167,7 @@ Update its `RELEASENOTES.md` file with changes.
 
 Commit these changes together (`plugin.xml`, `RELEASENOTES.md`, `tests/plugin.xml`)
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "Updated version and RELEASENOTES.md for release $v"); done
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
@@ -200,7 +200,7 @@ If a branch already exists, you will have to manually checkout the branch, merge
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
     # update the nested test
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
-    for l in $ACTIVE; do (cd $l; git commit -am "$JIRA Incremented plugin version." ); done
+    for l in $ACTIVE; do (cd $l; git commit -am "Incremented plugin version." ); done
 
 #### Push tags, branches and changes
 
@@ -222,17 +222,17 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$JIRA
+    coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-/plugins
 
 Sanity Check:
 
     # Manually double check version numbers are correct on the file names
     # Then run:
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho verify-archive cordova-dist-dev/plugins/*.tgz
 
 Upload:
 
-    (cd cordova-dist-dev && svn up && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for plugins release")
+    (cd cordova-dist-dev && svn up && svn add plugins && svn commit -m "Uploading release candidates for plugins release")
 
 * Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -293,7 +293,7 @@ Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires s
 
 2) Verify
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho verify-archive cordova-dist-dev/*.tgz
     coho repo-update -r plugins
     coho check-license -r active-plugins
     coho audit-license-headers -r active-plugins | less
@@ -360,21 +360,21 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 If you've lost your list of ACTIVE:
 
-    ACTIVE=$(cd cordova-dist-dev/$JIRA; ls *.tgz | sed -E 's:-[^-]*$::')
+    ACTIVE=$(cd cordova-dist-dev/plugins; ls *.tgz | sed -E 's:-[^-]*$::')
 
 Publish:
 
     cd cordova-dist
     svn up
     for l in $ACTIVE; do ( svn rm plugins/$l* ); done
-    cp ../cordova-dist-dev/$JIRA/* plugins/
+    cp ../cordova-dist-dev/plugins/* plugins/
     svn add plugins/*
-    svn commit -m "$JIRA Published plugins release to dist"
+    svn commit -m "Published plugins release to dist"
 
     cd ../cordova-dist-dev
     svn up
-    svn rm $JIRA
-    svn commit -m "$JIRA Removing release candidates from dist/dev"
+    svn rm plugins
+    svn commit -m "Removing release candidates from dist/dev"
     cd ..
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/

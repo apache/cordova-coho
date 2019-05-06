@@ -42,7 +42,7 @@ This page describes the steps for doing a Plugins Release.
     + [Push Changes](#push-changes)
       - [Tag](#tag)
       - [Create Release Branch](#create-release-branch)
-      - [Update version to add back -dev suffix](#update-version-to-add-back--dev-suffix)
+      - [Update version to add back `-dev` suffix](#update-version-to-add-back--dev-suffix)
       - [Push tags, branches and changes](#push-tags-branches-and-changes)
     + [Publish Release Candidate to `dist/dev`](#publish-release-candidate-to-distdev)
     + [Documentation and Communication](#documentation-and-communication)

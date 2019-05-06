@@ -28,7 +28,7 @@ This page describes the steps for doing a Plugins Release.
   * [Interactive Plugins Release](#interactive-plugins-release)
   * [Manual](#manual)
     + [Before you start](#before-you-start)
-      - [Get Buy-in](#get-buy-in)
+      - [Request Buy-in](#request-buy-in)
     + [Before Release](#before-release)
       - [Create JIRA issues](#create-jira-issues)
       - [Make sure you're up-to-date](#make-sure-youre-up-to-date)
@@ -91,11 +91,20 @@ Try to the interactive plugins release process. If you struggle with, use the ma
 
 ### Before you start
 
-### Get Buy-in
+#### Request buy-in
 
- 1. Email the dev mailing-list and see if anyone has reason to postpone the release.
-   * Subject should be "[DISCUSS] Plugins release
-   * If so, agree upon a branching date / time.
+Email the dev mailing-list at <dev@cordova.apache.org> and see if anyone has reason to postpone the release.
+
+E.g.:
+
+    Subject: [DISCUSS] Cordova Plugins Release
+
+    Does anyone have any reason to delay a Cordova plugins release?
+    Any outstanding patches to land?
+
+    If not, I will start the release tomorrow.
+
+Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
 
 ### Before Release
 

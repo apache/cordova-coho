@@ -126,7 +126,6 @@ function * interactive_plugins_release () {
         /*
          * 2. Are your gpg keys in place? maybe basic validation
          */
-        inquirer.prompt({
         return inquirer.prompt({
             type: 'confirm',
             name: 'gpg',

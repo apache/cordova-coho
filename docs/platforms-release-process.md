@@ -38,7 +38,6 @@ It describes the following steps:
   * [Check dependencies](#check-dependencies)
   * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
   * [License Check](#license-check)
-  * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
@@ -75,7 +74,6 @@ It describes the following steps:
   * [Tell Apache about Release](#tell-apache-about-release)
   * [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
   * [Announce It!](#announce-it)
-  * [Close JIRA issue](#close-jira-issue)
   * [Finally](#finally)
 - [Other stuff that should be reviewed and moved up to the appropriate places](#other-stuff-that-should-be-reviewed-and-moved-up-to-the-appropriate-places)
   * [Update the Docs](#update-the-docs)
@@ -146,11 +144,11 @@ See if any dependencies are outdated
 **Alternative 1:**
 
 - Explicitly pin the outdated dependency versions in the `dependencies` section of `package.json`.
-- Raise a new JIRA issue to update the dependencies in an upcoming release.
+- Raise a new issue to update the dependencies in an upcoming release.
 
 **Alternative 2:**
 
-Within a new JIRA issue: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+Within a new Pull Request: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
 ### License Check
 
@@ -161,22 +159,6 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
-
-### Create JIRA issue
-
-After waiting for any possible objections from the email sent according to the [Request buy-in](#request-buy-in) section above:
-
- * Create a JIRA issue to track the status of the release.
-   - Make it of type "Task"
-   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
-   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
- * Comments should be added to this bug after each top-level step below is taken
- * Set a variable in your terminal for use later on
-
-
-```
-JIRA="CB-????" # Set this to the release bug.
-```
 
 ## Prepare Release
 
@@ -222,9 +204,9 @@ or use your favorite text editor manually.
 
 Commit these changes together in a single commit (one commit).
 
-    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Update RELEASENOTES & version for release $v")
+    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "Update RELEASENOTES & version for release $v")
 
-(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not yet updated in `package.json`.)
+(Should be `Update RELEASENOTES.md for release $v` in case `version` is not yet updated in `package.json`.)
 
 ### Special Case 1: Release notes in release branch for patch release
 
@@ -322,7 +304,7 @@ rm -rf androidTest*
 
 ### When a regression is found
 
-Create a JIRA issue for it, and mark it as a blocker.
+Create an issue for it and fix it via a Pull Request before continuing.
 
 ### To submit a fix
 
@@ -369,6 +351,8 @@ This command also tags `cordova-js` with `android-5.0.0` and pushes it.
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
+
+TODO Find replacement for usage of $JIRA here
 
 Create archives from your tags:
 
@@ -559,11 +543,6 @@ Announce the release to the world!
 * Publish the release blog post
 * Tweet it on https://twitter.com/apachecordova
    
-### Close JIRA Issue
-
-- Double check that the issue includes comments that record the steps you took
-- Mark it as fixed
-
 ### Finally
 
 - Update these instructions if they were missing anything.

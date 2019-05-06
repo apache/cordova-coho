@@ -352,19 +352,17 @@ Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
 
-TODO Find replacement for usage of $JIRA here
-
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 5.0.0
+    coho create-archive -r android --dest cordova-dist-dev --tag 5.0.0
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho verify-archive cordova-dist-dev/*.tgz
 
 Upload:
 
-    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
+    (cd cordova-dist-dev && svn add --force . && svn commit -m "Uploading release candidates for android release")
 
 If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -468,9 +466,9 @@ First move the release package files to `dist/`:
     cd cordova-dist
     svn up
     svn rm platforms/cordova-android*
-    cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
+    cp ../cordova-dist-dev/cordova-android* platforms/
     svn add platforms/cordova-android*
-    svn commit -m "$JIRA Published android release to dist"
+    svn commit -m "Published android release to dist"
 
 Now you can find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
@@ -478,8 +476,8 @@ Then you can also remove the release candidate from `dist-dev/`:
 
     cd ../cordova-dist-dev
     svn up
-    svn rm $JIRA
-    svn commit -m "$JIRA Removing release candidates from dist/dev"
+    svn rm cordova-android*
+    svn commit -m "Removing release candidates from dist/dev"
     cd ..
 
 And finally you can publish your package to `npm`:

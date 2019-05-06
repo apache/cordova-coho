@@ -12,7 +12,7 @@
     "co-stream": "0.1.1",
     "glob": "^5.0.14",
     "gnode": "^0.1.0",
-    "inquirer": "2.0.0",
+    "inquirer": "^6.3.1",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
     "jira-client": "4.2.0",

@@ -30,7 +30,6 @@ This page describes the steps for doing a Plugins Release.
     + [Before you start](#before-you-start)
       - [Request Buy-in](#request-buy-in)
     + [Before Release](#before-release)
-      - [Create JIRA issues](#create-jira-issues)
       - [Make sure you're up-to-date](#make-sure-youre-up-to-date)
       - [Identify which plugins have changes](#identify-which-plugins-have-changes)
       - [Ensure license headers are present everywhere](#ensure-license-headers-are-present-everywhere)
@@ -59,7 +58,6 @@ This page describes the steps for doing a Plugins Release.
       - [Tell Apache about Release](#tell-apache-about-release)
       - [Post blog Post](#post-blog-post)
       - [Do other announcements](#do-other-announcements)
-      - [Close JIRA Issue](#close-jira-issue)
       - [Finally](#finally)
 
 
@@ -108,19 +106,6 @@ Note that it would be possible to continue with some of the [Before Release](#be
 
 ### Before Release
 
-#### Create JIRA issues
-
- * Create a JIRA issue to track the status of the release.
-   * Make it of type "Task"
-   * Subject should be "Plugins Release _Feb 2, 2014_" (Use the current date, not the expected release date)
-   * Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md"
-   * Assignee should be the Release Manager
- * Comments should be added to this bug after each top-level step below is taken
- * Set an environment variable in your terminal for use later on:
-
-
-    JIRA="CB-????" # Set this to the release bug.
-
 #### Make sure you're up-to-date
 
     # Update your repos
@@ -154,11 +139,11 @@ For reference, see this [background](http://www.apache.org/legal/src-headers.htm
 
 #### Update Version
 
-Remove the ''-dev'' suffix on the version in plugin.xml.
+Remove the `-dev` suffix on the version in plugin.xml.
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ "$v" != "$v2" ]; then echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
 
-Remove the ''-dev'' suffix on the version in package.json.
+Remove the `-dev` suffix on the version in package.json.
 
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
@@ -170,9 +155,9 @@ For each of the plugins that have a test project inside it, update the version n
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
-#### Update RELEASENOTES.md
+#### Update `RELEASENOTES.md`
 
-Update its RELEASENOTES.md file with changes.
+Update its `RELEASENOTES.md` file with changes.
 
     for l in $ACTIVE; do (coho update-release-notes -r $l); done
     # Then curate:
@@ -180,15 +165,15 @@ Update its RELEASENOTES.md file with changes.
 
 #### Commit Release Notes and optional version changes together
 
-Commit these changes together (plugin.xml, RELEASENOTES.md, tests/plugin.xml)
+Commit these changes together (`plugin.xml`, `RELEASENOTES.md`, `tests/plugin.xml`)
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$JIRA Updated version and RELEASENOTES.md for release $v"); done
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
-
 ### Test
- Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the RELEASENOTES.md
+
+Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the `RELEASENOTES.md`
 
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
@@ -206,9 +191,9 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git branch $b; echo "Creating branch $b for $l"); done
 
-If a branch already exists, you will have to manually checkout the branch, merge master and then checkout master. 
+If a branch already exists, you will have to manually checkout the branch, merge `master` and then checkout `master`. 
 
-#### Update version to add back -dev suffix
+#### Update version to add back `-dev` suffix
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
     # update package.json
@@ -255,17 +240,16 @@ Upload:
 
 #### Prepare Blog Post
 
-Run the following script to get release notes from RELEASENOTS.md.
+Run the following script to get release notes from `RELEASENOTES.md`.
 
     for l in $ACTIVE; do (cd $l; current_release=$(git describe --tags --abbrev=0); previous_release=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`); echo "$l@$current_release"; awk '/### '$current_release'.*/,/### '$previous_release'.*/ {temp=match($0,/### '$previous_release'/); title=match($0, /### '$current_release'/); if(temp == 0 && title == 0) print $0}' < RELEASENOTES.md); done
 
- * Combine the output from above into a Release Announcement blog post
-   * Instructions on [sites page README](https://svn.apache.org/repos/asf/cordova/site/README.md)
- * Get blog post proof-read.
+* Combine the output from above into a Release Announcement blog post
 
 ### Voting and Release
 
 #### Start VOTE Thread
+
 Send an email to dev ML with:
 
 __Subject:__
@@ -365,12 +349,12 @@ If there were any votes from non-pmc, include them in an additional `Non-Binding
 _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 #### If the Vote does *not* Pass
+
 * Revert adding of `-dev` on master branch
 * Address the concerns (on master branch)
 * Re-tag release using `git tag -f`
 * Add back `-dev`
 * Start a new vote
-
 
 ### Otherwise: Publish to `dist/` & npm
 
@@ -417,14 +401,13 @@ TODO: Please someone write a coho helper for doing this POST request!
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
 2. Use version "cordova-plugin-$FOO@x.x.x"
 
-
 #### Post blog Post
 
 See instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
 
 #### Do other announcements
 
-    Do the same things regarding announcements as described in cadence-release-process, where they make sense.
+Do the same things regarding announcements as described in cadence-release-process, where they make sense.
 
 Send email to dev list with a subject [ANNOUNCE] Plugin Release and include blog post and tweet links
 
@@ -436,11 +419,6 @@ __Body:__
  
     Blog: http://cordova.apache.org/news/YYYY/MM/DD/plugin-release.html
     Tweet: https://twitter.com/apachecordova/status/xxxxxxxxxxxx
-
-#### Close JIRA Issue
-
- * Double check that the issue has comments that record the steps you took
- * Mark it as fixed
 
 #### Finally:
 

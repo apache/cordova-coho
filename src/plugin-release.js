@@ -36,24 +36,10 @@ var versionutil = require('./versionutil');
 var repoupdate = require('./repo-update');
 var repoclone = require('./repo-clone');
 var reporeset = require('./repo-reset');
-var jira_client = require('jira-client');
 var inquirer = require('inquirer');
 var semver = require('semver');
 
-/*
- * Pseudo code for plugin automation:
- * 1. Who are you? --> this is the release manager. Can we use JIRA for this?
- */
-var jira; // issues.apache.org jira client object
-var you; // store label for the user here
-var jira_user; // store ref to jira project user
-var cordova_project; // store ref to jira project for Cordova
-var plugins_release_issue; // store ref to jira issue tracking release.
-/* eslint-disable no-unused-vars */
-var jira_issue_types; // store ref to all issue types supported by our JIRA instance
-/* eslint-enable no-unused-vars */
-var all_plugins_component; // store the specific component associated to the plugin issue.
-var jira_task_issue; // store ref to the "task" issue type
+var release_identifier; // unique identifier of this release process
 var plugin_base; // parent directory holding all cordova plugins
 var plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
 var dist_dev_svn; // cordova dist/dev repo
@@ -126,91 +112,38 @@ function * interactive_plugins_release () {
         process.exit(1);
     }
     return Q.fcall(function () {
-        if (process.env.JIRA_USER && process.env.JIRA_PASSWORD) {
-            return {
-                username: process.env.JIRA_USER,
-                password: process.env.JIRA_PASSWORD
-            };
-        } else {
-            console.log('Let\'s start with your JIRA credentials - this system will be interacting with Apache\'s JIRA instance (issues.apache.org) often.');
-            console.log('(Note that you can export environment variables `JIRA_USER` and `JIRA_PASSWORD` so I won\'t ask you next time.)');
-            return inquirer.prompt([{
-                type: 'input',
-                name: 'username',
-                message: 'Please enter your JIRA username'
-            }, {
-                type: 'password',
-                name: 'password',
-                message: 'Please enter your JIRA password'
-            }]);
-        }
-    }).then(function (answers) {
-        var username = answers.username;
-        you = username;
-        var password = answers.password;
-        jira = new jira_client({ // eslint-disable-line new-cap
-            protocol: 'https',
-            host: 'issues.apache.org',
-            base: 'jira',
-            apiVersion: '2',
-            strictSSL: true,
-            username: username,
-            password: password
+        /*
+        * 1. Unique identification for release?
+        */
+        return inquirer.prompt({
+            type: 'input',
+            name: 'unique',
+            message: 'Please type a unique string that will internally identify this release. It will be used for some temporary folder but also as prefix for commit messages. (Good choices would be `cordova-cli@9.1.0` or `cordova-plugins-2019-05-06` for example):'
         });
-        return jira.getCurrentUser();
-    }).then(function (user) {
-        jira_user = user;
-        you = user.displayName || you; // either use JIRA display name, or username
-        console.log('Hey', you, '!');
-        console.log('Welcome. Let me pull some data from JIRA first...');
-        return jira.listProjects();
-    }).then(function (projects) {
-        // Find the Apache Cordova (CB) project in Apache's JIRA
-        for (var i = 0; i < projects.length; i++) {
-            var project = projects[i];
-            if (project.key === 'CB') {
-                cordova_project = project;
-                break;
-            }
-        }
-        return jira.listComponents('CB');
-    }).then(function (components) {
-        // Find the ALlPlugins component in Cordova'a JIRA components
-        for (var i = 0; i < components.length; i++) {
-            var component = components[i];
-            if (component.name === 'AllPlugins') {
-                all_plugins_component = component;
-                break;
-            }
-        }
-        return jira.listIssueTypes();
-    }).then(function (issue_types) {
-        jira_issue_types = issue_types;
-        for (var i = 0; i < issue_types.length; i++) {
-            var it = issue_types[i];
-            if (it.name === 'Task') {
-                jira_task_issue = it;
-            }
-        }
+    }).then(function (answer) {
+        console.log('Sweet, our unique release identifier is "' + answer.unique + '"!');
+        release_identifier = answer.unique;
         /*
          * 2. Are your gpg keys in place? maybe basic validation
          */
         inquirer.prompt({
+        return inquirer.prompt({
             type: 'confirm',
             name: 'gpg',
             message: 'Are your GPG keys in place?'
-        }).then(function (answer) {
-            if (answer.gpg) {
-                console.log('Great! Let\'s keep going.');
-                return inquirer.prompt({
-                    type: 'confirm',
-                    name: 'discuss',
-                    message: 'Did you start a "[DISCUSS] Plugins release" thread on the Cordova mailing list?'
-                });
-            } else {
-                console.error('You should get your GPG keys sorted out first!');
-                console.warn('Follow the instructions here, then come back and try again: ' + create_archive.GPG_DOCS);
-                process.exit(2);
+        });
+    }).then(function (answer) {
+        if (answer.gpg) {
+            console.log('Great! Let\'s keep going.');
+            return inquirer.prompt({
+                type: 'confirm',
+                name: 'discuss',
+                message: 'Did you start a "[DISCUSS] Plugins release" thread on the Cordova mailing list?'
+            });
+        } else {
+            console.error('You should get your GPG keys sorted out first!');
+            console.warn('Follow the instructions here, then come back and try again: ' + create_archive.GPG_DOCS);
+            process.exit(2);
             }
         }).then(function (answer) {
             /* 3. Y/N did you start a "[DISCUSS] Plugins release" thread on the mailing list?
@@ -218,68 +151,10 @@ function * interactive_plugins_release () {
              */
             if (answer.discuss) {
                 console.log('Nice! Way to keep everyone in the loop!');
-                return inquirer.prompt({
-                    type: 'confirm',
-                    name: 'jira',
-                    message: 'Is there a JIRA issue filed for the plugins release? (i.e. "Plugins Release, <recent date>") - if not, I will create one for you.'
-                });
             } else {
                 console.error('You definitely need to have a discussion about the plugins release on the mailing list first. Go do that!');
                 process.exit(3);
             }
-        }).then(function (answer) {
-            /* 4. Ask for JIRA issue, or, Create JIRA issue; check docs/plugins-release-process.md for details
-             *   - lets refer to this JIRA issue as $JIRA from here on out.
-             *   - TODO: BONUS: COMMENT to this JIRA issue for each "top-level" step below that is completed.
-             */
-            if (answer.jira) {
-                return inquirer.prompt({
-                    type: 'input',
-                    name: 'jira',
-                    message: 'What is the JIRA issue number for your plugins release? Please provide only the numerical part of the issue key (i.e. CB-XXXXX)'
-                }).then(function (answers) {
-                    var cb_issue = 'CB-' + answers.jira;
-                    console.log('Looking for ' + cb_issue + '...');
-                    return jira.findIssue(cb_issue).then(function (issue) {
-                        return issue;
-                    }, function (err) { // eslint-disable-line handle-callback-err
-                        console.error('Error finding issue ' + cb_issue + '!');
-                        process.exit(4);
-                    });
-                });
-            } else {
-                console.warn('OK, no problem. I will create one for you now! Hang tight...');
-                var date = (new Date()).toDateString();
-                var new_issue = {
-                    'fields': {
-                        'project': {
-                            'id': cordova_project.id
-                        },
-                        'summary': 'Plugins Release, ' + date,
-                        'description': 'Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md\nGenerated automatically using cordova-coho.',
-                        'assignee': {
-                            'name': jira_user.name
-                        },
-                        'issuetype': {
-                            'id': jira_task_issue.id
-                        },
-                        'components': [
-                            {
-                                'id': all_plugins_component.id
-                            }
-                        ]
-                    }
-                };
-                return jira.addNewIssue(new_issue).then(function (issue) {
-                    return issue;
-                }, function (err) {
-                    console.error('There was a problem creating the JIRA issue!', err);
-                    process.exit(5);
-                });
-            }
-        }).then(function (jira_issue) {
-            console.log('Sweet, our Plugins Release JIRA issue is ' + jira_issue.key + ' (https://issues.apache.org/jira/browse/' + jira_issue.key + ')!');
-            plugins_release_issue = jira_issue;
         }).then(function () {
             /* 5: update the repos. ask the RM if they want to create a new set of repos, or use an existing directory */
             return inquirer.prompt([{
@@ -476,10 +351,10 @@ function * interactive_plugins_release () {
                         release_notes[plugin_name] = new_rn;
                     }
                     fs.writeFileSync(update_release_notes.FILE, release_notes[plugin_name], { encoding: 'utf8' });
-                    /* - commit changes to versions and release notes together with description '$JIRA Updated version and release notes for release $v'
+                /* - commit changes to versions and release notes together with description 'Updated version and release notes for release $v'
                      * - tag each plugin repo with $v */
                     if (yield gitutil.pendingChangesExist()) {
-                        yield gitutil.commitChanges(plugins_release_issue.key + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release + ' (via coho)');
+                    yield gitutil.commitChanges(release_identifier + ' Updated version and RELEASENOTES.md for release ' + plugin_data[plugin_name].current_release + ' (via coho)');
                         yield gitutil.tagRepo(plugin_data[plugin_name].current_release);
                     } else {
                         console.warn('No pending changes detected for ' + plugin_name + '; that\'s probably not good eh?');
@@ -676,10 +551,10 @@ function * interactive_plugins_release () {
                 process.chdir(orig_dir);
             })();
         }).then(function () {
-            //   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
+        //   - create-archive -r $ACTIVE --dest cordova-dist-dev/foo
             return co.wrap(function * () {
                 // location to store the archives in.
-                var dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
+            var dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, release_identifier);
                 if (!(fs.existsSync(dist_dev_dir))) {
                     shelljs.mkdir('-p', dist_dev_dir);
                     created_distdev_dir = true;
@@ -689,7 +564,7 @@ function * interactive_plugins_release () {
                     var tag = plugin_data[plugin_name].current_release;
                     yield gitutil.gitCheckout(tag);
                     var archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/* sign */);
-                    // - verify-archive cordova-dist-dev/$JIRA/*.tgz
+                // - verify-archive cordova-dist-dev/foo/*.tgz
                     yield create_archive.verifyArchive(archive);
                     yield gitutil.gitCheckout('master');
                 });
@@ -724,8 +599,8 @@ function * interactive_plugins_release () {
                     // if we created the dir containing the archives, then we can
                     // just svn add the entire dir.
                     process.chdir(dist_dev_repo);
-                    yield svnutil.add(plugins_release_issue.key);
-                    yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins release');
+                yield svnutil.add(release_identifier);
+                yield svnutil.commit(svn_user, svn_password, release_identifier + ': Uploading release candidates for plugins release');
                 } else {
                     // if it already existed, then we need to painstakingly add
                     // each individual archive file cause svn is cool
@@ -736,13 +611,13 @@ function * interactive_plugins_release () {
                         var tag = plugin_data[plugin_name].current_release;
                         var fileref = plugin_name + '-' + tag;
                         archives_for_plugins.push(fileref);
-                        var files_to_add = glob.sync(path.join(plugins_release_issue.key, fileref + '*'));
+                    var files_to_add = glob.sync(path.join(release_identifier, fileref + '*'));
                         for (var i = 0; i < files_to_add.length; i++) {
                             yield svnutil.add(files_to_add[i]);
                         }
                     });
                     process.chdir(dist_dev_repo);
-                    yield svnutil.commit(svn_user, svn_password, plugins_release_issue.key + ': Uploading release candidates for plugins ' + archives_for_plugins.join(', '));
+                yield svnutil.commit(svn_user, svn_password, release_identifier + ': Uploading release candidates for plugins ' + archives_for_plugins.join(', '));
                 }
 
                 process.chdir(orig_dir);
@@ -756,11 +631,7 @@ function * interactive_plugins_release () {
             console.log('3. You should test these plugins out! Check out cordova-mobile-spec, and in particular, the `createmobilespec` script that comes with it - it\'s a quick way to create a test project with all plugins included.');
             process.exit(0);
         });
-    }, function (auth_err) {
-        var keys = Object.keys(auth_err); // eslint-disable-line no-unused-vars
-        console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
-        process.exit(1);
-    });
+
     /* 16. Bonus: separate script to 'approve' a plugins release, which would:
      *   - publish the artifacts to dist/ in apache
      *   - "tell apache about the release" which has a TODO to write a helper to POST the request appropriately.
@@ -768,7 +639,6 @@ function * interactive_plugins_release () {
      *   - push 'permanent release tags' (for apache) to git
      *   - issue cordova-docs blog post PR (only if we auto-branch in cordova-docs repo, as per step 14)
      *   - dump instructions only? post an ANNOUNCE thread to ML.
-     *   - close $JIRA issue
      */
 
     /*

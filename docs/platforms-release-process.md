@@ -81,7 +81,6 @@ It describes the following steps:
     
 <!-- created with https://ecotrust-canada.github.io/markdown-toc/ and some manual fixing -->
 
-(Yes this list is long and scary, but represents the content below)
 
 ## General instructions
 
@@ -96,11 +95,8 @@ It describes the following steps:
 You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
 ](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
+
 ## Before you start
-
-### Read through Apache release policy
-
-Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
 
 ### Request buy-in
 
@@ -119,19 +115,16 @@ Double check you replace "Android" in the subject and mail body - there is no un
 
 Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
 
+
 ## Before Release
 
-### npm audit check
-
-Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
-
-    (cd cordova-android && npm audit)
-
-### Check dependencies
+### Make sure you're up-to-date
 
 Ensure your checkout of the repository is up-to-date:
 
-    coho repo-update -r android
+    coho repo-update -r android   # updates the repos
+
+### Check dependencies
 
 See if any dependencies are outdated
 
@@ -139,7 +132,7 @@ See if any dependencies are outdated
 
 (The `--depth=0` prevents from listing dependencies of dependencies.)
 
-### Resolve any outdated dependencies
+#### Resolve any outdated dependencies
 
 **Alternative 1:**
 
@@ -150,6 +143,12 @@ See if any dependencies are outdated
 
 Within a new Pull Request: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
+### `npm audit` check
+
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-android && npm audit)
+    
 ### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
@@ -159,6 +158,7 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
+
 
 ## Prepare Release
 

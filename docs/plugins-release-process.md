@@ -60,12 +60,18 @@ This page describes the steps for doing a Plugins Release.
       - [Do other announcements](#do-other-announcements)
       - [Finally](#finally)
 
+## General Instructions
 
-## 
+### Read first
 
 - Before cutting any releases, read the Apache's [Releases Policy](http://www.apache.org/dev/release)
 - If you have not done so already, create a GPG key (see: [setting-up-gpg.md](setting-up-gpg.md)).
 - Core Plugins are released at most weekly (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
+
+### Repository setup
+
+You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
+](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, and used `coho repo-clone`, this should already be the case.
 
 ## Interactive Plugins Release
 
@@ -83,11 +89,36 @@ This will do the following:
 * Increment version on master with `-dev`
 * Create svn dist archives for you to share with the cordova list for voting purposes.
 
+
 ## Manual
 
 Try to the interactive plugins release process. If you struggle with, use the manual process which is documented below. 
 
+
 ### Before you start
+
+#### Identify which plugins have changes
+
+This whole process depends on the `ACTIVE` environment variable being set and containing a list of the plugins you want to release. This command can automatically select the plugins that need a release:
+
+TODO How does it figure out which need a release?
+TODO Does this actually work? On Windows it sure doesn't.
+
+    ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
+    echo $ACTIVE
+
+If you don't want to release all plugins, but you have specific plugins you want to release, you need to set `ACTIVE` equal to them:
+
+    ACTIVE="cordova-plugin-camera cordova-plugin-contacts cordova-plugin-device-motion"
+    echo $ACTIVE
+
+---
+Note: If you are doing this on Windows, you have to change these commands:
+
+1. Prefix the `ACTIVE=...` command with `set ` to `set ACTIVE=...`
+2. Do not add `"` around the string that `ACTIVE` should be set to: `set ACTIVE=plugin1 plugin2`
+3. Everywhere you see `$ACTIVE`, you have to use `%ACTIVE%`
+---
 
 #### Request buy-in
 
@@ -102,38 +133,58 @@ E.g.:
 
     If not, I will start the release tomorrow.
 
+Make sure to adapt the subject and content to the actual plugins you want to release.
+
 Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
+
 
 ### Before Release
 
 #### Make sure you're up-to-date
 
     # Update your repos
-    coho repo-status -r plugins -b master
-    coho repo-update -r plugins
-    coho repo-clone -r plugins
-    coho foreach -r plugins "git checkout master"
+    coho repo-status -r plugins -b master           # check if there are any unpushed changes in the repos
+    coho repo-update -r plugins                     # updates the repos
+    coho repo-clone -r plugins                      # clone any possibly missing plugin repos
+    coho foreach -r plugins "git checkout master"   # make sure all plugins have master checked out
 
-#### Identify which plugins have changes
+### Check dependencies
 
-    ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
-    echo $ACTIVE
+TODO How to run for many repo folders?
 
-If you don't want to release all plugins, but you have specific plugins you want to release, you need to set `ACTIVE` equal to them.
+See if any dependencies are outdated
 
-    ACTIVE="cordova-plugin-camera cordova-plugin-contacts cordova-plugin-device-motion"
-    echo $ACTIVE
+    (cd ... && npm outdated --depth=0)
 
-#### Ensure license headers are present everywhere:
+(The `--depth=0` prevents from listing dependencies of dependencies.)
+
+#### Resolve any outdated dependencies
+
+**Alternative 1:**
+
+- Explicitly pin the outdated dependency versions in the `dependencies` section of `package.json`.
+- Raise a new issue to update the dependencies in an upcoming release.
+
+**Alternative 2:**
+
+Within a new Pull Request: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+
+#### `npm audit` check
+
+TODO How to run `npm audit` for many repo folders?
+
+#### License Check
+
+Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.
 
     coho audit-license-headers -r active-plugins | less
-    // Tip: Skim by searching for "Unknown Licenses"
+    
+Tip: Skim by searching for "Unknown Licenses" where the number infront it not 0.
 
-For reference, see this [background](http://www.apache.org/legal/src-headers.html)
-
-#### Ensure all dependencies and subdependencies have Apache-compatible licenses
+Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r active-plugins
+ 
 
 ### Prepare Release
 

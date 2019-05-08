@@ -31,7 +31,6 @@ It describes the following steps:
   * [Read first](#read-first)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
-  * [Read through Apache release policy](#read-through-apache-release-policy)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
@@ -55,7 +54,7 @@ It describes the following steps:
   * [4) `cordova-lib` tests](#4-cordova-lib-tests)
   * [5) Clean up](#5-clean-up)
   * [When a regression is found](#when-a-regression-is-found)
-  * [To submit a fix](#to-submit-a-fix)
+    - [To submit a fix](#to-submit-a-fix)
 - [Push Changes](#push-changes)
   * [Push commits](#push-commits)
   * [Tag and push tag](#tag-and-push-tag)
@@ -67,7 +66,7 @@ It describes the following steps:
   * [Start VOTE Thread](#start-vote-thread)
   * [Email the result of the vote](#email-the-result-of-the-vote)
   * [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
-  * [Otherwise: Publish real release to `dist/` & npm](#otherwise-publish-real-release-to-dist--npm)
+  * [Otherwise: Publish release to `dist/` & npm](#otherwise-publish-release-to-dist--npm)
   * [(Android only) Uploading to Bintray](#android-only-uploading-to-bintray)
   * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
 - [Follow up steps](#follow-up-steps)
@@ -193,6 +192,7 @@ Update the repos `RELEASENOTES.md` file with changes since the last release.
     coho update-release-notes -r android
 
 (`--from-tag` and/or `--to-tag` may be needed in case of non-master branch)
+TODO what does that mean? Examples.
 
 Then curate:
 
@@ -228,7 +228,7 @@ Create and prepare your release branch by using `coho prepare-platform-release-b
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
 3. Propagates version number from `--version` argument (or from `package.json` if there is no `--version` argument) to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
-4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
+4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) back
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 
@@ -306,7 +306,7 @@ rm -rf androidTest*
 
 Create an issue for it and fix it via a Pull Request before continuing.
 
-### To submit a fix
+#### To submit a fix
 
     git checkout master
     git commit -am 'Your commit message'
@@ -396,10 +396,8 @@ __Body:__
     Please review and vote on this 5.0.0 Android Release
     by replying to this email (and keep discussion on the DISCUSS thread)
 
-    Release issue: https://issues.apache.org/jira/browse/CB-XXXX
-
     The archive has been published to dist/dev:
-    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
+    https://dist.apache.org/repos/dist/dev/cordova/XXX/
 
     The package was published from its corresponding git tag:
     ### PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0 ###
@@ -451,13 +449,14 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ### If the Vote does *not* Pass
 
-* Revert adding of `-dev`
-* Address the concerns
+* Revert adding of `-dev` on master branch
+* Address the concerns (on master branch)
 * Re-tag release using `git tag -f`
+TODO this seems to be missing a few steps here
 * Add back `-dev`
 * Start a new vote
 
-### Otherwise: Publish real release to `dist/` & npm
+### Otherwise: Publish release to `dist/` & npm
 
 First move the release package files to `dist/`:
 
@@ -480,7 +479,7 @@ Then you can also remove the release candidate from `dist-dev/`:
     svn commit -m "Removing release candidates from dist/dev"
     cd ..
 
-And finally you can publish your package to `npm`:
+And finally you can publish your package to npm:
 
     cd cordova-dist
     npm publish platforms/cordova-android-5.0.0.tgz

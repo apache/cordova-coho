@@ -247,7 +247,10 @@ module.exports = function () {
     if (!command.noChdir) {
         // Change directory to be a sibling of coho.
         apputil.initWorkingDir(argv.chdir);
+    } else {
+        console.log('Running from ' + apputil.getBaseDir());
     }
+
     if (argv.verbose) {
         executil.verbose = true;
     }

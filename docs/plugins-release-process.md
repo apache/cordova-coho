@@ -25,40 +25,48 @@ This page describes the steps for doing a Plugins Release.
 
 ## Table of Contents
 
-  * [Interactive Plugins Release](#interactive-plugins-release)
-  * [Manual](#manual)
-    + [Before you start](#before-you-start)
-      - [Request Buy-in](#request-buy-in)
-    + [Before Release](#before-release)
-      - [Make sure you're up-to-date](#make-sure-youre-up-to-date)
-      - [Identify which plugins have changes](#identify-which-plugins-have-changes)
-      - [Ensure license headers are present everywhere](#ensure-license-headers-are-present-everywhere)
-      - [Ensure all dependencies and subdependencies have Apache-compatible licenses](#ensure-all-dependencies-and-subdependencies-have-apache-compatible-licenses)
-    + [Prepare Release](#prepare-release)
-      - [Update Version](#update-version)
-      - [Update RELEASENOTES.md](#update-releasenotesmd)
-      - [Commit Release Notes and optional version changes together](#commit-release-notes-and-optional-version-changes-together)
-    + [Test](#test)
-    + [Push Changes](#push-changes)
-      - [Tag](#tag)
-      - [Create Release Branch](#create-release-branch)
-      - [Update version to add back `-dev` suffix](#update-version-to-add-back--dev-suffix)
-      - [Push tags, branches and changes](#push-tags-branches-and-changes)
-    + [Publish Release Candidate to `dist/dev`](#publish-release-candidate-to-distdev)
-    + [Documentation and Communication](#documentation-and-communication)
-      - [Prepare Blog Post](#prepare-blog-post)
-    + [Voting and Release](#voting-and-release)
-      - [Start VOTE Thread](#start-vote-thread)
-      - [Voting](#voting)
-      - [Email the result of the vote](#email-the-result-of-the-vote)
-      - [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
-    + [Otherwise: Publish to `dist/` & npm](#otherwise-publish-to-dist--npm)
-      - [Add new apache release tags](#add-new-apache-release-tags)
-    + [Follow up steps](#follow-up-steps)
-      - [Tell Apache about Release](#tell-apache-about-release)
-      - [Post blog Post](#post-blog-post)
-      - [Do other announcements](#do-other-announcements)
-      - [Finally](#finally)
+- [General Instructions](#general-instructions)
+  * [Read first](#read-first)
+  * [Repository setup](#repository-setup)
+- [Interactive Plugins Release](#interactive-plugins-release)
+- [Manual](#manual)
+  * [Before you start](#before-you-start)
+    + [Identify which plugins have changes](#identify-which-plugins-have-changes)
+    + [Request buy-in](#request-buy-in)
+  * [Before Release](#before-release)
+    + [Make sure you're up-to-date](#make-sure-youre-up-to-date)
+  * [Check dependencies](#check-dependencies)
+    + [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+    + [`npm audit` check](#npm-audit-check)
+    + [License Check](#license-check)
+  * [Prepare Release](#prepare-release)
+    + [Update Version](#update-version)
+    + [Create Release Notes](#create-release-notes)
+    + [Commit Release Notes and optional version changes together](#commit-release-notes-and-optional-version-changes-together)
+  * [Testing](#testing)
+  * [Push Changes](#push-changes)
+    + [Tag](#tag)
+    + [Create Release Branch](#create-release-branch)
+    + [Update version to add back `-dev` suffix](#update-version-to-add-back--dev-suffix)
+    + [Push tags, branches and changes](#push-tags-branches-and-changes)
+  * [Publish Release Candidate to `dist/dev`](#publish-release-candidate-to-distdev)
+  * [Documentation and Communication](#documentation-and-communication)
+    + [Prepare Blog Post](#prepare-blog-post)
+  * [Voting and Release](#voting-and-release)
+    + [Start VOTE Thread](#start-vote-thread)
+    + [Voting](#voting)
+    + [Email the result of the vote](#email-the-result-of-the-vote)
+    + [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
+  * [Otherwise: Publish release to `dist/` & npm](#otherwise-publish-release-to-dist--npm)
+  * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
+  * [Follow up steps](#follow-up-steps)
+    + [Tell Apache about Release](#tell-apache-about-release)
+    + [Post blog Post](#post-blog-post)
+    + [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
+    + [Finally:](#finally)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## General Instructions
 
@@ -190,15 +198,15 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
 #### Update Version
 
-Remove the `-dev` suffix on the version in plugin.xml.
+Remove the `-dev` suffix on the version in `plugin.xml`:
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ "$v" != "$v2" ]; then echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
 
-Remove the `-dev` suffix on the version in package.json.
+Remove the `-dev` suffix on the version in `package.json`:
 
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-If the changes merit it, manually bump the major / minor version instead of the micro. Manual process, but list the changes via:
+If the changes merit it, manually bump the major / minor version instead of the path. Manual process, but list the changes via:
 
     for l in $ACTIVE; do ( cd $l; echo $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" ); done
 
@@ -206,13 +214,17 @@ For each of the plugins that have a test project inside it, update the version n
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
-#### Update `RELEASENOTES.md`
+#### Create Release Notes
 
-Update its `RELEASENOTES.md` file with changes.
+Update its `RELEASENOTES.md` file with changes since the last release.
 
     for l in $ACTIVE; do (coho update-release-notes -r $l); done
-    # Then curate:
+
+Then curate:
+
     vim ${ACTIVE// //RELEASENOTES.md }/RELEASENOTES.md
+
+or use your favorite text editor manually.
 
 #### Commit Release Notes and optional version changes together
 
@@ -222,7 +234,7 @@ Commit these changes together (`plugin.xml`, `RELEASENOTES.md`, `tests/plugin.xm
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
-### Test
+### Testing
 
 Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the `RELEASENOTES.md`
 
@@ -231,6 +243,7 @@ Create mobilespec and sanity check all plugins on at least one platform (prefera
     (cd mobilespec && ./cordova build && ./cordova run android --device)
     (cd mobilespec && ./cordova build && ./cordova run ios --device)
 
+This should start a black-ish app with a "Plugin tests" button. When clicking it you end up in a screen with "Auto Tests" and "Manual Tests" buttons. You should run both and see if all/most/the expected ones succeed.
 
 ### Push Changes
 
@@ -267,6 +280,8 @@ If a branch already exists, you will have to manually checkout the branch, merge
 
 ### Publish Release Candidate to `dist/dev`
 
+**Attention**: The following steps need [SVN](https://subversion.apache.org/packages.html#windows) installed and [unfortunately don't give an error if it is not, failing silently](https://issues.apache.org/jira/browse/CB-8006). You also need do [have a secret key set up](setting-up-gpg.md) for signing the release.
+
 Ensure you have the svn repos checked out:
 
     coho repo-clone -r dist -r dist/dev
@@ -285,7 +300,7 @@ Upload:
 
     (cd cordova-dist-dev && svn up && svn add plugins && svn commit -m "Uploading release candidates for plugins release")
 
-* Find your release here: https://dist.apache.org/repos/dist/dev/cordova/
+If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
 ### Documentation and Communication
 
@@ -295,7 +310,9 @@ Run the following script to get release notes from `RELEASENOTES.md`.
 
     for l in $ACTIVE; do (cd $l; current_release=$(git describe --tags --abbrev=0); previous_release=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`); echo "$l@$current_release"; awk '/### '$current_release'.*/,/### '$previous_release'.*/ {temp=match($0,/### '$previous_release'/); title=match($0, /### '$current_release'/); if(temp == 0 && title == 0) print $0}' < RELEASENOTES.md); done
 
-* Combine the output from above into a Release Announcement blog post
+ * Gather highlights from `RELEASENOTES.md` into a Release Announcement blog post
+ * Instructions on publishing a blog post are on the [`cordova-docs` repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
+ * Get blog post proofread by submitting a PR to `cordova-docs` and asking someone on dev list to +1 it.
 
 ### Voting and Release
 
@@ -312,13 +329,11 @@ __Body:__
     Please review and vote on the release of this plugins release
     by replying to this email (and keep discussion on the DISCUSS thread)
 
-    Release issue: https://issues.apache.org/jira/browse/CB-XXXX
-
     The plugins have been published to dist/dev:
-    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX/
+    https://dist.apache.org/repos/dist/dev/cordova/XXX/
 
     The packages were published from their corresponding git tags:
-    PASTE OUTPUT OF: coho print-tags -r ${ACTIVE// / -r }
+    ### PASTE OUTPUT OF: coho print-tags -r ${ACTIVE// / -r }
 
     Upon a successful vote I will upload the archives to dist/, upload them to npm, and post the corresponding blog post.
 
@@ -333,6 +348,8 @@ __Body:__
     * Ensured continuous build was green when repos were tagged
 
 #### Voting
+
+TODO
 
 Steps to verify a plugins release
 
@@ -352,7 +369,7 @@ Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires s
 
 3) Test
 
-Review [ci.cordova.io](http://ci.cordova.io/).
+Check plugins CI
 
 (Optional locally run `mobile-spec`)
 
@@ -364,12 +381,6 @@ Review [ci.cordova.io](http://ci.cordova.io/).
 #### Email the result of the vote
 
 Respond to the vote thread with:
-
-__Subject:__
-
-    [RESULT][VOTE] Plugins Release
-
-__Body:__
 
     The vote has now closed. The results are:
 
@@ -404,10 +415,11 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 * Revert adding of `-dev` on master branch
 * Address the concerns (on master branch)
 * Re-tag release using `git tag -f`
+TODO this seems to be missing a few steps here
 * Add back `-dev`
 * Start a new vote
 
-### Otherwise: Publish to `dist/` & npm
+### Otherwise: Publish release to `dist/` & npm
 
 If you've lost your list of ACTIVE:
 
@@ -422,52 +434,50 @@ Publish:
     svn add plugins/*
     svn commit -m "Published plugins release to dist"
 
+Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
+
+Then you can also remove the release candidate from `dist-dev/`:
+
     cd ../cordova-dist-dev
     svn up
     svn rm plugins
     svn commit -m "Removing release candidates from dist/dev"
     cd ..
 
-Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
-
-Publish to npm
+And finally you can publish your package to npm:
 
     cd cordova-dist/plugins
     for l in $ACTIVE; do (
         npm publish $l-*.tgz
     ) done;
 
-#### Add new apache release tags
+### Add permanent Apache release tag to repository
 
-Make a copy of your released tag with a prefix of `rel\YOURTAG`. These are permanent release tags for Apache. 
+Make a copy of your released tag with a prefix of `rel\YOURTAG`:
 
     for l in $ACTIVE; do ( cd $l; tag=$(git describe --tags --abbrev=0); git checkout $tag; git tag 'rel/'$tag; git push origin refs/tags/'rel/'$tag; git checkout master); done
+    
+These are permanent release tags for Apache.
+
     
 ### Follow up steps
 
 #### Tell Apache about Release
 
-TODO: Please someone write a coho helper for doing this POST request!
-
 1. Go to: https://reporter.apache.org/addrelease.html?cordova
-2. Use version "cordova-plugin-$FOO@x.x.x"
+2. Use `cordova-plugin-$FOO@x.x.x` as "Full version name"
+3. Click "Update release data" to submit it to the list
 
 #### Post blog Post
 
 See instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
 
-#### Do other announcements
+#### Email a release announcement to the mailing list
 
-Do the same things regarding announcements as described in cadence-release-process, where they make sense.
-
-Send email to dev list with a subject [ANNOUNCE] Plugin Release and include blog post and tweet links
-
-__Subject:__
+    Subject: [ANNOUNCE] Plugin Release
     
-    [ANNOUNCE] Plugin Release
-
-__Body:__
- 
+    cordova-plugin-xxx@VERSION has been released!
+    
     Blog: http://cordova.apache.org/news/YYYY/MM/DD/plugin-release.html
     Tweet: https://twitter.com/apachecordova/status/xxxxxxxxxxxx
 

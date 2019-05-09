@@ -131,12 +131,12 @@ Note: If you are doing this on Windows, you have to change these commands:
 
 #### Choose a Release Identifier
 
-Releases are identified by a "Release Identifier", that is used in commit messages and for temporary folders etc. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `cordova-plugins-2019-05-06` or `cordova-plugin-splashscreen@5.0.3`.
+Releases are identified by a "Release Identifier", that is used in commit messages and for temporary folders etc. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`.
 
 You set it similar to the active plugins:
 
 ```
-RELEASE=cordova-plugin-release-2019-05-09
+RELEASE=plugins20190506
 echo $RELEASE
 ```
 

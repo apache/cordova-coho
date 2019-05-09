@@ -215,15 +215,19 @@ TODO only run for $ACTIVE
 
 Remove the `-dev` suffix on the version in `plugin.xml`:
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ "$v" != "$v2" ]; then echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v2="${v%-dev}"; if [ "$v" != "$v2" ]; then echo "$l: Setting version in plugin.xml to $v2"; sed -i -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
 
 Remove the `-dev` suffix on the version in `package.json`:
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
 For each of the plugins that have a test project inside it, update the version number there (`cordova-plugin-*/tests/plugin.xml`) to match the version of the plugin itself (`cordova-plugin-*/plugin.xml`).
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/plugin.xml to $v"; sed -i -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
+
+And same for `cordova-plugin-*/tests/package.json` and `cordova-plugin-*/package.json`:
+
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; vt="$(grep -m 1 '"version"' tests/package.json | cut -d'"' -f4)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/package.json to $v"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v'",/' tests/package.json; fi); done
 
 ##### Minor or Major version update
 
@@ -253,6 +257,8 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
 ### Testing
 
+TODO This will only work if you have _all_ the Cordova plugins checked out via Coho, not just a few of them
+
 Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the `RELEASENOTES.md`:
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
@@ -269,30 +275,54 @@ This should start a black-ish app with a "Plugin tests" button. When clicking it
 
 #### Create Release Branch
 
+If there currently is no release branch (e.g. `5.0.x`) on the remote, you can create one with this command:
+
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git branch $b; echo "Creating branch $b for $l"); done
 
-If a branch already exists, you will have to manually checkout the branch, merge `master` and then checkout `master`. 
-TODO What does that means exactly?
+##### Update Release Branch
+
+If a release branch already exists on the remote, you will have to manually checkout the branch, merge `master` into it and then checkout `master` again:
+
+    # in each plugin
+    v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x;
+    git checkout $b
+    git merge master
+    # fix eventual merge conflicts and commit
+    git checkout master
 
 #### Update version to add back `-dev` suffix
 
-    # update config.xml
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    # update plugin.xml
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
+    
     # update package.json
-    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
-    # update the nested test
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
+    
+    # update the nested test plugin.xml
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/plugin.xml to $v"; sed -i -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
+    
+    # update the nested test package.json
+    for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; vt="$(grep -m 1 '"version"' tests/package.json | cut -d'"' -f4)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/package.json to $v"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v'",/' tests/package.json; fi); done
+    
     # commit
     for l in $ACTIVE; do (cd $l; git commit -am "$RELEASE: Incremented plugin version." ); done
 
 #### Push tags, branches and changes
 
+First command shows which commit will be pushed, second one if there are uncommited files in any of the plugin checkouts.
+
     # Sanity check:
     coho repo-status -r plugins
     coho foreach -r plugins "git status -s"
+    
+ Then push the changes (commits in `master`, tag and release branch):
+    
     # Push: (assumes "origin" is apache remote)
     for l in $ACTIVE; do ( cd $l; tag=$(git describe --tags --abbrev=0); echo $l; set -x; git push origin master && git push origin refs/tags/$tag); done
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git push origin $b;); done
+    
+ Finally check it's all pushed now:
+ 
     # Check that it was all successful:
     coho repo-update -r plugins
     coho repo-status -r plugins

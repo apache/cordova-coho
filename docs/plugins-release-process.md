@@ -35,8 +35,8 @@ This page describes the steps for doing a Plugins Release.
     + [Request buy-in](#request-buy-in)
   * [Before Release](#before-release)
     + [Make sure you're up-to-date](#make-sure-youre-up-to-date)
-  * [Check dependencies](#check-dependencies)
-    + [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+    + [Check dependencies](#check-dependencies)
+      - [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
     + [`npm audit` check](#npm-audit-check)
     + [License Check](#license-check)
   * [Prepare Release](#prepare-release)
@@ -156,7 +156,7 @@ Note that it would be possible to continue with some of the [Before Release](#be
     coho repo-clone -r plugins                      # clone any possibly missing plugin repos
     coho foreach -r plugins "git checkout master"   # make sure all plugins have master checked out
 
-### Check dependencies
+#### Check dependencies
 
 TODO How to run for many repo folders?
 
@@ -166,7 +166,7 @@ See if any dependencies are outdated
 
 (The `--depth=0` prevents from listing dependencies of dependencies.)
 
-#### Resolve any outdated dependencies
+##### Resolve any outdated dependencies
 
 **Alternative 1:**
 

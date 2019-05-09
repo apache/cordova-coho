@@ -400,22 +400,23 @@ TODO
 Steps to verify a plugins release
 
 1) Setup
-Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires svn setup.
+  Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires svn setup.
 
     coho repo-clone -r cordova-dist-dev
     (cd cordova-dist-dev && svn up)
 
 2) Verify
+
 Verify the release:
 
-    # Verify the archive
-    # $RELEASE should be included in the vote email
+    // Verify the archive
+    // $RELEASE should be included in the vote email
     coho verify-archive cordova-dist-dev/$RELEASE/*.tgz
     
-    # update local checkouts
+    // update local checkouts
     coho repo-update -r plugins
     
-    # check licences
+    // check licences
     coho check-license -r active-plugins
     coho audit-license-headers -r active-plugins | less
     // Tip: Skim by searching for "Unknown Licenses"

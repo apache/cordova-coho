@@ -32,6 +32,7 @@ This page describes the steps for doing a Plugins Release.
 - [Manual](#manual)
   * [Before you start](#before-you-start)
     + [Identify which plugins have changes](#identify-which-plugins-have-changes)
+    + [Choose a Release Identifier](#choose-a-release-identifier)
     + [Request buy-in](#request-buy-in)
   * [Before Release](#before-release)
     + [Make sure you're up-to-date](#make-sure-youre-up-to-date)
@@ -127,6 +128,17 @@ Note: If you are doing this on Windows, you have to change these commands:
 2. Do not add `"` around the string that `ACTIVE` should be set to: `set ACTIVE=plugin1 plugin2`
 3. Everywhere you see `$ACTIVE`, you have to use `%ACTIVE%`
 ---
+
+#### Choose a Release Identifier
+
+Releases are identified by a "Release Identifier", that is used in commit messages and for temporary folders etc. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `cordova-plugins-2019-05-06` or `cordova-plugin-splashscreen@5.0.3`.
+
+You set it similar to the active plugins:
+
+```
+RELEASE=cordova-plugin-release-2019-05-09
+echo $RELEASE
+```
 
 #### Request buy-in
 
@@ -230,7 +242,7 @@ or use your favorite text editor manually.
 
 Commit these changes together (`plugin.xml`, `RELEASENOTES.md`, `tests/plugin.xml`)
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "Updated version and RELEASENOTES.md for release $v"); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$RELEASE: Updated version and RELEASENOTES.md for release $v"); done
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
@@ -264,7 +276,7 @@ If a branch already exists, you will have to manually checkout the branch, merge
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
     # update the nested test
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
-    for l in $ACTIVE; do (cd $l; git commit -am "Incremented plugin version." ); done
+    for l in $ACTIVE; do (cd $l; git commit -am "$RELEASE: Incremented plugin version." ); done
 
 #### Push tags, branches and changes
 
@@ -288,17 +300,17 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-/plugins
+    coho create-archive -r ${ACTIVE// / -r } --dest cordova-dist-dev/$RELEASE
 
 Sanity Check:
 
     # Manually double check version numbers are correct on the file names
     # Then run:
-    coho verify-archive cordova-dist-dev/plugins/*.tgz
+    coho verify-archive cordova-dist-dev/$RELEASE/*.tgz
 
 Upload:
 
-    (cd cordova-dist-dev && svn up && svn add plugins && svn commit -m "Uploading release candidates for plugins release")
+    (cd cordova-dist-dev && svn up && svn add $RELEASE && svn commit -m "$RELEASE: Uploading release candidates for plugins release")
 
 If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -361,7 +373,7 @@ Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires s
 
 2) Verify
 
-    coho verify-archive cordova-dist-dev/*.tgz
+    coho verify-archive cordova-dist-dev/$RELEASE/*.tgz
     coho repo-update -r plugins
     coho check-license -r active-plugins
     coho audit-license-headers -r active-plugins | less
@@ -421,18 +433,18 @@ TODO this seems to be missing a few steps here
 
 #### Otherwise: Publish release to `dist/` & npm
 
-If you've lost your list of ACTIVE:
+If you've lost your list of ACTIVE, you can recreate it from the voted on release:
 
-    ACTIVE=$(cd cordova-dist-dev/plugins; ls *.tgz | sed -E 's:-[^-]*$::')
+    ACTIVE=$(cd cordova-dist-dev/$RELEASE; ls *.tgz | sed -E 's:-[^-]*$::')
 
 Publish:
 
     cd cordova-dist
     svn up
     for l in $ACTIVE; do ( svn rm plugins/$l* ); done
-    cp ../cordova-dist-dev/plugins/* plugins/
+    cp ../cordova-dist-dev/$RELEASE/* plugins/
     svn add plugins/*
-    svn commit -m "Published plugins release to dist"
+    svn commit -m "$RELEASE: Published plugins release to dist"
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
 
@@ -440,8 +452,8 @@ Then you can also remove the release candidate from `dist-dev/`:
 
     cd ../cordova-dist-dev
     svn up
-    svn rm plugins
-    svn commit -m "Removing release candidates from dist/dev"
+    svn rm $RELEASE
+    svn commit -m "$RELEASE: Removing release candidates from dist/dev"
     cd ..
 
 And finally you can publish your package to npm:

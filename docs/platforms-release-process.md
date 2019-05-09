@@ -35,7 +35,7 @@ It describes the following steps:
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
   * [Check dependencies](#check-dependencies)
-  * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+    - [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
   * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)

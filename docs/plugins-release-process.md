@@ -230,6 +230,8 @@ If the changes merit it, manually bump the major / minor version instead of the 
 
     for l in $ACTIVE; do ( cd $l; echo $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" ); done
 
+If this justifies or requires a major / minor version update, manually edit the version numbers in the files that currently already have uncommitted changes.
+
 #### Create Release Notes
 
 Update their `RELEASENOTES.md` files with changes since the last release:

@@ -118,7 +118,7 @@ function * interactive_plugins_release () {
         return inquirer.prompt({
             type: 'input',
             name: 'unique',
-            message: 'Please type a unique string that will internally identify this release. It will be used for some temporary folder but also as prefix for commit messages. (Good choices would be `cordova-cli@9.1.0` or `cordova-plugins-2019-05-06` for example):'
+            message: 'Please type a unique string that will be our Release Identifier. It will be used for some temporary folder but also as prefix for commit messages. (Good choices would be `plugins20190506`, `cli1905` or `splashscreen@503` for example):'
         });
     }).then(function (answer) {
         console.log('Sweet, our unique release identifier is "' + answer.unique + '"!');

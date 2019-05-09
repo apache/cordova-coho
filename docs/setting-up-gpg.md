@@ -46,13 +46,16 @@ On Windows:
 
 ### Create a key
 
-How to create a key: 
-http://www.apache.org/dev/openpgp.html#generate-key
+Create a new key with 
 
  * email = you@apache.org
- * description = CODE SIGNING KEY
+ * description = "CODE SIGNING KEY"
+ 
+Use this command
 
-Then follow these instructions: http://www.apache.org/dev/openpgp.html#generation-final-steps
+    gpg --gen-key
+
+(more elaborate instructions at http://www.apache.org/dev/openpgp.html#generate-key + http://www.apache.org/dev/openpgp.html#generation-final-steps)
 
 ### Get Key ID
 
@@ -69,7 +72,11 @@ Example Output:
     sub   4096R/A59029E7 2014-02-27
     sig          8A496450 2014-02-27  Andrew Grieve (CODE SIGNING KEY) <agrieve@apache.org>
 
-In this example, `8A496450` is your `$KEY_ID`
+In this example, `8A496450` is your key ID. Set it to a environment variable:
+
+    KEY_ID=8A496450
+   
+(Or on Windows: `set KEY_ID=8A496450`. Everywhere you see `$KEY_ID` from now on, use `%KEY_ID%` instead)
 
 ### Publish Key
 
@@ -77,9 +84,13 @@ Publish to `dist/KEYS`:
 
     # Clone `cordova-dist` if you don't have it already:
     coho repo-clone -r dist
+    
+    # Append your key to the KEYS file
     gpg --armor --export $KEY_ID >> cordova-dist/KEYS
+    
     # Make sure that's the only change to the file
     ( cd cordova-dist && svn diff )
+    
     # Commit
     ( cd cordova-dist && svn commit -m "Added my signing PGP key to KEYS" )
     
@@ -101,12 +112,9 @@ Copy to your Apache homedir:
     gpg --armor --export $KEY_ID > $KEY_ID.asc
     scp $KEY_ID.asc people.apache.org:
 
-Optional:
-Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID)
-  * This will cause emails from Apache to you to be encrypted.
+#### Optional
 
-Phew! That was easy :P
-
+Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID). This will cause emails from Apache to you to be encrypted.
 
 ## Importing PMC Members' PGP keys
 

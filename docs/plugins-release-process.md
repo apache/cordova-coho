@@ -62,7 +62,7 @@ This page describes the steps for doing a Plugins Release.
     + [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
   * [Follow up steps](#follow-up-steps)
     + [Tell Apache about Release](#tell-apache-about-release)
-    + [Post blog Post](#post-blog-post)
+    + [Publish the prepared blog post](#publish-the-prepared-blog-post)
     + [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
     + [Finally:](#finally)
 
@@ -77,6 +77,8 @@ This page describes the steps for doing a Plugins Release.
 - If you have not done so already, create a GPG key (see: [setting-up-gpg.md](setting-up-gpg.md)).
 - Core Plugins are released at most weekly (see: [versioning-and-release-strategy.md](versioning-and-release-strategy.md)).
 
+Important: This whole release process does _not_ work in **Windows** Command Prompt or Powershell. If you really want to do this release process on Windows, you have to use [Git Bash](https://gitforwindows.org/#bash) or similar.
+
 ### Repository setup
 
 You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
@@ -84,13 +86,13 @@ You should have your platform repository checked out in a folder where you also 
 
 ## Interactive Plugins Release
 
-Though we are still working out some kinks, it is recommended to try the new coho interactive plugins release command which will handle many of the manual steps listed below.
+The coho interactive plugins release command which will handle many of the manual steps listed below.
 
 `coho prepare-plugins-release`
 
 This will do the following:
 
-* Create JIRA issue
+* Ask for Release Identifier
 * Update repos
 * Let you select which repos to release
 * Let you modify release notes and finalize version to release
@@ -98,6 +100,7 @@ This will do the following:
 * Increment version on master with `-dev`
 * Create svn dist archives for you to share with the cordova list for voting purposes.
 
+(Caution: This interactive process still has some kinks)
 
 ## Manual
 
@@ -120,14 +123,6 @@ If you don't want to release all plugins, but you have specific plugins you want
 
     ACTIVE="cordova-plugin-camera cordova-plugin-contacts cordova-plugin-device-motion"
     echo $ACTIVE
-
----
-Note: If you are doing this on Windows, you have to change these commands:
-
-1. Prefix the `ACTIVE=...` command with `set ` to `set ACTIVE=...`
-2. Do not add `"` around the string that `ACTIVE` should be set to: `set ACTIVE=plugin1 plugin2`
-3. Everywhere you see `$ACTIVE`, you have to use `%ACTIVE%`
----
 
 #### Choose a Release Identifier
 
@@ -251,7 +246,7 @@ or use your favorite text editor manually.
 
 Commit these changes (`plugin.xml`, `package.json`, `RELEASENOTES.md`, `tests/plugin.xml`) together:
 
-    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$RELEASE: Updated version and RELEASENOTES.md for release $v"); done
+    for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "Updated version and RELEASENOTES.md for release $v ($RELEASE)"); done
 
 Reply to the DISCUSS thread with a link to the updated release notes.
 
@@ -305,7 +300,7 @@ If a release branch already exists on the remote, you will have to manually chec
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; vt="$(grep -m 1 '"version"' tests/package.json | cut -d'"' -f4)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/package.json to $v"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v'",/' tests/package.json; fi); done
     
     # commit
-    for l in $ACTIVE; do (cd $l; git commit -am "$RELEASE: Incremented plugin version." ); done
+    for l in $ACTIVE; do (cd $l; git commit -am "Incremented plugin version. ($RELEASE)" ); done
 
 #### Push tags, branches and changes
 
@@ -347,7 +342,7 @@ Sanity Check:
 
 Upload:
 
-    (cd cordova-dist-dev && svn up && svn add $RELEASE && svn commit -m "$RELEASE: Uploading release candidates for plugins release")
+    (cd cordova-dist-dev && svn up && svn add $RELEASE && svn commit -m "Uploading release candidates for plugins release ($RELEASE)")
 
 If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -355,13 +350,13 @@ If everything went well the Release Candidate will show up here: https://dist.ap
 
 #### Prepare Blog Post
 
-Run the following script to get release notes from `RELEASENOTES.md`.
+* Gather highlights from `RELEASENOTES.md` into a Release Announcement blog post  
+  This command can do that automatically:
+    
+      for l in $ACTIVE; do (cd $l; current_release=$(git describe --tags --abbrev=0); previous_release=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`); echo "$l@$current_release"; awk '/### '$current_release'.*/,/### '$previous_release'.*/ {temp=match($0,/### '$previous_release'/); title=match($0, /### '$current_release'/); if(temp == 0 && title == 0) print $0}' < RELEASENOTES.md); done
 
-    for l in $ACTIVE; do (cd $l; current_release=$(git describe --tags --abbrev=0); previous_release=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`); echo "$l@$current_release"; awk '/### '$current_release'.*/,/### '$previous_release'.*/ {temp=match($0,/### '$previous_release'/); title=match($0, /### '$current_release'/); if(temp == 0 && title == 0) print $0}' < RELEASENOTES.md); done
-
- * Gather highlights from `RELEASENOTES.md` into a Release Announcement blog post
- * Instructions on publishing a blog post are on the [`cordova-docs` repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
- * Get blog post proofread by submitting a PR to `cordova-docs` and asking someone on dev list to +1 it.
+* Instructions on publishing a blog post are on the [`cordova-docs` repo](https://github.com/apache/cordova-docs#writing-a-blog-post)
+* Get blog post proofread by submitting a PR to `cordova-docs` and asking someone on dev list to +1 it.
 
 ### Voting and Release
 
@@ -379,7 +374,7 @@ __Body:__
     by replying to this email (and keep discussion on the DISCUSS thread)
 
     The plugins have been published to dist/dev:
-    https://dist.apache.org/repos/dist/dev/cordova/XXX/
+    https://dist.apache.org/repos/dist/dev/cordova/$RELEASE/
 
     The packages were published from their corresponding git tags:
     ### PASTE OUTPUT OF: coho print-tags -r ${ACTIVE// / -r }
@@ -396,6 +391,8 @@ __Body:__
     * Ran coho check-license to ensure all dependencies and subdependencies have Apache-compatible licenses
     * Ensured continuous build was green when repos were tagged
 
+Replace `$RELEASE` and `### ...` line with the actual values!
+
 #### Voting
 
 TODO
@@ -409,9 +406,16 @@ Repo clone can be skipped if you have cordova-dist-dev. Warning, this requires s
     (cd cordova-dist-dev && svn up)
 
 2) Verify
+Verify the release:
 
+    # Verify the archive
+    # $RELEASE should be included in the vote email
     coho verify-archive cordova-dist-dev/$RELEASE/*.tgz
+    
+    # update local checkouts
     coho repo-update -r plugins
+    
+    # check licences
     coho check-license -r active-plugins
     coho audit-license-headers -r active-plugins | less
     // Tip: Skim by searching for "Unknown Licenses"
@@ -426,6 +430,7 @@ Check plugins CI
     (cd mobilespec && ./cordova build && ./cordova run android --device)
     (cd mobilespec && ./cordova build && ./cordova run ios --device)
 
+TODO
 
 #### Email the result of the vote
 
@@ -461,10 +466,10 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 #### If the Vote does *not* Pass
 
-* Revert adding of `-dev` on master branch
+* Revert commit adding `-dev` on master branch
 * Address the concerns (on master branch)
 * Re-tag release using `git tag -f`
-TODO this seems to be missing a few steps here
+* 
 * Add back `-dev`
 * Start a new vote
 
@@ -481,7 +486,7 @@ Publish:
     for l in $ACTIVE; do ( svn rm plugins/$l* ); done
     cp ../cordova-dist-dev/$RELEASE/* plugins/
     svn add plugins/*
-    svn commit -m "$RELEASE: Published plugins release to dist"
+    svn commit -m "Published plugins release to dist ($RELEASE)"
 
 Find your release here: https://dist.apache.org/repos/dist/release/cordova/plugins/
 
@@ -490,7 +495,7 @@ Then you can also remove the release candidate from `dist-dev/`:
     cd ../cordova-dist-dev
     svn up
     svn rm $RELEASE
-    svn commit -m "$RELEASE: Removing release candidates from dist/dev"
+    svn commit -m "Removing release candidates from dist/dev ($RELEASE)"
     cd ..
 
 And finally you can publish your package to npm:
@@ -517,9 +522,9 @@ These are permanent release tags for Apache.
 2. Use `cordova-plugin-$FOO@x.x.x` as "Full version name"
 3. Click "Update release data" to submit it to the list
 
-#### Post blog Post
+#### Publish the prepared blog post
 
-See instructions in the cordova-docs [README](https://github.com/apache/cordova-docs#writing-a-blog-post)
+Merge the prepare Pull Request with the blog post to publish it on the Cordova Blog.
 
 #### Email a release announcement to the mailing list
 

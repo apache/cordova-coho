@@ -131,7 +131,7 @@ Note: If you are doing this on Windows, you have to change these commands:
 
 #### Choose a Release Identifier
 
-Releases are identified by a "Release Identifier", that is used in commit messages and for temporary folders etc. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`.
+Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`.
 
 You set it similar to the active plugins:
 
@@ -199,12 +199,15 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 
     coho audit-license-headers -r active-plugins | less
     
+TODO only run for $ACTIVE
+    
 Tip: Skim by searching for "Unknown Licenses" where the number infront it not 0.
 
 Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r active-plugins
  
+TODO only run for $ACTIVE
 
 ### Prepare Release
 
@@ -218,17 +221,19 @@ Remove the `-dev` suffix on the version in `package.json`:
 
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v = *-dev ]]; then v2="${v%-dev}"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi) ; done
 
-If the changes merit it, manually bump the major / minor version instead of the path. Manual process, but list the changes via:
-
-    for l in $ACTIVE; do ( cd $l; echo $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" ); done
-
 For each of the plugins that have a test project inside it, update the version number there (`cordova-plugin-*/tests/plugin.xml`) to match the version of the plugin itself (`cordova-plugin-*/plugin.xml`).
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
 
+##### Minor or Major version update
+
+If the changes merit it, manually bump the major / minor version instead of the patch version. Manual process, but list the changes via:
+
+    for l in $ACTIVE; do ( cd $l; echo $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" ); done
+
 #### Create Release Notes
 
-Update its `RELEASENOTES.md` file with changes since the last release.
+Update their `RELEASENOTES.md` files with changes since the last release:
 
     for l in $ACTIVE; do (coho update-release-notes -r $l); done
 
@@ -240,7 +245,7 @@ or use your favorite text editor manually.
 
 #### Commit Release Notes and optional version changes together
 
-Commit these changes together (`plugin.xml`, `RELEASENOTES.md`, `tests/plugin.xml`)
+Commit these changes (`plugin.xml`, `package.json`, `RELEASENOTES.md`, `tests/plugin.xml`) together:
 
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; git commit -am "$RELEASE: Updated version and RELEASENOTES.md for release $v"); done
 
@@ -248,8 +253,7 @@ Reply to the DISCUSS thread with a link to the updated release notes.
 
 ### Testing
 
-Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the `RELEASENOTES.md`
-
+Create mobilespec and sanity check all plugins on at least one platform (preferably, a released version of the platform and not master). Run through mobilespec, ensuring to do manual tests that relate to changes in the `RELEASENOTES.md`:
 
     cordova-mobile-spec/createmobilespec/createmobilespec.js --android --ios
     (cd mobilespec && ./cordova build && ./cordova run android --device)
@@ -268,14 +272,17 @@ This should start a black-ish app with a "Plugin tests" button. When clicking it
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; b=`expr $v : '^\(....\)'`; x="x"; b=$b$x; git branch $b; echo "Creating branch $b for $l"); done
 
 If a branch already exists, you will have to manually checkout the branch, merge `master` and then checkout `master`. 
+TODO What does that means exactly?
 
 #### Update version to add back `-dev` suffix
 
+    # update config.xml
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; v_no_dev="${v%-dev}"; if [ "$v" = "$v_no_dev" ]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in plugin.xml to $v2"; sed -i '' -E s:"version=\"$v\":version=\"$v2\":" plugin.xml; fi) ; done
     # update package.json
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; if [[ $v != *-dev ]]; then v2="$(echo $v|awk -F"." '{$NF+=1}{print $0RT}' OFS="." ORS="")-dev"; echo "$l: Setting version in package.json to $v2"; sed -i '' -E '1,/version":.*/s/version":.*/version": "'$v2'",/' package.json; fi); done
     # update the nested test
     for l in $ACTIVE; do ( cd $l; v="$(grep version= plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; vt="$(grep version= tests/plugin.xml | grep -v xml | head -n1 | cut -d'"' -f2)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version to $v"; sed -i '' -E s:"version=\"$vt\":version=\"$v\":" tests/plugin.xml; fi); done
+    # commit
     for l in $ACTIVE; do (cd $l; git commit -am "$RELEASE: Incremented plugin version." ); done
 
 #### Push tags, branches and changes

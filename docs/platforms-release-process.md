@@ -21,11 +21,9 @@
 
 # Release Process for Cordova Platforms
 
-This page describes the technical steps for doing a `Platforms Release`.
+This page describes the technical steps for doing a Platforms Release.
 
 ## Table of contents
-
-It describes the following steps:
 
 - [General instructions](#general-instructions)
   * [Read first](#read-first)
@@ -33,9 +31,10 @@ It describes the following steps:
 - [Before you start](#before-you-start)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
-  * [npm audit check](#npm-audit-check)
+  * [Make sure you're up-to-date](#make-sure-youre-up-to-date)
   * [Check dependencies](#check-dependencies)
     - [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+  * [`npm audit` check](#npm-audit-check)
   * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)

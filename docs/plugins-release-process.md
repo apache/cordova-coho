@@ -57,15 +57,15 @@ This page describes the steps for doing a Plugins Release.
     + [Voting](#voting)
     + [Email the result of the vote](#email-the-result-of-the-vote)
     + [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
-  * [Otherwise: Publish release to `dist/` & npm](#otherwise-publish-release-to-dist--npm)
-  * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
+    + [Otherwise: Publish release to `dist/` & npm](#otherwise-publish-release-to-dist--npm)
+    + [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
   * [Follow up steps](#follow-up-steps)
     + [Tell Apache about Release](#tell-apache-about-release)
     + [Post blog Post](#post-blog-post)
     + [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
     + [Finally:](#finally)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+<!--<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>-->
 
 
 ## General Instructions
@@ -419,7 +419,7 @@ TODO this seems to be missing a few steps here
 * Add back `-dev`
 * Start a new vote
 
-### Otherwise: Publish release to `dist/` & npm
+#### Otherwise: Publish release to `dist/` & npm
 
 If you've lost your list of ACTIVE:
 
@@ -451,7 +451,7 @@ And finally you can publish your package to npm:
         npm publish $l-*.tgz
     ) done;
 
-### Add permanent Apache release tag to repository
+#### Add permanent Apache release tag to repository
 
 Make a copy of your released tag with a prefix of `rel\YOURTAG`:
 

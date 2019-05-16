@@ -128,6 +128,8 @@ If you don't want to release all plugins, but you have specific plugins you want
 
 Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`.
 
+TODO replace with issue ID
+
 You set it similar to the active plugins:
 
 ```
@@ -163,6 +165,9 @@ Note that it would be possible to continue with some of the [Before Release](#be
     coho repo-clone -r plugins                      # clone any possibly missing plugin repos
     coho foreach -r plugins "git checkout master"   # make sure all plugins have master checked out
 
+TODO How to do only for active?
+=> See `${ACTIVE// //` foo below
+
 #### Check dependencies
 
 TODO How to run for many repo folders?
@@ -187,6 +192,8 @@ Within a new Pull Request: update any outdated dependencies in the project's `pa
 #### `npm audit` check
 
 TODO How to run `npm audit` for many repo folders?
+
+TODO Get rid of package-lock.json afterwards
 
 #### License Check
 
@@ -224,6 +231,8 @@ And same for `cordova-plugin-*/tests/package.json` and `cordova-plugin-*/package
 
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; vt="$(grep -m 1 '"version"' tests/package.json | cut -d'"' -f4)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/package.json to $v"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v'",/' tests/package.json; fi); done
 
+TODO Output how many files were edited
+
 ##### Minor or Major version update
 
 If the changes merit it, manually bump the major / minor version instead of the patch version. Manual process, but list the changes via:
@@ -231,6 +240,8 @@ If the changes merit it, manually bump the major / minor version instead of the 
     for l in $ACTIVE; do ( cd $l; echo $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" ); done
 
 If this justifies or requires a major / minor version update, manually edit the version numbers in the files that currently already have uncommitted changes.
+
+TODO Decide _before_ updating version numbers
 
 #### Create Release Notes
 
@@ -394,6 +405,8 @@ __Body:__
     * Ensured continuous build was green when repos were tagged
 
 Replace `$RELEASE` and `### ...` line with the actual values!
+
+TODO Include Release notes in email, at least as a link
 
 #### Voting
 

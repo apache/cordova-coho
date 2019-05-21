@@ -137,6 +137,7 @@ exports.pendingChangesExist = function * () {
 exports.gitCheckout = function * (branchName) {
     var curBranch = yield gitutil.retrieveCurrentBranchName(true);
     if (curBranch !== branchName) {
+        // XXX TODO raise an issue for this:
         // EXTRA WORKAROUND SOLUTION for package.json,
         // as needed for cordova-osx & Windows
         // FUTURE TBD better solution for package.json?

@@ -149,12 +149,14 @@ function * updateJsSnapshot (repo, version, commit, branch, commitPrefixOrUndefi
                     if (branch === 'master') {
                         yield repoupdate.updateRepos([cordovaJsRepo], [branch], false);
                     }
+                    // XXX TODO raise an issue for this:
                     // EXTRA WORKAROUND SOLUTION for package.json,
                     // as needed for cordova-osx & Windows
                     // FUTURE TBD better solution for package.json?
                     yield executil.execHelper(executil.ARGS('git checkout -- package.json'));
                     yield executil.execHelper(executil.ARGS('git checkout -q ' + branch));
                     yield gitutil.gitCheckout(branch);
+                    // XXX TODO raise issue for WORKAROUND PART 1 and WORKAROUND PART 2
                     yield executil.execHelper(executil.ARGS('npm install'), false, true); // WORKAROUND PART 1 for local grunt issue in cordova-js
                     yield executil.execHelper(executil.ARGS('grunt compile:' + repo.id + ' --platformVersion=' + version), false, true);
                     shelljs.rm('-fr', 'node_modules'); // WORKAROUND PART 2 for local grunt issue in cordova-js

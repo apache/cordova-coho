@@ -246,6 +246,7 @@ exports.prepareReleaseBranchCommand = function * () {
             // or other branch
             yield repoupdate.updateRepos([repo], [repoBranchName], false);
 
+            // XXX TODO move code to update CDVAvailability.h file from here:
             if (platform === 'ios' || platform === 'osx') {
                 // Updates version in CDVAvailability.h file
                 yield updateCDVAvailabilityFile(version, platform);
@@ -271,6 +272,16 @@ exports.prepareReleaseBranchCommand = function * () {
             }
 
             yield updateJsSnapshot(repo, version, true, jsBranchName, pre);
+
+            //* XXX TODO move code to update CDVAvailability.h file to here
+            //* but skip this update if version is not all digits
+            //* to avoid a build or runtime error
+            //* (I forgot which one it was)
+            //* if ((platform === 'ios' || platform === 'osx')
+            //*     && /\d$/.test(version)) {
+            //*     // Updates version in CDVAvailability.h file
+            //*     // ...
+            //* }
 
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + releaseBranchName + '".');
             yield versionutil.updateRepoVersion(repo, version, {commitChanges:true, pre:pre});

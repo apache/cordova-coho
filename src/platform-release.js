@@ -233,7 +233,8 @@ exports.prepareReleaseBranchCommand = function * () {
                 versionutil.getReleaseBranchNameFromVersion(version);
 
         yield gitutil.stashAndPop(repo, function * () {
-            // git fetch + update master
+            // git fetch & update master
+            // or other branch
             yield repoupdate.updateRepos([repo], [repoBranchName], false);
 
             // Either create or pull down the branch.

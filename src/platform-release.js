@@ -178,7 +178,7 @@ function * updateJsSnapshot (repo, version, commit, branch, commitPrefixOrUndefi
         });
         if (commit === true) {
             if (yield gitutil.pendingChangesExist()) {
-                var pre = !!commitPrefixOrUndefined ? commitPrefixOrUndefined : '';
+                var pre = commitPrefixOrUndefined || '';
                 yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Update JS to version ' + version + ' (via coho)'));
             }
         }
@@ -241,7 +241,7 @@ exports.prepareReleaseBranchCommand = function * () {
         // XXX TODO this should probably be used in the
         // executil.reportGitPushResult call below.
         var releaseBranchName = isOtherRepoBranch ? repoBranchName :
-                versionutil.getReleaseBranchNameFromVersion(version);
+            versionutil.getReleaseBranchNameFromVersion(version);
 
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch & update master
@@ -286,7 +286,7 @@ exports.prepareReleaseBranchCommand = function * () {
             //* }
 
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + releaseBranchName + '".');
-            yield versionutil.updateRepoVersion(repo, version, {commitChanges:true, pre:pre});
+            yield versionutil.updateRepoVersion(repo, version, { commitChanges: true, pre: pre });
 
             // skip remaining steps for this repo if other repo branch was specified:
             if (isOtherRepoBranch) return;
@@ -297,7 +297,7 @@ exports.prepareReleaseBranchCommand = function * () {
             yield gitutil.gitCheckout('master');
             var devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
-            yield versionutil.updateRepoVersion(repo, devVersion, {commitChanges:true, pre:pre});
+            yield versionutil.updateRepoVersion(repo, devVersion, { commitChanges: true, pre: pre });
             yield updateJsSnapshot(repo, devVersion, true, jsBranchName);
             yield gitutil.gitCheckout(releaseBranchName);
         });

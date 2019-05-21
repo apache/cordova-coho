@@ -34,7 +34,7 @@ exports.initWorkingDir = function (chdir) {
         process.chdir(newDir);
         baseWorkingDir = newDir;
     }
-    console.log('Running from ' + baseWorkingDir);
+    console.log('Running from ' + baseWorkingDir + ' (use `-g` to run in current working directory)');
 };
 
 exports.getBaseDir = function () {

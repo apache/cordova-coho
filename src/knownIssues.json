@@ -219,5 +219,15 @@
     "spdx-license-ids": {
         "verified-license": "CC0-1.0",
         "license-notes": "This is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of eslint-plugin-import."
+    },
+    "color-convert": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/Qix-/color-convert/blob/master/LICENSE",
+        "license-notes": "This is a dev dependency, we don't ship it or ask our users to download it. We are good. It is a dep of eslint."
+    },
+    "speedometer": {
+        "verified-license": "MIT",
+        "verified-license-notes": "https://github.com/mafintosh/speedometer/blob/master/LICENSE",
+        "license-notes": "This is a dep of electron."
     }
 }

@@ -67,7 +67,7 @@ module.exports = function * (_argv) {
     apputil.prefixLength = Math.max.apply(null,
         [apputil.prefixLength].concat(
             repos.map(function (r) { return r.repoName.length + 2; }))
-        );
+    );
 
     // ensure that any missing repos are cloned
     yield require('./repo-clone').cloneRepos(repos, true, depth);
@@ -116,7 +116,7 @@ function * updateRepos (repos, branches, noFetch) {
                     yield executil.execHelper(executil.ARGS('svn up'), /* silent */ false, /* allowError */ true);
                 } catch (e) {
                     errors += '(' + repo.repoName + '): ' + e + '\n';
-                     // Log failure and continue updating other repos
+                    // Log failure and continue updating other repos
                     console.log(e);
                 }
                 return;
@@ -132,7 +132,7 @@ function * updateRepos (repos, branches, noFetch) {
                     }
                 } else {
                     yield executil.execHelper(executil.ARGS('git checkout -b ' + branchName + ' remotes/' + repo.remoteName + '/' + branchName),
-                            /* silent */ true, /* allowError */ false);
+                        /* silent */ true, /* allowError */ false);
                 }
             }
             staleBranches = branches.filter(function (branchName) {

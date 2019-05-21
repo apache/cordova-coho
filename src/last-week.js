@@ -54,7 +54,7 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, {includeModules: true});
+    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     var filterByEmail = !!argv.me || !!argv.user;
     var days = argv.days || 7;
     var userEmail = filterByEmail && (argv.user || meEmail);

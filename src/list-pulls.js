@@ -87,7 +87,7 @@ function getPullRequestComments (url, existingComments, callback) {
 
     request.get({
         url: url,
-        headers: {'User-Agent': 'Cordova Coho'}
+        headers: { 'User-Agent': 'Cordova Coho' }
     }, function (err, res, payload) {
         if (err) {
             if (!commentFailed) {
@@ -129,7 +129,7 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 
         if (pullRequests.message === 'Bad credentials') {
             apputil.fatal('Error: GitHub Bad credentials. Check your CORDOVA_GIT_ACCOUNT environment variable which should be set with your Github API token: https://github.com/settings/tokens.',
-            'CORDOVA_GIT_ACCOUNT used: ' + process.env['CORDOVA_GIT_ACCOUNT']);
+                'CORDOVA_GIT_ACCOUNT used: ' + process.env['CORDOVA_GIT_ACCOUNT']);
         }
 
         pullRequests = pullRequests.filter(function (p) {
@@ -245,10 +245,10 @@ function * listPullRequestsCommand () {
             desc: 'Used in conjunction with --stats-only. Output the report in JSON format.',
             type: 'bool'
         })
-         .options('short', {
-             desc: 'Truncates PR body description',
-             type: 'bool'
-         });
+        .options('short', {
+            desc: 'Truncates PR body description',
+            type: 'bool'
+        });
     opt.usage('Reports what GitHub pull requests are open for the given repositories.\n' +
                '\n' +
                'Example usage: $0 list-pulls --hide-user="agrieve" | tee pulls.list | less -R\n' +
@@ -257,7 +257,7 @@ function * listPullRequestsCommand () {
                '\n' +
                'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n' +
                'You can also set the CORDOVA_GIT_ACCOUNT environment variable with your Github API key: https://github.com/settings/tokens\n'
-               );
+    );
     var argv = opt.argv;
 
     if (argv.h) {

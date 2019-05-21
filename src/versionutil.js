@@ -171,7 +171,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
         var versionDescription = pendingChangesExistInJSON ?
             'version & VERSION' : 'VERSION';
-        var pre = opts.pre || '';
+        var pre = (opts && opts.pre) ? opts.pre : '';
         yield gitutil.commitChanges(pre + 'Set ' + versionDescription + ' to ' + version + ' (coho)');
     }
 };

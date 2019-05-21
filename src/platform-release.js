@@ -215,7 +215,8 @@ exports.prepareReleaseBranchCommand = function * () {
 
     var repos = flagutil.computeReposFromFlag(argv.r);
 
-    // XXX TBD ???:
+    // XXX TODO this variable should either be updated or removed
+    // from this function.
     var branchName = null;
 
     var isOtherRepoBranch = !!argv.b;
@@ -229,6 +230,8 @@ exports.prepareReleaseBranchCommand = function * () {
     yield repoutil.forEachRepo(repos, function * (repo) {
         var platform = repo.id;
         var version = yield handleVersion(repo, argv.version, true);
+        // XXX TODO this should probably be used in the
+        // executil.reportGitPushResult call below.
         var releaseBranchName = isOtherRepoBranch ? repoBranchName :
                 versionutil.getReleaseBranchNameFromVersion(version);
 
@@ -281,7 +284,8 @@ exports.prepareReleaseBranchCommand = function * () {
         });
     });
 
-    // XXX TBD ???:
+    // XXX TODO: show correct branch name as
+    // branchName is no longer updated in the code above.
     executil.reportGitPushResult(repos, [repoBranchName, branchName]);
 };
 

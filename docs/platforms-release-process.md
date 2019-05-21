@@ -261,7 +261,7 @@ Then ensure commits look okay on both branches
 
     coho repo-status -r android -b master -b 7.1.x
 
-or use git tool to verify manually.
+or verify manually (e.g. by looking at the git commit messages).
 
 ## Testing
 

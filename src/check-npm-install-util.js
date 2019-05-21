@@ -23,7 +23,7 @@ try {
 } catch (e) {
     const path = require('path'); // Built-in Node.js module
     console.log(
-       'Please run "npm install" from this directory:\n\t' +
+        'Please run "npm install" from this directory:\n\t' +
         path.join(__dirname, '..')); // correct path
     process.exit(2);
 }

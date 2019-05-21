@@ -237,6 +237,15 @@ exports.prepareReleaseBranchCommand = function * () {
             // or other branch
             yield repoupdate.updateRepos([repo], [repoBranchName], false);
 
+            if (platform === 'ios') {
+                // Updates version in CDVAvailability.h file
+                yield updateCDVAvailabilityFile(version);
+                // Git commit changes
+                if (yield gitutil.pendingChangesExist()) {
+                    yield executil.execHelper(executil.ARGS('git commit -am', 'Added ' + version + ' to CDVAvailability.h (via coho).'));
+                }
+            }
+
             // Either create or pull down the branch.
             if (yield gitutil.remoteBranchExists(repo, releaseBranchName)) {
                 print('Remote branch already exists for repo: ' + repo.repoName);
@@ -253,15 +262,6 @@ exports.prepareReleaseBranchCommand = function * () {
             }
 
             yield updateJsSnapshot(repo, version, true, jsBranchName, pre);
-
-            if (platform === 'ios' && /\d$/.test(version)) {
-                // Updates version in CDVAvailability.h file
-                yield updateCDVAvailabilityFile(version);
-                // Git commit changes
-                if (yield gitutil.pendingChangesExist()) {
-                    yield executil.execHelper(executil.ARGS('git commit -am', pre + 'Add ' + version + ' to CDVAvailability.h (via coho).'));
-                }
-            }
 
             print(repo.repoName + ': Setting VERSION to "' + version + '" on branch "' + releaseBranchName + '".');
             yield versionutil.updateRepoVersion(repo, version, {commitChanges:true, pre:pre});

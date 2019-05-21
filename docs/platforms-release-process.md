@@ -33,6 +33,7 @@ It describes the following steps:
 - [Before you start](#before-you-start)
   * [Read through Apache release policy](#read-through-apache-release-policy)
   * [Request buy-in](#request-buy-in)
+  * [Ensure changes are in a dev version](#ensure-changes-are-in-a-dev-version)
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
   * [Check dependencies](#check-dependencies)
@@ -120,6 +121,10 @@ E.g.:
 Double check you replace "Android" in the subject and mail body - there is no undo for emails.
 
 Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
+
+### Ensure changes are in a dev version
+
+The procedure described here may leave non-master branch with a non-dev version number. Functional changes should always be done in a "-dev" version. Please mark the "-dev" version manually or using cordova-coho before making changes, and test it especially when marking "-dev" version manually.
 
 ## Before Release
 

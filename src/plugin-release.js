@@ -426,7 +426,7 @@ function * interactive_plugins_release () {
             prompts.push({
                 type: 'confirm',
                 name: 'rb_manualmerge_proceed_' + plugin_name,
-                message: plugin_name + ' already has an existing release branch "' + rb + '", and it needs a manual merge of master into it (either because you specified that, or because there was a merge conflict during auto-merge. Now is your chance to manually merge / cherry-pick / resolve conflicts on the "' + rb + '" branch. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
+                message: plugin_name + ' already has an existing release branch "' + rb + '", and it needs a manual merge of master into it (either because you specified that, or because there was a merge conflict during auto-merge. Now is your chance to manually merge / cherry-pick / resolve conflicts on the "' + rb + '" branch and commit the result. Once you have done this (probably in a separate shell or command prompt), hit Enter to continue.'
             });
         });
         return inquirer.prompt(prompts);

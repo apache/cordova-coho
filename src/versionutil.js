@@ -144,6 +144,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     }
 
     // Update the plugin.xml(s)
+    TODO tests/package.json
     var isPluginRepo = !!repoutil.isInRepoGroup(repo, 'plugins');
     if (isPluginRepo) {
         var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];

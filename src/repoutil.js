@@ -502,6 +502,7 @@ exports.forEachRepo = function * (repos, func) {
             origPath = origPath + '/..';
         }
         var repoDir = getRepoDir(repo);
+        console.log('$ cd ' + repoDir)
         shelljs.cd(repoDir);
 
         if (shelljs.error()) {
@@ -521,6 +522,8 @@ function resolveCwdRepo () {
     for (;;) {
         var value = path.basename(curPath);
         if (getRepoById(value)) {
+            console.log('Working with `' + value + '`');
+
             return value;
         }
         curPath = path.resolve(curPath, '..');

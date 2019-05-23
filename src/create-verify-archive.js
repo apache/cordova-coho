@@ -84,6 +84,7 @@ exports.createCommand = function * (argv) {
         }
 
         var tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
+        console.log('Working with tag `' + tag + '`')
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
         }

@@ -29,6 +29,7 @@ This page describes the technical steps for doing a Platforms Release.
   * [Read first](#read-first)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
+  * [Choose a Release Identifier](#choose-a-release-identifier)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
   * [Make sure you're up-to-date](#make-sure-youre-up-to-date)
@@ -96,6 +97,20 @@ You should have your platform repository checked out in a folder where you also 
 
 ## Before you start
 
+
+### Choose a Release Identifier
+
+Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. 
+
+Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `android20190506` or `android@503`. You can also create a release issue and use that (including the repository name): `cordova-androidn#123`.
+
+You set it similar to the active plugins:
+
+```
+RELEASE=android20190506
+echo $RELEASE
+```
+
 ### Request buy-in
 
 Email the dev mailing-list at <dev@cordova.apache.org> and see if anyone has reason to postpone the release.
@@ -146,7 +161,9 @@ Within a new Pull Request: update any outdated dependencies in the project's `pa
 Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
 
     (cd cordova-android && npm audit)
-    
+
+TODO Get rid of package-lock.json afterwards
+
 ### License Check
 
 Ensure license headers are present everywhere. For reference, see this [background](http://www.apache.org/legal/src-headers.html). Expect some noise in the output, for example some files from test fixtures will show up.

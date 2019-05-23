@@ -102,7 +102,7 @@ You should have your platform repository checked out in a folder where you also 
 
 Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. 
 
-Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `android20190506` or `android@503`. You can also create a release issue and use that (including the repository name): `cordova-androidn#123`.
+Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `android20190506` or `android@503`. You can also create a release issue and use that (including the repository name): `cordova-android#123`.
 
 You set it similar to the active plugins:
 

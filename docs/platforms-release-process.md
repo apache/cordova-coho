@@ -32,13 +32,13 @@ It describes the following steps:
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
   * [Read through Apache release policy](#read-through-apache-release-policy)
+  * [Choose a Release Identifier](#choose-a-release-identifier)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
   * [npm audit check](#npm-audit-check)
   * [Check dependencies](#check-dependencies)
   * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
   * [License Check](#license-check)
-  * [Create JIRA issue](#create-jira-issue)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
     - [Remove the `-dev` suffix from version](#remove-the--dev-suffix-from-version)
@@ -75,7 +75,6 @@ It describes the following steps:
   * [Tell Apache about Release](#tell-apache-about-release)
   * [Email a release announcement to the mailing list](#email-a-release-announcement-to-the-mailing-list)
   * [Announce It!](#announce-it)
-  * [Close JIRA issue](#close-jira-issue)
   * [Finally](#finally)
 - [Other stuff that should be reviewed and moved up to the appropriate places](#other-stuff-that-should-be-reviewed-and-moved-up-to-the-appropriate-places)
   * [Update the Docs](#update-the-docs)
@@ -103,6 +102,18 @@ You should have your platform repository checked out in a folder where you also 
 ### Read through Apache release policy
 
 Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
+### Choose a Release Identifier
+
+Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. 
+
+Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `android20190506` or `android@503`. You can also create a release issue and use that (including the repository name): `cordova-android#123`.
+
+You set it similar to the active plugins:
+
+```
+RELEASE=android20190506
+echo $RELEASE
+```
 
 ### Request buy-in
 
@@ -146,11 +157,11 @@ See if any dependencies are outdated
 **Alternative 1:**
 
 - Explicitly pin the outdated dependency versions in the `dependencies` section of `package.json`.
-- Raise a new JIRA issue to update the dependencies in an upcoming release.
+- Raise a new issue to update the dependencies in an upcoming release.
 
 **Alternative 2:**
 
-Within a new JIRA issue: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+Within a new Pull Request: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
 
 ### License Check
 
@@ -162,21 +173,6 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r android
 
-### Create JIRA issue
-
-After waiting for any possible objections from the email sent according to the [Request buy-in](#request-buy-in) section above:
-
- * Create a JIRA issue to track the status of the release.
-   - Make it of type "Task"
-   - Title should be "Cordova-Android Platform Release _August 21, 2014_"
-   - Description should be: "Following steps at https://github.com/apache/cordova-coho/blob/master/docs/platforms-release-process.md"
- * Comments should be added to this bug after each top-level step below is taken
- * Set a variable in your terminal for use later on
-
-
-```
-JIRA="CB-????" # Set this to the release bug.
-```
 
 ## Prepare Release
 
@@ -222,9 +218,9 @@ or use your favorite text editor manually.
 
 Commit these changes together in a single commit (one commit).
 
-    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "$JIRA Update RELEASENOTES & version for release $v")
+    (cd cordova-android && v="$(grep '"version"' package.json | cut -d'"' -f4)" && git commit -am "Update RELEASENOTES & version for release $v ($RELEASE)")
 
-(Should be "$JIRA Update RELEASENOTES.md for release $v" in case `version` is not yet updated in `package.json`.)
+(Should be `Update RELEASENOTES.md for release $v ($RELEASE)` in case `version` is not yet updated in `package.json`.)
 
 ### Special Case 1: Release notes in release branch for patch release
 
@@ -246,7 +242,7 @@ Create and prepare your release branch by using `coho prepare-platform-release-b
 1. Creates a release branch `5.0.x` (if it doesn't already exist)
 2. Updates `cordova.js` snapshot on both `5.0.x` and `master`
 3. Propagates version number from `--version` argument (or from `package.json` if there is no `--version` argument) to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
-4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) again
+4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) back
 
 Run the following command (make sure to replace the version below with what is listed inside `package.json`).
 
@@ -322,7 +318,7 @@ rm -rf androidTest*
 
 ### When a regression is found
 
-Create a JIRA issue for it, and mark it as a blocker.
+Create an issue for it and fix it via a Pull Request before continuing.
 
 ### To submit a fix
 
@@ -372,15 +368,15 @@ Ensure you have the svn repos checked out:
 
 Create archives from your tags:
 
-    coho create-archive -r android --dest cordova-dist-dev/$JIRA --tag 5.0.0
+    coho create-archive -r android --dest cordova-dist-dev/$RELEASE --tag 5.0.0
 
 Sanity Check:
 
-    coho verify-archive cordova-dist-dev/$JIRA/*.tgz
+    coho verify-archive cordova-dist-dev/$RELEASE/*.tgz
 
 Upload:
 
-    (cd cordova-dist-dev && svn add $JIRA && svn commit -m "$JIRA Uploading release candidates for android release")
+    (cd cordova-dist-dev && svn add $RELEASE && svn commit -m "Uploading release candidates for android release ($RELEASE)")
 
 If everything went well the Release Candidate will show up here: https://dist.apache.org/repos/dist/dev/cordova/
 
@@ -414,10 +410,8 @@ __Body:__
     Please review and vote on this 5.0.0 Android Release
     by replying to this email (and keep discussion on the DISCUSS thread)
 
-    Release issue: https://issues.apache.org/jira/browse/CB-XXXX
-
     The archive has been published to dist/dev:
-    https://dist.apache.org/repos/dist/dev/cordova/CB-XXXX
+    https://dist.apache.org/repos/dist/dev/cordova/XXX/
 
     The package was published from its corresponding git tag:
     ### PASTE OUTPUT OF: coho print-tags -r android --tag 5.0.0 ###
@@ -484,9 +478,9 @@ First move the release package files to `dist/`:
     cd cordova-dist
     svn up
     svn rm platforms/cordova-android*
-    cp ../cordova-dist-dev/$JIRA/cordova-android* platforms/
+    cp ../cordova-dist-dev/$RELEASE/cordova-android* platforms/
     svn add platforms/cordova-android*
-    svn commit -m "$JIRA Published android release to dist"
+    svn commit -m "Published android release to dist ($RELEASE)"
 
 Now you can find your release here: https://dist.apache.org/repos/dist/release/cordova/
 
@@ -494,11 +488,11 @@ Then you can also remove the release candidate from `dist-dev/`:
 
     cd ../cordova-dist-dev
     svn up
-    svn rm $JIRA
-    svn commit -m "$JIRA Removing release candidates from dist/dev"
+    svn rm $RELEASE
+    svn commit -m "Removing release candidates from dist/dev ($RELEASE)"
     cd ..
 
-And finally you can publish your package to `npm`:
+And finally you can publish your package to npm:
 
     cd cordova-dist
     npm publish platforms/cordova-android-5.0.0.tgz
@@ -559,11 +553,6 @@ Announce the release to the world!
 * Publish the release blog post
 * Tweet it on https://twitter.com/apachecordova
    
-### Close JIRA Issue
-
-- Double check that the issue includes comments that record the steps you took
-- Mark it as fixed
-
 ### Finally
 
 - Update these instructions if they were missing anything.

@@ -46,7 +46,7 @@ exports.computeReposFromFlag = function (flagValue, opts) {
     var includeModules = opts.includeModules;
 
     if (!flagValue) {
-        console.log('No repos specified - using repo in CWD');
+        console.log('No repos specified with `-r` - using repo in CWD');
         flagValue = '.';
     }
     var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
@@ -86,7 +86,7 @@ exports.computeReposFromFlag = function (flagValue, opts) {
         } else if (group) {
             group.forEach(addRepo);
         } else {
-            apputil.fatal('Invalid repo value: ' + value + '\nUse the list-repos command to see value values.');
+            apputil.fatal('Invalid repo value: ' + value + '\nUse the list-repos command to see valid values.');
         }
     });
     if (!includeSvn) {

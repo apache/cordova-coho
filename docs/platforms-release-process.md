@@ -21,23 +21,21 @@
 
 # Release Process for Cordova Platforms
 
-This page describes the technical steps for doing a `Platforms Release`.
+This page describes the technical steps for doing a Platforms Release.
 
 ## Table of contents
-
-It describes the following steps:
 
 - [General instructions](#general-instructions)
   * [Read first](#read-first)
   * [Repository setup](#repository-setup)
 - [Before you start](#before-you-start)
-  * [Read through Apache release policy](#read-through-apache-release-policy)
   * [Choose a Release Identifier](#choose-a-release-identifier)
   * [Request buy-in](#request-buy-in)
 - [Before Release](#before-release)
-  * [npm audit check](#npm-audit-check)
+  * [Make sure you're up-to-date](#make-sure-youre-up-to-date)
   * [Check dependencies](#check-dependencies)
-  * [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+    - [Resolve any outdated dependencies](#resolve-any-outdated-dependencies)
+  * [`npm audit` check](#npm-audit-check)
   * [License Check](#license-check)
 - [Prepare Release](#prepare-release)
   * [Optional: Set release version in `package.json`](#optional-set-release-version-in-packagejson)
@@ -56,7 +54,7 @@ It describes the following steps:
   * [4) `cordova-lib` tests](#4-cordova-lib-tests)
   * [5) Clean up](#5-clean-up)
   * [When a regression is found](#when-a-regression-is-found)
-  * [To submit a fix](#to-submit-a-fix)
+    - [To submit a fix](#to-submit-a-fix)
 - [Push Changes](#push-changes)
   * [Push commits](#push-commits)
   * [Tag and push tag](#tag-and-push-tag)
@@ -68,7 +66,7 @@ It describes the following steps:
   * [Start VOTE Thread](#start-vote-thread)
   * [Email the result of the vote](#email-the-result-of-the-vote)
   * [If the Vote does *not* Pass](#if-the-vote-does-not-pass)
-  * [Otherwise: Publish real release to `dist/` & npm](#otherwise-publish-real-release-to-dist--npm)
+  * [Otherwise: Publish release to `dist/` & npm](#otherwise-publish-release-to-dist--npm)
   * [(Android only) Uploading to Bintray](#android-only-uploading-to-bintray)
   * [Add permanent Apache release tag to repository](#add-permanent-apache-release-tag-to-repository)
 - [Follow up steps](#follow-up-steps)
@@ -82,7 +80,6 @@ It describes the following steps:
     
 <!-- created with https://ecotrust-canada.github.io/markdown-toc/ and some manual fixing -->
 
-(Yes this list is long and scary, but represents the content below)
 
 ## General instructions
 
@@ -97,11 +94,10 @@ It describes the following steps:
 You should have your platform repository checked out in a folder where you also have checked out all/most/some of the other Cordova repositories. If you followed the [Cloning/Updating Cordova repositories
 ](../README.md#cloningupdating-cordova-repositories) instructions of `cordova-coho`, this should already be the case.
 
+
 ## Before you start
 
-### Read through Apache release policy
 
-Read through the [Apache Releases Policy](http://www.apache.org/dev/release) as stated above. 
 ### Choose a Release Identifier
 
 Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. 
@@ -132,19 +128,16 @@ Double check you replace "Android" in the subject and mail body - there is no un
 
 Note that it would be possible to continue with some of the [Before Release](#before-release) items while waiting for a possible response.
 
+
 ## Before Release
 
-### npm audit check
-
-Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
-
-    (cd cordova-android && npm audit)
-
-### Check dependencies
+### Make sure you're up-to-date
 
 Ensure your checkout of the repository is up-to-date:
 
-    coho repo-update -r android
+    coho repo-update -r android   # updates the repos
+
+### Check dependencies
 
 See if any dependencies are outdated
 
@@ -152,7 +145,7 @@ See if any dependencies are outdated
 
 (The `--depth=0` prevents from listing dependencies of dependencies.)
 
-### Resolve any outdated dependencies
+#### Resolve any outdated dependencies
 
 **Alternative 1:**
 
@@ -162,6 +155,14 @@ See if any dependencies are outdated
 **Alternative 2:**
 
 Within a new Pull Request: update any outdated dependencies in the project's `package.json` file. Be sure to run through the test section below for compatibility issues.
+
+### `npm audit` check
+
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
+
+    (cd cordova-android && npm audit)
+
+TODO Get rid of package-lock.json afterwards
 
 ### License Check
 
@@ -207,6 +208,7 @@ Update the repos `RELEASENOTES.md` file with changes since the last release.
     coho update-release-notes -r android
 
 (`--from-tag` and/or `--to-tag` may be needed in case of non-master branch)
+TODO what does that mean? Examples.
 
 Then curate:
 
@@ -320,7 +322,7 @@ rm -rf androidTest*
 
 Create an issue for it and fix it via a Pull Request before continuing.
 
-### To submit a fix
+#### To submit a fix
 
     git checkout master
     git commit -am 'Your commit message'
@@ -466,10 +468,11 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 * Revert adding of `-dev`
 * Address the concerns
 * Re-tag release using `git tag -f`
+TODO this seems to be missing a few steps here
 * Add back `-dev`
 * Start a new vote
 
-### Otherwise: Publish real release to `dist/` & npm
+### Otherwise: Publish release to `dist/` & npm
 
 First move the release package files to `dist/`:
 

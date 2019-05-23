@@ -113,9 +113,6 @@ Try to the interactive plugins release process. If you struggle with, use the ma
 
 This whole process depends on the `ACTIVE` environment variable being set and containing a list of the plugins you want to release. This command can automatically select the plugins that need a release:
 
-TODO How does it figure out which need a release?
-TODO Does this actually work? On Windows it sure doesn't.
-
     ACTIVE=$(for l in cordova-plugin-*; do ( cd $l; last_release=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD); git log --pretty=format:'* %s' --topo-order --no-merges $last_release..master | grep -v "Incremented plugin version" > /dev/null && echo $l); done | xargs echo)
     echo $ACTIVE
 
@@ -126,9 +123,9 @@ If you don't want to release all plugins, but you have specific plugins you want
 
 #### Choose a Release Identifier
 
-Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`.
+Releases are identified by a "Release Identifier" that is used in commit messages and for temporary folders. 
 
-TODO replace with issue ID
+Good choices are unique and have a direct relation to the release you are about to perform. Examples for valid identifiers would be `plugins20190506` or `splashscreen@503`. You can also create a release issue and use that (including the repository name): `cordova-plugin-splashscreen#123`.
 
 You set it similar to the active plugins:
 
@@ -165,8 +162,7 @@ Note that it would be possible to continue with some of the [Before Release](#be
     coho repo-clone -r plugins                      # clone any possibly missing plugin repos
     coho foreach -r plugins "git checkout master"   # make sure all plugins have master checked out
 
-TODO How to do only for active?
-=> See `${ACTIVE// //` foo below
+TODO How to do only for active? => See `${ACTIVE// //` foo below
 
 #### Check dependencies
 
@@ -191,8 +187,11 @@ Within a new Pull Request: update any outdated dependencies in the project's `pa
 
 #### `npm audit` check
 
-TODO How to run `npm audit` for many repo folders?
+Ensure that the latest version of npm is installed (using a command such as `npm i npm@latest`), `package-lock.json` is present (do `npm i --package-lock-only` if needed), and then check:
 
+    (cd cordova-plugin-splashscreen && npm audit)
+    
+TODO How to run `npm audit` for many repo folders?
 TODO Get rid of package-lock.json afterwards
 
 #### License Check
@@ -201,7 +200,7 @@ Ensure license headers are present everywhere. For reference, see this [backgrou
 
     coho audit-license-headers -r active-plugins | less
     
-TODO only run for $ACTIVE
+TODO only run for $ACTIVE, not for all active-plugins
     
 Tip: Skim by searching for "Unknown Licenses" where the number infront it not 0.
 
@@ -209,7 +208,7 @@ Ensure all dependencies and subdependencies have Apache-compatible licenses.
 
     coho check-license -r active-plugins
  
-TODO only run for $ACTIVE
+TODO only run for $ACTIVE, not for all active-plugins
 
 ### Prepare Release
 
@@ -231,7 +230,7 @@ And same for `cordova-plugin-*/tests/package.json` and `cordova-plugin-*/package
 
     for l in $ACTIVE; do ( cd $l; v="$(grep -m 1 '"version"' package.json | cut -d'"' -f4)"; vt="$(grep -m 1 '"version"' tests/package.json | cut -d'"' -f4)"; if [ "$v" != "$vt" ]; then echo "$l: Setting version in tests/package.json to $v"; sed -i -E '1,/version":.*/s/version":.*/version": "'$v'",/' tests/package.json; fi); done
 
-TODO Output how many files were edited
+TODO Output how many files were edited for success control
 
 ##### Minor or Major version update
 
@@ -410,7 +409,7 @@ TODO Include Release notes in email, at least as a link
 
 #### Voting
 
-TODO
+TODO This needs much better instructions
 
 Steps to verify a plugins release
 

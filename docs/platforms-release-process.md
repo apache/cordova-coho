@@ -465,8 +465,8 @@ _Note: list of PMC members: http://people.apache.org/phonebook.html?pmc=cordova_
 
 ### If the Vote does *not* Pass
 
-* Revert adding of `-dev` on master branch
-* Address the concerns (on master branch)
+* Revert adding of `-dev`
+* Address the concerns
 * Re-tag release using `git tag -f`
 TODO this seems to be missing a few steps here
 * Add back `-dev`

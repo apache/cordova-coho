@@ -100,7 +100,7 @@ To see valid repo ids and repo group ids for use with Coho, use the `list-repos`
 
 ### Note about global context
 
-Note that for some commands you may need to use the `-g` or `--global` flag to work in an npm global context, since coho was originally designed for use in another context.
+By default `coho` is executed in the parent of where it is installed or checked out (since coho was originally designed for use in another context where this was needed). To work in a global context, meaning the current folder where you are executing `coho`, most commands require you to use the `-g` or `--global` flag. To make this more obvious, all commands first output their current working directory: `Running from ...`.
 
 ## Contributing
 

@@ -36,6 +36,8 @@ According [versioning-and-release-strategy.md](versioning-and-release-strategy.m
 
 ### cordova-common singleton rule
 
+**Does not apply since Cordova 9 (cordova-common@3.1.0):**
+
 The most important rule is that packages such as `cordova-lib` and `cordova-cli` should not use multiple versions of `cordova-common` through the chain of dependencies. This rule is due to the use of multiple singletons in `cordova-common`. This means that if `cordova-common` is updated it should be released before other packages such as `cordova-fetch`, `cordova-create`, `cordova-lib`, `cordova-cli`, etc.
 
 ### Alternative approaches

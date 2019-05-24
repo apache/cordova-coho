@@ -284,7 +284,7 @@ function * interactive_plugins_release () {
         /* 8. ensure all dependencies and subdependencies have apache-compatible licenses.
             * 9. update plugin versions + release notes.
             *   - for each plugin, remove the `-dev` suffix in plugin.xml, package.json, and plugin.xml of `tests/` subdirectory (if exists) */
-            TODO add tests/package.json
+            /* TODO add tests/package.json*/
         console.log('Removing the "-dev" suffix from versions in the master branch...');
         return co.wrap(function * () {
             yield repoutil.forEachRepo(plugin_repos, function * (repo) {

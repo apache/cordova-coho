@@ -246,8 +246,10 @@ function * interactive_plugins_release () {
             });
             return yield Promise.resolve(unknown_licenses);
         })();
+        /*
         TODO npm audit
         TODO Check dependencies
+        */
     }).then(function (unknowns) {
         if (unknowns.length) {
             console.warn('We identified some unknown licenses in plugin repos!');

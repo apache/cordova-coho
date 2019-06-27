@@ -30,21 +30,21 @@ var repoutil = require('./repoutil');
 // constants
 var COMMON_RAT_EXCLUDES = [
     // Binary Files
-    '*.wav',
-    '*.webloc',
+    '(.*).wav',
+    '(.*).webloc',
 
     // iOS Related
-    '*.xcworkspacedata',
-    '*.xccheckout',
-    '*.xcscheme',
-    '*.xcodeproj',
-    '*-Info.plist',
+    '(.*).xcworkspacedata',
+    '(.*).xccheckout',
+    '(.*).xcscheme',
+    '(.*).xcodeproj',
+    '(.*)-Info.plist',
     'Info.plist',
 
     // Other
-    '.*',
-    '*.json', // Excludes all JSON files because commenting is not supported.
-    '*.txt', // Excludes all text files because commenting is not supported.
+    // eslint-disable-next-line no-useless-escape
+    '\\.(.*)',
+    '(.*).json', // Excludes all JSON files because commenting is not supported.
     'VERSION',
     'node_modules',
     'thirdparty'
@@ -129,11 +129,12 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
         // add flags for excludes
         var excludeFlags = [];
         excludePatterns.forEach(function (pattern) {
-            excludeFlags.push('-e', pattern);
+            excludeFlags.push('-e', `"${pattern}"`);
         });
 
         // run Rat
-        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function (stdout) {
+        const target = path.resolve(apputil.getBaseDir(), repo.repoName);
+        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', target).concat(excludeFlags), silent, ignoreError, function (stdout) {
             if (win) win(repo, stdout);
         });
     });

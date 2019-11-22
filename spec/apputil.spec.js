@@ -18,8 +18,6 @@ under the License.
 */
 
 var path = require('path');
-var chalk = require('chalk');
-var shell = require('shelljs');
 var apputil = require('../src/apputil');
 
 describe('apputil unit tests', function () {

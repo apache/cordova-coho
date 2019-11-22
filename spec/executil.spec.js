@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var jasmine_co = require('jasmine-co').install();
+require('jasmine-co').install();
 var executil = require('../src/executil');
 var superspawn = require('../src/superspawn');
 var apputil = require('../src/apputil');
@@ -77,7 +77,7 @@ describe('executil unit tests', function () {
     }, TIMEOUT);
 
     it('Test#006 : pretending to run', function * () {
-        var executilExecOrPretend = yield executil.execOrPretend([ 'git', 'symbolic-ref', 'HEAD' ], 'pretend');
+        yield executil.execOrPretend([ 'git', 'symbolic-ref', 'HEAD' ], 'pretend');
         expect(apputil.print.calls.count()).toEqual(1);
         expect(apputil.print.calls.argsFor(0)[0]).toEqual('PRETENDING TO RUN: git symbolic-ref HEAD');
     }, TIMEOUT);

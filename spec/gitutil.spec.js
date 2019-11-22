@@ -17,19 +17,10 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var jasmine_co = require('jasmine-co').install();
-var path = require('path');
+require('jasmine-co').install();
 var executil = require('../src/executil');
 var gitutilJS = require('../src/gitutil');
-var gitutil = exports;
-var semver = require('semver');
 var TIMEOUT = 60000;
-var androidRepo = { title: 'Android',
-    id: 'android',
-    repoName: 'cordova-android',
-    jiraComponentName: 'Android',
-    cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ],
-    remoteName: 'origin' };
 
 describe('gitutil unit tests', function () {
     beforeEach(function * () {
@@ -41,37 +32,28 @@ describe('gitutil unit tests', function () {
         });
     });
     it('Test#001 : validate the version that is passed in', function * () {
-        var gitutilTagExists = yield gitutilJS.tagExists('6.3.0');
+        yield gitutilJS.tagExists('6.3.0');
         expect(executil.execHelper.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.argsFor(0)[0]).toEqual('git tag --list 6.3.0');
     }, TIMEOUT);
 
-    /* XXX TBD LOOKS BROKEN:
-	it("Test#002 : validate remote branch", function* () {
-		var gitutilRemoteBranch = yield gitutilJS.remoteBranchExists('android', 'name');
-		expect(executil.execHelper.calls.count()).toEqual(1);
-		expect(executil.ARGS.calls.count()).toEqual(1);
-		expect(executil.ARGS.calls.argsFor(0)[0]).toEqual("git branch -r --list undefined/name");
-	},TIMEOUT);
-	// */
-
     it('Test#003 : validate pending changes', function * () {
-        var gitutilPendingChanges = yield gitutilJS.pendingChangesExist();
+        yield gitutilJS.pendingChangesExist();
         expect(executil.execHelper.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.argsFor(0)[0]).toEqual('git status --porcelain');
     }, TIMEOUT);
 
     it('Test#004 : reseting from origin', function * () {
-        var gitutilReset = yield gitutilJS.resetFromOrigin();
+        yield gitutilJS.resetFromOrigin();
         expect(executil.execHelper.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.argsFor(0)[0]).toEqual('git reset --hard origin/master');
     }, TIMEOUT);
 
     it('Test#005 : git clean', function * () {
-        var gitutilClean = yield gitutilJS.gitClean();
+        yield gitutilJS.gitClean();
         expect(executil.execHelper.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.argsFor(0)[0]).toEqual('git clean -d -f');

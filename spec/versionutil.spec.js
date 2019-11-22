@@ -18,7 +18,7 @@ under the License.
 */
 
 var versionutil = require('../src/versionutil');
-var jasmine_co = require('jasmine-co').install();
+require('jasmine-co').install();
 var fs = require('fs');
 var path = require('path');
 var shell = require('shelljs');
@@ -56,13 +56,12 @@ var browserRepo = { title: 'Browser',
     cordovaJsPaths: ['cordova-lib/cordova.js'] };
 
 describe('Correct version is passed to gradle.build', function () {
-    var shellSpy;
     beforeEach(function * () {
         spyOn(fs, 'writeFileSync').and.returnValue(true);
         spyOn(fs, 'readFileSync').and.returnValue('{}');
         spyOn(xml2js, 'parseString').and.returnValue(true);
         spyOn(fs, 'existsSync').and.returnValue(true);
-        shellSpy = spyOn(shell, 'sed').and.returnValue(true);
+        spyOn(shell, 'sed').and.returnValue(true);
         spyOn(apputil, 'print').and.returnValue(true);
         spyOn(repoutil, 'isInRepoGroup').and.returnValue(true);
         spyOn(gitutil, 'pendingChangesExist').and.callFake(function () {
@@ -85,7 +84,7 @@ describe('Correct version is passed to gradle.build', function () {
     });
 
     it('Test#001 : checks that the correct android version is passed in', function * () {
-        var androidVersion = yield versionutil.updateRepoVersion(androidRepo, '6.4.0-dev');
+        yield versionutil.updateRepoVersion(androidRepo, '6.4.0-dev');
         // Check call count
         expect(fs.writeFileSync.calls.count()).toEqual(2);
         expect(fs.existsSync.calls.count()).toEqual(4);
@@ -105,7 +104,7 @@ describe('Correct version is passed to gradle.build', function () {
     }, TIMEOUT);
 
     it('Test#002 : checks that the correct ios version is passed in', function * () {
-        var iosVersion = yield versionutil.updateRepoVersion(iosRepo, '4.2.0-dev');
+        yield versionutil.updateRepoVersion(iosRepo, '4.2.0-dev');
         // Check call count
         expect(fs.writeFileSync.calls.count()).toEqual(2);
         expect(fs.existsSync.calls.count()).toEqual(4);
@@ -120,7 +119,7 @@ describe('Correct version is passed to gradle.build', function () {
     }, TIMEOUT);
 
     it('Test#003 : checks that the correct windows version is passed in', function * () {
-        var windowsVersion = yield versionutil.updateRepoVersion(windowsRepo, '4.5.0-dev');
+        yield versionutil.updateRepoVersion(windowsRepo, '4.5.0-dev');
         // Check call count
         expect(fs.writeFileSync.calls.count()).toEqual(2);
         expect(fs.existsSync.calls.count()).toEqual(5);
@@ -135,7 +134,7 @@ describe('Correct version is passed to gradle.build', function () {
     }, TIMEOUT);
 
     it('Test#004 : check that the correct browser version is passed in', function * () {
-        var browserVersion = yield versionutil.updateRepoVersion(browserRepo, '4.1.0-dev');
+        yield versionutil.updateRepoVersion(browserRepo, '4.1.0-dev');
         // Check call count
         expect(fs.writeFileSync.calls.count()).toEqual(2);
         expect(fs.existsSync.calls.count()).toEqual(5);

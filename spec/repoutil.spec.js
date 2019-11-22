@@ -17,9 +17,8 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var jasmine_co = require('jasmine-co').install();
+require('jasmine-co').install();
 
-var fs = require('fs');
 var path = require('path');
 
 var shelljs = require('shelljs');
@@ -68,7 +67,7 @@ describe('check functionality of repoutil', function () {
         spyOn(shelljs, 'cd').and.returnValue(true);
         spyOn(shelljs, 'error');
         spyOn(apputil, 'fatal');
-        var x = yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {});
+        yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {});
         expect(shelljs.cd.calls.count()).toEqual(2);
         expect(shelljs.error.calls.count()).toEqual(1);
         expect(apputil.fatal.calls.count()).toEqual(0);
@@ -78,12 +77,12 @@ describe('check functionality of repoutil', function () {
         // Return correct repo object
         repoutil.getRepoById('cordova-android');
         expect(repoutil.getRepoById('cordova-android')).toEqual(Object(
-	        { title: 'Android',
+            { title: 'Android',
                 id: 'android',
-	        versions: [ '4.4', '5.0', '5.1', '6.0', '7.0', '7.1' ],
-	        repoName: 'cordova-android',
-	        jiraComponentName: 'cordova-android',
-	        cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ] }
+                versions: [ '4.4', '5.0', '5.1', '6.0', '7.0', '7.1' ],
+                repoName: 'cordova-android',
+                jiraComponentName: 'cordova-android',
+                cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ] }
         ));
         // Return null if opt repos are passed in
         repoutil.getRepoById('cordova-android', 'opt_repos');

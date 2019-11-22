@@ -17,10 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
-
 var apputil = require('../src/apputil');
-var repoutil = require('../src/repoutil');
 var flagutil = require('../src/flagutil');
 
 var TIMEOUT = 60000;
@@ -52,9 +49,9 @@ describe('flagutil unit tests', function () {
         var repo = flagutil.computeReposFromFlag('plugin-camera');
         expect(repo).toEqual(
             [ { title: 'Plugin - Camera',
-		    id: 'plugin-camera',
-		    repoName: 'cordova-plugin-camera',
-		    jiraComponentName: 'cordova-plugin-camera' } ]
+                id: 'plugin-camera',
+                repoName: 'cordova-plugin-camera',
+                jiraComponentName: 'cordova-plugin-camera' } ]
         );
     }, TIMEOUT);
 
@@ -62,15 +59,15 @@ describe('flagutil unit tests', function () {
         var repo = flagutil.computeReposFromFlag('docs');
         expect(repo).toEqual(
             [ { title: 'Docs',
-		    id: 'docs',
-		    repoName: 'cordova-docs',
-		    jiraComponentName: 'cordova-docs' } ]
+                id: 'docs',
+                repoName: 'cordova-docs',
+                jiraComponentName: 'cordova-docs' } ]
         );
     }, TIMEOUT);
 
     it('Test#005 : passing in a non-repo is invalid', function () {
         spyOn(apputil, 'fatal');
-        var nonRepo = flagutil.computeReposFromFlag('nonRepo');
+        flagutil.computeReposFromFlag('nonRepo');
         expect(apputil.fatal.calls.count()).toEqual(1);
         expect(apputil.fatal.calls.argsFor(0)[0]).toMatch('Invalid repo value: nonRepo');
     }, TIMEOUT);

@@ -55,7 +55,7 @@ var browserRepo = { title: 'Browser',
     cordovaJsSrcName: 'cordova.browser.js',
     cordovaJsPaths: ['cordova-lib/cordova.js'] };
 
-describe('Correct version is passed to gradle.build', function () {
+describe('versionutil', function () {
     beforeEach(function * () {
         spyOn(fs, 'writeFileSync').and.returnValue(true);
         spyOn(fs, 'readFileSync').and.returnValue('{}');

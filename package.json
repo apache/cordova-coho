@@ -45,7 +45,7 @@
     "tape-test": "node test/test.js | tap-spec",
     "cover": "istanbul cover --root src --print detail jasmine",
     "jasmine": "jasmine",
-    "eslint": "eslint test && eslint src"
+    "eslint": "eslint ."
   },
   "repository": {
     "type": "git",

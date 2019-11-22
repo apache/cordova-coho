@@ -24,7 +24,6 @@ var os = require('os');
 var path = require('path');
 var shell = require('shelljs');
 var gitutil = require('../src/gitutil');
-var TIMEOUT = 60000;
 var androidRepo = { title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
@@ -90,23 +89,23 @@ describe('versionutil', function () {
             'framework/src/org/apache/cordova/CordovaWebView.java',
             'framework/build.gradle'
         );
-    }, TIMEOUT);
+    });
 
     it('Test#002 : checks that the correct ios version is passed in', function * () {
         setupPlatform('ios');
         yield versionutil.updateRepoVersion(iosRepo, testVersion);
         expectTestVersioninFiles('bin/templates/scripts/cordova/version');
-    }, TIMEOUT);
+    });
 
     it('Test#003 : checks that the correct windows version is passed in', function * () {
         setupPlatform('windows');
         yield versionutil.updateRepoVersion(windowsRepo, testVersion);
         expectTestVersioninFiles('template/cordova/version');
-    }, TIMEOUT);
+    });
 
     it('Test#004 : check that the correct browser version is passed in', function * () {
         setupPlatform('browser');
         yield versionutil.updateRepoVersion(browserRepo, testVersion);
         expectTestVersioninFiles('bin/template/cordova/version');
-    }, TIMEOUT);
+    });
 });

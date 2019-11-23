@@ -53,19 +53,8 @@ var COMMON_RAT_EXCLUDES = [
     'thirdparty'
 ];
 
-var RAT_IGNORE_PATH = '.ratignore';
-var RATIGNORE_COMMENT_PREFIX = '#';
-
 var RAT_NAME = 'apache-rat-0.12';
 var RAT_URL = 'https://archive.apache.org/dist/creadur/apache-rat-0.12/apache-rat-0.12-bin.tar.gz';
-
-function startsWith (string, prefix) {
-    return string.indexOf(prefix) === 0;
-}
-
-function isComment (pattern) {
-    return startsWith(pattern.trim(), RATIGNORE_COMMENT_PREFIX);
-}
 
 module.exports = function * () {
 
@@ -109,24 +98,10 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
 
     console.log(chalk.red('Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));
 
-    // NOTE:
-    //      the CWD in a callback is the directory for its respective repo
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var excludePatterns = COMMON_RAT_EXCLUDES;
-
-        // read in exclude patterns from repo's .ratignore, one pattern per line
-        if (fs.existsSync(RAT_IGNORE_PATH)) {
-
-            var ratignoreFile = fs.readFileSync(RAT_IGNORE_PATH);
-            var ratignoreLines = ratignoreFile.toString().trim().split('\n');
-
-            // add only non-empty and non-comment lines
-            ratignoreLines.forEach(function (line) {
-                if (line.length > 0 && !isComment(line)) {
-                    excludePatterns.push(line);
-                }
-            });
-        }
+        // NOTE: the CWD in a callback is the directory for its respective repo
+        const ratignorePatterns = readRatignorePatterns(process.cwd());
+        const excludePatterns = COMMON_RAT_EXCLUDES.concat(ratignorePatterns);
 
         // run Rat
         const args = executil.ARGS('java -jar', ratPath, '-d', '.', '-e').concat(excludePatterns);
@@ -135,3 +110,15 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
         });
     });
 };
+
+// Read in exclude patterns from .ratignore at dir
+function readRatignorePatterns (dir) {
+    const ratignorePath = path.join(dir, '.ratignore');
+    if (!fs.existsSync(ratignorePath)) return [];
+
+    // return only non-empty and non-comment lines
+    return fs.readFileSync(ratignorePath, 'utf-8')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0 && !line.startsWith('#'));
+}

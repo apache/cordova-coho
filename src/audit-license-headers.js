@@ -26,7 +26,7 @@ var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 const { promisify } = require('util');
 const pipeline = promisify(require('stream').pipeline);
-const zlib = require('zlib');
+const { Gunzip } = require('zlib');
 const got = require('got');
 const tar = require('tar-fs');
 
@@ -53,9 +53,6 @@ var COMMON_RAT_EXCLUDES = [
     'thirdparty'
 ];
 
-var RAT_NAME = 'apache-rat-0.12';
-var RAT_URL = 'https://archive.apache.org/dist/creadur/apache-rat-0.12/apache-rat-0.12-bin.tar.gz';
-
 module.exports = function * () {
 
     var opt = flagutil.registerRepoFlag(optimist);
@@ -76,25 +73,7 @@ module.exports = function * () {
 };
 
 module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
-    // Check that RAT command exists.
-    var ratPath;
-    yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {
-        ratPath = path.join(process.cwd(), RAT_NAME, RAT_NAME + '.jar');
-    });
-
-    if (!fs.existsSync(ratPath)) {
-        console.log('RAT tool not found, downloading to: ' + ratPath);
-        yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {
-            yield pipeline(
-                got.stream(RAT_URL),
-                zlib.createGunzip(),
-                tar.extract('.')
-            ).catch(error => {
-                error.message = 'Failed to get RAT binary:\n' + error.message;
-                throw error;
-            });
-        });
-    }
+    const ratPath = yield getRatJar();
 
     console.log(chalk.red('Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));
 
@@ -110,6 +89,25 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
         });
     });
 };
+
+// Returns path to Apache RAT JAR; downloads it first if necessary
+async function getRatJar () {
+    const RAT_ID = 'apache-rat-0.12';
+    const RAT_URL = `https://archive.apache.org/dist/creadur/${RAT_ID}/${RAT_ID}-bin.tar.gz`;
+
+    const cohoRoot = repoutil.getRepoDir(repoutil.getRepoById('coho'));
+    const ratJarPath = path.join(cohoRoot, RAT_ID, RAT_ID + '.jar');
+
+    if (!fs.existsSync(ratJarPath)) {
+        console.log('RAT tool not found, downloading to: ' + ratJarPath);
+        await pipeline(
+            got.stream(RAT_URL), new Gunzip(), tar.extract(cohoRoot)
+        ).catch(err => {
+            throw new Error('Failed to get RAT JAR:\n' + err.message);
+        });
+    }
+    return ratJarPath;
+}
 
 // Read in exclude patterns from .ratignore at dir
 function readRatignorePatterns (dir) {

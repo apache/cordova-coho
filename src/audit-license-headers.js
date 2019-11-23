@@ -128,14 +128,9 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
             });
         }
 
-        // add flags for excludes
-        var excludeFlags = [];
-        excludePatterns.forEach(function (pattern) {
-            excludeFlags.push('-e', pattern);
-        });
-
         // run Rat
-        yield executil.execHelper(executil.ARGS('java -jar', ratPath, '-d', '.').concat(excludeFlags), silent, ignoreError, function (stdout) {
+        const args = executil.ARGS('java -jar', ratPath, '-d', '.', '-e').concat(excludePatterns);
+        yield executil.execHelper(args, silent, ignoreError, function (stdout) {
             if (win) win(repo, stdout);
         });
     });

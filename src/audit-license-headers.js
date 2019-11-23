@@ -42,7 +42,6 @@ var COMMON_RAT_EXCLUDES = [
     'Info.plist',
 
     // Other
-    // eslint-disable-next-line no-useless-escape
     '\\.(.*)',
     '(.*).json', // Excludes all JSON files because commenting is not supported.
     '(.*).txt', // Excludes all text files because commenting is not supported.

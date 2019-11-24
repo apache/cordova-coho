@@ -98,7 +98,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
             fs.writeFileSync(versionFilePath, version + '\n');
         });
         shelljs.config.fatal = true;
-        if (repo.id === 'android' || repo.id === 'amazon-fireos') {
+        if (repo.id === 'android') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
             // Set build.gradle version, vcsTag, and name
@@ -107,10 +107,6 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
             shelljs.sed('-i', /version.{\n.*(name.*=.*)/, "version {\n            name = '" + version + "'", path.join('framework', 'build.gradle'));
         } else if (repo.id === 'ios' || repo.id === 'osx') {
             shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '";', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
-        } else if (repo.id === 'blackberry') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project', 'cordova', 'lib', 'version.js'));
-        } else if (repo.id === 'firefoxos' || repo.id === 'ubuntu') {
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'project', 'cordova', 'version'));
         } else if (repo.id === 'windows') {
             if (fs.existsSync(path.join('template', 'cordova', 'version'))) {
                 shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));

@@ -1,9 +1,6 @@
-apache-rat-0.8
-apache-rat-0.10
-apache-rat-0.11
-apache-rat-0.12
-node_modules
-.idea
-**/*.swp
-
+*.swp
 .DS_Store
+node_modules/
+.idea/
+
+/apache-rat-*

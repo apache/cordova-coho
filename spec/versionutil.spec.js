@@ -20,14 +20,10 @@ under the License.
 var versionutil = require('../src/versionutil');
 require('jasmine-co').install();
 var fs = require('fs');
+var os = require('os');
 var path = require('path');
 var shell = require('shelljs');
-var xml2js = require('xml2js');
-var repoutil = require('../src/repoutil');
-var executil = require('../src/executil');
 var gitutil = require('../src/gitutil');
-var apputil = require('../src/apputil');
-var TIMEOUT = 60000;
 var androidRepo = { title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
@@ -54,97 +50,62 @@ var browserRepo = { title: 'Browser',
     jiraComponentName: 'Browser',
     cordovaJsSrcName: 'cordova.browser.js',
     cordovaJsPaths: ['cordova-lib/cordova.js'] };
+const testVersion = '0.0.99';
 
-describe('Correct version is passed to gradle.build', function () {
-    beforeEach(function * () {
-        spyOn(fs, 'writeFileSync').and.returnValue(true);
-        spyOn(fs, 'readFileSync').and.returnValue('{}');
-        spyOn(xml2js, 'parseString').and.returnValue(true);
-        spyOn(fs, 'existsSync').and.returnValue(true);
-        spyOn(shell, 'sed').and.returnValue(true);
-        spyOn(apputil, 'print').and.returnValue(true);
-        spyOn(repoutil, 'isInRepoGroup').and.returnValue(true);
-        spyOn(gitutil, 'pendingChangesExist').and.callFake(function () {
-            return function * () { return true; };
-        });
-        spyOn(executil, 'execHelper').and.callFake(function () {
-            return function * () { return true; };
-        });
+describe('versionutil', function () {
+    let tmpDir;
+
+    beforeEach(() => {
+        const tmpDirTemplate = path.join(os.tmpdir(), 'cordova-coho-tests-');
+        tmpDir = fs.mkdtempSync(tmpDirTemplate);
+
+        spyOn(gitutil, 'pendingChangesExist').and.callFake(() => function * () { return true; });
+        spyOn(gitutil, 'commitChanges').and.callFake(() => function * () {});
     });
 
-    afterEach(function () {
-        fs.writeFileSync.calls.reset();
-        fs.readFileSync.calls.reset();
-        fs.existsSync.calls.reset();
-        shell.sed.calls.reset();
-        apputil.print.calls.reset();
-        repoutil.isInRepoGroup.calls.reset();
-        gitutil.pendingChangesExist.calls.reset();
-        executil.execHelper.calls.reset();
+    afterEach(() => {
+        process.chdir(__dirname);
+        shell.rm('-rf', tmpDir);
     });
+
+    function setupPlatform (id) {
+        const src = path.dirname(require.resolve(`cordova-${id}/package`));
+        shell.cp('-R', src, tmpDir);
+        process.chdir(path.join(tmpDir, `cordova-${id}`));
+    }
+
+    function expectTestVersioninFiles (...paths) {
+        for (const p of paths) {
+            const content = fs.readFileSync(path.normalize(p), { encoding: 'utf-8' });
+            expect(content).toMatch(testVersion);
+        }
+    }
 
     it('Test#001 : checks that the correct android version is passed in', function * () {
-        yield versionutil.updateRepoVersion(androidRepo, '6.4.0-dev');
-        // Check call count
-        expect(fs.writeFileSync.calls.count()).toEqual(2);
-        expect(fs.existsSync.calls.count()).toEqual(4);
-        expect(fs.readFileSync.calls.count()).toEqual(3);
-        expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
-        expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
-        expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
-        expect(executil.execHelper.calls.count()).toEqual(1);
-        expect(apputil.print.calls.count()).toEqual(0);
-        expect(shell.sed.calls.count()).toEqual(5);
-        // Check that args are correct
-        expect(shell.sed.calls.argsFor(0)[2]).toEqual('CORDOVA_VERSION = "6.4.0-dev";');
-        expect(shell.sed.calls.argsFor(1)[2]).toEqual('VERSION = "6.4.0-dev";');
-        expect(shell.sed.calls.argsFor(2)[2]).toEqual("version = '6.4.0-dev'");
-        expect(shell.sed.calls.argsFor(3)[2]).toEqual("vcsTag = '6.4.0-dev'");
-        expect(shell.sed.calls.argsFor(4)[2]).toContain("name = '6.4.0-dev");
-    }, TIMEOUT);
+        setupPlatform('android');
+        yield versionutil.updateRepoVersion(androidRepo, testVersion);
+        expectTestVersioninFiles(
+            'bin/templates/cordova/version',
+            'framework/src/org/apache/cordova/CordovaWebView.java',
+            'framework/build.gradle'
+        );
+    });
 
     it('Test#002 : checks that the correct ios version is passed in', function * () {
-        yield versionutil.updateRepoVersion(iosRepo, '4.2.0-dev');
-        // Check call count
-        expect(fs.writeFileSync.calls.count()).toEqual(2);
-        expect(fs.existsSync.calls.count()).toEqual(4);
-        expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
-        expect(fs.readFileSync.calls.count()).toEqual(3);
-        expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
-        expect(shell.sed.calls.count()).toEqual(1);
-        expect(apputil.print.calls.count()).toEqual(0);
-        expect(executil.execHelper.calls.count()).toEqual(1);
-        // Check that args are correct
-        expect(shell.sed.calls.argsFor(0)[2]).toEqual('VERSION="4.2.0-dev";');
-    }, TIMEOUT);
+        setupPlatform('ios');
+        yield versionutil.updateRepoVersion(iosRepo, testVersion);
+        expectTestVersioninFiles('bin/templates/scripts/cordova/version');
+    });
 
     it('Test#003 : checks that the correct windows version is passed in', function * () {
-        yield versionutil.updateRepoVersion(windowsRepo, '4.5.0-dev');
-        // Check call count
-        expect(fs.writeFileSync.calls.count()).toEqual(2);
-        expect(fs.existsSync.calls.count()).toEqual(5);
-        expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
-        expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
-        expect(fs.readFileSync.calls.count()).toEqual(3);
-        expect(shell.sed.calls.count()).toEqual(1);
-        expect(apputil.print.calls.count()).toEqual(0);
-        expect(executil.execHelper.calls.count()).toEqual(1);
-        // Check that args are correct
-        expect(shell.sed.calls.argsFor(0)[2]).toEqual('VERSION = "4.5.0-dev";');
-    }, TIMEOUT);
+        setupPlatform('windows');
+        yield versionutil.updateRepoVersion(windowsRepo, testVersion);
+        expectTestVersioninFiles('template/cordova/version');
+    });
 
     it('Test#004 : check that the correct browser version is passed in', function * () {
-        yield versionutil.updateRepoVersion(browserRepo, '4.1.0-dev');
-        // Check call count
-        expect(fs.writeFileSync.calls.count()).toEqual(2);
-        expect(fs.existsSync.calls.count()).toEqual(5);
-        expect(repoutil.isInRepoGroup.calls.count()).toEqual(2);
-        expect(gitutil.pendingChangesExist.calls.count()).toEqual(4);
-        expect(fs.readFileSync.calls.count()).toEqual(3);
-        expect(shell.sed.calls.count()).toEqual(1);
-        expect(apputil.print.calls.count()).toEqual(0);
-        expect(executil.execHelper.calls.count()).toEqual(1);
-        // Check that args are correct
-        expect(shell.sed.calls.argsFor(0)[2]).toEqual('VERSION = "4.1.0-dev";');
-    }, TIMEOUT);
+        setupPlatform('browser');
+        yield versionutil.updateRepoVersion(browserRepo, testVersion);
+        expectTestVersioninFiles('bin/template/cordova/version');
+    });
 });

@@ -17,21 +17,20 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var path = require('path');
-var chalk = require('chalk');
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
+const fs = require('fs');
+const path = require('path');
 const { promisify } = require('util');
 const pipeline = promisify(require('stream').pipeline);
 const { Gunzip } = require('zlib');
 const got = require('got');
 const tar = require('tar-fs');
+const chalk = require('chalk');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
 
-// constants
-var COMMON_RAT_EXCLUDES = [
+const COMMON_RAT_EXCLUDES = [
     // Binary Files
     '*.wav',
     '*.webloc',
@@ -54,21 +53,20 @@ var COMMON_RAT_EXCLUDES = [
 ];
 
 module.exports = function * () {
-
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
 
     opt.usage('Uses Apache RAT to audit source files for license headers.\n' +
               '\n' +
               'Usage: $0 audit-license-headers --repo=name [-r repos]');
-    let argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     yield module.exports.scrubRepos(repos);
 };
 

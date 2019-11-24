@@ -11,7 +11,6 @@
     "co": "~4.0",
     "co-stream": "0.1.1",
     "glob": "^5.0.14",
-    "gnode": "^0.1.0",
     "inquirer": "2.0.0",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
@@ -64,5 +63,8 @@
     "steven gill",
     "Brian LeRoux"
   ],
+  "engines": {
+    "node": ">=4"
+  },
   "license": "Apache-2.0"
 }

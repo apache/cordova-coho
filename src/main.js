@@ -251,5 +251,8 @@ module.exports = function () {
     }
 
     const entry = command.entryPoint;
-    co(entry).then();
+    co(entry).catch(error => {
+        console.error(error.stack);
+        process.exitCode = 1;
+    });
 };

@@ -119,7 +119,7 @@ exports.stashAndPop = function * (repo, func) {
     var branchName = yield gitutil.retrieveCurrentBranchName();
 
     if (requiresStash) {
-        yield executil.execHelper(executil.ARGS('git stash save --all --quiet', 'coho stash'));
+        yield executil.execHelper(executil.ARGS('git stash save --include-untracked --quiet', 'coho stash'));
     }
 
     yield func();

@@ -34,15 +34,10 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.0",
-    "eslint-plugin-standard": "^4.0.0",
-    "tap-dot": "^1.0.0",
-    "tap-spec": "^5.0.0",
-    "tape": "^4.0.0",
-    "tape-runner": "^0.3.0"
+    "eslint-plugin-standard": "^4.0.0"
   },
   "scripts": {
-    "test": "npm run eslint && npm run jasmine && npm run tape-test",
-    "tape-test": "node test/test.js | tap-spec",
+    "test": "npm run eslint && npm run jasmine",
     "cover": "istanbul cover --root src --print detail jasmine",
     "jasmine": "jasmine",
     "eslint": "eslint ."

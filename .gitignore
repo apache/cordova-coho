@@ -4,3 +4,7 @@ node_modules/
 .idea/
 
 /apache-rat-*
+
+# Code coverage output
+/coverage/
+/.nyc_output/

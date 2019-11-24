@@ -19,6 +19,7 @@ under the License.
 
 var fs = require('fs');
 var path = require('path');
+var glob = require('glob');
 var shelljs = require('shelljs');
 var xml2js = require('xml2js');
 var apputil = require('./apputil');
@@ -97,26 +98,20 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         versionFilePaths.forEach(function (versionFilePath) {
             fs.writeFileSync(versionFilePath, version + '\n');
         });
+
         shelljs.config.fatal = true;
+        glob.sync('{bin/,}template{s,}/{scripts/,}cordova/version').forEach(f => {
+            shelljs.sed('-i', /\bVERSION\s*=.+?;/, `VERSION = '${version}';`, f);
+        });
         if (repo.id === 'android') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
-            shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'templates', 'cordova', 'version'));
             // Set build.gradle version, vcsTag, and name
             shelljs.sed('-i', /version.*=.*/, "version = '" + version + "'", path.join('framework', 'build.gradle'));
             shelljs.sed('-i', /vcsTag.*=.*/, "vcsTag = '" + version + "'", path.join('framework', 'build.gradle'));
             shelljs.sed('-i', /version.{\n.*(name.*=.*)/, "version {\n            name = '" + version + "'", path.join('framework', 'build.gradle'));
-        } else if (repo.id === 'ios' || repo.id === 'osx') {
-            shelljs.sed('-i', /VERSION.*=.*/, 'VERSION="' + version + '";', path.join('bin', 'templates', 'scripts', 'cordova', 'version'));
-        } else if (repo.id === 'windows') {
-            if (fs.existsSync(path.join('template', 'cordova', 'version'))) {
-                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('template', 'cordova', 'version'));
-            }
-        } else if (repo.id === 'browser' || repo.id === 'electron') {
-            if (fs.existsSync(path.join('bin', 'template', 'cordova', 'version'))) {
-                shelljs.sed('-i', /VERSION.*=.*;/, 'VERSION = "' + version + '";', path.join('bin', 'template', 'cordova', 'version'));
-            }
         }
         shelljs.config.fatal = false;
+
         if (!(yield gitutil.pendingChangesExist())) {
             apputil.print('VERSION file was already up-to-date.');
         }

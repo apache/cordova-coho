@@ -1,6 +1,6 @@
 {
   "name": "cordova-coho",
-  "version": "1.0.2-dev",
+  "version": "2.0.0-dev",
   "description": "Apache Cordova release tool",
   "main": "./coho",
   "bin": {
@@ -64,7 +64,7 @@
     "Brian LeRoux"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">=10"
   },
   "license": "Apache-2.0"
 }

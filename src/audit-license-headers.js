@@ -20,12 +20,15 @@ under the License.
 var fs = require('fs');
 var path = require('path');
 var chalk = require('chalk');
-var shelljs = require('shelljs');
 var optimist = require('optimist');
-var apputil = require('./apputil');
 var executil = require('./executil');
 var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
+const { promisify } = require('util');
+const pipeline = promisify(require('stream').pipeline);
+const zlib = require('zlib');
+const got = require('got');
+const tar = require('tar-fs');
 
 // constants
 var COMMON_RAT_EXCLUDES = [
@@ -93,16 +96,15 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
     if (!fs.existsSync(ratPath)) {
         console.log('RAT tool not found, downloading to: ' + ratPath);
         yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {
-            // TODO: this will not work on windows right?
-            if (shelljs.which('curl')) {
-                yield executil.execHelper(['sh', '-c', 'curl "' + RAT_URL + '" | tar xz']);
-            } else {
-                yield executil.execHelper(['sh', '-c', 'wget -O - "' + RAT_URL + '" | tar xz']);
-            }
+            yield pipeline(
+                got.stream(RAT_URL),
+                zlib.createGunzip(),
+                tar.extract('.')
+            ).catch(error => {
+                error.message = 'Failed to get RAT binary:\n' + error.message;
+                throw error;
+            });
         });
-        if (!fs.existsSync(ratPath)) {
-            apputil.fatal('Download failed.');
-        }
     }
 
     console.log(chalk.red('Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));

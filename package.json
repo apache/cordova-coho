@@ -64,7 +64,7 @@
     "Brian LeRoux"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">=10"
   },
   "license": "Apache-2.0"
 }

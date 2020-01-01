@@ -112,7 +112,13 @@ Copy to your Apache homedir:
     gpg --armor --export $KEY_ID > $KEY_ID.asc
     scp $KEY_ID.asc people.apache.org:
 
-#### Optional
+#### Fingerprint
+
+**Recommended** to make it easier for other PMC members to check dist archives:
+
+Here is a quick command to show your gpg key fingerprint:
+
+    gpg --fingerprint
 
 Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID). This will cause emails from Apache to you to be encrypted.
 

@@ -45,7 +45,7 @@ module.exports = function * (_argv) {
 };
 
 function createRepoUrl (repo) {
-    return 'https://github.com/apache/' + repo.repoName + '.git';
+    return 'git@github.com:apache/' + repo.repoName + '.git';
 }
 
 function * cloneRepos (repos, quiet, depth) {

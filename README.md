@@ -105,4 +105,4 @@ By default `coho` is executed in the parent of where it is installed or checked 
 ## Contributing
 
 Cordova is an open source Apache project and contributors are needed to keep this project moving forward. Learn more on 
-[how to contribute on our website][contribute]. 
+[how to contribute on our website](https://cordova.apache.org/contribute). 

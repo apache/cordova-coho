@@ -100,9 +100,21 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         });
 
         shelljs.config.fatal = true;
+
+        // Old version location which still exists for some platforms that have not been updated.
         glob.sync('{bin/,}template{s,}/{scripts/,}cordova/version').forEach(f => {
             shelljs.sed('-i', /\bVERSION\s*=.+?;/, `VERSION = '${version}';`, f);
         });
+
+        /**
+         * Version information has be temporary migrating to Api.js...
+         * This is because the `cordova/version` shebang line fails to be rewired in node 12.x.
+         * Eventually, the version information should come from package.json
+         */
+        glob.sync('{bin/,}template{s,}/{scripts/,}cordova/Api.js').forEach(f => {
+            shelljs.sed('-i', /const VERSION\s=\s'.*';/, `const VERSION = '${version}';`, f);
+        });
+
         if (repo.id === 'android') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
             // Set build.gradle version, vcsTag, and name

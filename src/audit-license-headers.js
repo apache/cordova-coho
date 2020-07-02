@@ -90,7 +90,7 @@ module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
 
 // Returns path to Apache RAT JAR; downloads it first if necessary
 async function getRatJar () {
-    const RAT_ID = 'apache-rat-0.12';
+    const RAT_ID = 'apache-rat-0.13';
     const RAT_URL = `https://archive.apache.org/dist/creadur/${RAT_ID}/${RAT_ID}-bin.tar.gz`;
 
     const cohoRoot = repoutil.getRepoDir(repoutil.getRepoById('coho'));

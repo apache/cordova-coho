@@ -42,7 +42,7 @@ On a Mac:
 
 On Windows:
 
-    ???
+Download and install [gpg4win](https://www.gpg4win.org/)
 
 ### Create a key
 

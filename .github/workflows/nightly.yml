@@ -1,0 +1,109 @@
+name: Cordova Nightly
+
+on:
+  workflow_dispatch:
+    inputs:
+      dispatchReason:
+        description: 'Reason of Manual Dispatch'
+        required: true
+        default: 'Re-run broken nightly build'
+
+      verbose:
+        description: 'Enable Verbose'
+        required: true
+        default: 'false'
+
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2.1.1
+        with:
+          node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Dispatch Inputs
+        run: |
+          echo "Dispatch Reason: ${{ github.event.inputs.dispatchReason }}"
+          echo "Enable Verbose: ${{ github.event.inputs.verbose }}"
+
+      - name: Cordova Coho - Setup
+        run: |
+          npm i
+          npm link
+
+      - name: Cordova Coho - Create Nightlies
+        run: |
+          cd ..
+          coho nightly \
+            -r cli \
+            -r lib \
+            -r common \
+            -r fetch \
+            -r serve \
+            -r create \
+            -r node-xcode \
+            -r android \
+            -r electron \
+            -r ios \
+            --pretend \
+            --verbose ${{ github.event.inputs.verbose == 'true' }}
+
+      - name: NPM Publish - cordova-cli
+        run: |
+          cd ../cordova-cli
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-lib
+        run: |
+          cd ../cordova-lib
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-common
+        run: |
+          cd ../cordova-common
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-fetch
+        run: |
+          cd ../cordova-fetch
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-serve
+        run: |
+          cd ../cordova-serve
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-create
+        run: |
+          cd ../cordova-create
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-node-xcode
+        run: |
+          cd ../cordova-node-xcode
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-android
+        run: |
+          cd ../cordova-android
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-electron
+        run: |
+          cd ../cordova-electron
+          npm publish --tag nightly
+
+      - name: NPM Publish - cordova-ios
+        run: |
+          cd ../cordova-ios
+          npm publish --tag nightly

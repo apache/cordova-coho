@@ -79,6 +79,8 @@ jobs:
 
       - name: NPM whoami
         run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-cli
         run: |

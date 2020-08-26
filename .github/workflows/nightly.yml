@@ -38,7 +38,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # Since npm loglevel is not boolean, it will always be in verbose mode to better debug errors.
       npm_config_loglevel: verbose
 
@@ -86,48 +85,68 @@ jobs:
         run: |
           cd ../cordova-cli
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-lib
         run: |
           cd ../cordova-lib
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-common
         run: |
           cd ../cordova-common
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-fetch
         run: |
           cd ../cordova-fetch
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-serve
         run: |
           cd ../cordova-serve
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-create
         run: |
           cd ../cordova-create
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-node-xcode
         run: |
           cd ../cordova-node-xcode
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-android
         run: |
           cd ../cordova-android
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-electron
         run: |
           cd ../cordova-electron
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: NPM Publish - cordova-ios
         run: |
           cd ../cordova-ios
           npm publish --tag nightly
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

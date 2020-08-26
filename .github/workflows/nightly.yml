@@ -77,6 +77,9 @@ jobs:
             --pretend \
             --verbose ${{ github.event.inputs.verbose == 'true' }}
 
+      - name: NPM whoami
+        run: npm whoami
+
       - name: NPM Publish - cordova-cli
         run: |
           cd ../cordova-cli

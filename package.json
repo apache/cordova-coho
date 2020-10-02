@@ -53,20 +53,11 @@
       "spec/"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/apache/cordova-coho"
-  },
-  "bugs": {
-    "url": "https://issues.apache.org/jira/browse/CB"
-  },
-  "authors": [
-    "Andrew Grieve",
-    "steven gill",
-    "Brian LeRoux"
-  ],
+  "repository": "github:apache/cordova-coho",
+  "bugs": "https://github.com/apache/cordova-coho/issues",
   "engines": {
     "node": ">=10"
   },
+  "author": "Apache Software Foundation",
   "license": "Apache-2.0"
 }

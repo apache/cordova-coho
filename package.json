@@ -58,5 +58,6 @@
   "engines": {
     "node": ">=10"
   },
+  "author": "Apache Software Foundation",
   "license": "Apache-2.0"
 }

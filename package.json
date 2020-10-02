@@ -53,10 +53,7 @@
       "spec/"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/apache/cordova-coho"
-  },
+  "repository": "github:apache/cordova-coho",
   "bugs": {
     "url": "https://issues.apache.org/jira/browse/CB"
   },

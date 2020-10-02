@@ -55,11 +55,6 @@
   },
   "repository": "github:apache/cordova-coho",
   "bugs": "https://github.com/apache/cordova-coho/issues",
-  "authors": [
-    "Andrew Grieve",
-    "steven gill",
-    "Brian LeRoux"
-  ],
   "engines": {
     "node": ">=10"
   },

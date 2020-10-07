@@ -35,6 +35,8 @@ on:
 
 jobs:
   build:
+    if: github.repository == 'apache/cordova-coho'
+
     runs-on: ubuntu-latest
 
     env:

@@ -35,20 +35,9 @@ Follow these processes to release...
 
 ### About Releases
 
-* [Versioning and release strategy](versioning-and-release-strategy.md)
 * [Release Voting](release-voting.md)
 * [Setting up GPG](setting-up-gpg.md)
 
-## Committer Workflow
-
-Things a committer frequently does:
-
-* [Committer workflow](committer-workflow.md)
-* [Code Reviews](code-reviews.md)
-* [Processing Pull Requests](processing-pull-requests.md)
-* [Triaging JIRA issues](jira-triage.md)
-
 ## Misc
 
-* [Storing Repo Versions Design](storing-repo-versions-design.md)
 * [Access to Apache's jenkins CI setup (deprecated)](jenkins-access.md)

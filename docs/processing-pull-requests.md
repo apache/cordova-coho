@@ -75,7 +75,7 @@ _Thanks for the pull request. I've had a look at it and think it looks good. Bef
 
 There are two ways to merge a PR.
 
-The goal is to have one or more commits in `master` that are connected to both the original author and you as the commiter, and include the JIRA issue number in the form CB-#### (no "[]"'s, no ":").
+The goal is to have one or more commits in `master` that are connected to both the original author and you as the committer, and include the JIRA issue number in the form CB-#### (no "[]"'s, no ":").
 
 Example commit message:
 
@@ -99,7 +99,7 @@ This command will do the following:
 * Attempt a `--ff-only` merge to master. If this fails, then: 
     * Perform a rebase of the `pr/pr#` branch.
     * Attempt a `--ff-only` merge to master. 
-    * On success, it will modify the last commit's message to include. 'This closes #pr' to ensure the corresponding PR closes on pushing to remote.
+    * On success, it will modify the last commits message to include. 'This closes #pr' to ensure the corresponding PR closes on pushing to remote.
 
 You then should:
  * Squash as many commits as is reasonable together.

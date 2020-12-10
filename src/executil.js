@@ -37,7 +37,7 @@ exports.verbose = false;
 // silent == true or 1 ==> don't print command, don't print output
 // silent == 2 ==> don't print command, print output
 // silent == 3 ==> print command, don't print output
-// TODO: this function should be consolidated to promises, and shouldnt take win/fail callbacks.
+// TODO: this function should be consolidated to promises, and shouldn't take win/fail callbacks.
 // some async confusion here
 function execHelper (cmdAndArgs, silent, allowError, win, fail) {
     // there are times where we want silent but not allowError.

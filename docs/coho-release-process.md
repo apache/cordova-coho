@@ -62,7 +62,7 @@ See if any dependencies are outdated
 
     (cd cordova-coho && npm outdated --depth=0)
 
-Update them in each project's `package.json` file. Make sure to run through the test section below for compatability issues. The `--depth=0` prevents from listing dependencies of dependencies. 
+Update them in each project's `package.json` file. Make sure to run through the test section below for compatibility issues. The `--depth=0` prevents from listing dependencies of dependencies. 
 
 ## Update Release Notes & Version
 

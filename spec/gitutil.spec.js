@@ -45,7 +45,7 @@ describe('gitutil unit tests', function () {
         expect(executil.ARGS.calls.argsFor(0)[0]).toEqual('git status --porcelain');
     }, TIMEOUT);
 
-    it('Test#004 : reseting from origin', function * () {
+    it('Test#004 : resetting from origin', function * () {
         yield gitutilJS.resetFromOrigin();
         expect(executil.execHelper.calls.count()).toEqual(1);
         expect(executil.ARGS.calls.count()).toEqual(1);

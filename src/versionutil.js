@@ -87,6 +87,7 @@ exports.getReleaseBranchNameFromVersion = function (version) {
  * @param {Object}  [opts]  An options object
  * @param {Boolean} [opts.commitChanges=true] Specifies whether to commit changes
  *   to the repo after update is done.
+ * @param {String}  [opts.pre=''] Optional commit prefix
  */
 exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the VERSION files.
@@ -133,13 +134,15 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
 
     // Update the package.json VERSION.
     var packageFilePaths = repo.packageFilePaths || ['package.json'];
+    var pendingChangesExistInJSON = false;
     if (fs.existsSync(packageFilePaths[0])) {
         var data = fs.readFileSync(packageFilePaths[0], { encoding: 'utf-8' });
         var packageJSON = JSON.parse(data);
         packageJSON.version = version;
         // use 2 spaces indent similar to npm
         fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, 2) + '\n');
-        if (!(yield gitutil.pendingChangesExist())) {
+        pendingChangesExistInJSON = yield gitutil.pendingChangesExist();
+        if (!pendingChangesExistInJSON) {
             apputil.print('package.json file was already up-to-date.');
         }
     } else {
@@ -169,6 +172,9 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
 
     var commitChanges = !!(opts ? opts.commitChanges : true);
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
-        yield gitutil.commitChanges('Set VERSION to ' + version + ' (via coho)');
+        var versionDescription = pendingChangesExistInJSON ?
+            'version & VERSION' : 'VERSION';
+        var pre = (opts && opts.pre) ? opts.pre : '';
+        yield gitutil.commitChanges(pre + 'Set ' + versionDescription + ' to ' + version + ' (coho)');
     }
 };

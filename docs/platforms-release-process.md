@@ -246,13 +246,19 @@ Create and prepare your release branch by using `coho prepare-platform-release-b
 3. Propagates version number from `--version` argument (or from `package.json` if there is no `--version` argument) to all other files (`VERSION` and similar [e.g. `build.gradle` for Android]) on the release branch `5.0.x`
 4. Prepares `master` for future development already: It gives version (`package.json`, `VERSION` and similar) a minor bump and adds `-dev` (=> `5.1.0-dev`) back
 
-Run the following command (make sure to replace the version below with what is listed inside `package.json`).
+Run the following command (make sure to replace the version below with what is listed inside `package.json`) in case of release from the `master`:
 
-    coho prepare-platform-release-branch --version 5.0.0 -r android
+    coho prepare-platform-release-branch --version 7.2.0 -r android
+
+or in case of release from another release branch:
+
+    coho prepare-platform-release-branch --version 7.1.1 -r android -b 7.1.x
 
 Then ensure commits look okay on both branches
 
-    coho repo-status -r android -b master -b 5.0.x
+    coho repo-status -r android -b master -b 7.1.x
+
+or verify manually (e.g. by looking at the git commit messages).
 
 ## Testing
 
@@ -340,25 +346,31 @@ Create an issue for it and fix it via a Pull Request before continuing.
 
 All good? Have another look at the changes:
 
-    coho repo-status -r android -b master -b 5.0.x
+    coho repo-status -r android -b master -b 7.1.x
 
 If changes look right:
 
     coho repo-push -r android -b master -b 5.0.x
 
-This pushes the commits in both `master` and `5.0.x` (the release branch) to the remote.
+This pushes the commits in both `master` and `7.1.x` (the release branch) to the remote.
 
 ### Tag and push tag
 
 Before you tag, run this command:
 
-    coho tag-platform-release --version 5.0.0 -r android --pretend
+    coho tag-platform-release --version 7.1.0 -r android --pretend
     
 Seems okay? Then execute it by running:
 
-    coho tag-platform-release --version 5.0.0 -r android
+    coho tag-platform-release --version 7.1.0 -r android
 
-This command also tags `cordova-js` with `android-5.0.0` and pushes it.
+This command also tags `cordova-js` with `android-7.1.0` and pushes it.
+
+To tag without automatic push:
+
+    coho tag-platform-release --version 7.1.0 -r android --tag-only
+
+and then manually push the new tags.
 
 ## Publish Release Candidate to `dist/dev`
 

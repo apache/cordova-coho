@@ -173,7 +173,7 @@ module.exports = function () {
     releaseCommands.forEach(addToCommandMap);
     otherCommands.forEach(addToCommandMap);
     // aliases:
-    commandMap['foreach'] = commandMap['for-each'];
+    commandMap.foreach = commandMap['for-each'];
 
     let usage = 'Usage: $0 command [options]\n\n';
     function addCommandUsage (cmd) {
@@ -229,13 +229,13 @@ module.exports = function () {
     const argv = opts.check(function (argv) {
         const commandName = argv._[0];
         if (!commandName) {
-            throw 'No command specified.';
+            throw Error('No command specified.');
         }
         if (!command) {
-            throw 'Unknown command: ' + commandName;
+            throw Error('Unknown command: ' + commandName);
         }
         if (argv.r === true) {
-            throw 'No repositories specified, see list-repos';
+            throw Error('No repositories specified, see list-repos');
         }
     }).argv;
 

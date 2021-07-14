@@ -251,21 +251,21 @@ function * interactive_plugins_release () {
                 console.warn('OK, no problem. I will create one for you now! Hang tight...');
                 var date = (new Date()).toDateString();
                 var new_issue = {
-                    'fields': {
-                        'project': {
-                            'id': cordova_project.id
+                    fields: {
+                        project: {
+                            id: cordova_project.id
                         },
-                        'summary': 'Plugins Release, ' + date,
-                        'description': 'Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md\nGenerated automatically using cordova-coho.',
-                        'assignee': {
-                            'name': jira_user.name
+                        summary: 'Plugins Release, ' + date,
+                        description: 'Following steps at https://github.com/apache/cordova-coho/blob/master/docs/plugins-release-process.md\nGenerated automatically using cordova-coho.',
+                        assignee: {
+                            name: jira_user.name
                         },
-                        'issuetype': {
-                            'id': jira_task_issue.id
+                        issuetype: {
+                            id: jira_task_issue.id
                         },
-                        'components': [
+                        components: [
                             {
-                                'id': all_plugins_component.id
+                                id: all_plugins_component.id
                             }
                         ]
                     }
@@ -624,7 +624,7 @@ function * interactive_plugins_release () {
                     yield gitutil.gitCheckout(release_branch_name);
                     if (previous_release_branch_head) {
                         // release branch previously existed.
-                        let diff = yield gitutil.diff(previous_release_branch_head, 'HEAD');
+                        const diff = yield gitutil.diff(previous_release_branch_head, 'HEAD');
                         rb_prompts.push({
                             type: 'confirm',
                             name: 'rb_' + plugin_name,
@@ -632,7 +632,7 @@ function * interactive_plugins_release () {
                         });
                     } else {
                         // release branch did NOT exist previously, this is a new release branch.
-                        let diff = yield gitutil.diff('master', release_branch_name);
+                        const diff = yield gitutil.diff('master', release_branch_name);
                         rb_prompts.push({
                             type: 'confirm',
                             name: 'rb_' + plugin_name,

@@ -23,7 +23,6 @@ var flagutil = require('./flagutil');
 var repoutil = require('./repoutil');
 
 module.exports = function * (_argv) {
-
     var opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
 
@@ -56,16 +55,13 @@ module.exports = function * (_argv) {
 };
 
 function * updateRemote (repos, remote) {
-
     yield repoutil.forEachRepo(repos, function * (repo) {
-
         // don't update svn repos
         if (repo.svn) {
             return;
         }
 
         yield executil.execHelper(executil.ARGS('git remote set-url ' + remote + ' https://github.com/apache/' + repo.repoName + '.git'), false, false);
-
     });
 }
 module.exports.updateRemote = updateRemote;

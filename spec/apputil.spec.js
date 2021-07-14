@@ -21,7 +21,6 @@ var path = require('path');
 var apputil = require('../src/apputil');
 
 describe('apputil unit tests', function () {
-
     it('Test#001 : print', function () {
         spyOn(path, 'relative').and.returnValue(true);
         spyOn(console.log, 'apply').and.returnValue(true);

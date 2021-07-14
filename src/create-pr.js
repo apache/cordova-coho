@@ -71,7 +71,11 @@ function * getRemoteForkName (remoteName) {
     if (!remoteUrl) {
         apputil.fatal('Cannot find remote Url: ' + remotes);
     }
+
+    // @todo replace this with new URL() and test use cases
+    // eslint-disable-next-line
     var parsed = url.parse(remoteUrl);
+
     // parsed => /forkName/cordova-coho.git
     var forkName = (parsed.pathname.split('/'))[1];
     return forkName;

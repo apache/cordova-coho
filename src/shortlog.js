@@ -31,7 +31,7 @@ module.exports = function * () {
               '    --filter: Sum up all commits that match this pattern\n' +
               '    --days=n: Show commits from the past n days');
 
-    let argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();

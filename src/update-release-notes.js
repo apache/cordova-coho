@@ -41,7 +41,7 @@ module.exports = function * () {
         .options('to-tag', { desc: 'Update to a specific tag instead of "master"' })
         .options('override-date', { desc: 'Update to a specific date instead of today.' })
         .options('last-two-tags', { desc: 'Update with the latest and previous tagged commits' });
-    let argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
@@ -68,7 +68,6 @@ module.exports = function * () {
                 }
             }
         } else {
-
             if (argv['from-tag']) {
                 fromTag = argv['from-tag'];
             } else {
@@ -76,7 +75,7 @@ module.exports = function * () {
                     fromTag = (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
                 } catch (e) {
                     console.log(`no tags exist in ${repo.packageName}`);
-                    throw 'update-release-notes will not work';
+                    throw Error('update-release-notes will not work');
                 }
             }
             if (argv['to-tag']) {

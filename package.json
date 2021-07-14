@@ -40,17 +40,20 @@
     "eslint-plugin-standard": "^4.0.0",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
-    "nyc": "^14.1.1"
+    "nyc": "^15.1.0"
   },
   "scripts": {
-    "test": "npm run eslint && npm run test:coverage",
-    "test:coverage": "nyc jasmine",
-    "eslint": "eslint ."
+    "test": "npm run lint && npm run cover",
+    "cover": "nyc jasmine",
+    "lint": "eslint ."
   },
   "nyc": {
-    "all": true,
-    "exclude": [
-      "spec/"
+    "include": [
+      "src"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
     ]
   },
   "repository": "github:apache/cordova-coho",

@@ -116,11 +116,8 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
 
         if (repo.id === 'android') {
             shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
-            // Set build.gradle version, vcsTag, and name
-            shelljs.sed('-i', /version.*=.*/, "version = '" + version + "'", path.join('framework', 'build.gradle'));
-            shelljs.sed('-i', /vcsTag.*=.*/, "vcsTag = '" + version + "'", path.join('framework', 'build.gradle'));
-            shelljs.sed('-i', /version.{\n.*(name.*=.*)/, "version {\n            name = '" + version + "'", path.join('framework', 'build.gradle'));
         }
+
         shelljs.config.fatal = false;
 
         if (!(yield gitutil.pendingChangesExist())) {

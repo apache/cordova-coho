@@ -93,9 +93,7 @@ describe('versionutil', function () {
         setupPlatform('android');
         yield versionutil.updateRepoVersion(androidRepo, testVersion);
         expectTestVersioninFiles(
-            'bin/templates/cordova/version',
-            'framework/src/org/apache/cordova/CordovaWebView.java',
-            'framework/build.gradle'
+            'framework/src/org/apache/cordova/CordovaWebView.java'
         );
     });
 

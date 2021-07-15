@@ -39,7 +39,7 @@ function * publishTag (options) {
             });
     }
 
-    let argv = opt
+    const argv = opt
         .usage('Publishes current version of a repo to a specified npm tag. \n' +
                'Usage: $0 npm-publish --tag rc -r cli -r lib')
         .options('tag', {

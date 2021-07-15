@@ -91,7 +91,7 @@ function configureReleaseCommandFlags (_opt) {
         });
     opt = flagutil.registerHelpFlag(opt);
 
-    let argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
@@ -257,7 +257,6 @@ exports.prepareReleaseBranchCommand = function * () {
 };
 
 function * tagJs (repo, version, pretend) {
-
     function * execOrPretend (cmd) {
         if (pretend) {
             print('PRETENDING TO RUN: ' + cmd.join(' '));
@@ -336,7 +335,6 @@ exports.tagReleaseBranchCommand = function * (argv) {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }
             yield tagJs(repo, version, pretend);
-
         });
     });
 

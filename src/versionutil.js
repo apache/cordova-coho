@@ -50,7 +50,6 @@ exports.removeDev = removeDev;
 // and the new version as value
 // ex {android:4.0.0}
 function updatePlatformsConfig (newValues) {
-
     var platformsConfig = path.join(repoutil.getRepoDir(repoutil.getRepoById('lib')),
         'src/platforms/platformsConfig.json');
     var platformsJS = require(platformsConfig);
@@ -155,7 +154,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
                 var data = fs.readFileSync(xmlFile, { encoding: 'utf-8' });
                 xml2js.parseString(data, { async: false }, function (err, xml) {
                     if (err) throw err;
-                    var prev_version = xml.plugin['$'].version;
+                    var prev_version = xml.plugin.$.version;
                     shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);
                 });
             } else {

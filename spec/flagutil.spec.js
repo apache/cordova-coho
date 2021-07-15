@@ -23,7 +23,6 @@ var flagutil = require('../src/flagutil');
 var TIMEOUT = 60000;
 
 describe('flagutil unit tests', function () {
-
     it('Test#001 : validate the version that is passed in', function () {
         spyOn(console, 'log').and.returnValue(false);
         spyOn(apputil, 'fatal');
@@ -35,33 +34,38 @@ describe('flagutil unit tests', function () {
     it('Test#002 : computeReposFromFlag returns correct repo (platform) info', function () {
         var repo = flagutil.computeReposFromFlag('android');
         expect(repo).toEqual(
-            [ Object({
+            [Object({
                 title: 'Android',
-                versions: [ '4.4', '5.0', '5.1', '6.0', '7.0', '7.1' ],
+                versions: ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1'],
                 id: 'android',
                 repoName: 'cordova-android',
                 jiraComponentName: 'cordova-android',
-                cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ] }) ]
+                cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js']
+            })]
         );
     }, TIMEOUT);
 
     it('Test#003 : computeReposFromFlag returns correct repo (plugin) info', function () {
         var repo = flagutil.computeReposFromFlag('plugin-camera');
         expect(repo).toEqual(
-            [ { title: 'Plugin - Camera',
+            [{
+                title: 'Plugin - Camera',
                 id: 'plugin-camera',
                 repoName: 'cordova-plugin-camera',
-                jiraComponentName: 'cordova-plugin-camera' } ]
+                jiraComponentName: 'cordova-plugin-camera'
+            }]
         );
     }, TIMEOUT);
 
     it('Test#004 : computeReposFromFlag returns correct repo (docs) info', function () {
         var repo = flagutil.computeReposFromFlag('docs');
         expect(repo).toEqual(
-            [ { title: 'Docs',
+            [{
+                title: 'Docs',
                 id: 'docs',
                 repoName: 'cordova-docs',
-                jiraComponentName: 'cordova-docs' } ]
+                jiraComponentName: 'cordova-docs'
+            }]
         );
     }, TIMEOUT);
 

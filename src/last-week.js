@@ -48,7 +48,7 @@ module.exports = function * () {
                '\n' +
                'Usage: $0 last-week [--repo=ios] [--me] [--days=7] [--cherry-picks] [--user=someone]');
 
-    let argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();

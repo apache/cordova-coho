@@ -132,8 +132,8 @@ function processResults (results, repos) {
     console.log('***********************************************************************************************************************\n');
     if (flagged.length) {
         for (var j = 0; j < flagged.length; ++j) {
-            if (knownIssues[ flagged[j].name ]) {
-                flagged[j]['known-issues'] = knownIssues[ flagged[j].name ];
+            if (knownIssues[flagged[j].name]) {
+                flagged[j]['known-issues'] = knownIssues[flagged[j].name];
             }
 
             console.log(treeify.asTree(flagged[j], true));
@@ -169,7 +169,6 @@ function getDependencies (packages) {
 
             if (duplicate) {
                 flagged[z].directory = flagged[z].directory.concat(obj.directory); // if it is already flagged then just add the directory to the directories array
-
             } else { flagged.push(JSON.parse(JSON.stringify(obj))); }
         }
     }

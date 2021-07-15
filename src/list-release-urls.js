@@ -42,7 +42,7 @@ module.exports = function * () {
         process.exit(1);
     }
     var repos = flagutil.computeReposFromFlag(argv.r);
-    var version = argv['version'];
+    var version = argv.version;
 
     var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
     yield repoutil.forEachRepo(repos, function * (repo) {

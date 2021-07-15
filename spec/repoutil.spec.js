@@ -28,12 +28,14 @@ var repoutil = require('../src/repoutil');
 
 var TIMEOUT = 60000;
 
-var androidRepo = { title: 'Android',
+var androidRepo = {
+    title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
     jiraComponentName: 'Android',
-    cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ],
-    remoteName: 'origin' };
+    cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
+    remoteName: 'origin'
+};
 
 var commonRepo = {
     title: 'Cordova Common',
@@ -42,7 +44,8 @@ var commonRepo = {
     repoName: 'cordova-lib',
     path: 'cordova-common',
     versionPrefix: 'common',
-    isModule: true };
+    isModule: true
+};
 
 describe('check functionality of repoutil', function () {
     it('Test#001 : getRepoDir', function () {
@@ -77,12 +80,14 @@ describe('check functionality of repoutil', function () {
         // Return correct repo object
         repoutil.getRepoById('cordova-android');
         expect(repoutil.getRepoById('cordova-android')).toEqual(Object(
-            { title: 'Android',
+            {
+                title: 'Android',
                 id: 'android',
-                versions: [ '4.4', '5.0', '5.1', '6.0', '7.0', '7.1' ],
+                versions: ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1'],
                 repoName: 'cordova-android',
                 jiraComponentName: 'cordova-android',
-                cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ] }
+                cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js']
+            }
         ));
         // Return null if opt repos are passed in
         repoutil.getRepoById('cordova-android', 'opt_repos');

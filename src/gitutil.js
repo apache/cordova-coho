@@ -74,9 +74,9 @@ exports.findMostRecentTag = function * (prefix) {
 
     if (ret) {
         if (lastBest) {
-            return [ ret, lastBest ];
+            return [ret, lastBest];
         } else {
-            return [ ret ];
+            return [ret];
         }
     } else {
         return null;

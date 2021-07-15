@@ -24,32 +24,40 @@ var os = require('os');
 var path = require('path');
 var shell = require('shelljs');
 var gitutil = require('../src/gitutil');
-var androidRepo = { title: 'Android',
+var androidRepo = {
+    title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
     jiraComponentName: 'Android',
-    cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ],
-    remoteName: 'origin' };
-var iosRepo = { title: 'iOS',
+    cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
+    remoteName: 'origin'
+};
+var iosRepo = {
+    title: 'iOS',
     id: 'ios',
     repoName: 'cordova-ios',
     jiraComponentName: 'iOS',
     cordovaJsPaths: ['CordovaLib/cordova.js'],
-    versionFilePaths: [path.join('CordovaLib', 'VERSION')] };
-var windowsRepo = { title: 'Windows',
+    versionFilePaths: [path.join('CordovaLib', 'VERSION')]
+};
+var windowsRepo = {
+    title: 'Windows',
     id: 'windows',
     repoName: 'cordova-windows',
     jiraComponentName: 'Windows 8',
     cordovaJsSrcName: 'cordova.windows.js',
     cordovaJsPaths: ['template/www/cordova.js'],
     versionFilePaths: ['VERSION'],
-    packageFilePaths: ['package.json'] };
-var browserRepo = { title: 'Browser',
+    packageFilePaths: ['package.json']
+};
+var browserRepo = {
+    title: 'Browser',
     id: 'browser',
     repoName: 'cordova-browser',
     jiraComponentName: 'Browser',
     cordovaJsSrcName: 'cordova.browser.js',
-    cordovaJsPaths: ['cordova-lib/cordova.js'] };
+    cordovaJsPaths: ['cordova-lib/cordova.js']
+};
 const testVersion = '0.0.99';
 
 describe('versionutil', function () {

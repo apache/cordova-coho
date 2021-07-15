@@ -41,7 +41,7 @@ module.exports = function * () {
     if (process.platform === 'win32') {
         cmd = ['cmd', '/s', '/c', argv._[1]];
     } else {
-        cmd = [process.env['SHELL'] || 'sh', '-c', argv._[1]];
+        cmd = [process.env.SHELL || 'sh', '-c', argv._[1]];
     }
 
     yield repoutil.forEachRepo(repos, function * (repo) {

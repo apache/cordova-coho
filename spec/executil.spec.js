@@ -24,12 +24,14 @@ var apputil = require('../src/apputil');
 var Q = require('q');
 var deferred = Q.defer();
 var TIMEOUT = 60000;
-var androidRepo = { title: 'Android',
+var androidRepo = {
+    title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
     jiraComponentName: 'Android',
-    cordovaJsPaths: [ 'bin/templates/project/assets/www/cordova.js' ],
-    remoteName: 'origin' };
+    cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
+    remoteName: 'origin'
+};
 
 describe('executil unit tests', function () {
     beforeEach(function () {
@@ -48,14 +50,14 @@ describe('executil unit tests', function () {
     }, TIMEOUT);
 
     it("Test#002 : Don't print command, don't print output", function () {
-        executil.execHelper([ 'git', 'symbolic-ref', 'HEAD' ], true, true);
+        executil.execHelper(['git', 'symbolic-ref', 'HEAD'], true, true);
         expect(apputil.print.calls.count()).toEqual(0);
-        expect(apputil.print.calls.allArgs()).toEqual([ ]);
+        expect(apputil.print.calls.allArgs()).toEqual([]);
         expect(superspawn.spawn.calls.argsFor(0)[2]).toEqual(Object({ stdio: 'default' }));
     }, TIMEOUT);
 
     it('Test#003 : Print command and output', function () {
-        executil.execHelper([ 'git', 'symbolic-ref', 'HEAD' ], false, true);
+        executil.execHelper(['git', 'symbolic-ref', 'HEAD'], false, true);
         expect(apputil.print.calls.count()).toEqual(1);
         expect(apputil.print.calls.argsFor(0)[0]).toEqual('Executing:');
         expect(apputil.print.calls.argsFor(0)[1]).toEqual('git symbolic-ref HEAD');
@@ -63,13 +65,13 @@ describe('executil unit tests', function () {
     }, TIMEOUT);
 
     it("Test#004 : Don't print command, print output", function () {
-        executil.execHelper([ 'git', 'symbolic-ref', 'HEAD' ], 2, true);
+        executil.execHelper(['git', 'symbolic-ref', 'HEAD'], 2, true);
         expect(apputil.print.calls.count()).toEqual(0);
         expect(superspawn.spawn.calls.argsFor(0)[2]).toEqual(Object({ stdio: 'inherit' }));
     }, TIMEOUT);
 
     it("Test#005 : Print command, don't print output", function () {
-        executil.execHelper([ 'git', 'symbolic-ref', 'HEAD' ], 3, true);
+        executil.execHelper(['git', 'symbolic-ref', 'HEAD'], 3, true);
         expect(apputil.print.calls.count()).toEqual(1);
         expect(apputil.print.calls.argsFor(0)[0]).toEqual('Executing:');
         expect(apputil.print.calls.argsFor(0)[1]).toEqual('git symbolic-ref HEAD');
@@ -77,7 +79,7 @@ describe('executil unit tests', function () {
     }, TIMEOUT);
 
     it('Test#006 : pretending to run', function * () {
-        yield executil.execOrPretend([ 'git', 'symbolic-ref', 'HEAD' ], 'pretend');
+        yield executil.execOrPretend(['git', 'symbolic-ref', 'HEAD'], 'pretend');
         expect(apputil.print.calls.count()).toEqual(1);
         expect(apputil.print.calls.argsFor(0)[0]).toEqual('PRETENDING TO RUN: git symbolic-ref HEAD');
     }, TIMEOUT);

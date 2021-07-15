@@ -441,19 +441,19 @@ var allRepos = platformRepos.concat(nonPlatformRepos,
     otherRepos);
 
 var repoGroups = {
-    'all': allRepos,
-    'platform': platformRepos,
-    'platforms': platformRepos,
-    'plugin': pluginRepos,
-    'plugins': pluginRepos,
-    'tools': toolRepos,
+    all: allRepos,
+    platform: platformRepos,
+    platforms: platformRepos,
+    plugin: pluginRepos,
+    plugins: pluginRepos,
+    tools: toolRepos,
     'active-platform': platformRepos.filter(function (r) { return !r.inactive; }),
     'active-platforms': platformRepos.filter(function (r) { return !r.inactive; }),
     'active-plugins': pluginRepos.filter(function (r) { return !r.inactive; }),
     'release-repos': allRepos.filter(function (r) { return !r.inactive; })
 };
-repoGroups['cadence'] = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);
-repoGroups['nightly'] = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('lib')]);
+repoGroups.cadence = repoGroups['active-platform'].concat([getRepoById('mobile-spec'), getRepoById('app-hello-world')]);
+repoGroups.nightly = repoGroups['active-platform'].concat([getRepoById('cli'), getRepoById('lib')]);
 
 repoGroups.__defineGetter__('auto', function () {
     return allRepos.filter(function (repo) {

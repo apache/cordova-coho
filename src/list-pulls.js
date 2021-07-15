@@ -129,7 +129,7 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 
         if (pullRequests.message === 'Bad credentials') {
             apputil.fatal('Error: GitHub Bad credentials. Check your CORDOVA_GIT_ACCOUNT environment variable which should be set with your Github API token: https://github.com/settings/tokens.',
-                'CORDOVA_GIT_ACCOUNT used: ' + process.env['CORDOVA_GIT_ACCOUNT']);
+                'CORDOVA_GIT_ACCOUNT used: ' + process.env.CORDOVA_GIT_ACCOUNT);
         }
 
         pullRequests = pullRequests.filter(function (p) {
@@ -147,12 +147,12 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 
         function next () {
             var cbObj = {
-                'repo': repo,
+                repo: repo,
                 'fresh-count': 0,
                 'old-count': 0,
                 'stale-count': 0,
                 'total-count': origCount,
-                'message': null
+                message: null
             };
 
             if (hideUser) {
@@ -267,11 +267,11 @@ function * listPullRequestsCommand () {
 
     var repos = flagutil.computeReposFromFlag(argv.r);
     var report = {
-        'title': 'coho list-pulls report',
+        title: 'coho list-pulls report',
         // "command" : process.argv,
-        'timestamp': new Date().toJSON(),
+        timestamp: new Date().toJSON(),
         'max-age': argv['max-age'],
-        'repos': []
+        repos: []
     };
     var simple_report = [];
 
@@ -314,7 +314,7 @@ function * listPullRequestsCommand () {
     repos.forEach(function (repo) {
         url += '+repo%3Aapache%2F' + repo.repoName;
     });
-    if (!(argv['stats-only'] && argv['json'])) {
+    if (!(argv['stats-only'] && argv.json)) {
         console.log(url);
     }
     next();

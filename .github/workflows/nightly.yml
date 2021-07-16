@@ -135,6 +135,7 @@ jobs:
       - name: NPM Publish - cordova-android
         run: |
           cd ../cordova-android
+          npm i
           npm publish --tag nightly
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

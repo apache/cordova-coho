@@ -123,3 +123,7 @@ Sign into: https://id.apache.org/ and add your fingerprint (not your KEY_ID). Th
 Import any extra committer's keys via:
 
     curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import
+
+## Further reading
+
+* https://www.apache.org/dev/new-committers-guide.html#set-up-security-and-pgp-keys

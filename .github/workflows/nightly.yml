@@ -143,6 +143,7 @@ jobs:
       - name: NPM Publish - cordova-electron
         run: |
           cd ../cordova-electron
+          npm i
           npm publish --tag nightly
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

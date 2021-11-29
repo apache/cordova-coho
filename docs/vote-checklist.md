@@ -28,6 +28,8 @@ Before continuing, we must first fetch and pull the latest changes from the repo
 
 **Without coho:**
 
+1. Check CI is green
+1. Check the git history for hidden breaking changes
 1. Run tests
 1. npm audit
 

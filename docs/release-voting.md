@@ -21,7 +21,7 @@
 
 # Release Voting Guidelines
 
-> This document describes what Apache requires you to do for a vote. Please make sure you understand this first. You can refert to the [shorter checklist](./vote-checklist.md) every time you vote.
+> This document describes what Apache requires you to do for a vote. Please make sure you understand this first. You can refer to the [shorter checklist](./vote-checklist.md) every time you vote.
 
 Reference: https://www.apache.org/dev/release-publishing.html
 

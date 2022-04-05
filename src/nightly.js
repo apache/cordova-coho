@@ -111,6 +111,7 @@ function updateRepoDependencies (repo, dependencies) {
     const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
     // Let's iterate through repos we're going to release
+    // eslint-disable-next-line array-callback-return
     Object.keys(dependencies).map(function (dependencyId) {
         const repo = repoutil.getRepoById(dependencyId);
         const packageId = repo.packageName || repo.repoName;

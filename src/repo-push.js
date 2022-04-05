@@ -27,15 +27,14 @@ const repoupdate = require('./repo-update');
 const print = apputil.print;
 
 module.exports = function * (argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
-    var opt = optimist // eslint-disable-line
+    let opt = flagutil.registerRepoFlag(optimist)
         .options('b', {
             alias: 'branch',
             desc: 'The name of the branch to push. Can be specified multiple times to specify multiple branches.',
             default: ['master']
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt // eslint-disable-line
+    argv = opt
         .usage('Pushes changes to the remote repository.\n' +
                '\n' +
                'Usage: $0 repo-push -r auto -b master -b 2.9.x')

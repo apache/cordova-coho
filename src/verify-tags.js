@@ -50,7 +50,7 @@ function readInput () {
 
 exports.createCommand = function * (argv) {
     const opt = flagutil.registerHelpFlag(optimist);
-    var argv = opt // eslint-disable-line
+    argv = opt // eslint-disable-line
         .usage('Makes sure the given hashs match the tags.\n' +
                'Paste the output of the `print-tags` into this command to verify.\n' +
                'e.g.:     cordova-plugin-camera: 0.3.0 (4fa934e06f)\n' +
@@ -77,7 +77,7 @@ exports.createCommand = function * (argv) {
         apputil.fatal('Error processing input.');
     }
     let hadErrors = false;
-    for (var i = 0, entry; entry = results[i]; ++i) { // eslint-disable-line no-cond-assign
+    for (let i = 0, entry; entry = results[i]; ++i) { // eslint-disable-line no-cond-assign
         yield repoutil.forEachRepo([repoutil.getRepoById(entry.repoId)], function * (repo) {
             let foundHash = yield gitutil.hashForRef(entry.tagName);
             if (!foundHash) {

@@ -42,6 +42,7 @@ function resolveWindowsExe (cmd) {
     }
     cmd = shell.which(cmd) || cmd;
     if (!isValidExe(cmd)) {
+        // eslint-disable-next-line array-callback-return
         winExtensions.some(function (ext) {
             if (fs.existsSync(cmd + ext)) {
                 cmd = cmd + ext;

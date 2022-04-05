@@ -17,25 +17,25 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var glob = require('glob');
-var optimist = require('optimist');
-var shelljs = require('shelljs');
-var chalk = require('chalk');
-var fs = require('fs');
-var path = require('path');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var print = apputil.print;
-var settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
-var isWin = process.platform === 'win32';
+const glob = require('glob');
+const optimist = require('optimist');
+const shelljs = require('shelljs');
+const chalk = require('chalk');
+const fs = require('fs');
+const path = require('path');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const print = apputil.print;
+const settingUpGpg = path.resolve(path.dirname(__dirname), 'docs', 'setting-up-gpg.md');
+const isWin = process.platform === 'win32';
 
 exports.GPG_DOCS = settingUpGpg;
 
 exports.createCommand = function * (argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = opt
         .options('tag', {
             desc: 'The pre-existing tag or hash to archive (defaults to newest tag on branch)'
@@ -68,29 +68,29 @@ exports.createCommand = function * (argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     if (argv.sign && !shelljs.which('gpg')) {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
-    var outDir = apputil.resolveUserSpecifiedPath(argv.dest);
+    const outDir = apputil.resolveUserSpecifiedPath(argv.dest);
     shelljs.mkdir('-p', outDir);
-    var absOutDir = path.resolve(outDir);
+    const absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         if (isWin) {
             yield checkLineEndings(repo);
         }
 
-        var tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
+        const tag = argv.tag || (yield gitutil.findMostRecentTag(repo.versionPrefix))[0];
         if (!tag) {
             apputil.fatal('Could not find most recent tag. Try running with --tag');
         }
         if (!argv['allow-pending'] && (yield gitutil.pendingChangesExist())) {
             apputil.fatal('Aborting because pending changes exist in ' + repo.repoName + ' (run "git status")');
         }
-        var origBranch = yield gitutil.retrieveCurrentBranchName(true);
+        const origBranch = yield gitutil.retrieveCurrentBranchName(true);
 
         yield gitutil.gitCheckout(tag);
 
@@ -108,10 +108,10 @@ exports.createCommand = function * (argv) {
 // WARNING: NEEDS to be executed in the current working directory of a cordova repo!!!
 function * createArchive (repo, tag, outDir, sign) {
     print('Creating archive of ' + repo.repoName + '@' + tag);
-    var outPath;
+    let outPath;
     if (repo.id !== 'mobile-spec') {
-        var pkgInfo = require(path.resolve('package'));
-        var tgzname = pkgInfo.name + '-' + tag + '.tgz';
+        const pkgInfo = require(path.resolve('package'));
+        const tgzname = pkgInfo.name + '-' + tag + '.tgz';
         yield executil.execHelper(executil.ARGS('npm pack'), 1, false);
         outPath = path.join(outDir, tgzname);
         if (path.resolve(tgzname) !== outPath) {
@@ -133,15 +133,15 @@ function * createArchive (repo, tag, outDir, sign) {
 exports.createArchive = createArchive;
 
 exports.verifyCommand = function * () {
-    var opt = flagutil.registerHelpFlag(optimist);
-    var argv = opt
+    const opt = flagutil.registerHelpFlag(optimist);
+    const argv = opt
         .usage('Ensures the given .zip files match their neighbouring .asc, .sha512 files.\n' +
                'Refer to ' + settingUpGpg + ' for how to set up gpg\n' +
                '\n' +
                'Usage: $0 verify-archive a.zip b.zip c.zip')
         .argv;
 
-    var zipPaths = argv._.slice(1);
+    const zipPaths = argv._.slice(1);
     if (argv.h || !zipPaths.length) {
         optimist.showHelp();
         process.exit(1);
@@ -150,30 +150,30 @@ exports.verifyCommand = function * () {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
-    var resolvedZipPaths = zipPaths.reduce(function (current, zipPath) {
-        var matchingPaths = glob.sync(apputil.resolveUserSpecifiedPath(zipPath));
+    const resolvedZipPaths = zipPaths.reduce(function (current, zipPath) {
+        const matchingPaths = glob.sync(apputil.resolveUserSpecifiedPath(zipPath));
         if (!matchingPaths || !matchingPaths.length) {
             apputil.fatal(chalk.red('No files found that match \'' + zipPath + '\''));
         }
         return current.concat(matchingPaths);
     }, []);
 
-    for (var i = 0; i < resolvedZipPaths.length; ++i) {
-        var zipPath = resolvedZipPaths[i];
+    for (let i = 0; i < resolvedZipPaths.length; ++i) {
+        const zipPath = resolvedZipPaths[i];
         yield verifyArchive(zipPath);
     }
     print(chalk.green('Verified ' + resolvedZipPaths.length + ' signatures and hashes.'));
 };
 
 function * verifyArchive (archive) {
-    var result = yield executil.execHelper(executil.ARGS('gpg --verify', archive + '.asc', archive), false, true);
+    const result = yield executil.execHelper(executil.ARGS('gpg --verify', archive + '.asc', archive), false, true);
     if (result === null) {
         apputil.fatal('Verification failed. You may need to update your keys. Run: curl "https://dist.apache.org/repos/dist/release/cordova/KEYS" | gpg --import');
     }
 
-    var sha = yield computeHash(archive, 'SHA512');
-    var archiveFileName = archive + '.sha512';
-    var oldArchiveFileName = archive + '.sha';
+    const sha = yield computeHash(archive, 'SHA512');
+    let archiveFileName = archive + '.sha512';
+    const oldArchiveFileName = archive + '.sha';
 
     if (fs.existsSync(oldArchiveFileName) && !fs.existsSync(archiveFileName)) {
         print('Old .sha extension found, this might have been generated by an old cordova-coho version. Using .sha extension for the check.');
@@ -190,7 +190,7 @@ exports.verifyArchive = verifyArchive;
 
 function * computeHash (path, algo) {
     print('Computing ' + algo + ' for: ' + path);
-    var result = yield executil.execHelper(executil.ARGS('gpg --print-md', algo, path), true);
+    const result = yield executil.execHelper(executil.ARGS('gpg --print-md', algo, path), true);
     return extractHashFromOutput(result);
 }
 
@@ -199,9 +199,9 @@ function extractHashFromOutput (output) {
 }
 
 function * checkLineEndings (repo) {
-    var autoCRLF;
-    var eol;
-    var msg = '';
+    let autoCRLF;
+    let eol;
+    let msg = '';
 
     try {
         autoCRLF = yield executil.execHelper(executil.ARGS('git config --get core.autocrlf'), true);

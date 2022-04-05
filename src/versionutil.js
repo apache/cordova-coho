@@ -17,21 +17,21 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var path = require('path');
-var glob = require('glob');
-var shelljs = require('shelljs');
-var xml2js = require('xml2js');
-var apputil = require('./apputil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
+const fs = require('fs');
+const path = require('path');
+const glob = require('glob');
+const shelljs = require('shelljs');
+const xml2js = require('xml2js');
+const apputil = require('./apputil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
 
 function * getRepoVersion (repo) {
-    var version;
+    let version;
     yield repoutil.forEachRepo([repo], function * () {
-        var platformPackage = path.join(process.cwd(), 'package.json');
-        var platformPackageJson = require(platformPackage);
+        const platformPackage = path.join(process.cwd(), 'package.json');
+        const platformPackageJson = require(platformPackage);
         version = platformPackageJson.version;
     });
     return version;
@@ -40,7 +40,7 @@ function * getRepoVersion (repo) {
 exports.getRepoVersion = getRepoVersion;
 
 function removeDev (version) {
-    var newVersion = version.replace('-dev', '');
+    const newVersion = version.replace('-dev', '');
     return newVersion;
 }
 exports.removeDev = removeDev;
@@ -50,15 +50,15 @@ exports.removeDev = removeDev;
 // and the new version as value
 // ex {android:4.0.0}
 function updatePlatformsConfig (newValues) {
-    var platformsConfig = path.join(repoutil.getRepoDir(repoutil.getRepoById('lib')),
+    const platformsConfig = path.join(repoutil.getRepoDir(repoutil.getRepoById('lib')),
         'src/platforms/platformsConfig.json');
-    var platformsJS = require(platformsConfig);
+    const platformsJS = require(platformsConfig);
 
     flagutil.computeReposFromFlag('active-platform')
         .forEach(function (repo) {
             if (newValues[repo.id]) {
             // For blackberry platformsConfig.json uses 'blackberry10' key
-                var correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
+                const correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
                 platformsJS[correctRepoId].version = newValues[repo.id];
             }
         });
@@ -91,8 +91,8 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     // Update the VERSION files.
     // TODO: why do we read files asynchronously in this function, but write
     // and check for existence synchronously?
-    var versionFilePaths = repo.versionFilePaths || ['VERSION'];
-    var isPlatformRepo = !!repoutil.isInRepoGroup(repo, 'platform');
+    const versionFilePaths = repo.versionFilePaths || ['VERSION'];
+    const isPlatformRepo = !!repoutil.isInRepoGroup(repo, 'platform');
     if (isPlatformRepo && fs.existsSync(versionFilePaths[0])) {
         versionFilePaths.forEach(function (versionFilePath) {
             fs.writeFileSync(versionFilePath, version + '\n');
@@ -128,10 +128,10 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     }
 
     // Update the package.json VERSION.
-    var packageFilePaths = repo.packageFilePaths || ['package.json'];
+    const packageFilePaths = repo.packageFilePaths || ['package.json'];
     if (fs.existsSync(packageFilePaths[0])) {
-        var data = fs.readFileSync(packageFilePaths[0], { encoding: 'utf-8' });
-        var packageJSON = JSON.parse(data);
+        const data = fs.readFileSync(packageFilePaths[0], { encoding: 'utf-8' });
+        const packageJSON = JSON.parse(data);
         packageJSON.version = version;
         // use 2 spaces indent similar to npm
         fs.writeFileSync(packageFilePaths[0], JSON.stringify(packageJSON, null, 2) + '\n');
@@ -143,15 +143,15 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
     }
 
     // Update the plugin.xml(s)
-    var isPluginRepo = !!repoutil.isInRepoGroup(repo, 'plugins');
+    const isPluginRepo = !!repoutil.isInRepoGroup(repo, 'plugins');
     if (isPluginRepo) {
-        var xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
+        const xmlFilePaths = repo.xmlFilePaths || ['plugin.xml', 'tests/plugin.xml'];
         xmlFilePaths.forEach(function (xmlFile) {
             if (fs.existsSync(xmlFile)) {
-                var data = fs.readFileSync(xmlFile, { encoding: 'utf-8' });
+                const data = fs.readFileSync(xmlFile, { encoding: 'utf-8' });
                 xml2js.parseString(data, { async: false }, function (err, xml) {
                     if (err) throw err;
-                    var prev_version = xml.plugin.$.version;
+                    const prev_version = xml.plugin.$.version;
                     shelljs.sed('-i', new RegExp('version="' + prev_version + '"', 'i'), 'version="' + version + '"', xmlFile);
                 });
             } else {
@@ -163,7 +163,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         }
     }
 
-    var commitChanges = !!(opts ? opts.commitChanges : true);
+    const commitChanges = !!(opts ? opts.commitChanges : true);
     if (commitChanges && (yield gitutil.pendingChangesExist())) {
         yield gitutil.commitChanges('Set VERSION to ' + version + ' (via coho)');
     }

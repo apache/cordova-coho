@@ -19,16 +19,16 @@ under the License.
 
 require('jasmine-co').install();
 
-var path = require('path');
+const path = require('path');
 
-var shelljs = require('shelljs');
+const shelljs = require('shelljs');
 
-var apputil = require('../src/apputil');
-var repoutil = require('../src/repoutil');
+const apputil = require('../src/apputil');
+const repoutil = require('../src/repoutil');
 
-var TIMEOUT = 60000;
+const TIMEOUT = 60000;
 
-var androidRepo = {
+const androidRepo = {
     title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
@@ -37,7 +37,7 @@ var androidRepo = {
     remoteName: 'origin'
 };
 
-var commonRepo = {
+const commonRepo = {
     title: 'Cordova Common',
     id: 'common',
     packageName: 'cordova-common',

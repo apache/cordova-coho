@@ -17,21 +17,21 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * () {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = opt
         .options('version', {
             desc: 'The version of the release. E.g. 2.7.1-rc2',
             demand: true
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('List the apache git repo urls for release artifacts.\n' +
                '\n' +
                'Usage: $0 list-release-urls [-r repos] --version=2.7.1-rc2')
@@ -41,16 +41,16 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var version = argv.version;
+    const repos = flagutil.computeReposFromFlag(argv.r);
+    const version = argv.version;
 
-    var baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
+    const baseUrl = 'http://git-wip-us.apache.org/repos/asf?p=%s.git;a=shortlog;h=refs/tags/%s';
     yield repoutil.forEachRepo(repos, function * (repo) {
         if (!(yield gitutil.tagExists(version))) {
             console.error('Tag "' + version + '" does not exist in repo ' + repo.repoName);
             return;
         }
-        var url = require('util').format(baseUrl, repo.repoName, version);
+        const url = require('util').format(baseUrl, repo.repoName, version);
         console.log(url);
         yield executil.execHelper(executil.ARGS('git show-ref ' + version), 2, true);
     });

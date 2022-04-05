@@ -17,21 +17,21 @@
  under the License.
  */
 
-var fs = require('fs');
-var path = require('path');
-var stream = require('stream');
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var linkify = require('jira-linkify');
-var co_stream = require('co-stream');
+const fs = require('fs');
+const path = require('path');
+const stream = require('stream');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const linkify = require('jira-linkify');
+const co_stream = require('co-stream');
 
-var relNotesFile = 'RELEASENOTES.md';
+const relNotesFile = 'RELEASENOTES.md';
 
 module.exports = function * () {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt)
         .usage('Updates release notes with commits since the most recent tag.\n' +
         '\n' +
@@ -48,16 +48,16 @@ module.exports = function * () {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         // TODO: we should use gitutil.summaryOfChanges here.
-        var cmd = executil.ARGS('git log --topo-order --no-merges');
+        const cmd = executil.ARGS('git log --topo-order --no-merges');
         cmd.push(['--pretty=format:* %s']);
-        var fromTag, toTag, hasOneTag;
+        let fromTag, toTag, hasOneTag;
         hasOneTag = false;
         if (argv['last-two-tags']) {
-            var last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
+            const last_two = (yield gitutil.findMostRecentTag(repo.versionPrefix));
             if (last_two) {
                 toTag = last_two[0];
                 if (last_two.length > 1) {
@@ -88,21 +88,21 @@ module.exports = function * () {
         if (!hasOneTag) {
             cmd.push(fromTag + '..' + toTag);
         }
-        var repoDesc = repo.repoName;
+        let repoDesc = repo.repoName;
         if (repo.path) {
             repoDesc += '/' + repo.path;
         }
         console.log('Finding commits in ' + repoDesc + ' from tag ' + fromTag + ' to tag ' + toTag);
-        var output = yield executil.execHelper(cmd.concat(repoutil.getRepoIncludePath(repo)), true);
+        const output = yield executil.execHelper(cmd.concat(repoutil.getRepoIncludePath(repo)), true);
         if (output) {
-            var newVersion;
+            let newVersion;
             if (toTag === 'master') {
                 delete require.cache[path.join(process.cwd(), 'package.json')];
                 newVersion = require(path.join(process.cwd(), 'package.json')).version;
             } else {
                 newVersion = toTag;
             }
-            var final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
+            const final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
             fs.writeFileSync(relNotesFile, final_notes, { encoding: 'utf8' });
             return linkify.file(relNotesFile);
         }
@@ -117,18 +117,18 @@ function bold (text, token) {
     return text.replace(new RegExp(' ' + token, 'gi'), ' **' + token + '**');
 }
 
-var GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi; // eslint-disable-line no-useless-escape
-var VIA_COHO_COMMIT_MSG = /\(via coho\)/gi;
+const GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi; // eslint-disable-line no-useless-escape
+const VIA_COHO_COMMIT_MSG = /\(via coho\)/gi;
 
 function * createNotes (repo, newVersion, changes, overrideDate) {
     // pump changes through JIRA linkifier first through a stream pipe
-    var transformer = linkify.stream('CB');
-    var read = new stream.Readable();
+    const transformer = linkify.stream('CB');
+    const read = new stream.Readable();
     read._read = function () {};// noop
     read.push(changes);
     read.push(null);
-    var write = new stream.Writable();
-    var data = '';
+    const write = new stream.Writable();
+    let data = '';
     write._write = function (chunk, encoding, done) {
         data += chunk.toString();
         done();
@@ -136,7 +136,7 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
     read.pipe(transformer).pipe(write);
     yield co_stream.wait(write); // wait for the writable stream to finish/end
     // remove any commit logs in the form "Close #xxx", used for closing github pull requests.
-    var lines = data.split('\n');
+    const lines = data.split('\n');
     data = lines.filter(function (line) {
         return !(
             line.match(GITHUB_CLOSE_COMMIT_MSG) ||
@@ -152,7 +152,7 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
         data = backtick(data, platform_name);
     });
     // bold platform labels (with optional version numbers, too)
-    var version_labels = [];
+    const version_labels = [];
     repoutil.repoGroups.platforms.filter(function (p) {
         // first only pull out the platform repos that we have explicitly labeled with nice version strings
         return p.versions && p.versions.length;
@@ -169,7 +169,7 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
         data = bold(data, platform);
     });
     // then interpolate linkified changes into existing release notes and compose the final release notes string
-    var relNotesData;
+    let relNotesData;
     // if being run in cordova directy, cd into repo
     if (path.basename(process.cwd()) === 'cordova') {
         relNotesData = fs.readFileSync(path.join(process.cwd(), repo, relNotesFile), { encoding: 'utf8' });
@@ -177,8 +177,8 @@ function * createNotes (repo, newVersion, changes, overrideDate) {
         // being run in repo directory (Eg cordova/cordova-plugin-device)
         relNotesData = fs.readFileSync(path.join(process.cwd(), relNotesFile), { encoding: 'utf8' });
     }
-    var headerPos = relNotesData.indexOf('### ');
-    var date;
+    const headerPos = relNotesData.indexOf('### ');
+    let date;
     if (overrideDate) {
         date = new Date(overrideDate).toDateString().split(' ');
     } else {

@@ -17,25 +17,25 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var request = require('request');
-var apputil = require('./apputil');
-var flagutil = require('./flagutil');
+const optimist = require('optimist');
+const request = require('request');
+const apputil = require('./apputil');
+const flagutil = require('./flagutil');
 
 // Set env variable CORDOVA_GIT_ACCOUNT to <username>:<password> or <api-token> to avoid hitting GitHub rate limits.
-var GITHUB_ACCOUNT = process.env.CORDOVA_GIT_ACCOUNT ? process.env.CORDOVA_GIT_ACCOUNT + '@' : '';
-var GITHUB_API_URL = 'https://' + GITHUB_ACCOUNT + 'api.github.com/';
-var GITHUB_ORGANIZATION = 'apache';
-var commentFailed = false;
+const GITHUB_ACCOUNT = process.env.CORDOVA_GIT_ACCOUNT ? process.env.CORDOVA_GIT_ACCOUNT + '@' : '';
+const GITHUB_API_URL = 'https://' + GITHUB_ACCOUNT + 'api.github.com/';
+const GITHUB_ORGANIZATION = 'apache';
+let commentFailed = false;
 
 function addLastCommentInfo (repo, pullRequests, callback) {
-    var remaining = pullRequests.length;
+    let remaining = pullRequests.length;
     if (remaining === 0) {
         callback();
     }
     pullRequests.forEach(function (pullRequest) {
-        var commentsUrl = pullRequest._links.comments && pullRequest._links.comments.href;
-        var reviewCommentsUrl = pullRequest._links.review_comments && pullRequest._links.review_comments.href;
+        const commentsUrl = pullRequest._links.comments && pullRequest._links.comments.href;
+        const reviewCommentsUrl = pullRequest._links.review_comments && pullRequest._links.review_comments.href;
 
         if (commentsUrl && reviewCommentsUrl) {
             // If comments and review_comments URLs are present, use them (more accurate than scraping)
@@ -64,7 +64,7 @@ function addLastCommentInfo (repo, pullRequests, callback) {
                         console.warn('Pull request scrape request failed: ' + err);
                     }
                 } else {
-                    var m = /[\s\S]*timeline-comment-header[\s\S]*?"author".*?>(.*?)</.exec(payload);
+                    const m = /[\s\S]*timeline-comment-header[\s\S]*?"author".*?>(.*?)</.exec(payload);
                     (pullRequest.lastUpdatedBy = m && m[1]) || (''); // eslint-disable-line no-unused-expressions
                 }
                 if (--remaining === 0) {
@@ -96,7 +96,7 @@ function getPullRequestComments (url, existingComments, callback) {
             }
             callback(existingComments);
         }
-        var comments = JSON.parse(payload);
+        const comments = JSON.parse(payload);
         if (!comments.forEach) {
             // We don't have an array, so something failed
             if (!commentFailed) {
@@ -110,7 +110,7 @@ function getPullRequestComments (url, existingComments, callback) {
 }
 
 function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callback) {
-    var url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
+    const url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
     request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' } }, function (err, res, pullRequests) {
         if (err) {
@@ -118,14 +118,14 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
         } else if (!pullRequests) {
             apputil.fatal('Error: GitHub returned no pull requests');
         } else if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-remaining'] === 0) {
-            var resetEpoch = new Date(res.headers['x-ratelimit-reset'] * 1000);
-            var expiration = resetEpoch.getHours() + ':' + resetEpoch.getMinutes() + ':' + resetEpoch.getSeconds();
+            const resetEpoch = new Date(res.headers['x-ratelimit-reset'] * 1000);
+            const expiration = resetEpoch.getHours() + ':' + resetEpoch.getMinutes() + ':' + resetEpoch.getSeconds();
             apputil.fatal('Error: GitHub rate limit exceeded, wait till ' + expiration + ' before trying again.\n' +
                 'See http://developer.github.com/v3/#rate-limiting for details.');
         }
 
         pullRequests = JSON.parse(pullRequests);
-        var origCount = pullRequests.length;
+        const origCount = pullRequests.length;
 
         if (pullRequests.message === 'Bad credentials') {
             apputil.fatal('Error: GitHub Bad credentials. Check your CORDOVA_GIT_ACCOUNT environment variable which should be set with your Github API token: https://github.com/settings/tokens.',
@@ -133,11 +133,11 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
         }
 
         pullRequests = pullRequests.filter(function (p) {
-            var updatedDate = new Date(p.updated_at);
-            var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
+            const updatedDate = new Date(p.updated_at);
+            const daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
             return daysAgo < maxAge;
         });
-        var countAfterDateFilter = pullRequests.length;
+        const countAfterDateFilter = pullRequests.length;
 
         if (hideUser) {
             addLastCommentInfo(repo, pullRequests, next);
@@ -146,7 +146,7 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
         }
 
         function next () {
-            var cbObj = {
+            const cbObj = {
                 repo: repo,
                 'fresh-count': 0,
                 'old-count': 0,
@@ -160,14 +160,14 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
                     return p.lastUpdatedBy !== hideUser;
                 });
             }
-            var count = pullRequests.length;
+            const count = pullRequests.length;
             cbObj['fresh-count'] = count;
 
             if (!statsOnly) {
                 pullRequests.sort(function (a, b) { return (a.updated_at > b.updated_at) ? -1 : ((b.updated_at > a.updated_at) ? 1 : 0); });
             }
 
-            var countMsg = count + ' Pull Requests';
+            let countMsg = count + ' Pull Requests';
             if (countAfterDateFilter !== origCount || count !== countAfterDateFilter) {
                 countMsg += ' (plus ';
             }
@@ -192,8 +192,8 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 
             if (!statsOnly) {
                 pullRequests.forEach(function (pullRequest) {
-                    var updatedDate = new Date(pullRequest.updated_at);
-                    var daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
+                    const updatedDate = new Date(pullRequest.updated_at);
+                    const daysAgo = Math.round((new Date() - updatedDate) / (60 * 60 * 24 * 1000));
                     console.log('\x1B[33m-----------------------------------------------------------------------------------------------\x1B[39m');
                     console.log('PR #' + pullRequest.number + ': ' + pullRequest.user.login + ': ' +
                         pullRequest.title + ' (\x1B[31m' + (pullRequest.lastUpdatedBy || '<no comments>') + ' ' + daysAgo + ' days ago\x1B[39m)');
@@ -222,7 +222,7 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 }
 
 function * listPullRequestsCommand () {
-    var opt = flagutil.registerHelpFlag(optimist);
+    let opt = flagutil.registerHelpFlag(optimist);
     opt = flagutil.registerRepoFlag(opt)
         .options('max-age', {
             desc: 'Don\'t show pulls older than this (in days)',
@@ -258,22 +258,22 @@ function * listPullRequestsCommand () {
                'Please note that GitHub rate limiting applies. See http://developer.github.com/v3/#rate-limiting for details.\n' +
                'You can also set the CORDOVA_GIT_ACCOUNT environment variable with your Github API key: https://github.com/settings/tokens\n'
     );
-    var argv = opt.argv;
+    const argv = opt.argv;
 
     if (argv.h) {
         optimist.showHelp();
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var report = {
+    const repos = flagutil.computeReposFromFlag(argv.r);
+    const report = {
         title: 'coho list-pulls report',
         // "command" : process.argv,
         timestamp: new Date().toJSON(),
         'max-age': argv['max-age'],
         repos: []
     };
-    var simple_report = [];
+    const simple_report = [];
 
     function next (reportObject) {
         if (reportObject && argv['stats-only']) {
@@ -285,7 +285,7 @@ function * listPullRequestsCommand () {
         }
 
         if (repos.length) {
-            var repo = repos.shift();
+            const repo = repos.shift();
             listGitHubPullRequests(repo.repoName, argv['max-age'], argv['hide-user'], argv.short, argv['stats-only'], next);
         } else if (argv['stats-only']) { // done
             function compareFunc (a, b) { // eslint-disable-line no-inner-declarations
@@ -310,7 +310,7 @@ function * listPullRequestsCommand () {
         }
     }
 
-    var url = 'https://github.com/pulls?utf8=%E2%9C%93&q=is%3Aopen+is%3Apr';
+    let url = 'https://github.com/pulls?utf8=%E2%9C%93&q=is%3Aopen+is%3Apr';
     repos.forEach(function (repo) {
         url += '+repo%3Aapache%2F' + repo.repoName;
     });

@@ -17,12 +17,12 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
-var chalk = require('chalk');
-var shell = require('shelljs');
+const path = require('path');
+const chalk = require('chalk');
+const shell = require('shelljs');
 
-var origWorkingDir = path.resolve(process.cwd());
-var baseWorkingDir = origWorkingDir;
+const origWorkingDir = path.resolve(process.cwd());
+let baseWorkingDir = origWorkingDir;
 
 exports.resolveUserSpecifiedPath = function (p) {
     return path.resolve(origWorkingDir, p);
@@ -30,7 +30,7 @@ exports.resolveUserSpecifiedPath = function (p) {
 
 exports.initWorkingDir = function (chdir) {
     if (chdir) {
-        var newDir = path.resolve(__dirname, '..', '..');
+        const newDir = path.resolve(__dirname, '..', '..');
         process.chdir(newDir);
         baseWorkingDir = newDir;
     }
@@ -49,17 +49,17 @@ exports.fatal = function () {
 exports.prefixLength = 30;
 
 exports.print = function () {
-    var newArgs = Array.prototype.slice.call(arguments);
+    let newArgs = Array.prototype.slice.call(arguments);
     // Prefix any prints() to distinguish them from command output.
     if (newArgs.length > 1 || newArgs[0]) {
-        var curDir = path.relative(baseWorkingDir, process.cwd());
+        let curDir = path.relative(baseWorkingDir, process.cwd());
         curDir = curDir ? curDir + '/' : './';
-        var banner = ' =';
-        var PREFIX_LEN = exports.prefixLength;
+        let banner = ' =';
+        const PREFIX_LEN = exports.prefixLength;
         if (curDir.length < PREFIX_LEN) {
             banner += new Array(PREFIX_LEN - curDir.length + 1).join('=');
         }
-        var prefix = chalk.magenta.bold(curDir) + chalk.yellow(banner);
+        const prefix = chalk.magenta.bold(curDir) + chalk.yellow(banner);
         newArgs.unshift(prefix);
         newArgs = newArgs.map(function (val) { return val.replace(/\n/g, '\n' + prefix + ' '); });
     }
@@ -68,7 +68,7 @@ exports.print = function () {
 };
 
 exports.setShellSilent = function (func) {
-    var origShellSilent = shell.config.silent;
+    const origShellSilent = shell.config.silent;
     shell.config.silent = true;
     func();
     shell.config.silent = origShellSilent;

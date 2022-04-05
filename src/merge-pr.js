@@ -15,15 +15,15 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var flagutil = require('./flagutil');
-var optimist = require('optimist');
-var executil = require('./executil');
-var gitutil = require('./gitutil');
-var chalk = require('chalk');
-var repoutil = require('./repoutil');
+const flagutil = require('./flagutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const gitutil = require('./gitutil');
+const chalk = require('chalk');
+const repoutil = require('./repoutil');
 
 module.exports = function * (argv) {
-    var opt = flagutil.registerHelpFlag(optimist);
+    const opt = flagutil.registerHelpFlag(optimist);
     opt.options('pr', {
         desc: 'PR # that needs to be merged',
         demand: true
@@ -47,17 +47,17 @@ module.exports = function * (argv) {
         process.exit(1);
     }
 
-    var pull_only = argv['pull-only'];
-    var localBranch = 'pr/' + argv.pr;
-    var currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
-    var origin = 'https://github.com/apache/' + currentRepo.repoName;
+    const pull_only = argv['pull-only'];
+    const localBranch = 'pr/' + argv.pr;
+    const currentRepo = repoutil.getRepoById(repoutil.resolveCwdRepo());
+    const origin = 'https://github.com/apache/' + currentRepo.repoName;
 
     function * mergePr () {
-        var commitMessage;
+        let commitMessage;
         yield executil.execHelper(executil.ARGS('git checkout master'));
 
         yield executil.execHelper(['git', 'pull', origin, 'master']);
-        var commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /* silent */ true);
+        const commit = yield executil.execHelper(executil.ARGS('git rev-parse HEAD'), /* silent */ true);
         yield executil.execHelper(['git', 'fetch', /* force update */ '-fu', origin,
             'refs/pull/' + argv.pr + '/head:' + localBranch]);
 
@@ -83,7 +83,7 @@ module.exports = function * (argv) {
                 }
             }
             console.log();
-            var commits = yield executil.execHelper(['git', 'log',
+            const commits = yield executil.execHelper(['git', 'log',
                 '--graph',
                 '--pretty=format:%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset',
                 '--abbrev-commit',

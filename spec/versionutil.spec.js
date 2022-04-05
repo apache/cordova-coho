@@ -17,14 +17,14 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var versionutil = require('../src/versionutil');
+const versionutil = require('../src/versionutil');
 require('jasmine-co').install();
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var shell = require('shelljs');
-var gitutil = require('../src/gitutil');
-var androidRepo = {
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const shell = require('shelljs');
+const gitutil = require('../src/gitutil');
+const androidRepo = {
     title: 'Android',
     id: 'android',
     repoName: 'cordova-android',
@@ -32,7 +32,7 @@ var androidRepo = {
     cordovaJsPaths: ['bin/templates/project/assets/www/cordova.js'],
     remoteName: 'origin'
 };
-var iosRepo = {
+const iosRepo = {
     title: 'iOS',
     id: 'ios',
     repoName: 'cordova-ios',
@@ -40,7 +40,7 @@ var iosRepo = {
     cordovaJsPaths: ['CordovaLib/cordova.js'],
     versionFilePaths: [path.join('CordovaLib', 'VERSION')]
 };
-var windowsRepo = {
+const windowsRepo = {
     title: 'Windows',
     id: 'windows',
     repoName: 'cordova-windows',
@@ -50,7 +50,7 @@ var windowsRepo = {
     versionFilePaths: ['VERSION'],
     packageFilePaths: ['package.json']
 };
-var browserRepo = {
+const browserRepo = {
     title: 'Browser',
     id: 'browser',
     repoName: 'cordova-browser',

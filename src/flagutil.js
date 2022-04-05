@@ -17,8 +17,8 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var apputil = require('./apputil');
-var repoutil = require('./repoutil');
+const apputil = require('./apputil');
+const repoutil = require('./repoutil');
 
 exports.registerHelpFlag = function (opt) {
     return opt.options('h', {
@@ -42,17 +42,17 @@ exports.registerDepthFlag = function (opt) {
 
 exports.computeReposFromFlag = function (flagValue, opts) {
     opts = opts || {};
-    var includeSvn = opts.includeSvn;
-    var includeModules = opts.includeModules;
+    const includeSvn = opts.includeSvn;
+    const includeModules = opts.includeModules;
 
     if (!flagValue) {
         console.log('No repos specified - using repo in CWD');
         flagValue = '.';
     }
-    var values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
-    var ret = [];
-    var addedIds = {};
-    var addedRepos = {};
+    const values = flagValue === true ? [] : Array.isArray(flagValue) ? flagValue : [flagValue];
+    let ret = [];
+    const addedIds = {};
+    const addedRepos = {};
     function addRepo (repo) {
         if (!addedIds[repo.id]) {
             addedIds[repo.id] = true;
@@ -63,7 +63,7 @@ exports.computeReposFromFlag = function (flagValue, opts) {
             if (includeModules) {
                 ret.push(repo);
             } else {
-                var existingRepo = addedRepos[repo.repoName];
+                const existingRepo = addedRepos[repo.repoName];
                 if (!existingRepo || !repo.isModule) {
                     if (existingRepo) {
                         ret[ret.indexOf(existingRepo)] = repo;
@@ -79,8 +79,8 @@ exports.computeReposFromFlag = function (flagValue, opts) {
         if (value === '.') {
             value = repoutil.resolveCwdRepo();
         }
-        var repo = repoutil.getRepoById(value);
-        var group = repoutil.repoGroups[value];
+        const repo = repoutil.getRepoById(value);
+        const group = repoutil.repoGroups[value];
         if (repo) {
             addRepo(repo);
         } else if (group) {
@@ -90,7 +90,7 @@ exports.computeReposFromFlag = function (flagValue, opts) {
         }
     });
     if (!includeSvn) {
-        var hadSvn = false;
+        let hadSvn = false;
         ret = ret.filter(function (r) {
             hadSvn = hadSvn || !!r.svn;
             return !r.svn;
@@ -104,7 +104,7 @@ exports.computeReposFromFlag = function (flagValue, opts) {
 };
 
 exports.validateVersionString = function (version, opt_allowNonSemver) {
-    var pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
+    const pattern = opt_allowNonSemver ? /^\d+\.\d+\.\d+(-?rc\d)?$/ : /^\d+\.\d+\.\d+(-rc\d)?$/;
     if (!pattern.test(version)) {
         apputil.fatal('Versions must be in the form #.#.#-[rc#]');
     }

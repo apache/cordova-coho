@@ -17,15 +17,15 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * () {
-    var meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
-    var opt = flagutil.registerRepoFlag(optimist);
+    const meEmail = yield executil.execHelper(executil.ARGS('git config user.email'), true);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt)
         .options('me', {
             desc: 'Show only your commits. Short for --user=' + meEmail + ' --cherry-picks=false',
@@ -54,15 +54,15 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
-    var filterByEmail = !!argv.me || !!argv.user;
-    var days = argv.days || 7;
-    var userEmail = filterByEmail && (argv.user || meEmail);
-    var showCherryPicks = !argv.me && argv['cherry-picks'];
-    var commitCount = 0;
-    var pullRequestCount = 0;
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const filterByEmail = !!argv.me || !!argv.user;
+    const days = argv.days || 7;
+    const userEmail = filterByEmail && (argv.user || meEmail);
+    const showCherryPicks = !argv.me && argv['cherry-picks'];
+    let commitCount = 0;
+    let pullRequestCount = 0;
 
-    var cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
+    let cmd = executil.ARGS('git log --no-merges --date=short --all-match --fixed-strings');
     if (filterByEmail) {
         cmd.push('--author=' + userEmail);
         if (!showCherryPicks) {
@@ -72,13 +72,13 @@ module.exports = function * () {
 
     apputil.print('Running command: ' + cmd.join(' ') + ' --format="$REPO_NAME %s" --since="' + days + ' days ago"');
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-        var format = '--format=' + repoName;
+        const repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
+        let format = '--format=' + repoName;
         if (!filterByEmail) {
             format += ' %an - ';
         }
         format += '%cd %s';
-        var output = yield executil.execHelper(cmd.concat([format, '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
+        const output = yield executil.execHelper(cmd.concat([format, '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
         if (output) {
             console.log(output);
             commitCount += output.split('\n').length;
@@ -89,8 +89,8 @@ module.exports = function * () {
         console.log('\nPull requests:');
         cmd = executil.ARGS('git log --no-merges --date=short --fixed-strings', '--committer=' + userEmail);
         yield repoutil.forEachRepo(repos, function * (repo) {
-            var repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
-            var output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
+            const repoName = repo.id + new Array(Math.max(0, 20 - repo.id.length + 1)).join(' ');
+            const output = yield executil.execHelper(cmd.concat(['--format=%ae|' + repoName + ' %cd %s',
                 '--since=' + days + ' days ago']).concat(repoutil.getRepoIncludePath(repo)), true);
             if (output) {
                 output.split('\n').forEach(function (line) {

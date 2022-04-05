@@ -17,14 +17,14 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var repoupdate = require('./repo-update');
-var print = apputil.print;
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const repoupdate = require('./repo-update');
+const print = apputil.print;
 
 module.exports = function * (argv) {
     var opt = flagutil.registerRepoFlag(optimist);
@@ -45,25 +45,25 @@ module.exports = function * (argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    const branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    const repos = flagutil.computeReposFromFlag(argv.r);
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         // Update first.
         yield repoupdate.updateRepos([repo], branches, false);
-        for (var i = 0; i < branches.length; ++i) {
-            var branchName = branches[i];
+        for (let i = 0; i < branches.length; ++i) {
+            const branchName = branches[i];
             if (!(yield gitutil.localBranchExists(branchName))) {
                 continue;
             }
-            var isNewBranch = !(yield gitutil.remoteBranchExists(repo, branchName));
+            const isNewBranch = !(yield gitutil.remoteBranchExists(repo, branchName));
 
             yield gitutil.gitCheckout(branchName);
 
             if (isNewBranch) {
                 yield executil.execHelper(executil.ARGS('git push --set-upstream ' + repo.remoteName + ' ' + branchName));
             } else {
-                var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName), true);
+                const changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName), true);
                 if (changes) {
                     yield executil.execHelper(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName));
                 } else {

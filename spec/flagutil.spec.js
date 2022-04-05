@@ -17,10 +17,10 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var apputil = require('../src/apputil');
-var flagutil = require('../src/flagutil');
+const apputil = require('../src/apputil');
+const flagutil = require('../src/flagutil');
 
-var TIMEOUT = 60000;
+const TIMEOUT = 60000;
 
 describe('flagutil unit tests', function () {
     it('Test#001 : validate the version that is passed in', function () {
@@ -32,7 +32,7 @@ describe('flagutil unit tests', function () {
     }, TIMEOUT);
 
     it('Test#002 : computeReposFromFlag returns correct repo (platform) info', function () {
-        var repo = flagutil.computeReposFromFlag('android');
+        const repo = flagutil.computeReposFromFlag('android');
         expect(repo).toEqual(
             [Object({
                 title: 'Android',
@@ -46,7 +46,7 @@ describe('flagutil unit tests', function () {
     }, TIMEOUT);
 
     it('Test#003 : computeReposFromFlag returns correct repo (plugin) info', function () {
-        var repo = flagutil.computeReposFromFlag('plugin-camera');
+        const repo = flagutil.computeReposFromFlag('plugin-camera');
         expect(repo).toEqual(
             [{
                 title: 'Plugin - Camera',
@@ -58,7 +58,7 @@ describe('flagutil unit tests', function () {
     }, TIMEOUT);
 
     it('Test#004 : computeReposFromFlag returns correct repo (docs) info', function () {
-        var repo = flagutil.computeReposFromFlag('docs');
+        const repo = flagutil.computeReposFromFlag('docs');
         expect(repo).toEqual(
             [{
                 title: 'Docs',

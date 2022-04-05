@@ -17,17 +17,17 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var repoupdate = require('./repo-update');
-var print = apputil.print;
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const repoupdate = require('./repo-update');
+const print = apputil.print;
 
 module.exports = function * (_argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = optimist
         .options('b', {
             alias: 'branch',
@@ -35,7 +35,7 @@ module.exports = function * (_argv) {
             default: 'master'
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Resets repository branches to match their upstream state.\n' +
                'Performs the following commands on each:\n' +
                '    git commit                             (commit any pending changes)\n' +
@@ -53,8 +53,8 @@ module.exports = function * (_argv) {
     if (argv.r === 'auto') {
         apputil.fatal('"-r auto" is not allowed for repo-reset. Please enumerate repos explicitly');
     }
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    const branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    const repos = flagutil.computeReposFromFlag(argv.r);
     yield module.exports.resetRepos(repos, branches);
 };
 
@@ -62,7 +62,7 @@ module.exports.resetRepos = function * (repos, branches) {
     yield repoutil.forEachRepo(repos, function * (repo) {
         // Determine remote name.
         yield repoupdate.updateRepos([repo], [], true);
-        var branchName = yield gitutil.retrieveCurrentBranchName();
+        const branchName = yield gitutil.retrieveCurrentBranchName();
         if (branches.indexOf(branchName) === -1) {
             yield gitutil.stashAndPop(repo, function * () {
                 yield cleanRepo(repo, branches);
@@ -74,8 +74,8 @@ module.exports.resetRepos = function * (repos, branches) {
 };
 
 function * cleanRepo (repo, branches) {
-    for (var i = 0; i < branches.length; ++i) {
-        var branchName = branches[i];
+    for (let i = 0; i < branches.length; ++i) {
+        const branchName = branches[i];
         if (!(yield gitutil.localBranchExists(branchName))) {
             continue;
         }
@@ -88,7 +88,7 @@ function * cleanRepo (repo, branches) {
 
         if (yield gitutil.remoteBranchExists(repo, branchName)) {
             yield gitutil.gitCheckout(branchName);
-            var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
+            const changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + repo.remoteName + '/' + branchName + '..' + branchName));
             if (changes) {
                 print(repo.repoName + ' on branch ' + branchName + ': Local commits exist. Resetting.');
                 yield executil.execHelper(executil.ARGS('git reset --hard ' + repo.remoteName + '/' + branchName));

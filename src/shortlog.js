@@ -17,13 +17,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * () {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt.usage('A version of `git shortlog -s` aggregated across multiple repos.\n' +
               '\n' +
@@ -37,27 +37,27 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var emailFilter = argv.filter && new RegExp(argv.filter);
-    var days = argv.days || 7;
-    var resultsByAuthor = {};
+    const repos = flagutil.computeReposFromFlag(argv.r);
+    const emailFilter = argv.filter && new RegExp(argv.filter);
+    const days = argv.days || 7;
+    const resultsByAuthor = {};
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var cmd = executil.ARGS('git shortlog -s -e --no-merges ', '--since=' + days + ' days ago');
-        var output = yield executil.execHelper(cmd, true);
+        const cmd = executil.ARGS('git shortlog -s -e --no-merges ', '--since=' + days + ' days ago');
+        const output = yield executil.execHelper(cmd, true);
         if (output) {
             output.split(/\n/).forEach(function (line) {
-                var m = /\s*(\d+).*?<(.*?)>/.exec(line);
-                var author = m[2];
-                var count = +m[1];
+                const m = /\s*(\d+).*?<(.*?)>/.exec(line);
+                const author = m[2];
+                const count = +m[1];
                 resultsByAuthor[author] = +(resultsByAuthor[author] || 0) + count;
             });
         }
     });
 
-    var total = 0;
-    var filterTotal = 0;
-    var records = Object.keys(resultsByAuthor).map(function (author) {
-        var count = resultsByAuthor[author];
+    let total = 0;
+    let filterTotal = 0;
+    const records = Object.keys(resultsByAuthor).map(function (author) {
+        const count = resultsByAuthor[author];
         total += count;
         if (emailFilter && emailFilter.exec(author)) {
             filterTotal += count;

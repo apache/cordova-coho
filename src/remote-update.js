@@ -17,13 +17,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * (_argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
 
     opt = opt.options('remote', {
@@ -32,7 +32,7 @@ module.exports = function * (_argv) {
     });
 
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Updates specified git remotes to apache github repos by performing the following command:\n' +
                '    for each specified repo:\n' +
                '        git remote set-url $REMOTE APACHE_GITHUB_URL' +
@@ -46,8 +46,8 @@ module.exports = function * (_argv) {
         process.exit(1);
     }
 
-    var remote = argv.remote;
-    var repos = flagutil.computeReposFromFlag(argv.r, true);
+    const remote = argv.remote;
+    const repos = flagutil.computeReposFromFlag(argv.r, true);
 
     // ensure that any missing repos are cloned
     // yield require('./repo-clone').cloneRepos(repos, true, depth);

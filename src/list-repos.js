@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var repoutil = require('./repoutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * (argv) {
     console.log('Valid values for the --repo flag:');
@@ -28,7 +28,7 @@ module.exports = function * (argv) {
     });
     console.log('');
     console.log('Repository Groups:');
-    var groupNames = Object.keys(repoutil.repoGroups);
+    const groupNames = Object.keys(repoutil.repoGroups);
     groupNames.sort();
     groupNames.forEach(function (groupName) {
         console.log('    ' + groupName + ' (' + repoutil.repoGroups[groupName].map(function (repo) { return repo.id; }).join(', ') + ')');

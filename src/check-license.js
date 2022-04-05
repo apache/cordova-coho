@@ -158,18 +158,22 @@ function getDependencies (packages) {
 
         // flag any packages whose licenses may not be compatible
         if (!hasValidLicense(obj)) {
-            let duplicate = false;
+            let hadDuplicate = false;
+
             // avoid duplicating already flagged packages
-            for (var z = 0; z < flagged.length; ++z) {
+            for (let z = 0; z < flagged.length; ++z) {
                 if (flagged[z].id === obj.id) {
-                    duplicate = true;
+                    hadDuplicate = true;
+
+                    // if it is already flagged then just add the directory to the directories array
+                    flagged[z].directory = flagged[z].directory.concat(obj.directory);
                     break;
                 }
             }
 
-            if (duplicate) {
-                flagged[z].directory = flagged[z].directory.concat(obj.directory); // if it is already flagged then just add the directory to the directories array
-            } else { flagged.push(JSON.parse(JSON.stringify(obj))); }
+            if (!hadDuplicate) {
+                flagged.push(JSON.parse(JSON.stringify(obj)));
+            }
         }
     }
 

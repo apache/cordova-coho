@@ -19,8 +19,9 @@
 #
 -->
 
-[![Build Status](https://travis-ci.org/apache/cordova-coho.svg?branch=master)](https://travis-ci.org/apache/cordova-coho)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-coho?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-coho)
+[![Node CI](https://github.com/apache/cordova-coho/workflows/Node%20CI/badge.svg?branch=master)](https://github.com/apache/cordova-coho/actions?query=branch%3Amaster)
+[![codecov.io](https://codecov.io/github/apache/cordova-coho/coverage.svg?branch=master)](https://codecov.io/github/apache/cordova-coho?branch=master)
+
 
 # Cordova Coho
 

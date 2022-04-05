@@ -242,7 +242,7 @@ function * interactive_plugins_release () {
                     console.log('Looking for ' + cb_issue + '...');
                     return jira.findIssue(cb_issue).then(function (issue) {
                         return issue;
-                    }, function (err) { // eslint-disable-line handle-callback-err
+                    }, function (err) { // eslint-disable-line node/handle-callback-err
                         console.error('Error finding issue ' + cb_issue + '!');
                         process.exit(4);
                     });

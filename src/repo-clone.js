@@ -17,18 +17,18 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var print = apputil.print;
+const fs = require('fs');
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const print = apputil.print;
 
 module.exports = function * (_argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     opt = flagutil.registerDepthFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Clones git repositories as siblings of cordova-coho (unless --no-chdir or --global is used). If the repositories are already cloned, then this is a no-op.\n\n' +
                'Usage: $0 repo-clone [--depth 1] --repo=name [-r repos]')
         .argv;
@@ -38,9 +38,9 @@ module.exports = function * (_argv) {
         process.exit(1);
     }
 
-    var depth = argv.depth ? argv.depth : null;
+    const depth = argv.depth ? argv.depth : null;
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
     yield cloneRepos(repos, false, depth);
 };
 
@@ -49,19 +49,19 @@ function createRepoUrl (repo) {
 }
 
 function * cloneRepos (repos, quiet, depth) {
-    var failures = []; // eslint-disable-line no-unused-vars
-    var numSkipped = 0;
+    const failures = []; // eslint-disable-line no-unused-vars
+    let numSkipped = 0;
 
-    var clonePromises = [];
-    for (var i = 0; i < repos.length; ++i) {
-        var repo = repos[i];
+    const clonePromises = [];
+    for (let i = 0; i < repos.length; ++i) {
+        const repo = repos[i];
         if (fs.existsSync(repo.repoName)) {
             if (!quiet) print('Repo already cloned: ' + repo.repoName);
             numSkipped += 1;
         } else if (repo.svn) {
             clonePromises.push(executil.execHelper(executil.ARGS('svn checkout ' + repo.svn + ' ' + repo.repoName + ' ' + '--trust-server-cert --non-interactive')));
         } else {
-            var depthArg = depth == null ? '' : '--depth ' + depth + ' ';
+            const depthArg = depth == null ? '' : '--depth ' + depth + ' ';
             clonePromises.push(executil.execHelper(executil.ARGS('git clone ' + depthArg + createRepoUrl(repo))));
         }
     }
@@ -71,7 +71,7 @@ function * cloneRepos (repos, quiet, depth) {
     }
     yield clonePromises;
 
-    var numCloned = repos.length - numSkipped;
+    const numCloned = repos.length - numSkipped;
     if (numCloned) {
         print('Successfully cloned ' + numCloned + ' repositories.');
     }

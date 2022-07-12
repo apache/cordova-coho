@@ -17,15 +17,15 @@
     under the License.
 */
 
-var child_process = require('child_process');
-var fs = require('fs');
-var path = require('path');
-var Q = require('q');
-var shell = require('shelljs');
-var iswin32 = process.platform === 'win32';
+const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const Q = require('q');
+const shell = require('shelljs');
+const iswin32 = process.platform === 'win32';
 
 function extend (dst, src) {
-    for (var k in src) {
+    for (const k in src) {
         dst[k] = src[k];
     }
     return dst;
@@ -33,7 +33,7 @@ function extend (dst, src) {
 
 // On Windows, spawn() for batch files requires absolute path & having the extension.
 function resolveWindowsExe (cmd) {
-    var winExtensions = ['.exe', '.cmd', '.bat', '.js', '.vbs'];
+    const winExtensions = ['.exe', '.cmd', '.bat', '.js', '.vbs'];
     function isValidExe (c) {
         return winExtensions.indexOf(path.extname(c)) !== -1 && fs.existsSync(c);
     }
@@ -42,6 +42,7 @@ function resolveWindowsExe (cmd) {
     }
     cmd = shell.which(cmd) || cmd;
     if (!isValidExe(cmd)) {
+        // eslint-disable-next-line array-callback-return
         winExtensions.some(function (ext) {
             if (fs.existsSync(cmd + ext)) {
                 cmd = cmd + ext;
@@ -70,8 +71,8 @@ function maybeQuote (a) {
 exports.spawn = function (cmd, args, opts) {
     args = args || [];
     opts = opts || {};
-    var spawnOpts = {};
-    var d = Q.defer();
+    const spawnOpts = {};
+    const d = Q.defer();
 
     if (iswin32) {
         cmd = resolveWindowsExe(cmd);
@@ -88,7 +89,7 @@ exports.spawn = function (cmd, args, opts) {
         }
     }
 
-    var pipeOutput = opts.stdio === 'inherit';
+    const pipeOutput = opts.stdio === 'inherit';
     if (opts.stdio === 'ignore') {
         spawnOpts.stdio = 'ignore';
     } else if (pipeOutput) {
@@ -107,9 +108,9 @@ exports.spawn = function (cmd, args, opts) {
         console.log('Running command: ' + maybeQuote(cmd) + ' ' + args.map(maybeQuote).join(' '));
     }
 
-    var child = child_process.spawn(cmd, args, spawnOpts);
-    var capturedOut = '';
-    var capturedErr = '';
+    const child = child_process.spawn(cmd, args, spawnOpts);
+    let capturedOut = '';
+    let capturedErr = '';
 
     if (child.stdout) {
         child.stdout.setEncoding('utf8');
@@ -132,16 +133,16 @@ exports.spawn = function (cmd, args, opts) {
     function whenDone (arg) {
         child.removeListener('close', whenDone);
         child.removeListener('error', whenDone);
-        var code = typeof arg === 'number' ? arg : arg && arg.code;
+        const code = typeof arg === 'number' ? arg : arg && arg.code;
 
         if (code === 0) {
             d.resolve(capturedOut.trim());
         } else {
-            var errMsg = cmd + ': Command failed with exit code ' + code;
+            let errMsg = cmd + ': Command failed with exit code ' + code;
             if (capturedErr) {
                 errMsg += ' Error output:\n' + capturedErr.trim();
             }
-            var err = new Error(errMsg);
+            const err = new Error(errMsg);
             err.code = code;
             err.output = capturedOut.trim();
             d.reject(err);

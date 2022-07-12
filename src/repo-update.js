@@ -17,16 +17,16 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var print = apputil.print;
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const print = apputil.print;
 
 module.exports = function * (_argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerDepthFlag(opt);
     opt = opt
         .options('b', {
@@ -40,7 +40,7 @@ module.exports = function * (_argv) {
             default: true
         });
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Updates git repositories by performing the following commands:\n' +
                '    save active branch\n' +
                '    git fetch $REMOTE \n' +
@@ -60,10 +60,10 @@ module.exports = function * (_argv) {
         process.exit(1);
     }
 
-    var depth = argv.depth ? argv.depth : null;
+    const depth = argv.depth ? argv.depth : null;
 
-    var branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    var repos = flagutil.computeReposFromFlag(argv.r, true);
+    const branches = Array.isArray(argv.b) ? argv.b : [argv.b];
+    const repos = flagutil.computeReposFromFlag(argv.r, true);
     apputil.prefixLength = Math.max.apply(null,
         [apputil.prefixLength].concat(
             repos.map(function (r) { return r.repoName.length + 2; }))
@@ -89,7 +89,7 @@ function * updateRepos (repos, branches, noFetch) {
     });
 
     if (!noFetch) {
-        var fetchPromises = [];
+        const fetchPromises = [];
         yield repoutil.forEachRepo(repos, function * (repo) {
             if (repo.svn) {
                 return;
@@ -104,7 +104,7 @@ function * updateRepos (repos, branches, noFetch) {
     }
 
     if (branches && branches.length) {
-        var errors = '';
+        let errors = '';
         yield repoutil.forEachRepo(repos, function * (repo) {
             if (repo.id === 'firefoxos' && process.platform === 'win32') {
                 console.log('Skipping firefox OS repo on Windows as it fails due to max path length issues');
@@ -121,12 +121,12 @@ function * updateRepos (repos, branches, noFetch) {
                 }
                 return;
             }
-            var staleBranches = {};
-            for (var i = 0; i < branches.length; ++i) {
-                var branchName = branches[i];
+            let staleBranches = {};
+            for (let i = 0; i < branches.length; ++i) {
+                const branchName = branches[i];
                 if (yield gitutil.localBranchExists(branchName)) {
                     if (yield gitutil.remoteBranchExists(repo, branchName)) {
-                        var changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName),
+                        const changes = yield executil.execHelper(executil.ARGS('git log --oneline ' + branchName + '..' + repo.remoteName + '/' + branchName),
                             /* silent */ true, /* allowError */ true);
                         staleBranches[branchName] = !!changes;
                     }
@@ -142,11 +142,11 @@ function * updateRepos (repos, branches, noFetch) {
                 print('Already up-to-date: ' + repo.repoName);
             } else {
                 yield gitutil.stashAndPop(repo, function * () {
-                    for (var i = 0; i < staleBranches.length; ++i) {
-                        var branchName = staleBranches[i];
+                    for (let i = 0; i < staleBranches.length; ++i) {
+                        const branchName = staleBranches[i];
                         yield gitutil.gitCheckout(branchName);
                         try {
-                            var ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName),
+                            let ret = yield executil.execHelper(executil.ARGS('git merge --ff-only', repo.remoteName + '/' + branchName),
                                 /* silent */ false, /* allowError */ true);
                             if (ret === null) {
                                 try {
@@ -174,9 +174,9 @@ function * updateRepos (repos, branches, noFetch) {
 module.exports.updateRepos = updateRepos;
 
 function * determineApacheRemote (repo) {
-    var fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
+    const fields = (yield executil.execHelper(executil.ARGS('git remote -v'), true)).split(/\s+/);
 
-    var ret = null;
+    let ret = null;
 
     // prefer github - in particular, ASF remote does not respond well to repo-update command.
     [
@@ -185,7 +185,7 @@ function * determineApacheRemote (repo) {
         'git-wip-us.apache.org/repos/asf/',
         'git.apache.org/'
     ].forEach(function (validRepo) {
-        for (var i = 1; i < fields.length; i += 3) {
+        for (let i = 1; i < fields.length; i += 3) {
             if (!ret && fields[i].indexOf(validRepo + repo.repoName) !== -1) {
                 ret = fields[i - 1];
             }

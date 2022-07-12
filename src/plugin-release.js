@@ -17,56 +17,56 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var co = require('co');
-var Q = require('q');
-var glob = require('glob');
-var path = require('path');
-var fs = require('fs');
-var shelljs = require('shelljs');
-var apputil = require('./apputil');
-var audit_license = require('./audit-license-headers');
-var update_release_notes = require('./update-release-notes');
-var create_archive = require('./create-verify-archive');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var svnutil = require('./svnutil');
-var repoutil = require('./repoutil');
-var versionutil = require('./versionutil');
-var repoupdate = require('./repo-update');
-var repoclone = require('./repo-clone');
-var reporeset = require('./repo-reset');
-var jira_client = require('jira-client');
-var inquirer = require('inquirer');
-var semver = require('semver');
+const co = require('co');
+const Q = require('q');
+const glob = require('glob');
+const path = require('path');
+const fs = require('fs');
+const shelljs = require('shelljs');
+const apputil = require('./apputil');
+const audit_license = require('./audit-license-headers');
+const update_release_notes = require('./update-release-notes');
+const create_archive = require('./create-verify-archive');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const svnutil = require('./svnutil');
+const repoutil = require('./repoutil');
+const versionutil = require('./versionutil');
+const repoupdate = require('./repo-update');
+const repoclone = require('./repo-clone');
+const reporeset = require('./repo-reset');
+const jira_client = require('jira-client');
+const inquirer = require('inquirer');
+const semver = require('semver');
 
 /*
  * Pseudo code for plugin automation:
  * 1. Who are you? --> this is the release manager. Can we use JIRA for this?
  */
-var jira; // issues.apache.org jira client object
-var you; // store label for the user here
-var jira_user; // store ref to jira project user
-var cordova_project; // store ref to jira project for Cordova
-var plugins_release_issue; // store ref to jira issue tracking release.
+let jira; // issues.apache.org jira client object
+let you; // store label for the user here
+let jira_user; // store ref to jira project user
+let cordova_project; // store ref to jira project for Cordova
+let plugins_release_issue; // store ref to jira issue tracking release.
 /* eslint-disable no-unused-vars */
-var jira_issue_types; // store ref to all issue types supported by our JIRA instance
+let jira_issue_types; // store ref to all issue types supported by our JIRA instance
 /* eslint-enable no-unused-vars */
-var all_plugins_component; // store the specific component associated to the plugin issue.
-var jira_task_issue; // store ref to the "task" issue type
-var plugin_base; // parent directory holding all cordova plugins
-var plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
-var dist_dev_svn; // cordova dist/dev repo
-var dist_svn; // cordova dist repo
-var svn_repos; // cordova dist and dist/dev svn repos
-var plugin_data = {}; // massive object containing plugin release-relevant information
-var plugins_to_release = []; // array of plugin names that need releasing
-var plugins_ommitted = []; // array of plugin names that DO NOT need releasing
-var plugins_to_merge_manually = []; // array of plugin names that RM will need to merge master into release branch manually.
-var svn_user; // username for apache svn
-var svn_password; // password for apache svn
-var updated_repos; // sentinel variable for if we did repo updates
-var created_distdev_dir; // sentinel var for if a new dir was created in cordova-dist-dev
+let all_plugins_component; // store the specific component associated to the plugin issue.
+let jira_task_issue; // store ref to the "task" issue type
+let plugin_base; // parent directory holding all cordova plugins
+let plugin_repos; // which plugins are we messing with? initially gets set to all plugin repos, later on gets filtered to only those we will release. an array of objects in a special coho-accepted format.
+let dist_dev_svn; // cordova dist/dev repo
+let dist_svn; // cordova dist repo
+let svn_repos; // cordova dist and dist/dev svn repos
+const plugin_data = {}; // massive object containing plugin release-relevant information
+let plugins_to_release = []; // array of plugin names that need releasing
+const plugins_ommitted = []; // array of plugin names that DO NOT need releasing
+const plugins_to_merge_manually = []; // array of plugin names that RM will need to merge master into release branch manually.
+let svn_user; // username for apache svn
+let svn_password; // password for apache svn
+let updated_repos; // sentinel variable for if we did repo updates
+let created_distdev_dir; // sentinel var for if a new dir was created in cordova-dist-dev
 
 function * updateDesiredRepos (repos) {
     if (!updated_repos) {
@@ -81,11 +81,11 @@ function * updateDesiredRepos (repos) {
 function * findChangesInPluginRepos (repos) {
     yield repoutil.forEachRepo(repos, function * (repo) {
         if (repo.repoName === 'cordova-plugins') return;
-        var last_release = (yield gitutil.findMostRecentTag())[0];
+        const last_release = (yield gitutil.findMostRecentTag())[0];
         plugin_data[repo.repoName] = {
             last_release: last_release
         };
-        var changes = yield gitutil.summaryOfChanges(last_release);
+        let changes = yield gitutil.summaryOfChanges(last_release);
         changes = changes.split('\n').filter(function (line) {
             return (line.toLowerCase().indexOf('incremented plugin version') === -1);
         });
@@ -145,9 +145,9 @@ function * interactive_plugins_release () {
             }]);
         }
     }).then(function (answers) {
-        var username = answers.username;
+        const username = answers.username;
         you = username;
-        var password = answers.password;
+        const password = answers.password;
         jira = new jira_client({ // eslint-disable-line new-cap
             protocol: 'https',
             host: 'issues.apache.org',
@@ -166,8 +166,8 @@ function * interactive_plugins_release () {
         return jira.listProjects();
     }).then(function (projects) {
         // Find the Apache Cordova (CB) project in Apache's JIRA
-        for (var i = 0; i < projects.length; i++) {
-            var project = projects[i];
+        for (let i = 0; i < projects.length; i++) {
+            const project = projects[i];
             if (project.key === 'CB') {
                 cordova_project = project;
                 break;
@@ -176,8 +176,8 @@ function * interactive_plugins_release () {
         return jira.listComponents('CB');
     }).then(function (components) {
         // Find the ALlPlugins component in Cordova'a JIRA components
-        for (var i = 0; i < components.length; i++) {
-            var component = components[i];
+        for (let i = 0; i < components.length; i++) {
+            const component = components[i];
             if (component.name === 'AllPlugins') {
                 all_plugins_component = component;
                 break;
@@ -186,8 +186,8 @@ function * interactive_plugins_release () {
         return jira.listIssueTypes();
     }).then(function (issue_types) {
         jira_issue_types = issue_types;
-        for (var i = 0; i < issue_types.length; i++) {
-            var it = issue_types[i];
+        for (let i = 0; i < issue_types.length; i++) {
+            const it = issue_types[i];
             if (it.name === 'Task') {
                 jira_task_issue = it;
             }
@@ -238,19 +238,19 @@ function * interactive_plugins_release () {
                     name: 'jira',
                     message: 'What is the JIRA issue number for your plugins release? Please provide only the numerical part of the issue key (i.e. CB-XXXXX)'
                 }).then(function (answers) {
-                    var cb_issue = 'CB-' + answers.jira;
+                    const cb_issue = 'CB-' + answers.jira;
                     console.log('Looking for ' + cb_issue + '...');
                     return jira.findIssue(cb_issue).then(function (issue) {
                         return issue;
-                    }, function (err) { // eslint-disable-line handle-callback-err
+                    }, function (err) { // eslint-disable-line node/handle-callback-err
                         console.error('Error finding issue ' + cb_issue + '!');
                         process.exit(4);
                     });
                 });
             } else {
                 console.warn('OK, no problem. I will create one for you now! Hang tight...');
-                var date = (new Date()).toDateString();
-                var new_issue = {
+                const date = (new Date()).toDateString();
+                const new_issue = {
                     fields: {
                         project: {
                             id: cordova_project.id
@@ -352,7 +352,7 @@ function * interactive_plugins_release () {
             return co.wrap(function * () {
                 yield updateDesiredRepos(plugin_repos);
                 // and remove all the data we collected for plugins we no longer care about.
-                var data_keys = Object.keys(plugin_data);
+                const data_keys = Object.keys(plugin_data);
                 data_keys.forEach(function (key) {
                     if (plugins_to_release.indexOf(key) === -1) {
                         delete plugin_data[key];
@@ -360,9 +360,9 @@ function * interactive_plugins_release () {
                 });
                 /* 7. ensure license headers are present everywhere. */
                 console.log('Checking license headers for specified plugin repos...');
-                var unknown_licenses = [];
+                const unknown_licenses = [];
                 yield audit_license.scrubRepos(plugin_repos, /* silent */true, /* allowError */false, function (repo, stdout) {
-                    var unknown = stdout.split('\n').filter(function (line) {
+                    const unknown = stdout.split('\n').filter(function (line) {
                         return line.indexOf('Unknown Licenses') > -1;
                     })[0];
                     if (unknown[0] !== '0') {
@@ -410,9 +410,9 @@ function * interactive_plugins_release () {
             return co.wrap(function * () {
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
                     yield gitutil.gitCheckout('master');
-                    var current_version = yield versionutil.getRepoVersion(repo);
+                    const current_version = yield versionutil.getRepoVersion(repo);
                     console.log(repo.repoName, '\'s current version is', current_version);
-                    var devless_version = versionutil.removeDev(current_version);
+                    const devless_version = versionutil.removeDev(current_version);
                     plugin_data[repo.repoName].current_release = devless_version;
                     yield versionutil.updateRepoVersion(repo, devless_version, { commitChanges: false });
                 });
@@ -422,12 +422,12 @@ function * interactive_plugins_release () {
              *     - how to determine if patch, minor or major? show changes to each plugin and then prompt Release Manager for a decision?
              *     - reuse coho 'update release notes' command */
             return co.wrap(function * () {
-                var plugs = Object.keys(plugin_data);
-                var release_note_prompts = [];
+                const plugs = Object.keys(plugin_data);
+                const release_note_prompts = [];
                 yield plugs.map(function * (plugin) {
-                    var data = plugin_data[plugin];
-                    var changes = data.changes;
-                    var final_notes = yield update_release_notes.createNotes(plugin, data.current_release, changes);
+                    const data = plugin_data[plugin];
+                    const changes = data.changes;
+                    const final_notes = yield update_release_notes.createNotes(plugin, data.current_release, changes);
                     release_note_prompts.push({
                         type: 'editor',
                         name: plugin,
@@ -439,12 +439,12 @@ function * interactive_plugins_release () {
                         type: 'input',
                         name: plugin + '-version',
                         message: function (answers) {
-                            var new_changes = answers[plugin];
-                            var first_heading = new_changes.indexOf('###');
-                            var second_heading = new_changes.indexOf('###', first_heading + 3);
-                            var first_change = new_changes.indexOf('\n', first_heading + 3);
-                            var len = second_heading - first_change;
-                            var change_summary = new_changes.substr(first_change, len);
+                            const new_changes = answers[plugin];
+                            const first_heading = new_changes.indexOf('###');
+                            const second_heading = new_changes.indexOf('###', first_heading + 3);
+                            const first_change = new_changes.indexOf('\n', first_heading + 3);
+                            const len = second_heading - first_change;
+                            const change_summary = new_changes.substr(first_change, len);
                             return 'Please enter a semver-compatible version number for this release of ' + plugin + ', based on the changes below:\n' + change_summary;
                         },
                         default: data.current_release,
@@ -463,16 +463,16 @@ function * interactive_plugins_release () {
             return co.wrap(function * () {
                 console.log('Writing out new release notes and plugin versions (if applicable)...');
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
+                    const plugin_name = repo.repoName;
                     if (plugin_data[plugin_name].current_release !== release_notes[plugin_name + '-version']) {
                         // If, after release notes review, RM decided on a different version...
                         // Overwrite plugin version
-                        var previous_assumed_version = plugin_data[plugin_name].current_release;
+                        const previous_assumed_version = plugin_data[plugin_name].current_release;
                         plugin_data[plugin_name].current_release = release_notes[plugin_name + '-version'];
                         yield versionutil.updateRepoVersion(repo, plugin_data[plugin_name].current_release, { commitChanges: false });
                         // also overwrite the version originally specified in the release notes file, since we changed it now!
-                        var rn = release_notes[plugin_name];
-                        var new_rn = rn.replace(new RegExp('### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
+                        const rn = release_notes[plugin_name];
+                        const new_rn = rn.replace(new RegExp('### ' + previous_assumed_version, 'g'), '### ' + plugin_data[plugin_name].current_release);
                         release_notes[plugin_name] = new_rn;
                     }
                     fs.writeFileSync(update_release_notes.FILE, release_notes[plugin_name], { encoding: 'utf8' });
@@ -489,11 +489,11 @@ function * interactive_plugins_release () {
         }).then(function () {
             /* 10. Create release branch. Check if release branch, which would be named in the form "major.minor.x" (i.e. 2.3.x) already exists */
             return co.wrap(function * () {
-                var repos_with_existing_release_branch = [];
+                const repos_with_existing_release_branch = [];
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var plugin_version = plugin_data[plugin_name].current_release;
-                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    const plugin_name = repo.repoName;
+                    const plugin_version = plugin_data[plugin_name].current_release;
+                    const release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
                     if (yield gitutil.remoteBranchExists(repo, release_branch_name)) {
                         repos_with_existing_release_branch.push(repo);
                         // also store HEAD of release branch, so later on we can show a diff of the branch before pushing
@@ -512,10 +512,10 @@ function * interactive_plugins_release () {
             // Our mission in this clause, should we choose to accept it, is to merge master back into the branch. But, this can be dangerous!
             // Ask the RM if they want us to handle the merge automatically.
             // If the RM says no, we will prompt them to handle it manually later.
-            var prompts = [];
+            const prompts = [];
             repos_with_existing_release_branch.forEach(function (repo) {
-                var plugin_name = repo.repoName;
-                var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
+                const plugin_name = repo.repoName;
+                const rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
                 prompts.push({
                     type: 'confirm',
                     name: 'rb_automerge_proceed_' + plugin_name,
@@ -525,12 +525,12 @@ function * interactive_plugins_release () {
             return inquirer.prompt(prompts);
         }).then(function (answers) {
             return co.wrap(function * () {
-                var prompts = [];
+                const prompts = [];
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
+                    const plugin_name = repo.repoName;
                     if (answers['rb_automerge_proceed_' + plugin_name]) {
                         // Auto-merge master into the release branch.
-                        var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
+                        const rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
                         console.log('Checking out "' + rb + '" branch of', plugin_name, 'and merging master in...');
                         yield executil.execHelper(executil.ARGS('git merge -s recursive -X theirs', 'master'), false, false, function () {
                             console.log('Merge was fine, continuing.');
@@ -546,9 +546,9 @@ function * interactive_plugins_release () {
             })();
         }).then(function () {
             // prompt the RM about the plugins with manual merging work needed here.
-            var prompts = [];
+            const prompts = [];
             plugins_to_merge_manually.forEach(function (plugin_name) {
-                var rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
+                const rb = versionutil.getReleaseBranchNameFromVersion(plugin_data[plugin_name].current_release);
                 prompts.push({
                     type: 'confirm',
                     name: 'rb_manualmerge_proceed_' + plugin_name,
@@ -562,8 +562,8 @@ function * interactive_plugins_release () {
             // So, check out master branch and do the thing.
             return co.wrap(function * () {
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var newest_version = semver.inc(plugin_data[plugin_name].current_release, 'patch') + '-dev';
+                    const plugin_name = repo.repoName;
+                    const newest_version = semver.inc(plugin_data[plugin_name].current_release, 'patch') + '-dev';
                     console.log('Checking out master branch of', plugin_name, 'and setting version to', newest_version, ', then committing that change to master branch...');
                     yield gitutil.gitCheckout('master');
                     // store previous master HEAD, for later comparison/showing of diff
@@ -575,14 +575,14 @@ function * interactive_plugins_release () {
             /* 12. Push tags, release branch, and master branch changes.
              * start with pushing tag, then compile diffs for master branch push and ask user if they approve before pushing master */
             return co.wrap(function * () {
-                var master_prompts = [];
+                const master_prompts = [];
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var tag = plugin_data[plugin_name].current_release;
+                    const plugin_name = repo.repoName;
+                    const tag = plugin_data[plugin_name].current_release;
                     console.log(plugin_name, ': pushing tag ', tag);
                     yield gitutil.pushToOrigin(tag);
                     /*   - show diff of last master commit for user confirmation */
-                    var diff = yield gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');
+                    const diff = yield gitutil.diff(plugin_data[plugin_name].previous_master_head, 'master');
                     master_prompts.push({
                         type: 'confirm',
                         name: 'master_' + plugin_name,
@@ -595,7 +595,7 @@ function * interactive_plugins_release () {
             /* check confirmations and exit if RM bailed */
             return co.wrap(function * () {
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
+                    const plugin_name = repo.repoName;
                     if (!answers['master_' + plugin_name]) {
                         console.error('Aborting as master branch changes for ' + plugin_name + ' were not approved!');
                         process.exit(8);
@@ -615,12 +615,12 @@ function * interactive_plugins_release () {
             *     - if release branch did not exist before, show diff (simple, just master..branch), confirm, then push
             *     - if release branch did exist before, show diff (last branch commit..HEAD), confirm, then push */
             return co.wrap(function * () {
-                var rb_prompts = [];
+                const rb_prompts = [];
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var plugin_version = plugin_data[plugin_name].current_release;
-                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
-                    var previous_release_branch_head = plugin_data[plugin_name].previous_release_branch_head;
+                    const plugin_name = repo.repoName;
+                    const plugin_version = plugin_data[plugin_name].current_release;
+                    const release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    const previous_release_branch_head = plugin_data[plugin_name].previous_release_branch_head;
                     yield gitutil.gitCheckout(release_branch_name);
                     if (previous_release_branch_head) {
                         // release branch previously existed.
@@ -646,7 +646,7 @@ function * interactive_plugins_release () {
             /* check confirmations and exit if RM bailed */
             return co.wrap(function * () {
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
+                    const plugin_name = repo.repoName;
                     if (!answers['rb_' + plugin_name]) {
                         console.error('Aborting as release branch changes for ' + plugin_name + ' were not approved!');
                         process.exit(8);
@@ -657,9 +657,9 @@ function * interactive_plugins_release () {
             // at this point RM is cool pushing master branch changes up.
             return co.wrap(function * () {
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var plugin_version = plugin_data[plugin_name].current_release;
-                    var release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
+                    const plugin_name = repo.repoName;
+                    const plugin_version = plugin_data[plugin_name].current_release;
+                    const release_branch_name = versionutil.getReleaseBranchNameFromVersion(plugin_version);
                     // at this point have release branch checked out
                     yield gitutil.pushToOrigin(release_branch_name);
                 });
@@ -668,8 +668,8 @@ function * interactive_plugins_release () {
             // 13. Publish to apache svn:
             // - first update dist-dev repo
             return co.wrap(function * () {
-                var orig_dir = process.cwd();
-                var dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
+                const orig_dir = process.cwd();
+                const dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
                 process.chdir(dist_dev_repo);
                 console.log('Updating dist-dev svn repo...');
                 yield svnutil.update();
@@ -679,16 +679,16 @@ function * interactive_plugins_release () {
             //   - create-archive -r $ACTIVE --dest cordova-dist-dev/$JIRA
             return co.wrap(function * () {
                 // location to store the archives in.
-                var dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
+                const dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
                 if (!(fs.existsSync(dist_dev_dir))) {
                     shelljs.mkdir('-p', dist_dev_dir);
                     created_distdev_dir = true;
                 }
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
-                    var plugin_name = repo.repoName;
-                    var tag = plugin_data[plugin_name].current_release;
+                    const plugin_name = repo.repoName;
+                    const tag = plugin_data[plugin_name].current_release;
                     yield gitutil.gitCheckout(tag);
-                    var archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/* sign */);
+                    const archive = yield create_archive.createArchive(repo, tag, dist_dev_dir, true/* sign */);
                     // - verify-archive cordova-dist-dev/$JIRA/*.tgz
                     yield create_archive.verifyArchive(archive);
                     yield gitutil.gitCheckout('master');
@@ -718,8 +718,8 @@ function * interactive_plugins_release () {
             svn_password = answers.password;
             //   - upload by running `svn` add and commit commands.
             return co.wrap(function * () {
-                var orig_dir = process.cwd();
-                var dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
+                const orig_dir = process.cwd();
+                const dist_dev_repo = path.join(plugin_base, dist_dev_svn.repoName);
                 if (created_distdev_dir) {
                     // if we created the dir containing the archives, then we can
                     // just svn add the entire dir.
@@ -729,15 +729,15 @@ function * interactive_plugins_release () {
                 } else {
                     // if it already existed, then we need to painstakingly add
                     // each individual archive file cause svn is cool
-                    var archives_for_plugins = [];
+                    const archives_for_plugins = [];
                     yield repoutil.forEachRepo(plugin_repos, function * (repo) {
                         process.chdir(dist_dev_repo);
-                        var plugin_name = repo.repoName;
-                        var tag = plugin_data[plugin_name].current_release;
-                        var fileref = plugin_name + '-' + tag;
+                        const plugin_name = repo.repoName;
+                        const tag = plugin_data[plugin_name].current_release;
+                        const fileref = plugin_name + '-' + tag;
                         archives_for_plugins.push(fileref);
-                        var files_to_add = glob.sync(path.join(plugins_release_issue.key, fileref + '*'));
-                        for (var i = 0; i < files_to_add.length; i++) {
+                        const files_to_add = glob.sync(path.join(plugins_release_issue.key, fileref + '*'));
+                        for (let i = 0; i < files_to_add.length; i++) {
                             yield svnutil.add(files_to_add[i]);
                         }
                     });
@@ -757,7 +757,7 @@ function * interactive_plugins_release () {
             process.exit(0);
         });
     }, function (auth_err) {
-        var keys = Object.keys(auth_err); // eslint-disable-line no-unused-vars
+        const keys = Object.keys(auth_err); // eslint-disable-line no-unused-vars
         console.error('ERROR! There was a problem connecting to JIRA, received a', auth_err.statusCode, 'status code.');
         process.exit(1);
     });
@@ -791,14 +791,14 @@ module.exports.interactive = interactive_plugins_release;
 // TODO: if using this function only to retrieve repo version, use the new
 // versionutil.getRepoVersion method instead.
 function * handleVersion (repo, ver, validate) { // eslint-disable-line no-unused-vars
-    var platform = repo.id; // eslint-disable-line no-unused-vars
-    var version = ver || undefined;
+    const platform = repo.id; // eslint-disable-line no-unused-vars
+    let version = ver || undefined;
 
     if (version === undefined) {
         yield repoutil.forEachRepo([repo], function * () {
             // Grabbing version from platformPackageJson
-            var platformPackage = path.join(process.cwd(), 'package.json');
-            var platformPackageJson = require(platformPackage);
+            const platformPackage = path.join(process.cwd(), 'package.json');
+            const platformPackageJson = require(platformPackage);
             if (validate === true) {
                 version = flagutil.validateVersionString(platformPackageJson.version);
             } else {

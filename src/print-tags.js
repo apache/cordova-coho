@@ -17,14 +17,14 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * (argv) {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
     argv = opt
         .usage('Prints out tags & hashes for the given repos. Used in VOTE emails.\n' +
@@ -37,9 +37,9 @@ module.exports = function * (argv) {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
-    var tag;
+    let tag;
     yield repoutil.forEachRepo(repos, function * (repo) {
         if (argv.tag) {
             tag = argv.tag;
@@ -50,7 +50,7 @@ module.exports = function * (argv) {
             console.log('    ' + repo.repoName + ': NO TAGS');
             return;
         }
-        var ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
+        const ref = yield executil.execHelper(executil.ARGS('git show-ref ' + tag), true);
         console.log('    ' + repo.repoName + ': ' + tag.replace(/^r/, '') + ' (' + ref.slice(0, 10) + ')');
     });
 };

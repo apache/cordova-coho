@@ -17,16 +17,16 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var path = require('path');
-var optimist = require('optimist');
-var shelljs = require('shelljs');
-var flagutil = require('./flagutil');
+const fs = require('fs');
+const path = require('path');
+const optimist = require('optimist');
+const shelljs = require('shelljs');
+const flagutil = require('./flagutil');
 
-var packman = 'npm';
+let packman = 'npm';
 
 function * createLink (argv) {
-    var opt = flagutil.registerHelpFlag(optimist);
+    const opt = flagutil.registerHelpFlag(optimist);
     argv = opt
         .usage('Does an npm-link of the modules that we publish. Ensures we are testing live versions of our own dependencies instead of the last published version.\n' +
                '\n' +
@@ -121,12 +121,12 @@ function cdOutOf () {
 
 function verifyLink (linkedModule, installedModule) {
     cdInto(installedModule);
-    var linkedPath = path.join(shelljs.pwd(), 'node_modules', linkedModule);
+    const linkedPath = path.join(shelljs.pwd(), 'node_modules', linkedModule);
     if (!fs.existsSync(linkedPath)) {
         return false;
     }
 
-    var myStat = fs.lstatSync(linkedPath);
+    const myStat = fs.lstatSync(linkedPath);
     if (!myStat.isSymbolicLink()) {
         return false;
     }

@@ -17,23 +17,23 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var apputil = require('./apputil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var chalk = require('chalk');
-var Q = require('q');
-var readline = require('readline');
+const optimist = require('optimist');
+const apputil = require('./apputil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const chalk = require('chalk');
+const Q = require('q');
+const readline = require('readline');
 
 function readInput () {
-    var ret = Q.defer();
+    const ret = Q.defer();
 
-    var rl = readline.createInterface({
+    const rl = readline.createInterface({
         input: process.stdin
     });
 
-    var data = '';
+    let data = '';
     rl.on('line', function (line) {
         if (line) {
             data += line + '\n';
@@ -49,8 +49,8 @@ function readInput () {
 }
 
 exports.createCommand = function * (argv) {
-    var opt = flagutil.registerHelpFlag(optimist);
-    var argv = opt // eslint-disable-line
+    const opt = flagutil.registerHelpFlag(optimist);
+    argv = opt // eslint-disable-line
         .usage('Makes sure the given hashs match the tags.\n' +
                'Paste the output of the `print-tags` into this command to verify.\n' +
                'e.g.:     cordova-plugin-camera: 0.3.0 (4fa934e06f)\n' +
@@ -66,20 +66,20 @@ exports.createCommand = function * (argv) {
         console.log('Paste in print-tags output then hit Enter');
     }
 
-    var input = yield readInput();
-    var pattern = /\s*(cordova-.+?):\s*(.*?)\s+\((.*?)\)/g;
-    var m;
-    var results = [];
+    const input = yield readInput();
+    const pattern = /\s*(cordova-.+?):\s*(.*?)\s+\((.*?)\)/g;
+    let m;
+    const results = [];
     while (m = pattern.exec(input)) { // eslint-disable-line no-cond-assign
         results.push({ repoId: m[1], tagName: m[2], hash: m[3] });
     }
     if (results.length === 0) {
         apputil.fatal('Error processing input.');
     }
-    var hadErrors = false;
-    for (var i = 0, entry; entry = results[i]; ++i) { // eslint-disable-line no-cond-assign
+    let hadErrors = false;
+    for (let i = 0, entry; entry = results[i]; ++i) { // eslint-disable-line no-cond-assign
         yield repoutil.forEachRepo([repoutil.getRepoById(entry.repoId)], function * (repo) {
-            var foundHash = yield gitutil.hashForRef(entry.tagName);
+            let foundHash = yield gitutil.hashForRef(entry.tagName);
             if (!foundHash) {
                 // Plugins have a prefixed 'r'
                 foundHash = yield gitutil.hashForRef('r' + entry.tagName);

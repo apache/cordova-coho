@@ -18,13 +18,13 @@ under the License.
 */
 
 require('jasmine-co').install();
-var executil = require('../src/executil');
-var superspawn = require('../src/superspawn');
-var apputil = require('../src/apputil');
-var Q = require('q');
-var deferred = Q.defer();
-var TIMEOUT = 60000;
-var androidRepo = {
+const executil = require('../src/executil');
+const superspawn = require('../src/superspawn');
+const apputil = require('../src/apputil');
+const Q = require('q');
+const deferred = Q.defer();
+const TIMEOUT = 60000;
+const androidRepo = {
     title: 'Android',
     id: 'android',
     repoName: 'cordova-android',

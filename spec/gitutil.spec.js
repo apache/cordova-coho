@@ -18,9 +18,9 @@ under the License.
 */
 
 require('jasmine-co').install();
-var executil = require('../src/executil');
-var gitutilJS = require('../src/gitutil');
-var TIMEOUT = 60000;
+const executil = require('../src/executil');
+const gitutilJS = require('../src/gitutil');
+const TIMEOUT = 60000;
 
 describe('gitutil unit tests', function () {
     beforeEach(function * () {

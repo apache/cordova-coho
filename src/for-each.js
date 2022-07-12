@@ -17,16 +17,16 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
+const optimist = require('optimist');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
 
 module.exports = function * () {
-    var opt = flagutil.registerRepoFlag(optimist);
-    var cmd;
+    let opt = flagutil.registerRepoFlag(optimist);
+    let cmd;
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Performs the supplied shell command in each repo directory.\n' +
                'Use "$r" as pseudo variable for repo name.\n' +
                '\n' +
@@ -37,7 +37,7 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    const repos = flagutil.computeReposFromFlag(argv.r);
     if (process.platform === 'win32') {
         cmd = ['cmd', '/s', '/c', argv._[1]];
     } else {
@@ -45,8 +45,8 @@ module.exports = function * () {
     }
 
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var replacedCmd = [];
-        for (var i = 0; i < cmd.length; i++) {
+        const replacedCmd = [];
+        for (let i = 0; i < cmd.length; i++) {
             replacedCmd[i] = cmd[i].replace(/\$r/g, repo.repoName);
         }
         yield executil.execHelper(replacedCmd, false, true);

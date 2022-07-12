@@ -17,26 +17,26 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var nlf = require('nlf');
-var treeify = require('treeify');
-var optimist = require('optimist');
-var fs = require('fs');
-var path = require('path');
-var Q = require('q');
-var flagutil = require('./flagutil');
+const nlf = require('nlf');
+const treeify = require('treeify');
+const optimist = require('optimist');
+const fs = require('fs');
+const path = require('path');
+const Q = require('q');
+const flagutil = require('./flagutil');
 
-var jsonObject = {};
-var validLicenses = [];
-var knownIssues = {};
-var licensesFile = path.join('cordova-coho', 'src', 'validLicenses.json');
-var knownIssuesFile = path.join('cordova-coho', 'src', 'knownIssues.json');
-var reposWithDependencies = [];
-var flagged = [];
+const jsonObject = {};
+let validLicenses = [];
+let knownIssues = {};
+const licensesFile = path.join('cordova-coho', 'src', 'validLicenses.json');
+const knownIssuesFile = path.join('cordova-coho', 'src', 'knownIssues.json');
+const reposWithDependencies = [];
+const flagged = [];
 
 module.exports = function * () {
-    var opt = flagutil.registerRepoFlag(optimist);
+    let opt = flagutil.registerRepoFlag(optimist);
     opt = flagutil.registerHelpFlag(opt);
-    var argv = opt
+    const argv = opt
         .usage('Go through each specified repo and check the licenses of node modules that are 3rd-party dependencies.\n\n' +
                'Usage: $0 check-license --repo=name [-r repos]')
         .argv;
@@ -45,7 +45,7 @@ module.exports = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     checkLicense(repos);
 };
 
@@ -60,11 +60,11 @@ function getRepoLicense (repoName) {
 
 function checkLicense (repos) {
     // get the license info for each repo's dependencies and sub-dependencies
-    var results = [];
-    var previous = Q.resolve();
+    const results = [];
+    let previous = Q.resolve();
     repos.forEach(function (repo) {
         previous = previous.then(function () {
-            var packageDir = findPackageDir(repo);
+            const packageDir = findPackageDir(repo);
             if (packageDir) {
                 reposWithDependencies.push(repo.id);
                 return getRepoLicense(packageDir);
@@ -85,7 +85,7 @@ function checkLicense (repos) {
 }
 
 function findPackageDir (repo) {
-    var packageDir = repo.repoName;
+    let packageDir = repo.repoName;
     if (repo.path) {
         packageDir = path.join(packageDir, repo.path);
     }
@@ -111,12 +111,12 @@ function processResults (results, repos) {
     knownIssues = JSON.parse(knownIssues);
 
     // go through each repo, get its dependencies and add to json object
-    for (var i = 0; i < results.length; ++i) {
-        var repo = repos[i];
+    for (let i = 0; i < results.length; ++i) {
+        const repo = repos[i];
         if (reposWithDependencies.indexOf(repo.id) > -1) {
-            var repoJsonObj = {};
+            const repoJsonObj = {};
             repoJsonObj.dependencies = getDependencies(results[i]);
-            var repoIdentifier = repo.repoName;
+            let repoIdentifier = repo.repoName;
             if (repo.path) {
                 repoIdentifier += '/' + repo.path;
             }
@@ -131,7 +131,7 @@ function processResults (results, repos) {
     console.log('***********************************************************************************************************************');
     console.log('***********************************************************************************************************************\n');
     if (flagged.length) {
-        for (var j = 0; j < flagged.length; ++j) {
+        for (let j = 0; j < flagged.length; ++j) {
             if (knownIssues[flagged[j].name]) {
                 flagged[j]['known-issues'] = knownIssues[flagged[j].name];
             }
@@ -146,10 +146,10 @@ function processResults (results, repos) {
 
 // get dependencies for a repo
 function getDependencies (packages) {
-    var dependencies = [];
-    for (var j = 0; j < packages.length; ++j) {
+    const dependencies = [];
+    for (let j = 0; j < packages.length; ++j) {
         // pull out only relevant info and add to dependencies array
-        var obj = {};
+        const obj = {};
         obj.name = packages[j].name;
         obj.id = packages[j].id;
         obj.directory = [packages[j].directory];
@@ -158,18 +158,22 @@ function getDependencies (packages) {
 
         // flag any packages whose licenses may not be compatible
         if (!hasValidLicense(obj)) {
-            var duplicate = false;
+            let hadDuplicate = false;
+
             // avoid duplicating already flagged packages
-            for (var z = 0; z < flagged.length; ++z) {
+            for (let z = 0; z < flagged.length; ++z) {
                 if (flagged[z].id === obj.id) {
-                    duplicate = true;
+                    hadDuplicate = true;
+
+                    // if it is already flagged then just add the directory to the directories array
+                    flagged[z].directory = flagged[z].directory.concat(obj.directory);
                     break;
                 }
             }
 
-            if (duplicate) {
-                flagged[z].directory = flagged[z].directory.concat(obj.directory); // if it is already flagged then just add the directory to the directories array
-            } else { flagged.push(JSON.parse(JSON.stringify(obj))); }
+            if (!hadDuplicate) {
+                flagged.push(JSON.parse(JSON.stringify(obj)));
+            }
         }
     }
 
@@ -178,16 +182,16 @@ function getDependencies (packages) {
 
 // check if package has valid licenses
 function hasValidLicense (pkg) {
-    var isValid = false;
+    let isValid = false;
 
     if (pkg.licenses.length === 0) { return isValid; } else {
         // go through each license of the package
-        for (var x = 0; x < pkg.licenses.length; ++x) {
+        for (let x = 0; x < pkg.licenses.length; ++x) {
             isValid = false;
 
             // go through valid licenses and try to match with package license
-            for (var y = 0; y < validLicenses.length; ++y) {
-                var pattern = new RegExp(validLicenses[y], 'gi'); // construct regular expression from valid license
+            for (let y = 0; y < validLicenses.length; ++y) {
+                const pattern = new RegExp(validLicenses[y], 'gi'); // construct regular expression from valid license
                 if ((pkg.licenses[x].license).match(pattern)) { // match it against the package license
                     isValid = true;
                 }

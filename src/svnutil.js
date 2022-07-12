@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var executil = require('./executil');
+const executil = require('./executil');
 
 exports.update = function * () {
     yield executil.execHelper(executil.ARGS('svn update'), false, false);

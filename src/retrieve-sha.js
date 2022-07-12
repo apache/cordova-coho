@@ -16,11 +16,11 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */
-var repoutil = require('./repoutil');
-var executil = require('./executil');
+const repoutil = require('./repoutil');
+const executil = require('./executil');
 
 module.exports = function * (repos) {
-    var shas = {};
+    const shas = {};
     yield repoutil.forEachRepo(repos, function * (repo) {
         shas[repo.id] = yield executil.execHelper(executil.ARGS('git rev-parse --short=8 HEAD'), true, true);
     });

@@ -17,24 +17,24 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var apputil = require('./apputil');
-var optimist = require('optimist');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
-var repoupdate = require('./repo-update');
-var retrieveSha = require('./retrieve-sha');
-var npmpublish = require('./npm-publish');
-var versionutil = require('./versionutil');
-var gitutil = require('./gitutil');
-var fs = require('fs');
-var path = require('path');
-var repoclone = require('./repo-clone');
+const apputil = require('./apputil');
+const optimist = require('optimist');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
+const repoupdate = require('./repo-update');
+const retrieveSha = require('./retrieve-sha');
+const npmpublish = require('./npm-publish');
+const versionutil = require('./versionutil');
+const gitutil = require('./gitutil');
+const fs = require('fs');
+const path = require('path');
+const repoclone = require('./repo-clone');
 
 module.exports = function * (argv) {
     /** Specifies the default repos to build nightlies for */
-    var DEFAULT_NIGHTLY_REPOS = ['cli', 'lib', 'fetch', 'common', 'create', 'coho'];
+    const DEFAULT_NIGHTLY_REPOS = ['cli', 'lib', 'fetch', 'common', 'create', 'coho'];
 
-    var opt = flagutil.registerHelpFlag(optimist);
+    let opt = flagutil.registerHelpFlag(optimist);
     opt = flagutil.registerRepoFlag(opt);
 
     argv = opt
@@ -57,10 +57,10 @@ module.exports = function * (argv) {
     // Clone and update Repos
     yield prepareRepos(argv.r);
 
-    var reposToBuild = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const reposToBuild = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
     // Get updated nightly versions for all repos
     /** @type {Object} A map of repo.id and a short SHA for every repo to build */
-    var VERSIONS = yield retrieveVersions(reposToBuild);
+    const VERSIONS = yield retrieveVersions(reposToBuild);
 
     // Update version in package.json and other respective files for every repo
     // and update dependencies to use nightly versions of packages to be released
@@ -76,7 +76,7 @@ module.exports = function * (argv) {
         versionutil.updatePlatformsConfig(VERSIONS);
     }
 
-    var options = {};
+    const options = {};
     options.tag = 'nightly';
     options.pretend = argv.pretend;
     options.r = reposToBuild.map(function (repo) { return repo.id; });
@@ -88,13 +88,13 @@ module.exports = function * (argv) {
 function * prepareRepos (repoNames) {
     // Clone and update required repos
     apputil.print('Cloning and updating required repositories...');
-    var reposToClone = flagutil.computeReposFromFlag(['tools'].concat(repoNames));
+    const reposToClone = flagutil.computeReposFromFlag(['tools'].concat(repoNames));
     yield repoclone.cloneRepos(reposToClone, /* silent= */true);
     yield repoupdate.updateRepos(reposToClone, /* silent= */true);
 
     // Remove local changes and sync up with remote master
     apputil.print('Resetting repositories to "master" branches...');
-    var reposToUpdate = flagutil.computeReposFromFlag(repoNames);
+    const reposToUpdate = flagutil.computeReposFromFlag(repoNames);
     yield repoutil.forEachRepo(reposToUpdate, function * () {
         yield gitutil.gitClean();
         yield gitutil.resetFromOrigin();
@@ -107,13 +107,14 @@ function * prepareRepos (repoNames) {
  * @param {Object<String, String>} dependencies Map of package's id's and nightly versions
  */
 function updateRepoDependencies (repo, dependencies) {
-    var packageJSONPath = path.join(process.cwd(), 'package.json');
-    var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
+    const packageJSONPath = path.join(process.cwd(), 'package.json');
+    const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
     // Let's iterate through repos we're going to release
+    // eslint-disable-next-line array-callback-return
     Object.keys(dependencies).map(function (dependencyId) {
-        var repo = repoutil.getRepoById(dependencyId);
-        var packageId = repo.packageName || repo.repoName;
+        const repo = repoutil.getRepoById(dependencyId);
+        const packageId = repo.packageName || repo.repoName;
 
         if (packageJSON.dependencies[packageId]) {
             // If current repo has dependency that points to one of packages, we're going
@@ -133,8 +134,8 @@ function updateRepoDependencies (repo, dependencies) {
  * @returns {String} A newly generated nightly suffix
  */
 function getNightlySuffix (SHA) {
-    var currentDate = new Date();
-    var nightlySuffix = '-nightly.' + currentDate.getUTCFullYear() + '.' +
+    const currentDate = new Date();
+    const nightlySuffix = '-nightly.' + currentDate.getUTCFullYear() + '.' +
         (currentDate.getUTCMonth() + 1) + '.' + currentDate.getUTCDate() +
         '.' + SHA;
 
@@ -148,11 +149,11 @@ function getNightlySuffix (SHA) {
  * @returns {Object} Mapped object
  */
 function * retrieveVersions (repos) {
-    var SHAJSON = yield retrieveSha(repos);
+    const SHAJSON = yield retrieveSha(repos);
 
     return Object.keys(SHAJSON).reduce(function (result, repoId) {
-        var repoPath = repoutil.getRepoDir(repoutil.getRepoById(repoId));
-        var oldVersion = require(path.join(repoPath, 'package.json')).version;
+        const repoPath = repoutil.getRepoDir(repoutil.getRepoById(repoId));
+        const oldVersion = require(path.join(repoPath, 'package.json')).version;
         result[repoId] = versionutil.removeDev(oldVersion) + getNightlySuffix(SHAJSON[repoId]);
         return result;
     }, {});

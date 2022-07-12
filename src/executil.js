@@ -17,14 +17,14 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var apputil = require('./apputil');
-var superspawn = require('./superspawn');
+const apputil = require('./apputil');
+const superspawn = require('./superspawn');
 
-var gitCommitCount = 0;
+let gitCommitCount = 0;
 
 function ARGS (s, var_args) {
-    var ret = s.trim().split(/\s+/);
-    for (var i = 1; i < arguments.length; ++i) {
+    const ret = s.trim().split(/\s+/);
+    for (let i = 1; i < arguments.length; ++i) {
         ret.push(arguments[i]);
     }
     return ret;
@@ -52,7 +52,7 @@ function execHelper (cmdAndArgs, silent, allowError, win, fail) {
     if (!silent || silent === 3 || exports.verbose) {
         apputil.print('Executing:', cmdAndArgs.join(' '));
     }
-    var result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), { stdio: (silent && (silent !== 2)) ? 'default' : 'inherit' });
+    const result = superspawn.spawn(cmdAndArgs[0], cmdAndArgs.slice(1), { stdio: (silent && (silent !== 2)) ? 'default' : 'inherit' });
     return result.then(win || null, fail || function (e) {
         if (allowError) {
             throw e;
@@ -67,7 +67,7 @@ exports.execHelper = execHelper;
 function reportGitPushResult (repos, branches) {
     apputil.print('');
     if (gitCommitCount) {
-        var flagsStr = repos.map(function (r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function (b) { return '-b ' + b; }).join(' ');
+        const flagsStr = repos.map(function (r) { return '-r ' + r.id; }).join(' ') + ' ' + branches.map(function (b) { return '-b ' + b; }).join(' ');
         apputil.print('All work complete. ' + gitCommitCount + ' commits were made locally.');
         apputil.print('To review changes:');
         apputil.print('  ' + process.argv[1] + ' repo-status ' + flagsStr + ' --diff | less');

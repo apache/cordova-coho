@@ -17,12 +17,12 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var fs = require('fs');
-var path = require('path');
-var shelljs = require('shelljs');
-var apputil = require('./apputil');
+const fs = require('fs');
+const path = require('path');
+const shelljs = require('shelljs');
+const apputil = require('./apputil');
 
-var platformRepos = [
+const platformRepos = [
     {
         title: 'Android',
         versions: ['4.4', '5.0', '5.1', '6.0', '7.0', '7.1'],
@@ -144,7 +144,7 @@ var platformRepos = [
     }
 ];
 
-var nonPlatformRepos = [
+const nonPlatformRepos = [
     {
         title: 'Docs',
         id: 'docs',
@@ -168,7 +168,7 @@ var nonPlatformRepos = [
     }
 ];
 
-var pluginRepos = [
+const pluginRepos = [
     {
         title: 'Plugin - Battery Status',
         id: 'plugin-battery-status',
@@ -310,7 +310,7 @@ var pluginRepos = [
     }
 ];
 
-var toolRepos = [
+const toolRepos = [
     {
         title: 'Cordova CLI',
         id: 'cli',
@@ -370,7 +370,7 @@ var toolRepos = [
     }
 ];
 
-var otherRepos = [
+const otherRepos = [
     {
         title: 'Cordova Medic',
         id: 'medic',
@@ -435,12 +435,12 @@ var otherRepos = [
     }
 ];
 
-var allRepos = platformRepos.concat(nonPlatformRepos,
+const allRepos = platformRepos.concat(nonPlatformRepos,
     pluginRepos,
     toolRepos,
     otherRepos);
 
-var repoGroups = {
+const repoGroups = {
     all: allRepos,
     platform: platformRepos,
     platforms: platformRepos,
@@ -464,7 +464,7 @@ repoGroups.__defineGetter__('auto', function () {
 exports.repoGroups = repoGroups;
 
 function isInRepoGroup (repoToCheck, groupName) {
-    var repos = repoGroups[groupName];
+    const repos = repoGroups[groupName];
     if (!repos) return false;
     return repos.some(function (repo) {
         return repo.id === repoToCheck.id;
@@ -474,8 +474,8 @@ exports.isInRepoGroup = isInRepoGroup;
 
 function getRepoById (id, opt_repos) {
     // Strip cordova- prefix if it exists.
-    var repos = opt_repos || allRepos;
-    for (var i = 0; i < repos.length; ++i) {
+    const repos = opt_repos || allRepos;
+    for (let i = 0; i < repos.length; ++i) {
         if (repos[i].id === id || repos[i].packageName === id || repos[i].repoName === id) {
             return repos[i];
         }
@@ -484,12 +484,12 @@ function getRepoById (id, opt_repos) {
 }
 exports.getRepoById = getRepoById;
 
-var isInForEachRepoFunction = false;
+let isInForEachRepoFunction = false;
 
 exports.forEachRepo = function * (repos, func) {
-    for (var i = 0; i < repos.length; ++i) {
-        var repo = repos[i];
-        var origPath = isInForEachRepoFunction ? process.cwd() : '..';
+    for (let i = 0; i < repos.length; ++i) {
+        const repo = repos[i];
+        let origPath = isInForEachRepoFunction ? process.cwd() : '..';
 
         // The crazy dance with isInForEachRepoFunction and origPath is needed
         // for nested forEachRepo calls to work. E.g repo-reset calls
@@ -501,7 +501,7 @@ exports.forEachRepo = function * (repos, func) {
         if (repo.id === 'lib') {
             origPath = origPath + '/..';
         }
-        var repoDir = getRepoDir(repo);
+        const repoDir = getRepoDir(repo);
         shelljs.cd(repoDir);
 
         if (shelljs.error()) {
@@ -516,10 +516,10 @@ exports.forEachRepo = function * (repos, func) {
 };
 
 function resolveCwdRepo () {
-    var curPath = apputil.resolveUserSpecifiedPath('.');
-    var prevPath;
+    let curPath = apputil.resolveUserSpecifiedPath('.');
+    let prevPath;
     for (;;) {
-        var value = path.basename(curPath);
+        const value = path.basename(curPath);
         if (getRepoById(value)) {
             return value;
         }
@@ -533,8 +533,8 @@ function resolveCwdRepo () {
 exports.resolveCwdRepo = resolveCwdRepo;
 
 function getRepoDir (repo) {
-    var baseWorkingDir = apputil.getBaseDir();
-    var repoDir = path.join(baseWorkingDir, repo.repoName);
+    const baseWorkingDir = apputil.getBaseDir();
+    let repoDir = path.join(baseWorkingDir, repo.repoName);
     if (repo.path) {
         repoDir = path.join(repoDir, repo.path);
     }
@@ -543,7 +543,7 @@ function getRepoDir (repo) {
 exports.getRepoDir = getRepoDir;
 
 function getRepoIncludePath (repo) {
-    var repoPath = repo.path;
+    const repoPath = repo.path;
     if (!repoPath) {
         return [];
     }
@@ -556,7 +556,7 @@ function getRepoIncludePath (repo) {
 
     // The harder case - this is the main repo. We want to include the repo root folder and the folder pointed to by
     // repo.path, but exclude all module folders.
-    var matchingRepos = allRepos.filter(function (testRepo) {
+    const matchingRepos = allRepos.filter(function (testRepo) {
         return testRepo.isModule && testRepo.repoName === repo.repoName;
     });
 

@@ -17,9 +17,9 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var executil = require('./executil');
-var gitutil = exports;
-var semver = require('semver');
+const executil = require('./executil');
+const gitutil = exports;
+const semver = require('semver');
 
 /**
  * Returns the greatest semver-looking tag in the repo. If prefix is specified, only looks at tags that start with
@@ -30,12 +30,12 @@ var semver = require('semver');
  */
 exports.findMostRecentTag = function * (prefix) {
     prefix = prefix && prefix + '-';
-    var finalBest;
-    var lastBest;
+    let finalBest;
+    let lastBest;
 
-    var ret = (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
+    const ret = (yield executil.execHelper(executil.ARGS('git tag --list'), true)).split(/\s+/)
         .reduce(function (curBest, value) {
-            var modifiedCurBest, modifiedValue;
+            let modifiedCurBest, modifiedValue;
             if (prefix) {
                 // Ignore values that don't start with prefix, and strip prefix from the value we're going to test
                 if (value.indexOf(prefix) !== 0) {
@@ -88,7 +88,7 @@ exports.tagExists = function * (tagName) {
 };
 
 exports.retrieveCurrentBranchName = function * (allowDetached) {
-    var ref;
+    let ref;
     try {
         ref = yield executil.execHelper(executil.ARGS('git symbolic-ref HEAD'), true, true);
     } catch (e) {
@@ -97,7 +97,7 @@ exports.retrieveCurrentBranchName = function * (allowDetached) {
         }
         throw new Error('Aborted due to repo ' + process.cwd() + ' not being on a named branch. ' + e.message);
     }
-    var match = /refs\/heads\/(.*)/.exec(ref);
+    const match = /refs\/heads\/(.*)/.exec(ref);
     if (!match) {
         throw new Error('Could not parse branch name from: ' + ref);
     }
@@ -105,8 +105,8 @@ exports.retrieveCurrentBranchName = function * (allowDetached) {
 };
 
 exports.remoteBranchExists = function * (repo, branch) {
-    var branch_token = (repo.remoteName || 'origin') + '/' + branch;
-    var stdout = yield executil.execHelper(executil.ARGS('git branch -r --list ' + branch_token), false, false);
+    const branch_token = (repo.remoteName || 'origin') + '/' + branch;
+    const stdout = yield executil.execHelper(executil.ARGS('git branch -r --list ' + branch_token), false, false);
     if (stdout.indexOf(branch_token) > -1) {
         return true;
     } else {
@@ -115,8 +115,8 @@ exports.remoteBranchExists = function * (repo, branch) {
 };
 
 exports.stashAndPop = function * (repo, func) {
-    var requiresStash = yield gitutil.pendingChangesExist();
-    var branchName = yield gitutil.retrieveCurrentBranchName();
+    const requiresStash = yield gitutil.pendingChangesExist();
+    const branchName = yield gitutil.retrieveCurrentBranchName();
 
     if (requiresStash) {
         yield executil.execHelper(executil.ARGS('git stash save --include-untracked --quiet', 'coho stash'));
@@ -135,7 +135,7 @@ exports.pendingChangesExist = function * () {
 };
 
 exports.gitCheckout = function * (branchName) {
-    var curBranch = yield gitutil.retrieveCurrentBranchName(true);
+    const curBranch = yield gitutil.retrieveCurrentBranchName(true);
     if (curBranch !== branchName) {
         return yield executil.execHelper(executil.ARGS('git checkout -q ', branchName));
     }
@@ -169,7 +169,7 @@ exports.gitClean = function () {
 };
 
 exports.summaryOfChanges = function * (base_sha) {
-    var cmd = executil.ARGS('git log --topo-order --no-merges');
+    const cmd = executil.ARGS('git log --topo-order --no-merges');
     cmd.push(['--pretty=format:* %s']);
     cmd.push(base_sha + '..master');
     return yield executil.execHelper(cmd, true, false);
@@ -188,7 +188,7 @@ exports.pushToOrigin = function * (ref) {
 };
 
 exports.diff = function * (first, second) {
-    var args = executil.ARGS('git diff', first + '..' + second);
+    const args = executil.ARGS('git diff', first + '..' + second);
     return yield executil.execHelper(args, true, false);
 };
 

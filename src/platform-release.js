@@ -17,27 +17,27 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
-var fs = require('fs');
-var util = require('util');
-var optimist = require('optimist');
-var shelljs = require('shelljs');
-var apputil = require('./apputil');
-var executil = require('./executil');
-var flagutil = require('./flagutil');
-var gitutil = require('./gitutil');
-var repoutil = require('./repoutil');
-var repoupdate = require('./repo-update');
-var versionutil = require('./versionutil');
-var print = apputil.print;
+const path = require('path');
+const fs = require('fs');
+const util = require('util');
+const optimist = require('optimist');
+const shelljs = require('shelljs');
+const apputil = require('./apputil');
+const executil = require('./executil');
+const flagutil = require('./flagutil');
+const gitutil = require('./gitutil');
+const repoutil = require('./repoutil');
+const repoupdate = require('./repo-update');
+const versionutil = require('./versionutil');
+const print = apputil.print;
 
 function createPlatformDevVersion (version) {
     // e.g. "3.1.0" -> "3.2.0-dev".
     // e.g. "3.1.2-0.8.0-rc2" -> "3.2.0-0.8.0-dev".
     version = version.replace(/-rc.*$/, '');
-    var parts = version.split('.');
+    const parts = version.split('.');
     parts[1] = String(+parts[1] + 1);
-    var cliSafeParts = parts[2].split('-');
+    const cliSafeParts = parts[2].split('-');
     cliSafeParts[0] = '0';
     parts[2] = cliSafeParts.join('-');
     return parts.join('.') + '-dev';
@@ -65,14 +65,14 @@ function cpAndLog (src, dest) {
 // TODO: if using this method to only retrieve repo version, use the new
 // versionutil.getRepoVersion method.
 function * handleVersion (repo, ver, validate) {
-    var platform = repo.id; // eslint-disable-line no-unused-vars
-    var version = ver || undefined;
+    const platform = repo.id; // eslint-disable-line no-unused-vars
+    let version = ver || undefined;
 
     if (version === undefined) {
         yield repoutil.forEachRepo([repo], function * () {
             // Grabbing version from platformPackageJson
-            var platformPackage = path.join(process.cwd(), 'package.json');
-            var platformPackageJson = require(platformPackage);
+            const platformPackage = path.join(process.cwd(), 'package.json');
+            const platformPackageJson = require(platformPackage);
             if (validate === true) {
                 version = flagutil.validateVersionString(platformPackageJson.version);
             } else {
@@ -84,7 +84,7 @@ function * handleVersion (repo, ver, validate) {
 }
 
 function configureReleaseCommandFlags (_opt) {
-    var opt = flagutil.registerRepoFlag(_opt);
+    let opt = flagutil.registerRepoFlag(_opt);
     opt = opt
         .options('version', {
             desc: 'The version to use for the branch. Must match the pattern #.#.#[-rc#]'
@@ -101,7 +101,7 @@ function configureReleaseCommandFlags (_opt) {
     return argv;
 }
 
-var hasBuiltJs = '';
+let hasBuiltJs = '';
 
 // Adds the version to CDVAvailability.h for iOS or OSX
 function * updateCDVAvailabilityFile (version, platform) {
@@ -112,17 +112,17 @@ function * updateCDVAvailabilityFile (version, platform) {
         file = path.join(process.cwd(), 'CordovaLib', 'CordovaLib', 'Classes', 'Commands', 'CDVAvailability.h');
     }
 
-    var fileContents = fs.readFileSync(file, 'utf8');
+    let fileContents = fs.readFileSync(file, 'utf8');
     fileContents = fileContents.split('\n');
 
-    var lineNumberToInsertLine = fileContents.indexOf('/* coho:next-version,insert-before */');
-    var lineNumberToReplaceLine = fileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
+    const lineNumberToInsertLine = fileContents.indexOf('/* coho:next-version,insert-before */');
+    let lineNumberToReplaceLine = fileContents.indexOf('    /* coho:next-version-min-required,replace-after */') + 2;
 
-    var versionNumberUnderscores = version.split('.').join('_');
-    var versionNumberZeroes = version.split('.').join('0');
+    const versionNumberUnderscores = version.split('.').join('_');
+    const versionNumberZeroes = version.split('.').join('0');
 
-    var lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
-    var lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
+    const lineToAdd = util.format('#define __CORDOVA_%s %s', versionNumberUnderscores, versionNumberZeroes);
+    const lineToReplace = util.format('    #define CORDOVA_VERSION_MIN_REQUIRED __CORDOVA_%s', versionNumberUnderscores);
 
     if (fileContents[lineNumberToInsertLine - 1] === lineToAdd) {
         print('Version already exists in CDVAvailability.h');
@@ -138,7 +138,7 @@ function * updateCDVAvailabilityFile (version, platform) {
 
 function * updateJsSnapshot (repo, version, commit) {
     function * ensureJsIsBuilt () {
-        var cordovaJsRepo = repoutil.getRepoById('js');
+        const cordovaJsRepo = repoutil.getRepoById('js');
         if (repo.id === 'blackberry') {
             repo.id = 'blackberry10';
         }
@@ -162,7 +162,7 @@ function * updateJsSnapshot (repo, version, commit) {
     if (repo.cordovaJsPaths) {
         yield ensureJsIsBuilt();
         repo.cordovaJsPaths.forEach(function (jsPath) {
-            var src = path.join('..', 'cordova-js', 'pkg', repo.cordovaJsSrcName || ('cordova.' + repo.id + '.js'));
+            const src = path.join('..', 'cordova-js', 'pkg', repo.cordovaJsSrcName || ('cordova.' + repo.id + '.js'));
             cpAndLog(src, jsPath);
         });
         if (commit === true) {
@@ -176,7 +176,7 @@ function * updateJsSnapshot (repo, version, commit) {
 }
 
 exports.createAndCopyCordovaJSCommand = function * () {
-    var argv = configureReleaseCommandFlags(optimist
+    const argv = configureReleaseCommandFlags(optimist
         .usage('Generates and copies an updated cordova.js to the specified platform. It does the following:\n' +
                '    1. Generates a new cordova.js.\n' +
                '    2. Replaces platform\'s cordova.js file.\n' +
@@ -184,15 +184,15 @@ exports.createAndCopyCordovaJSCommand = function * () {
                'Usage: $0 copy-js -r platform')
     );
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    const repos = flagutil.computeReposFromFlag(argv.r);
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var version = yield handleVersion(repo, argv.version, false);
+        const version = yield handleVersion(repo, argv.version, false);
         yield updateJsSnapshot(repo, version, false);
     });
 };
 
 exports.prepareReleaseBranchCommand = function * () {
-    var argv = configureReleaseCommandFlags(optimist
+    const argv = configureReleaseCommandFlags(optimist
         .usage('Prepares release branches but does not create tags. This includes:\n' +
                '    1. Creating the branch if it doesn\'t already exist\n' +
                '    2. Generates and updates the cordova.js snapshot and VERSION file from master.\n' +
@@ -206,16 +206,16 @@ exports.prepareReleaseBranchCommand = function * () {
                'Usage: $0 prepare-release-branch -r platform [--version=3.6.0]')
     );
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var branchName = null;
+    const repos = flagutil.computeReposFromFlag(argv.r);
+    const branchName = null;
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
 
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var platform = repo.id;
-        var version = yield handleVersion(repo, argv.version, true);
-        var branchName = versionutil.getReleaseBranchNameFromVersion(version);
+        const platform = repo.id;
+        const version = yield handleVersion(repo, argv.version, true);
+        const branchName = versionutil.getReleaseBranchNameFromVersion(version);
 
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch + update master
@@ -246,7 +246,7 @@ exports.prepareReleaseBranchCommand = function * () {
             yield versionutil.updateRepoVersion(repo, version);
 
             yield gitutil.gitCheckout('master');
-            var devVersion = createPlatformDevVersion(version);
+            const devVersion = createPlatformDevVersion(version);
             print(repo.repoName + ': Setting VERSION to "' + devVersion + '" on branch "master".');
             yield versionutil.updateRepoVersion(repo, devVersion);
             yield updateJsSnapshot(repo, devVersion, true);
@@ -265,13 +265,13 @@ function * tagJs (repo, version, pretend) {
         }
     }
     // tag cordova.js platform-version
-    var cordovaJsRepo = repoutil.getRepoById('js');
+    const cordovaJsRepo = repoutil.getRepoById('js');
     yield repoutil.forEachRepo([cordovaJsRepo], function * () {
         yield gitutil.stashAndPop(cordovaJsRepo, function * () {
             // git fetch
             yield repoupdate.updateRepos([cordovaJsRepo], ['master'], false);
 
-            var tagName = repo.id + '-' + version;
+            const tagName = repo.id + '-' + version;
             if (yield gitutil.tagExists(tagName)) {
                 yield execOrPretend(executil.ARGS('git tag ' + tagName + ' --force'));
             } else {
@@ -292,10 +292,10 @@ exports.tagReleaseBranchCommand = function * (argv) {
             type: 'boolean'
         })
     );
-    var repos = flagutil.computeReposFromFlag(argv.r);
-    var version = flagutil.validateVersionString(argv.version);
-    var pretend = argv.pretend;
-    var branchName = versionutil.getReleaseBranchNameFromVersion(version);
+    const repos = flagutil.computeReposFromFlag(argv.r);
+    const version = flagutil.validateVersionString(argv.version);
+    const pretend = argv.pretend;
+    const branchName = versionutil.getReleaseBranchNameFromVersion(version);
 
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
@@ -323,7 +323,7 @@ exports.tagReleaseBranchCommand = function * (argv) {
             yield repoupdate.updateRepos([repo], [branchName], true);
 
             // Create/update the tag.
-            var tagName = yield gitutil.retrieveCurrentTagName();
+            const tagName = yield gitutil.retrieveCurrentTagName();
             if (tagName !== version) {
                 if (yield gitutil.tagExists(version)) {
                     yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));

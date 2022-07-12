@@ -17,13 +17,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var optimist = require('optimist');
-var flagutil = require('./flagutil');
-var repoutil = require('./repoutil');
-var executil = require('./executil');
+const optimist = require('optimist');
+const flagutil = require('./flagutil');
+const repoutil = require('./repoutil');
+const executil = require('./executil');
 
 function * publishTag (options) {
-    var opt = flagutil.registerHelpFlag(optimist);
+    let opt = flagutil.registerHelpFlag(optimist);
 
     // argv was passed through another function, set defaults to appease demand.
     if (options) {
@@ -62,7 +62,7 @@ function * publishTag (options) {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
     // npm publish --tag argv.tag
     yield repoutil.forEachRepo(repos, function * (repo) {
@@ -74,7 +74,7 @@ module.exports.publishTag = publishTag;
 
 // Gets last nightly tag and unpublishes it
 function * unpublishNightly (options) {
-    var opt = flagutil.registerHelpFlag(optimist);
+    let opt = flagutil.registerHelpFlag(optimist);
 
     if (options) {
         opt = opt
@@ -86,7 +86,7 @@ function * unpublishNightly (options) {
             });
     }
 
-    var argv = opt
+    const argv = opt
         .usage('Unpublishes the nightly version for the cli & lib from npm \n' +
                 'Usage: $0 npm-unpublish-nightly')
         .options('pretend', {
@@ -104,11 +104,11 @@ function * unpublishNightly (options) {
         process.exit(1);
     }
 
-    var repos = flagutil.computeReposFromFlag(argv.r);
+    const repos = flagutil.computeReposFromFlag(argv.r);
 
     yield repoutil.forEachRepo(repos, function * (repo) {
-        var packageId = repo.packageName || repo.repoName;
-        var oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageId + ' dist-tags.nightly'));
+        const packageId = repo.packageName || repo.repoName;
+        const oldNightlyVersion = yield executil.execHelper(executil.ARGS('npm view ' + packageId + ' dist-tags.nightly'));
 
         if (oldNightlyVersion && oldNightlyVersion !== 'undefined') {
             yield executil.execOrPretend(executil.ARGS('npm unpublish ' + packageId + '@' + oldNightlyVersion), argv.pretend);

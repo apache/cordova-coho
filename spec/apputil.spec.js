@@ -17,8 +17,8 @@ specific language governing permissions and limitations
 under the License.
 */
 
-var path = require('path');
-var apputil = require('../src/apputil');
+const path = require('path');
+const apputil = require('../src/apputil');
 
 describe('apputil unit tests', function () {
     it('Test#001 : print', function () {

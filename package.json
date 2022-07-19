@@ -11,7 +11,7 @@
     "co": "~4.0",
     "co-stream": "0.1.1",
     "glob": "^5.0.14",
-    "got": "^9.6.0",
+    "got": "^11.8.5",
     "inquirer": "2.0.0",
     "jira-client": "4.2.0",
     "jira-linkify": "^2.3.0",

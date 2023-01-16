@@ -165,6 +165,11 @@ const nonPlatformRepos = [
         id: 'cordova-template-reference',
         repoName: 'cordova-template-reference',
         jiraComponentName: 'cordova-template-reference'
+    }, {
+        title: 'ESLint',
+        id: 'eslint',
+        repoName: 'cordova-eslint',
+        jiraComponentName: 'cordova-eslint'
     }
 ];
 

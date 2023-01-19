@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@cordova/eslint-config": "^4.0.0",
-    "cordova-android": "^8.1.0",
+    "cordova-android": "^11.0.0",
     "cordova-browser": "^6.0.0",
     "cordova-ios": "^5.0.1",
     "cordova-windows": "^7.0.0",

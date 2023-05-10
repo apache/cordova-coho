@@ -92,15 +92,13 @@ describe('versionutil', function () {
     it('Test#001 : checks that the correct android version is passed in', function * () {
         setupPlatform('android');
         yield versionutil.updateRepoVersion(androidRepo, testVersion);
-        expectTestVersioninFiles(
-            'framework/src/org/apache/cordova/CordovaWebView.java'
-        );
+        expectTestVersioninFiles('package.json');
     });
 
     it('Test#002 : checks that the correct ios version is passed in', function * () {
         setupPlatform('ios');
         yield versionutil.updateRepoVersion(iosRepo, testVersion);
-        expectTestVersioninFiles('bin/templates/scripts/cordova/version');
+        expectTestVersioninFiles('package.json');
     });
 
     it('Test#003 : checks that the correct windows version is passed in', function * () {

@@ -31,6 +31,6 @@ describe('audit-license-headers', () => {
 
             const cohoRepo = repoutil.getRepoById('coho');
             yield auditLicenseHeaders.scrubRepos([cohoRepo], true);
-        });
+        }, 60000);
     });
 });

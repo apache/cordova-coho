@@ -86,7 +86,6 @@ Current support:
 
     ||'''Platform'''||'''Support'''||
     ||Android       || {*}         ||
-    ||BB10          || {o}         ||
     ||iOS           || {o}         ||
     ||OSX           || {o}         ||
     ||QT            || {o}         ||

@@ -235,7 +235,7 @@ function * checkLineEndings (repo) {
             '    git config --global core.eol lf\n' +
             '    git config --global core.autocrlf false\n' +
             'Or update the repos automatically using coho (change the repo groups to your ones):\n' +
-            '   coho for-each -r tools -r android -r ios -r windows "git config core.eol lf && git config core.autocrlf false && git rm --cached -r . && git reset --hard"');
+            '   coho for-each -r tools -r android -r ios "git config core.eol lf && git config core.autocrlf false && git rm --cached -r . && git reset --hard"');
 
         process.exit(1);
     }

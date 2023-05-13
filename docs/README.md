@@ -28,7 +28,7 @@ This is a collection of documentation on processes using `cordova-coho`:
 Follow these processes to release...
 
 * [Tools](tools-release-process.md) (CLI etc.)
-* [Platforms](platforms-release-process.md) (iOS, Android, Windows etc.)
+* [Platforms](platforms-release-process.md) (iOS, Android etc.)
 * [Plugins](plugins-release-process.md)
 * [Hello world app](app-hello-world-release-process.md)
 * [`cordova-coho` itself](coho-release-process.md)

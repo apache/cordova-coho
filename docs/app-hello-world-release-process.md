@@ -246,8 +246,8 @@ Find your release here: https://dist.apache.org/repos/dist/release/cordova/
     (cp -fr cordova-app-hello-world/www/* cordova-ios/bin/templates/project/www/)
     (cd cordova-ios && git commit -am "$JIRA updated hello-world template")
     
-    (cp -fr cordova-app-hello-world/www/* cordova-windows/template/www/)
-    (cd cordova-windows && git commit -am "$JIRA updated hello-world template")
+    (cp -fr cordova-app-hello-world/www/* cordova-android/template/www/)
+    (cd cordova-android && git commit -am "$JIRA updated hello-world template")
 
 TODO: Need to add other platforms path to templates here
 

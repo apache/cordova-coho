@@ -40,16 +40,6 @@ const iosRepo = {
     cordovaJsPaths: ['CordovaLib/cordova.js'],
     versionFilePaths: [path.join('CordovaLib', 'VERSION')]
 };
-const windowsRepo = {
-    title: 'Windows',
-    id: 'windows',
-    repoName: 'cordova-windows',
-    jiraComponentName: 'Windows 8',
-    cordovaJsSrcName: 'cordova.windows.js',
-    cordovaJsPaths: ['template/www/cordova.js'],
-    versionFilePaths: ['VERSION'],
-    packageFilePaths: ['package.json']
-};
 const browserRepo = {
     title: 'Browser',
     id: 'browser',
@@ -99,12 +89,6 @@ describe('versionutil', function () {
         setupPlatform('ios');
         yield versionutil.updateRepoVersion(iosRepo, testVersion);
         expectTestVersioninFiles('package.json');
-    });
-
-    it('Test#003 : checks that the correct windows version is passed in', function * () {
-        setupPlatform('windows');
-        yield versionutil.updateRepoVersion(windowsRepo, testVersion);
-        expectTestVersioninFiles('template/cordova/version');
     });
 
     it('Test#004 : check that the correct browser version is passed in', function * () {

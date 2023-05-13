@@ -28,10 +28,10 @@
   },
   "devDependencies": {
     "@cordova/eslint-config": "^4.0.0",
-    "cordova-android": "^8.1.0",
+    "cordova-android": "^11.0.0",
     "cordova-browser": "^6.0.0",
-    "cordova-ios": "^5.0.1",
-    "cordova-windows": "^7.0.0",
+    "cordova-ios": "^6.3.0",
+    "cordova-windows": "^7.0.1",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
     "nyc": "^15.1.0"

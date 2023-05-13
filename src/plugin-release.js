@@ -83,7 +83,7 @@ function * findChangesInPluginRepos (repos) {
         if (repo.repoName === 'cordova-plugins') return;
         const last_release = (yield gitutil.findMostRecentTag())[0];
         plugin_data[repo.repoName] = {
-            last_release: last_release
+            last_release
         };
         let changes = yield gitutil.summaryOfChanges(last_release);
         changes = changes.split('\n').filter(function (line) {
@@ -154,8 +154,8 @@ function * interactive_plugins_release () {
             base: 'jira',
             apiVersion: '2',
             strictSSL: true,
-            username: username,
-            password: password
+            username,
+            password
         });
         return jira.getCurrentUser();
     }).then(function (user) {
@@ -242,7 +242,7 @@ function * interactive_plugins_release () {
                     console.log('Looking for ' + cb_issue + '...');
                     return jira.findIssue(cb_issue).then(function (issue) {
                         return issue;
-                    }, function (err) { // eslint-disable-line node/handle-callback-err
+                    }, function () {
                         console.error('Error finding issue ' + cb_issue + '!');
                         process.exit(4);
                     });
@@ -367,7 +367,7 @@ function * interactive_plugins_release () {
                     })[0];
                     if (unknown[0] !== '0') {
                         // There are some unknown licenses!
-                        unknown_licenses.push({ repo: repo.repoName, unknown: unknown });
+                        unknown_licenses.push({ repo: repo.repoName, unknown });
                     }
                 });
                 return yield Promise.resolve(unknown_licenses);

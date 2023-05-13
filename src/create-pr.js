@@ -109,7 +109,7 @@ function * getRemoteName (currentBranch) {
                 remoteName = tokens[1];
                 remoteBranch = tokens[2];
             }
-            return { remoteName: remoteName, remoteBranch: remoteBranch };
+            return { remoteName, remoteBranch };
         }
     }
     apputil.fatal('Unexpected error. Cannot determine remote: ' + branches);

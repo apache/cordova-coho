@@ -86,7 +86,7 @@ function getPullRequestComments (url, existingComments, callback) {
     }
 
     request.get({
-        url: url,
+        url,
         headers: { 'User-Agent': 'Cordova Coho' }
     }, function (err, res, payload) {
         if (err) {
@@ -112,7 +112,7 @@ function getPullRequestComments (url, existingComments, callback) {
 function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callback) {
     const url = GITHUB_API_URL + 'repos/' + GITHUB_ORGANIZATION + '/' + repo + '/pulls';
 
-    request.get({ url: url, headers: { 'User-Agent': 'Cordova Coho' } }, function (err, res, pullRequests) {
+    request.get({ url, headers: { 'User-Agent': 'Cordova Coho' } }, function (err, res, pullRequests) {
         if (err) {
             apputil.fatal('Error getting pull requests from GitHub: ' + err);
         } else if (!pullRequests) {
@@ -147,7 +147,7 @@ function listGitHubPullRequests (repo, maxAge, hideUser, short, statsOnly, callb
 
         function next () {
             const cbObj = {
-                repo: repo,
+                repo,
                 'fresh-count': 0,
                 'old-count': 0,
                 'stale-count': 0,

@@ -89,7 +89,6 @@ Current support:
     ||BB10          || {o}         ||
     ||iOS           || {o}         ||
     ||OSX           || {o}         ||
-    ||QT            || {o}         ||
     ||Tizen         || {o}         ||
     ||WebOS         || {o}         ||
     ||Win           || {o}         ||

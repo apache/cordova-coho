@@ -93,8 +93,6 @@ Current support:
     ||Tizen         || {o}         ||
     ||WebOS         || {o}         ||
     ||Win           || {o}         ||
-    ||WP7           || {o}         ||
-    ||WP8           || {o}         ||
     ||www           || {o}         ||
 
 ## Cordova JS

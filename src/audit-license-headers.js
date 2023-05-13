@@ -43,6 +43,10 @@ const COMMON_RAT_EXCLUDES = [
     '*-Info.plist',
     'Info.plist',
 
+    // exclude code coverage reports
+    'lcov-*',
+    'lcov.info',
+
     // Other
     '.*',
     '*.json', // Excludes all JSON files because commenting is not supported.

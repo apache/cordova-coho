@@ -39,16 +39,6 @@ const platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'BlackBerry',
-        id: 'blackberry',
-        repoName: 'cordova-blackberry',
-        jiraComponentName: 'cordova-blackberry',
-        cordovaJsSrcName: 'cordova.blackberry10.js',
-        cordovaJsPaths: [path.join('javascript', 'cordova.blackberry10.js')],
-        versionFilePaths: [path.join('VERSION')],
-        packageFilePaths: [path.join('package.json')],
-        inactive: true
-    }, {
         title: 'Windows',
         id: 'windows',
         repoName: 'cordova-windows',

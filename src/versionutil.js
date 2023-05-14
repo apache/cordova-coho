@@ -57,9 +57,7 @@ function updatePlatformsConfig (newValues) {
     flagutil.computeReposFromFlag('active-platform')
         .forEach(function (repo) {
             if (newValues[repo.id]) {
-            // For blackberry platformsConfig.json uses 'blackberry10' key
-                const correctRepoId = (repo.id === 'blackberry') ? 'blackberry10' : repo.id;
-                platformsJS[correctRepoId].version = newValues[repo.id];
+                platformsJS[repo.id].version = newValues[repo.id];
             }
         });
 

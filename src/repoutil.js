@@ -52,14 +52,6 @@ const platformRepos = [
         jiraComponentName: 'cordova-electron',
         cordovaJsSrcName: 'cordova.electron.js',
         cordovaJsPaths: ['cordova-lib/cordova.js']
-    }, {
-        title: 'WebOS',
-        id: 'webos',
-        repoName: 'cordova-webos',
-        jiraComponentName: 'cordova-webos',
-        cordovaJsSrcName: 'cordova.webos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js'],
-        inactive: true
     }
 ];
 

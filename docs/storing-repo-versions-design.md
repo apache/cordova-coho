@@ -87,7 +87,6 @@ Current support:
     ||'''Platform'''||'''Support'''||
     ||Android       || {*}         ||
     ||iOS           || {o}         ||
-    ||Tizen         || {o}         ||
     ||WebOS         || {o}         ||
     ||Win           || {o}         ||
     ||www           || {o}         ||

@@ -74,12 +74,6 @@ const platformRepos = [
         cordovaJsSrcName: 'cordova.webos.js',
         cordovaJsPaths: ['cordova-lib/cordova.js'],
         inactive: true
-    }, {
-        title: 'Tizen',
-        id: 'tizen',
-        repoName: 'cordova-tizen',
-        jiraComponentName: 'cordova-tizen',
-        inactive: true
     }
 ];
 

@@ -40,7 +40,7 @@ Go through each [unresolved bug that is not labeled 'triaged' ordered by created
 		- `Minor`, `Trivial`: Nice to haves.
 	- **Label**: Use the following:
 		- `regression` - A change introduced in previous release or commit that surfaced the issue. Ideally, add a link to the commit that caused the issue.
-		- `ios`, `android`, `windows`, `browser`, `node` etc. platforms - You can use these labels, if it is a plugin issue and affects one of these platforms
+		- `ios`, `android`, `browser`, `node` etc. platforms - You can use these labels, if it is a plugin issue and affects one of these platforms
 		- `beginner` or `easyfix` - For issues that are easy for a new contributor to fix. We will eventually publish an easyfix query for new contributors to participate.
 		- `triaged` - Indicates bug that has been triaged and does not need to be triaged again.
 		- `reproduced` - Bug that has a reproduction.
@@ -68,7 +68,7 @@ Sometimes there is a bug or a feature request that seems valid, but it might not
 - If the issue is unclear, ask the reporter to provide more details via screen shot, sample code, or a command line log.
 
 ## Dealing with feature requests
-New features to plugins should ideally be cross platform (at least across more than one major platform - Android, iOS, Windows). The design should account for ease of detection or meaningful degradation in the absence of the feature on a particular platform. For feature requests that are overly specific to a particular use-case - we should resolve them with resolution reason `Later` or `Won't Fix`. There is little value in carrying the debt of these issues.
+New features to plugins should ideally be cross platform (at least across more than one major platform - Android, iOS). The design should account for ease of detection or meaningful degradation in the absence of the feature on a particular platform. For feature requests that are overly specific to a particular use-case - we should resolve them with resolution reason `Later` or `Won't Fix`. There is little value in carrying the debt of these issues.
 
 ## Open issues
 - Assignments: Who does JIRA triage? Do we need a weekly rotation duty? Should we publish a schedule? Should we distribute by component?

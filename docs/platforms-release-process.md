@@ -502,7 +502,7 @@ And finally you can publish your package to npm:
 
 Note: On Windows you have to replace `/` with `\` for this command to work.
 
-Check online if everything worked: https://www.npmjs.com/package/cordova-windows
+Check online if everything worked: https://www.npmjs.com/package/cordova-android
 
 You should now also be able to add your platform via the version number using the CLI:
 
@@ -547,7 +547,7 @@ These are permanent release tags for Apache.
 
     Subject: [ANNOUNCEMENT] Cordova Android 5.0.0 Release
     
-    Cordova-windows@VERSION has been released!
+    Cordova-Android@VERSION has been released!
 
 ### Announce It!
 

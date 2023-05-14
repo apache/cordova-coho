@@ -39,15 +39,6 @@ const platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'Windows',
-        id: 'windows',
-        repoName: 'cordova-windows',
-        jiraComponentName: 'cordova-windows',
-        cordovaJsSrcName: 'cordova.windows.js',
-        cordovaJsPaths: ['template/www/cordova.js'],
-        versionFilePaths: ['VERSION'],
-        packageFilePaths: ['package.json']
-    }, {
         title: 'Firefox OS',
         id: 'firefoxos',
         repoName: 'cordova-firefoxos',

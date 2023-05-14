@@ -101,18 +101,6 @@ const platformRepos = [
         cordovaJsSrcName: 'cordova.electron.js',
         cordovaJsPaths: ['cordova-lib/cordova.js']
     }, {
-        title: 'Bada',
-        id: 'bada',
-        repoName: 'cordova-bada',
-        jiraComponentName: 'cordova-bada',
-        inactive: true
-    }, {
-        title: 'Bada WAC',
-        id: 'bada-wac',
-        repoName: 'cordova-bada-wac',
-        jiraComponentName: 'cordova-bada',
-        inactive: true
-    }, {
         title: 'WebOS',
         id: 'webos',
         repoName: 'cordova-webos',

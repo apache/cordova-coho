@@ -88,7 +88,6 @@ Current support:
     ||Android       || {*}         ||
     ||iOS           || {o}         ||
     ||OSX           || {o}         ||
-    ||QT            || {o}         ||
     ||Tizen         || {o}         ||
     ||WebOS         || {o}         ||
     ||Win           || {o}         ||

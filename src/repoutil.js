@@ -99,12 +99,6 @@ const platformRepos = [
         cordovaJsPaths: ['cordova-lib/cordova.js'],
         inactive: true
     }, {
-        title: 'QT',
-        id: 'qt',
-        repoName: 'cordova-qt',
-        jiraComponentName: 'cordova-qt',
-        inactive: true
-    }, {
         title: 'Tizen',
         id: 'tizen',
         repoName: 'cordova-tizen',

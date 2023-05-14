@@ -58,15 +58,6 @@ const platformRepos = [
         versionFilePaths: ['VERSION'],
         packageFilePaths: ['package.json']
     }, {
-        title: 'Windows Phone 8.0',
-        id: 'wp8',
-        repoName: 'cordova-wp8',
-        jiraComponentName: 'cordova-wp8',
-        cordovaJsSrcName: 'cordova.wp8.js',
-        cordovaJsPaths: ['template/www/cordova.js'],
-        packageFilePaths: ['package.json'],
-        inactive: true
-    }, {
         title: 'Firefox OS',
         id: 'firefoxos',
         repoName: 'cordova-firefoxos',

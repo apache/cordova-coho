@@ -103,14 +103,10 @@ function configureReleaseCommandFlags (_opt) {
 
 let hasBuiltJs = '';
 
-// Adds the version to CDVAvailability.h for iOS or OSX
+// Adds the version to CDVAvailability.h for iOS
 function * updateCDVAvailabilityFile (version, platform) {
     // Default to iOS
-    let file = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
-
-    if (platform === 'osx') {
-        file = path.join(process.cwd(), 'CordovaLib', 'CordovaLib', 'Classes', 'Commands', 'CDVAvailability.h');
-    }
+    const file = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
 
     let fileContents = fs.readFileSync(file, 'utf8');
     fileContents = fileContents.split('\n');
@@ -217,7 +213,7 @@ exports.prepareReleaseBranchCommand = function * () {
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch + update master
             yield repoupdate.updateRepos([repo], ['master'], false);
-            if (platform === 'ios' || platform === 'osx') {
+            if (platform === 'ios') {
                 // Updates version in CDVAvailability.h file
                 yield updateCDVAvailabilityFile(version, platform);
                 // Git commit changes

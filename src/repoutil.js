@@ -39,14 +39,6 @@ const platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'Firefox OS',
-        id: 'firefoxos',
-        repoName: 'cordova-firefoxos',
-        jiraComponentName: 'cordova-firefoxos',
-        cordovaJsSrcName: 'cordova.firefoxos.js',
-        cordovaJsPaths: ['cordova-lib/cordova.js'],
-        inactive: true
-    }, {
         title: 'Mac OSX',
         id: 'osx',
         repoName: 'cordova-osx',

@@ -39,13 +39,6 @@ const platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'Ubuntu',
-        id: 'ubuntu',
-        repoName: 'cordova-ubuntu',
-        jiraComponentName: 'cordova-ubuntu',
-        cordovaJsPaths: ['www/cordova.js'],
-        inactive: true
-    }, {
         title: 'Amazon Fire OS',
         id: 'amazon-fireos',
         repoName: 'cordova-amazon-fireos',

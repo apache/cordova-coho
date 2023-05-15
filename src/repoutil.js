@@ -39,13 +39,6 @@ const platformRepos = [
         cordovaJsPaths: ['CordovaLib/cordova.js'],
         versionFilePaths: [path.join('CordovaLib', 'VERSION')]
     }, {
-        title: 'Amazon Fire OS',
-        id: 'amazon-fireos',
-        repoName: 'cordova-amazon-fireos',
-        jiraComponentName: 'cordova-amazon-fireos',
-        cordovaJsPaths: ['framework/assets/www/cordova.js'],
-        inactive: true
-    }, {
         title: 'Browser',
         id: 'browser',
         repoName: 'cordova-browser',

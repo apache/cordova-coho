@@ -139,7 +139,7 @@ function getNightlySuffix (SHA) {
     const dateTime = currentDate.toISOString().replace(/[T|Z\-:.]/g, '');
     // @see https://semver.org/#spec-item-10
     // Example: -nightly+20230509182032730.sha.8d2286c9
-    return `-nightly+${dateTime}.sha.${SHA}`;
+    return `-nightly.${dateTime}.sha.${SHA}`;
 }
 
 /**

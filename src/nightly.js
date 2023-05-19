@@ -135,11 +135,11 @@ function updateRepoDependencies (repo, dependencies) {
  */
 function getNightlySuffix (SHA) {
     const currentDate = new Date();
-    const nightlySuffix = '-nightly.' + currentDate.getUTCFullYear() + '.' +
-        (currentDate.getUTCMonth() + 1) + '.' + currentDate.getUTCDate() +
-        '.' + SHA;
-
-    return nightlySuffix;
+    // converts "2023-05-09T18:20:32.730Z" to "20230509182032730"
+    const dateTime = currentDate.toISOString().replace(/[T|Z\-:.]/g, '');
+    // @see https://semver.org/#spec-item-10
+    // Example: -nightly+20230509182032730.sha.8d2286c9
+    return `-nightly+${dateTime}.sha.${SHA}`;
 }
 
 /**

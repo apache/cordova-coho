@@ -106,7 +106,7 @@ let hasBuiltJs = '';
 // Adds the version to CDVAvailability.h for iOS
 function * updateCDVAvailabilityFile (version, platform) {
     // Default to iOS
-    const file = path.join(process.cwd(), 'CordovaLib', 'Classes', 'Public', 'CDVAvailability.h');
+    const file = path.join(process.cwd(), 'CordovaLib', 'include', 'Cordova', 'CDVAvailability.h');
 
     let fileContents = fs.readFileSync(file, 'utf8');
     fileContents = fileContents.split('\n');

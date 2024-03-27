@@ -20,6 +20,7 @@ under the License.
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
+const plist = require('plist');
 const shelljs = require('shelljs');
 const xml2js = require('xml2js');
 const apputil = require('./apputil');
@@ -112,10 +113,6 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
             shelljs.sed('-i', /const VERSION\s=\s'.*';/, `const VERSION = '${version}';`, f);
         });
 
-        if (repo.id === 'android') {
-            shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
-        }
-
         shelljs.config.fatal = false;
 
         if (!(yield gitutil.pendingChangesExist())) {
@@ -123,6 +120,27 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         }
     } else {
         if (isPlatformRepo) console.warn('No VERSION file exists in repo ' + repo.repoName);
+    }
+
+    if (isPlatformRepo) {
+        if (repo.id === 'android') {
+            shelljs.sed('-i', /CORDOVA_VERSION.*=.*;/, 'CORDOVA_VERSION = "' + version + '";', path.join('framework', 'src', 'org', 'apache', 'cordova', 'CordovaWebView.java'));
+        }
+
+        const plistFile = path.join('CordovaLib', 'Info.plist');
+        if (repo.id === 'ios' && fs.existsSync(plistFile)) {
+            const infoPlist = plist.parse(fs.readFileSync(plistFile, 'utf8'));
+
+            infoPlist.CFBundleShortVersionString = version;
+
+            /* eslint-disable no-tabs */
+            // Write out the plist file with the same formatting as Xcode does
+            let info_contents = plist.build(infoPlist, { indent: '\t', offset: -1 });
+            /* eslint-enable no-tabs */
+
+            info_contents = info_contents.replace(/<string>[\s\r\n]*<\/string>/g, '<string></string>');
+            fs.writeFileSync(plistFile, info_contents, 'utf-8');
+        }
     }
 
     // Update the package.json VERSION.

@@ -18,6 +18,7 @@
     "nlf": "^2.0.1",
     "opener": "^1.4.1",
     "optimist": "0.4",
+    "plist": "^3.1.0",
     "q": "1.4.1",
     "request": "^2.88.0",
     "semver": "^4.2.0",
@@ -30,7 +31,7 @@
     "@cordova/eslint-config": "^5.0.0",
     "cordova-android": "^11.0.0",
     "cordova-browser": "^6.0.0",
-    "cordova-ios": "^6.3.0",
+    "cordova-ios": "^7.0.0",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
     "nyc": "^15.1.0"

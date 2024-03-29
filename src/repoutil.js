@@ -36,8 +36,7 @@ const platformRepos = [
         id: 'ios',
         repoName: 'cordova-ios',
         jiraComponentName: 'cordova-ios',
-        cordovaJsPaths: ['CordovaLib/cordova.js'],
-        versionFilePaths: [path.join('CordovaLib', 'VERSION')]
+        cordovaJsPaths: ['CordovaLib/cordova.js']
     }, {
         title: 'Browser',
         id: 'browser',

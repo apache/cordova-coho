@@ -19,9 +19,8 @@ under the License.
 
 require('jasmine-co').install();
 
-const path = require('path');
-
-const shelljs = require('shelljs');
+const path = require('node:path');
+const process = require('node:process');
 
 const apputil = require('../src/apputil');
 const repoutil = require('../src/repoutil');
@@ -67,12 +66,10 @@ describe('check functionality of repoutil', function () {
     }, TIMEOUT);
 
     it('Test#004 : testing proper calls are made for forEachRepo function', function * () {
-        spyOn(shelljs, 'cd').and.returnValue(true);
-        spyOn(shelljs, 'error');
+        spyOn(process, 'chdir').and.returnValue(true);
         spyOn(apputil, 'fatal');
         yield repoutil.forEachRepo([repoutil.getRepoById('coho')], function * () {});
-        expect(shelljs.cd.calls.count()).toEqual(2);
-        expect(shelljs.error.calls.count()).toEqual(1);
+        expect(process.chdir.calls.count()).toEqual(2);
         expect(apputil.fatal.calls.count()).toEqual(0);
     }, TIMEOUT);
 

@@ -17,14 +17,12 @@ specific language governing permissions and limitations
 under the License.
 */
 
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util');
-const pipeline = promisify(require('stream').pipeline);
-const { Gunzip } = require('zlib');
-const got = require('got');
+const fs = require('node:fs');
+const path = require('node:path');
+const { styleText } = require('node:util');
+const { Readable } = require('node:stream');
+const { pipeline } = require('node:stream/promises');
 const tar = require('tar-fs');
-const chalk = require('chalk');
 const optimist = require('optimist');
 const executil = require('./executil');
 const flagutil = require('./flagutil');
@@ -77,7 +75,7 @@ module.exports = function * () {
 module.exports.scrubRepos = function * (repos, silent, ignoreError, win, fail) {
     const ratPath = yield getRatJar();
 
-    console.log(chalk.red('Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));
+    console.log(styleText(['red'], 'Note: ignore filters reside in a repo\'s .ratignore and in COMMON_RAT_EXCLUDES in audit-license-headers.js.'));
 
     yield repoutil.forEachRepo(repos, function * (repo) {
         // NOTE: the CWD in a callback is the directory for its respective repo
@@ -102,11 +100,15 @@ async function getRatJar () {
 
     if (!fs.existsSync(ratJarPath)) {
         console.log('RAT tool not found, downloading to: ' + ratJarPath);
-        await pipeline(
-            got.stream(RAT_URL), new Gunzip(), tar.extract(cohoRoot)
-        ).catch(err => {
-            throw new Error('Failed to get RAT JAR:\n' + err.message);
-        });
+
+        const unzip = new DecompressionStream('gzip');
+        await fetch(RAT_URL)
+            .then((resp) => resp.body.pipeThrough(unzip))
+            .then((stream) => Readable.fromWeb(stream))
+            .then((stream) => pipeline(stream, tar.extract(cohoRoot)))
+            .catch(err => {
+                throw new Error('Failed to get RAT JAR:\n' + err.message);
+            });
     }
     return ratJarPath;
 }

@@ -22,6 +22,7 @@ const path = require('path');
 const optimist = require('optimist');
 const shelljs = require('shelljs');
 const flagutil = require('./flagutil');
+const executil = require('./executil');
 
 let packman = 'npm';
 
@@ -52,61 +53,61 @@ function * createLink (argv) {
         console.log('Using npm');
     }
 
-    function npmLinkIn (linkedModule, installingModule) {
+    function * npmLinkIn (linkedModule, installingModule) {
         cdInto(installingModule);
         // 'npm link' will automatically unbuild a non-linked module if it is present,
         // so don't need to explicitly 'rm -r' it first.
-        shelljs.exec(packman + ' link ' + linkedModule);
+        yield executil.execHelper(executil.ARGS(packman + ' link ' + linkedModule));
         cdOutOf();
     }
 
-    function npmLinkOut (moduleName) {
+    function * npmLinkOut (moduleName) {
         cdInto(moduleName);
-        shelljs.exec(packman + ' link');
+        yield executil.execHelper(executil.ARGS(packman + ' link'));
         cdOutOf();
     }
 
     console.log('npm-linking dependent modules');
 
     // Do npm-link
-    npmLinkOut('cordova-cli');
-    npmLinkOut('cordova-common');
-    npmLinkOut('cordova-create');
-    npmLinkOut('cordova-fetch');
-    npmLinkOut('cordova-js');
-    npmLinkOut('cordova-lib');
-    npmLinkOut('cordova-plugman');
-    npmLinkOut('cordova-serve');
+    yield npmLinkOut('cordova-cli');
+    yield npmLinkOut('cordova-common');
+    yield npmLinkOut('cordova-create');
+    yield npmLinkOut('cordova-fetch');
+    yield npmLinkOut('cordova-js');
+    yield npmLinkOut('cordova-lib');
+    yield npmLinkOut('cordova-plugman');
+    yield npmLinkOut('cordova-serve');
 
     // Do npm-link <module> in cordova-fetch
-    npmLinkIn('cordova-common', 'cordova-fetch');
+    yield npmLinkIn('cordova-common', 'cordova-fetch');
 
     // Do npm-link <module> in cordova-create
-    npmLinkIn('cordova-common', 'cordova-create');
-    npmLinkIn('cordova-fetch', 'cordova-create');
+    yield npmLinkIn('cordova-common', 'cordova-create');
+    yield npmLinkIn('cordova-fetch', 'cordova-create');
 
     // Do npm-link <module> in cordova-lib
-    npmLinkIn('cordova-common', 'cordova-lib');
-    npmLinkIn('cordova-create', 'cordova-lib');
-    npmLinkIn('cordova-fetch', 'cordova-lib');
-    npmLinkIn('cordova-js', 'cordova-lib');
-    npmLinkIn('cordova-serve', 'cordova-lib');
+    yield npmLinkIn('cordova-common', 'cordova-lib');
+    yield npmLinkIn('cordova-create', 'cordova-lib');
+    yield npmLinkIn('cordova-fetch', 'cordova-lib');
+    yield npmLinkIn('cordova-js', 'cordova-lib');
+    yield npmLinkIn('cordova-serve', 'cordova-lib');
 
     // Do npm-link <module> in cordova-cli
-    npmLinkIn('cordova-common', 'cordova-cli');
-    npmLinkIn('cordova-create', 'cordova-cli');
-    npmLinkIn('cordova-fetch', 'cordova-cli');
-    npmLinkIn('cordova-js', 'cordova-cli');
-    npmLinkIn('cordova-lib', 'cordova-cli');
-    npmLinkIn('cordova-serve', 'cordova-cli');
+    yield npmLinkIn('cordova-common', 'cordova-cli');
+    yield npmLinkIn('cordova-create', 'cordova-cli');
+    yield npmLinkIn('cordova-fetch', 'cordova-cli');
+    yield npmLinkIn('cordova-js', 'cordova-cli');
+    yield npmLinkIn('cordova-lib', 'cordova-cli');
+    yield npmLinkIn('cordova-serve', 'cordova-cli');
 
     // Do npm-link <module> in cordova-plugman
-    npmLinkIn('cordova-common', 'cordova-plugman');
-    npmLinkIn('cordova-create', 'cordova-plugman');
-    npmLinkIn('cordova-fetch', 'cordova-plugman');
-    npmLinkIn('cordova-js', 'cordova-plugman');
-    npmLinkIn('cordova-lib', 'cordova-plugman');
-    npmLinkIn('cordova-serve', 'cordova-plugman');
+    yield npmLinkIn('cordova-common', 'cordova-plugman');
+    yield npmLinkIn('cordova-create', 'cordova-plugman');
+    yield npmLinkIn('cordova-fetch', 'cordova-plugman');
+    yield npmLinkIn('cordova-js', 'cordova-plugman');
+    yield npmLinkIn('cordova-lib', 'cordova-plugman');
+    yield npmLinkIn('cordova-serve', 'cordova-plugman');
 }
 
 module.exports = createLink;
@@ -120,8 +121,7 @@ function cdOutOf () {
 }
 
 function verifyLink (linkedModule, installedModule) {
-    cdInto(installedModule);
-    const linkedPath = path.join(shelljs.pwd(), 'node_modules', linkedModule);
+    const linkedPath = path.join(path.resolve(installedModule), 'node_modules', linkedModule);
     if (!fs.existsSync(linkedPath)) {
         return false;
     }
@@ -131,7 +131,6 @@ function verifyLink (linkedModule, installedModule) {
         return false;
     }
 
-    cdOutOf();
     return true;
 }
 

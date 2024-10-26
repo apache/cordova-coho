@@ -6,7 +6,9 @@ regarding copyright ownership.  The ASF licenses this file
 to you under the Apache License, Version 2.0 (the
 "License"); you may not use this file except in compliance
 with the License.  You may obtain a copy of the License at
+
 http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing,
 software distributed under the License is distributed on an
 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -15,11 +17,11 @@ specific language governing permissions and limitations
 under the License.
 */
 
+const { styleText } = require('node:util');
 const flagutil = require('./flagutil');
 const optimist = require('optimist');
 const executil = require('./executil');
 const gitutil = require('./gitutil');
-const chalk = require('chalk');
 const repoutil = require('./repoutil');
 
 module.exports = function * (argv) {
@@ -95,9 +97,9 @@ module.exports = function * (argv) {
                 console.log('Commits merged:');
                 console.log('---------------');
                 console.log(commits);
-                console.log(chalk.red.bold('Success! Please test, squash, and rebase to meaningful commits before pushing to remote master using: git push origin master'));
+                console.log(styleText(['red', 'bold'], 'Success! Please test, squash, and rebase to meaningful commits before pushing to remote master using: git push origin master'));
             } else {
-                console.log(chalk.red.bold('Nothing to merge - Has this already been merged?'));
+                console.log(styleText(['red', 'bold'], 'Nothing to merge - Has this already been merged?'));
             }
         }
     }

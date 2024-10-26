@@ -17,35 +17,32 @@ specific language governing permissions and limitations
 under the License.
 */
 
+const { styleText } = require('node:util');
 const optimist = require('optimist');
 const apputil = require('./apputil');
 const flagutil = require('./flagutil');
 const gitutil = require('./gitutil');
 const repoutil = require('./repoutil');
-const chalk = require('chalk');
-const Q = require('q');
 const readline = require('readline');
 
 function readInput () {
-    const ret = Q.defer();
+    return new Promise((resolve, reject) => {
+        const rl = readline.createInterface({
+            input: process.stdin
+        });
 
-    const rl = readline.createInterface({
-        input: process.stdin
+        let data = '';
+        rl.on('line', function (line) {
+            if (line) {
+                data += line + '\n';
+            } else {
+                rl.close();
+            }
+        });
+        rl.on('close', function () {
+            resolve(data);
+        });
     });
-
-    let data = '';
-    rl.on('line', function (line) {
-        if (line) {
-            data += line + '\n';
-        } else {
-            rl.close();
-        }
-    });
-    rl.on('close', function () {
-        ret.resolve(data);
-    });
-
-    return ret.promise;
 }
 
 exports.createCommand = function * (argv) {
@@ -85,12 +82,12 @@ exports.createCommand = function * (argv) {
                 foundHash = yield gitutil.hashForRef('r' + entry.tagName);
             }
             if (!foundHash) {
-                console.log(entry.repoId + ': ' + chalk.red('Tag not found') + ' (' + chalk.yellow(entry.tagName) + ')');
+                console.log(entry.repoId + ': ' + styleText(['red'], 'Tag not found') + ' (' + styleText(['yellow'], entry.tagName) + ')');
                 hadErrors = true;
             } else if (foundHash.slice(0, entry.hash.length) !== entry.hash) {
-                console.log(entry.repoId + ': ' + chalk.red('Hashes don\'t match!'));
+                console.log(entry.repoId + ': ' + styleText(['red'], 'Hashes don\'t match!'));
             } else {
-                console.log(entry.repoId + ': ' + chalk.green('Tag hash verified.'));
+                console.log(entry.repoId + ': ' + styleText(['green'], 'Tag hash verified.'));
             }
         });
     }

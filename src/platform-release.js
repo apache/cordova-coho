@@ -250,13 +250,6 @@ exports.prepareReleaseBranchCommand = function * () {
 };
 
 function * tagJs (repo, version, pretend) {
-    function * execOrPretend (cmd) {
-        if (pretend) {
-            print('PRETENDING TO RUN: ' + cmd.join(' '));
-        } else {
-            yield executil.execHelper(cmd);
-        }
-    }
     // tag cordova.js platform-version
     const cordovaJsRepo = repoutil.getRepoById('js');
     yield repoutil.forEachRepo([cordovaJsRepo], function * () {
@@ -266,11 +259,11 @@ function * tagJs (repo, version, pretend) {
 
             const tagName = repo.id + '-' + version;
             if (yield gitutil.tagExists(tagName)) {
-                yield execOrPretend(executil.ARGS('git tag ' + tagName + ' --force'));
+                yield executil.execOrPretend(executil.ARGS('git tag ' + tagName + ' --force'), pretend);
             } else {
-                yield execOrPretend(executil.ARGS('git tag ' + tagName));
+                yield executil.execOrPretend(executil.ARGS('git tag ' + tagName), pretend);
             }
-            yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' refs/tags/' + tagName));
+            yield executil.execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' refs/tags/' + tagName), pretend);
         });
     });
 }
@@ -293,13 +286,6 @@ exports.tagReleaseBranchCommand = function * (argv) {
     // First - perform precondition checks.
     yield repoupdate.updateRepos(repos, [], true);
 
-    function * execOrPretend (cmd) {
-        if (pretend) {
-            print('PRETENDING TO RUN: ' + cmd.join(' '));
-        } else {
-            yield executil.execHelper(cmd);
-        }
-    }
     yield repoutil.forEachRepo(repos, function * (repo) {
         yield gitutil.stashAndPop(repo, function * () {
             // git fetch.
@@ -319,11 +305,11 @@ exports.tagReleaseBranchCommand = function * (argv) {
             const tagName = yield gitutil.retrieveCurrentTagName();
             if (tagName !== version) {
                 if (yield gitutil.tagExists(version)) {
-                    yield execOrPretend(executil.ARGS('git tag ' + version + ' --force'));
+                    yield executil.execOrPretend(executil.ARGS('git tag ' + version + ' --force'), pretend);
                 } else {
-                    yield execOrPretend(executil.ARGS('git tag ' + version));
+                    yield executil.execOrPretend(executil.ARGS('git tag ' + version), pretend);
                 }
-                yield execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName + ' refs/tags/' + version));
+                yield executil.execOrPretend(executil.ARGS('git push ' + repo.remoteName + ' ' + branchName + ' refs/tags/' + version), pretend);
             } else {
                 print('Repo ' + repo.repoName + ' is already tagged.');
             }

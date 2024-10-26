@@ -21,8 +21,6 @@ require('jasmine-co').install();
 const executil = require('../src/executil');
 const superspawn = require('../src/superspawn');
 const apputil = require('../src/apputil');
-const Q = require('q');
-const deferred = Q.defer();
 const TIMEOUT = 60000;
 const androidRepo = {
     title: 'Android',
@@ -36,7 +34,7 @@ const androidRepo = {
 describe('executil unit tests', function () {
     beforeEach(function () {
         spyOn(apputil, 'print').and.returnValue(true);
-        spyOn(superspawn, 'spawn').and.returnValue(deferred.promise);
+        spyOn(superspawn, 'spawn').and.returnValue(new Promise(() => {}));
     });
 
     afterEach(function () {

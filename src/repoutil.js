@@ -17,9 +17,9 @@ specific language governing permissions and limitations
 under the License.
 */
 
-const fs = require('fs');
-const path = require('path');
-const shelljs = require('shelljs');
+const fs = require('node:fs');
+const path = require('node:path');
+const process = require('node:process');
 const apputil = require('./apputil');
 
 const platformRepos = [
@@ -417,14 +417,15 @@ exports.forEachRepo = function * (repos, func) {
             origPath = origPath + '/..';
         }
         const repoDir = getRepoDir(repo);
-        shelljs.cd(repoDir);
 
-        if (shelljs.error()) {
+        try {
+            process.chdir(repoDir);
+        } catch (err) {
             apputil.fatal('Repo directory does not exist: ' + repo.repoName + '. First run coho repo-clone.');
         }
         yield func(repo);
 
-        shelljs.cd(origPath);
+        process.chdir(origPath);
 
         isInForEachRepoFunction = !((origPath === '..') || (origPath === '../..'));
     }

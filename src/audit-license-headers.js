@@ -95,7 +95,7 @@ async function getRatJar () {
     const RAT_ID = 'apache-rat-0.12';
     const RAT_URL = `https://archive.apache.org/dist/creadur/${RAT_ID}/${RAT_ID}-bin.tar.gz`;
 
-    const cohoRoot = repoutil.getRepoDir(repoutil.getRepoById('coho'));
+    const cohoRoot = path.resolve(__dirname, '..');
     const ratJarPath = path.join(cohoRoot, RAT_ID, RAT_ID + '.jar');
 
     if (!fs.existsSync(ratJarPath)) {

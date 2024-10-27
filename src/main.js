@@ -229,7 +229,8 @@ module.exports = function () {
     const argv = opts.check(function (argv) {
         const commandName = argv._[0];
         if (!commandName) {
-            throw Error('No command specified.');
+            opts.showHelp();
+            process.exit(0);
         }
         if (!command) {
             throw Error('Unknown command: ' + commandName);

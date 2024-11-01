@@ -63,7 +63,7 @@ module.exports = function * (_argv) {
     const depth = argv.depth ? argv.depth : null;
 
     const branches = Array.isArray(argv.b) ? argv.b : [argv.b];
-    const repos = flagutil.computeReposFromFlag(argv.r, true);
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
     apputil.prefixLength = Math.max.apply(null,
         [apputil.prefixLength].concat(
             repos.map(function (r) { return r.repoName.length + 2; }))

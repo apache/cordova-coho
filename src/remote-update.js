@@ -47,7 +47,7 @@ module.exports = function * (_argv) {
     }
 
     const remote = argv.remote;
-    const repos = flagutil.computeReposFromFlag(argv.r, true);
+    const repos = flagutil.computeReposFromFlag(argv.r, { includeSvn: true });
 
     // ensure that any missing repos are cloned
     // yield require('./repo-clone').cloneRepos(repos, true, depth);

@@ -17,9 +17,9 @@ specific language governing permissions and limitations
 under the License.
 */
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+const fs = require('node:fs');
+const path = require('node:path');
+const { globSync } = require('glob');
 const plist = require('plist');
 const shelljs = require('shelljs');
 const xml2js = require('xml2js');
@@ -76,9 +76,9 @@ exports.getReleaseBranchNameFromVersion = function (version) {
 };
 
 /**
- * Updates VERSION file, version executable script, package.json and
- * plugin.xml(s) using specified version. Also commits change made to the repo
- * if opposite is not specified.
+ * Updates package.json and plugin.xml and other version-containing files using
+ * specified version. Also commits change made to the repo if opposite is not
+ * specified.
  *
  * @param {Object}  repo    Repo to update version for
  * @param {String}  version A semver-compatible version to write to repo's files
@@ -87,11 +87,13 @@ exports.getReleaseBranchNameFromVersion = function (version) {
  *   to the repo after update is done.
  */
 exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
-    // Update the VERSION files.
     // TODO: why do we read files asynchronously in this function, but write
     // and check for existence synchronously?
-    const versionFilePaths = repo.versionFilePaths || ['VERSION'];
     const isPlatformRepo = !!repoutil.isInRepoGroup(repo, 'platform');
+
+    // Update the VERSION files.
+    // As of 2024-10-27 only cordova-browser has a VERSION file and relies on this
+    const versionFilePaths = repo.versionFilePaths || ['VERSION'];
     if (isPlatformRepo && fs.existsSync(versionFilePaths[0])) {
         versionFilePaths.forEach(function (versionFilePath) {
             fs.writeFileSync(versionFilePath, version + '\n');
@@ -100,7 +102,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         shelljs.config.fatal = true;
 
         // Old version location which still exists for some platforms that have not been updated.
-        glob.sync('{bin/,}template{s,}/{scripts/,}cordova/version').forEach(f => {
+        globSync('{bin/,}template{s,}/{scripts/,}cordova/version').forEach(f => {
             shelljs.sed('-i', /\bVERSION\s*=.+?;/, `VERSION = '${version}';`, f);
         });
 
@@ -109,7 +111,7 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
          * This is because the `cordova/version` shebang line fails to be rewired in node 12.x.
          * Eventually, the version information should come from package.json
          */
-        glob.sync('{bin/,}template{s,}/{scripts/,}cordova/Api.js').forEach(f => {
+        globSync('{bin/,}template{s,}/{scripts/,}cordova/Api.js').forEach(f => {
             shelljs.sed('-i', /const VERSION\s=\s'.*';/, `const VERSION = '${version}';`, f);
         });
 
@@ -118,8 +120,6 @@ exports.updateRepoVersion = function * updateRepoVersion (repo, version, opts) {
         if (!(yield gitutil.pendingChangesExist())) {
             apputil.print('VERSION file was already up-to-date.');
         }
-    } else {
-        if (isPlatformRepo) console.warn('No VERSION file exists in repo ' + repo.repoName);
     }
 
     if (isPlatformRepo) {

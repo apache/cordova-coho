@@ -18,11 +18,10 @@ under the License.
 */
 
 const co = require('co');
-const Q = require('q');
-const glob = require('glob');
+const { globSync } = require('glob');
 const path = require('path');
 const fs = require('fs');
-const shelljs = require('shelljs');
+const which = require('which');
 const apputil = require('./apputil');
 const audit_license = require('./audit-license-headers');
 const update_release_notes = require('./update-release-notes');
@@ -114,18 +113,18 @@ function manualPluginSelection () {
 function * interactive_plugins_release () {
     console.log('Hi! So you want to do a plugins release, do you?');
     // sanity check for tooling that will be needed during releaser.
-    if (!shelljs.which('gpg')) {
+    if (!which.sync('gpg')) {
         console.warn("You'll need gpg installed and have your Apache GPG keys all set up to do a plugins release!");
         console.error('I did not find gpg on your PATH!');
         console.error('Refer to ' + create_archive.GPG_DOCS + ' for instructions on how to get that set up as a first step.');
         process.exit(1);
     }
-    if (!shelljs.which('svn')) {
+    if (!which.sync('svn')) {
         console.warn("You'll need svn installed to do a plugins release!");
         console.error('I did not find `svn` on your PATH!');
         process.exit(1);
     }
-    return Q.fcall(function () {
+    return new Promise((resolve) => resolve((function () {
         if (process.env.JIRA_USER && process.env.JIRA_PASSWORD) {
             return {
                 username: process.env.JIRA_USER,
@@ -144,7 +143,7 @@ function * interactive_plugins_release () {
                 message: 'Please enter your JIRA password'
             }]);
         }
-    }).then(function (answers) {
+    })())).then(function (answers) {
         const username = answers.username;
         you = username;
         const password = answers.password;
@@ -311,7 +310,7 @@ function * interactive_plugins_release () {
         }).then(function (answers) {
             if (answers.ok) {
                 plugin_base = path.resolve(path.normalize(answers.cwd));
-                shelljs.mkdir('-p', plugin_base);
+                fs.mkdirSync(plugin_base, { recursive: true });
                 process.chdir(plugin_base);
                 plugin_repos = flagutil.computeReposFromFlag('active-plugins', { includeSvn: true });
                 dist_svn = flagutil.computeReposFromFlag('dist', { includeSvn: true });
@@ -681,7 +680,7 @@ function * interactive_plugins_release () {
                 // location to store the archives in.
                 const dist_dev_dir = path.join(plugin_base, dist_dev_svn.repoName, plugins_release_issue.key);
                 if (!(fs.existsSync(dist_dev_dir))) {
-                    shelljs.mkdir('-p', dist_dev_dir);
+                    fs.mkdirSync(dist_dev_dir, { recursive: true });
                     created_distdev_dir = true;
                 }
                 yield repoutil.forEachRepo(plugin_repos, function * (repo) {
@@ -736,7 +735,7 @@ function * interactive_plugins_release () {
                         const tag = plugin_data[plugin_name].current_release;
                         const fileref = plugin_name + '-' + tag;
                         archives_for_plugins.push(fileref);
-                        const files_to_add = glob.sync(path.join(plugins_release_issue.key, fileref + '*'));
+                        const files_to_add = globSync(path.join(plugins_release_issue.key, fileref + '*'));
                         for (let i = 0; i < files_to_add.length; i++) {
                             yield svnutil.add(files_to_add[i]);
                         }

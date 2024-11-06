@@ -17,12 +17,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
-const glob = require('glob');
+const fs = require('node:fs');
+const path = require('node:path');
+const { styleText } = require('node:util');
+const { globSync } = require('glob');
 const optimist = require('optimist');
 const shelljs = require('shelljs');
-const chalk = require('chalk');
-const fs = require('fs');
-const path = require('path');
+const which = require('which');
 const apputil = require('./apputil');
 const executil = require('./executil');
 const flagutil = require('./flagutil');
@@ -70,12 +71,12 @@ exports.createCommand = function * (argv) {
     }
     const repos = flagutil.computeReposFromFlag(argv.r, { includeModules: true });
 
-    if (argv.sign && !shelljs.which('gpg')) {
+    if (argv.sign && !which.sync('gpg')) {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
     const outDir = apputil.resolveUserSpecifiedPath(argv.dest);
-    shelljs.mkdir('-p', outDir);
+    fs.mkdirSync(outDir, { recursive: true });
     const absOutDir = path.resolve(outDir);
 
     yield repoutil.forEachRepo(repos, function * (repo) {
@@ -146,14 +147,14 @@ exports.verifyCommand = function * () {
         optimist.showHelp();
         process.exit(1);
     }
-    if (!shelljs.which('gpg')) {
+    if (!which.sync('gpg')) {
         apputil.fatal('gpg command not found on your PATH. Refer to ' + settingUpGpg);
     }
 
     const resolvedZipPaths = zipPaths.reduce(function (current, zipPath) {
-        const matchingPaths = glob.sync(apputil.resolveUserSpecifiedPath(zipPath));
+        const matchingPaths = globSync(apputil.resolveUserSpecifiedPath(zipPath));
         if (!matchingPaths || !matchingPaths.length) {
-            apputil.fatal(chalk.red('No files found that match \'' + zipPath + '\''));
+            apputil.fatal(styleText(['red'], 'No files found that match \'' + zipPath + '\''));
         }
         return current.concat(matchingPaths);
     }, []);
@@ -162,7 +163,7 @@ exports.verifyCommand = function * () {
         const zipPath = resolvedZipPaths[i];
         yield verifyArchive(zipPath);
     }
-    print(chalk.green('Verified ' + resolvedZipPaths.length + ' signatures and hashes.'));
+    print(styleText(['green'], 'Verified ' + resolvedZipPaths.length + ' signatures and hashes.'));
 };
 
 function * verifyArchive (archive) {
@@ -183,7 +184,7 @@ function * verifyArchive (archive) {
     if (extractHashFromOutput(fs.readFileSync(archiveFileName, 'utf8')) !== sha) {
         apputil.fatal('SHA512 does not match.');
     }
-    print(archive + chalk.green(' signature and hashes verified.'));
+    print(archive + styleText(['green'], ' signature and hashes verified.'));
 }
 
 exports.verifyArchive = verifyArchive;

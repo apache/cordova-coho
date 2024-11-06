@@ -17,16 +17,13 @@
  under the License.
  */
 
-const fs = require('fs');
-const path = require('path');
-const stream = require('stream');
+const fs = require('node:fs');
+const path = require('node:path');
 const optimist = require('optimist');
 const executil = require('./executil');
 const flagutil = require('./flagutil');
 const gitutil = require('./gitutil');
 const repoutil = require('./repoutil');
-const linkify = require('jira-linkify');
-const co_stream = require('co-stream');
 
 const relNotesFile = 'RELEASENOTES.md';
 
@@ -104,7 +101,6 @@ module.exports = function * () {
             }
             const final_notes = yield createNotes(repo, newVersion, output, argv['override-date']);
             fs.writeFileSync(relNotesFile, final_notes, { encoding: 'utf8' });
-            return linkify.file(relNotesFile);
         }
     });
 };
@@ -121,20 +117,8 @@ const GITHUB_CLOSE_COMMIT_MSG = /^\*\s+Closes?\s+\#\d+$/gi; // eslint-disable-li
 const VIA_COHO_COMMIT_MSG = /\(via coho\)/gi;
 
 function * createNotes (repo, newVersion, changes, overrideDate) {
-    // pump changes through JIRA linkifier first through a stream pipe
-    const transformer = linkify.stream('CB');
-    const read = new stream.Readable();
-    read._read = function () {};// noop
-    read.push(changes);
-    read.push(null);
-    const write = new stream.Writable();
-    let data = '';
-    write._write = function (chunk, encoding, done) {
-        data += chunk.toString();
-        done();
-    };
-    read.pipe(transformer).pipe(write);
-    yield co_stream.wait(write); // wait for the writable stream to finish/end
+    let data = changes;
+
     // remove any commit logs in the form "Close #xxx", used for closing github pull requests.
     const lines = data.split('\n');
     data = lines.filter(function (line) {

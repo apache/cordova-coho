@@ -17,9 +17,8 @@ specific language governing permissions and limitations
 under the License.
 */
 
-const path = require('path');
-const chalk = require('chalk');
-const shell = require('shelljs');
+const path = require('node:path');
+const { styleText } = require('node:util');
 
 const origWorkingDir = path.resolve(process.cwd());
 let baseWorkingDir = origWorkingDir;
@@ -59,17 +58,10 @@ exports.print = function () {
         if (curDir.length < PREFIX_LEN) {
             banner += new Array(PREFIX_LEN - curDir.length + 1).join('=');
         }
-        const prefix = chalk.magenta.bold(curDir) + chalk.yellow(banner);
+        const prefix = styleText(['magenta', 'bold'], curDir) + styleText(['yellow'], banner);
         newArgs.unshift(prefix);
         newArgs = newArgs.map(function (val) { return val.replace(/\n/g, '\n' + prefix + ' '); });
     }
 
     console.log.apply(console, newArgs);
-};
-
-exports.setShellSilent = function (func) {
-    const origShellSilent = shell.config.silent;
-    shell.config.silent = true;
-    func();
-    shell.config.silent = origShellSilent;
 };

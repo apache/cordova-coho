@@ -18,8 +18,8 @@ under the License.
 */
 
 require('jasmine-co').install();
-const path = require('path');
-const shell = require('shelljs');
+const path = require('node:path');
+const fs = require('node:fs');
 const repoutil = require('../src/repoutil');
 const auditLicenseHeaders = require('../src/audit-license-headers');
 
@@ -27,7 +27,12 @@ describe('audit-license-headers', () => {
     describe('scrubRepos', () => {
         it('basic operation', function * () {
             spyOn(console, 'log');
-            shell.rm('-rf', path.join(__dirname, '../apache-rat-*'));
+
+            fs.readdirSync(path.join(__dirname, '..'))
+                .filter((filename) => filename.startsWith('apache-rat-'))
+                .forEach((filename) => {
+                    fs.rmSync(filename, { recursive: true, force: true });
+                });
 
             const cohoRepo = repoutil.getRepoById('coho');
             yield auditLicenseHeaders.scrubRepos([cohoRepo], true);

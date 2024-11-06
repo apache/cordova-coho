@@ -17,12 +17,12 @@ specific language governing permissions and limitations
 under the License.
 */
 
+const { promisify } = require('node:util');
 const nlf = require('nlf');
 const treeify = require('treeify');
 const optimist = require('optimist');
 const fs = require('fs');
 const path = require('path');
-const Q = require('q');
 const flagutil = require('./flagutil');
 
 const jsonObject = {};
@@ -50,18 +50,15 @@ module.exports = function * () {
 };
 
 function getRepoLicense (repoName) {
-    return Q.nfapply(nlf.find, [{
+    return promisify(nlf.find)({
         directory: path.join(process.cwd(), repoName)
-    }
-    ]).then(function (p) {
-        return p;
     });
 }
 
 function checkLicense (repos) {
     // get the license info for each repo's dependencies and sub-dependencies
     const results = [];
-    let previous = Q.resolve();
+    let previous = Promise.resolve();
     repos.forEach(function (repo) {
         previous = previous.then(function () {
             const packageDir = findPackageDir(repo);
@@ -69,7 +66,7 @@ function checkLicense (repos) {
                 reposWithDependencies.push(repo.id);
                 return getRepoLicense(packageDir);
             } else {
-                Q.resolve('Repo directory does not exist: ' + repos.repoName + '. First run coho repo-clone.'); // don't end execution if repo doesn't have dependencies or doesn't exist
+                console.log('Repo directory does not exist: ' + repos.repoName + '. First run coho repo-clone.'); // don't end execution if repo doesn't have dependencies or doesn't exist
             }
         }).then(function (data) {
             results.push(data); // push the result of this repo to the results array for later processing

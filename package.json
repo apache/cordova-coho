@@ -9,7 +9,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "glob": "^11.0.0",
-    "inquirer": "^6.3.1",
+    "inquirer": "^12.9.6",
     "jira-client": "4.2.0",
     "nlf": "^2.0.1",
     "opener": "^1.4.1",

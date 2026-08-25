@@ -26,6 +26,34 @@ on:
       - '*'
 
 jobs:
+  codeql:
+    name: CodeQL Analysis
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: github/codeql-action/init@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+        with:
+          languages: javascript
+          queries: security-and-quality
+          config: |
+            paths-ignore:
+              - .nyc_output
+              - apache-rat-0.12
+              - coverage
+              - node_modules
+
+      - uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+
   test:
     name: NodeJS ${{ matrix.node-version }} on ${{ matrix.os }}
 

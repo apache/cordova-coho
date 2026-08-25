@@ -25,20 +25,19 @@ on:
     branches:
       - '*'
 
-permissions:
-  contents: read
-  security-events: write
-
 jobs:
   test:
     name: NodeJS ${{ matrix.node-version }} on ${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      contents: read
+
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x]
-        os: [ubuntu-latest, windows-latest, macos-15]
+        node-version: [20.x, 22.x, 24.x, 26.x]
+        os: [ubuntu-latest, windows-latest, macos-26]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -65,8 +64,7 @@ jobs:
 
       - name: npm install and test
         run: |
-          npm i
-          npm t
+          npm cit
         env:
           CI: true
 

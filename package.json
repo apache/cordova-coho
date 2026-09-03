@@ -30,7 +30,7 @@
     "cordova-ios": "^7.0.0",
     "jasmine": "^2.5.3",
     "jasmine-co": "^1.2.2",
-    "nyc": "^17.0.0"
+    "nyc": "^18.0.0"
   },
   "scripts": {
     "test": "npm run lint && npm run cover",

@@ -20,7 +20,7 @@
     "shelljs": "^0.10.0",
     "tar-fs": "^3.0.6",
     "treeify": "^1.0.1",
-    "which": "^5.0.0",
+    "which": "^7.0.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
